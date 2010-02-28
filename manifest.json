@@ -1,0 +1,13 @@
+{
+    "name": "Shack Scripts",
+    "version": "1.0",
+    "description": "Collection of scripts for Shacknews.",
+    "icons": {
+        "128": "icon.png"
+    },
+    "js": [ "shackscripts.js"]
+    "matches": [
+        "http://www.shacknews.com/*",
+        "http://shacknews.com/*"
+    ]
+}
