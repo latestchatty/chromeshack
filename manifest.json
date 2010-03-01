@@ -5,9 +5,9 @@
     "icons": {
         "128": "icon.png"
     },
-    "js": [ "shackscripts.js"]
-    "matches": [
-        "http://www.shacknews.com/*",
-        "http://shacknews.com/*"
-    ]
+    "content_scripts": [ {
+        "js": [ "querystring.js", "shackscripts.js"],
+        "matches": [ "http://www.shacknews.com/*" ],
+        "all_frames": true
+    } ]
 }
