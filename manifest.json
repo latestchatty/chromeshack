@@ -6,7 +6,11 @@
         "128": "icon.png"
     },
     "content_scripts": [ {
-        "js": [ "chromeshack_posts.js"],
+        "js": [
+            "scripts/lol.js",
+            "scripts/comment_tags.js",
+            "chromeshack_posts.js"
+        ],
         "css": [ "chromeshack.css" ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
