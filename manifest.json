@@ -7,7 +7,9 @@
     },
     "content_scripts": [ {
         "js": [ "querystring.js", "shackscripts.js"],
-        "matches": [ "http://www.shacknews.com/*" ],
-        "all_frames": true
+        "css": [ "shackscripts.css" ],
+        "matches": [ "http://www.shacknews.com/laryn.x*" ],
+        "all_frames": false,
+        "run_at": "document_end"
     } ]
 }

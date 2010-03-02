@@ -1,24 +1,27 @@
-if (String(location.href).indexOf('frame_laryn.x') >= 0)
+// start listening for new nodes (replies) being inserted
+document.addEventListener('DOMNodeInserted', function(e)
 {
-    var qs = new Querystring();
-    if (qs.contains("id"))
-    {
-        console.log(location.href);
-        // process inidivitual post
-        console.log('loading iframe - single post.')
-    }
-    else
-    {
-        console.log(location.href);
-        // process individual posts
-        console.log('loading iframe - thread.')
-    }
-}
-else if (String(location.href).indexOf('laryn.x') >= 0)
-{
-    console.log(location.href);
-    console.log('loading chatty.')
 
+    // starts with "root", they probably refreshed the thread
+    if (e.srcElement.id.indexOf("root_") == 0)
+    {
+        processFullPosts(e.srcElement); 
+    }
+
+    // starts with "item_", they probably clicked on a reply
+    if (e.relatedNode.id.indexOf("item_") == 0)
+    {
+        // grab the id from the old node, since the new node doesn't contain the id
+        var id = e.relatedNode.id.substr(5);
+        processPost(e.srcElement, id);
+    }
+}, true);
+
+processFullPosts(document);
+
+function processFullPosts(element)
+{
+    // process fullposts
     var items = document.evaluate("//div[contains(@class, 'fullpost')]/..", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
     for (item = null, i = 0; item = items.snapshotItem(i); i++)
     {
@@ -29,8 +32,7 @@ else if (String(location.href).indexOf('laryn.x') >= 0)
 function processPost(item, root_id)
 {
     installLolButtons(item, root_id);
-
-    
+    // do other things here if needed, like insert sparkly and dinogegtik
 }
 
 function installLolButtons(item, id)
@@ -44,31 +46,51 @@ function installLolButtons(item, id)
     var author = getDescendentByTagAndClassName(item, "span", "author");
     if (!author)
     {
-        console.log("getDescendentByTagAndClassName could not locate span.author");
+        console.warning("getDescendentByTagAndClassName could not locate span.author");
         return;
     }
 
     var lol_div = document.createElement("div");
     lol_div.id = lol_div_id;
-    lol_div.setAttribute('style', 'display: inline; float: none; padding-left: 10px; font-size: 14px;');
+    lol_div.className = "lol";
     
-    var buttonHtml = ''; 
-    buttonHtml += ' [<a id="lol' + id + '" style="cursor: pointer; color: #f80; padding: 0 0.25em; text-decoration: underline;">lol</a>]'; 
-    buttonHtml += ' [<a id="inf' + id + '" style="cursor: pointer; color: #09c; padding: 0 0.25em; text-decoration: underline;">inf</a>]';
-    buttonHtml += ' [<a id="unf' + id + '" style="cursor: pointer; color: #f00; padding: 0 0.25em; text-decoration: underline;">unf</a>]';
-    buttonHtml += ' [<a id="tag' + id + '" style="cursor: pointer; color: #7b2; padding: 0 0.25em; text-decoration: underline;">tag</a>]';
-    buttonHtml += ' [<a id="wtf' + id + '" style="cursor: pointer; color: #C000C0; padding: 0 0.25em; text-decoration: underline;">wtf</a>]';
-    buttonHtml += ' [<a id="tth' + id + '" style="cursor: pointer; color: #fbb; padding: 0 0.25em; text-decoration: underline;">tth</a>]';
-    
-    lol_div.innerHTML = buttonHtml; 
+    // generate all the buttons
+    lol_div.appendChild(createLolButton("lol", id));
+    lol_div.appendChild(createLolButton("inf", id));
+    lol_div.appendChild(createLolButton("unf", id));
+    lol_div.appendChild(createLolButton("tag", id));
+    lol_div.appendChild(createLolButton("wtf", id));
+    lol_div.appendChild(createLolButton("tth", id));
 
+    // add them in
     author.appendChild(lol_div);
 }
 
-function lolThread(event)
+function createLolButton(tag, id)
 {
-    var tag = event.target.getAttribute('id').substr(0, 3);
-    var id = event.target.getAttribute('id').substr(3);
+    var button = document.createElement("a");
+    button.href = "#";
+    button.id = tag + id;
+    button.className = tag + "_button";
+    button.appendChild(document.createTextNode(tag));
+
+    button.addEventListener("click", function()
+    {
+        lolThread(tag, id);
+        return false;
+    });
+
+    var span = document.createElement("span");
+    span.appendChild(document.createTextNode("["));
+    span.appendChild(button);
+    span.appendChild(document.createTextNode("]"));
+
+    return span;
+}
+
+function lolThread(tag, id)
+{
+    // this is where the loling happings!
     console.log(tag + "'ing post " + id);
 }
 
@@ -81,6 +103,3 @@ function getDescendentByTagAndClassName(parent, tag, class)
             return descendents[i];
     }
 }
-
-console.log("finished loading.");
-
