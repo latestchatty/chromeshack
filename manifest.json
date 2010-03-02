@@ -6,7 +6,7 @@
         "128": "icon.png"
     },
     "content_scripts": [ {
-        "js": [ "querystring.js", "shackscripts.js"],
+        "js": [ "shackscripts.js"],
         "css": [ "shackscripts.css" ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
