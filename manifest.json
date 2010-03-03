@@ -2,6 +2,8 @@
     "name": "Chrome Shack",
     "version": "1.0",
     "description": "Collection of scripts for Shacknews.",
+    "options_page": "options.html",
+    "background_page": "background.html",
     "icons": {
         "128": "icon.png"
     },

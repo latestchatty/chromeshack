@@ -19,24 +19,23 @@ LOL =
         lol_div.id = lol_div_id;
         lol_div.className = "lol";
         
-        // generate all the buttons
-        lol_div.appendChild(LOL.createButton("lol", id));
-        lol_div.appendChild(LOL.createButton("inf", id));
-        lol_div.appendChild(LOL.createButton("unf", id));
-        lol_div.appendChild(LOL.createButton("tag", id));
-        lol_div.appendChild(LOL.createButton("wtf", id));
-        lol_div.appendChild(LOL.createButton("tth", id));
+        // generate all the buttons from settings
+        var tags = getSetting("lol_tags");
+        for (var i = 0; i < tags.length; i++)
+        {
+            lol_div.appendChild(LOL.createButton(tags[i].name, id, tags[i].color));
+        }
 
         // add them in
         author.appendChild(lol_div);
     },
 
-    createButton: function(tag, id)
+    createButton: function(tag, id, color)
     {
         var button = document.createElement("a");
         button.href = "#";
-        button.id = tag + id;
-        button.className = tag + "_button";
+        button.className = "lol_button";
+        button.style.color = color;
         button.appendChild(document.createTextNode(tag));
 
         button.addEventListener("click", function()
@@ -61,4 +60,7 @@ LOL =
 
 }
 
-parsePostEvent.addHandler(LOL.installButtons);
+if (getSetting('lol_enabled'))
+{
+    parsePostEvent.addHandler(LOL.installButtons);
+}

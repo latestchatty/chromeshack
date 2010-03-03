@@ -7,3 +7,19 @@ function getDescendentByTagAndClassName(parent, tag, class)
             return descendents[i];
     }
 }
+
+// get a snapshot of the local storage settings
+var settings;
+chrome.extension.sendRequest({name: "getSettings"}, function(response)
+{
+    settings = response;
+});
+
+// utility function to get a setting out of the local storage snapshot
+function getSetting(name)
+{
+    var v = settings[name];
+    if (v)
+        v = JSON.parse(v);
+    return v;
+}

@@ -1,0 +1,14 @@
+<script type="text/javascript">
+function getSettings()
+{
+    return localStorage;
+}
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
+{
+    if (request.name == "getSettings")
+        sendResponse(getSettings());
+    else
+        sendResponse();
+});
+</script>

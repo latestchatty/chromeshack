@@ -1,0 +1,15 @@
+<html>
+    <head><title>Chrome Shack Options</title></head>
+    <script type="text/javascript" src="options.js" />
+    <body onload="loadOptions()">
+        <h2>LOL tags</h2>
+        <input type="checkbox" id="lol_enabled" checked="true" /><label for="lol_enabled">Enable LOL script</label>
+        <div id="lol_tags"></div>
+        <a href="#" onclick="addTag(); return false;">Add</a>
+        <br>
+        <button onclick="saveOptions()">Save</button>
+        <button onclick="loadOptions()">Reset</button>
+        <br>
+        <span id="status" />
+    </body>
+</html>
