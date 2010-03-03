@@ -13,6 +13,7 @@
             "scripts/lol.js",
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
+            "scripts/dinogegtik.js",
             "chromeshack_posts.js"
         ],
         "css": [ "chromeshack.css" ],

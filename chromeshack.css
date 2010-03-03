@@ -19,3 +19,27 @@ div.newcommentform { position: relative !important; width: inherit !important; m
     width:570px;
     overflow:auto;
 }
+
+/* Dino Gegtik */
+div.dinogegtik a { color: #e00 !important; }
+div.dinogegtik {
+    display: block;
+    width: 735px;
+    height: 487px;
+    margin: 10px 0;
+    font-family: Lucida Console, Courier New;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1em;
+    background-color: #333;
+    color: #000;
+    background-image: url("/images/dinogegtik.png");
+    position: relative;
+}
+
+div.dinogegtik div.panel {
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    line-height: 1em;
+}
