@@ -38,10 +38,10 @@ LOL =
         button.style.color = color;
         button.appendChild(document.createTextNode(tag));
 
-        button.addEventListener("click", function()
+        button.addEventListener("click", function(e)
         {
             LOL.lolThread(tag, id);
-            return false;
+            e.preventDefault();
         });
 
         var span = document.createElement("span");
