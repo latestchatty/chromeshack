@@ -7,7 +7,6 @@ CommentTags =
         if (postform)
         {
             var comment_tags = document.createElement("div");
-            comment_tags.setAttribute("shack_comment_tags");
             comment_tags.innerHTML = '<p>Comment Tags;</p>' +
                     '<table cellpadding="2" border="0" cellspacing="0">' +
                     '<tr><td><span class="jt_red">red</span></td><td>r{ ... }r</td>' +
