@@ -19,7 +19,6 @@ document.addEventListener('DOMNodeInserted', function(e)
 
 // process posts on the main page
 processFullPosts(document);
-installCommentTags();
 
 function processFullPosts(element)
 {
