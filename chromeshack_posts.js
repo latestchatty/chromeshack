@@ -6,10 +6,16 @@ ChromeShack =
         document.addEventListener('DOMNodeInserted', function(e)
         {
 
+            var source_id = e.srcElement.id;
+
             // starts with "root", they probably refreshed the thread
-            if (e.srcElement.id.indexOf("root_") == 0)
+            if (source_id && source_id.indexOf("root_") == 0)
             {
                 ChromeShack.processFullPosts(e.srcElement); 
+            }
+            else if (source_id == "postbox")
+            {
+                ChromeShack.processPostBox(e.srcElement);
             }
 
             // starts with "item_", they probably clicked on a reply
@@ -36,6 +42,11 @@ ChromeShack =
     {
         parsePostEvent.raise(item, root_id);
     },
+
+    processPostBox: function(postbox)
+    {
+        postBoxEvent.raise(postbox);
+    }
 
 }
 

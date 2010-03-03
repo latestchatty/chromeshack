@@ -17,3 +17,4 @@ Event.prototype.raise = function(arg1, arg2)
 }
 
 var parsePostEvent = new Event();
+var postBoxEvent = new Event();

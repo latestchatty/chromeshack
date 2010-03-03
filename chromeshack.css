@@ -8,3 +8,14 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
 #shack_comment_tags table a { cursor: pointer; }
 div.newcommentform { position: relative !important; width: inherit !important; min-width: 580px; }
 #postform { float: left; }
+
+/* post preview */
+#previewArea {
+    display:none;
+    border:1px solid #AEAE9B;
+    padding:3px;
+    background:#222;
+    height:230px;
+    width:570px;
+    overflow:auto;
+}
