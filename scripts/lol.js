@@ -62,5 +62,5 @@ LOL =
 
 if (getSetting('lol_enabled'))
 {
-    parsePostEvent.addHandler(LOL.installButtons);
+    processPostEvent.addHandler(LOL.installButtons);
 }

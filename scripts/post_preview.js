@@ -101,4 +101,4 @@ PostPreview =
 }
 
 PostPreview.install();
-postBoxEvent.addHandler(PostPreview.installClickEvent);
+processPostBoxEvent.addHandler(PostPreview.installClickEvent);

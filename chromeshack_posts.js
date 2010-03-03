@@ -40,12 +40,12 @@ ChromeShack =
 
     processPost: function(item, root_id)
     {
-        parsePostEvent.raise(item, root_id);
+        processPostEvent.raise(item, root_id);
     },
 
     processPostBox: function(postbox)
     {
-        postBoxEvent.raise(postbox);
+        processPostBoxEvent.raise(postbox);
     }
 
 }
