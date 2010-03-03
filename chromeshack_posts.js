@@ -23,7 +23,7 @@ ChromeShack =
             {
                 // grab the id from the old node, since the new node doesn't contain the id
                 var id = e.relatedNode.id.substr(5);
-                ChromeShack.processPost(e.srcElement, id);
+                ChromeShack.processPost(e.relatedNode, id);
             }
         }, true);
     },
