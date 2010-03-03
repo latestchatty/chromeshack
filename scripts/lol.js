@@ -60,3 +60,5 @@ LOL =
     }
 
 }
+
+parsePostEvent.addHandler(LOL.installButtons);

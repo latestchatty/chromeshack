@@ -5,7 +5,8 @@
     "icons": {
         "128": "icon.png"
     },
-    "content_scripts": [ {
+    "content_scripts": [
+    {
         "js": [
             "scripts/lol.js",
             "scripts/comment_tags.js",
@@ -15,5 +16,15 @@
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
         "run_at": "document_end"
-    } ]
+    },
+    {
+        "js": [
+            "common.js",
+            "init_events.js"
+        ],
+        "matches": [ "http://www.shacknews.com/laryn.x*" ],
+        "all_frames": false,
+        "run_at": "document_start"
+    }
+    ]
 }
