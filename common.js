@@ -36,6 +36,6 @@ function getSetting(name)
 {
     var v = settings[name];
     if (v)
-        v = JSON.parse(v);
+        return JSON.parse(v);
     return DefaultSettings[name];
 }
