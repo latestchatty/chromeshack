@@ -1,6 +1,17 @@
 /* lol buttons */
 div.lol { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
 a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; }
+#lollink {
+    display: block;
+    width: 190px;
+    height: 45px;
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 12px;
+    text-indent: -9999px;
+    color: #f00;
+}
 
 /* comment tags */
 #shack_comment_tags { float:left; padding:5px; }

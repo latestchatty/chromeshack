@@ -3,6 +3,21 @@ LOL =
     URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
     VERSION: "20090513",
 
+    installLink: function()
+    {
+        var comments_tools = getDescendentByTagAndClassName(document, "div", "commentstools");
+        if (comments_tools)
+        {
+            var link = document.createElement("a");
+            link.id = "lollink";
+            link.href = LOL.URL + "?user=" + encodeURIComponent(LOL.getUsername());
+            link.title = "Check out what got the [lol]s";
+            link.style.backgroundImage = "url(" + chrome.extension.getURL("../images/lol.png") + ")";
+            link.appendChild(document.createTextNode("[ L O L ` d ]"));
+            comments_tools.appendChild(link);
+        }
+    },
+
     installButtons: function(item, id)
     {
         var lol_div_id = 'lol_' + id;
@@ -121,5 +136,6 @@ LOL =
 
 if (getSetting('lol_enabled'))
 {
+    LOL.installLink();
     processPostEvent.addHandler(LOL.installButtons);
 }
