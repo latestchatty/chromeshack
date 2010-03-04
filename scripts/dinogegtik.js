@@ -46,12 +46,17 @@ DinoGegtik =
 
                 comic_div.appendChild(panel);
 
-                var size = 12;
-                while (panel.scrollHeight > panel.clientHeight && size > 7)
+                // the div isn't actually visible yet, so the scroll/client height properties will just be 0
+                // just wait a bit to resize the text
+                window.setTimeout(function()
                 {
-                    panel.style.fontSize = "" + size + "px";
-                    size--;
-                }
+                    var size = 12;
+                    while (panel.scrollHeight > panel.clientHeight && size > 7)
+                    {
+                        panel.style.fontSize = "" + size + "px";
+                        size--;
+                    }
+                }, 200);
             }
         }
     },
@@ -59,32 +64,33 @@ DinoGegtik =
     parsePostIntoLines: function(html)
     {
 		var res = new Array(); 
+
+        var LINK_PLACEHOLDER = "%%link%%";
 	
 		// Extract all the links, store them in links[] and replace the link with a %%link%% placeholder in the post 
 		var links = new Array(); 
-		var regExLink = new RegExp(/<a.*? href=(\"|')(.*?)([\n|\r]*?)(\"|').*?>(.*?)([\n|\r]*?)<\/a>/i);
-		do 
-		{
-			var m = regExLink.exec(html);
-			if (m == null) 
-			{
-				break;
-			}
-			links.push(m[0]); 
-			html = html.replace(regExLink, '%%link%%'); 
-		}
-		while (1)
+		var link_regex = new RegExp(/<a.*? href=(\"|')(.*?)([\n|\r]*?)(\"|').*?>(.*?)([\n|\r]*?)<\/a>/i);
+        var m = link_regex.exec(html);
+        while (m)
+        {
+            // save the link, and put a placeholder in
+            links.push(m[0]);
+            html.replace(link_regex, LINK_PLACEHOLDER);
+            m = link_regex.exec(html);
+        }
 	
-		// Strip HTML from the post 	
+		// remove the rest of the html from the post
 		post = DinoGegtik.stripHtml(html);
-		
+
+        var link_replace_regex = new RegExp("/" + LINK_PLACEHOLDER + "/i");
+
 		// Split paragraphs
 		var lines = html.split('\n');
 		
 		// Get sentences from paragraphs
 		for (var i = 0; i < lines.length; i++)
 		{
-			lines[i] = lines[i].replace('...', '&Ellipsis;'); 
+			lines[i] = lines[i].replace('...', '&ellipsis;'); 
 	
 			var sentences = lines[i].split('.');
 			
@@ -93,13 +99,13 @@ DinoGegtik =
 				if (sentences[j].length)
 				{
 					var tmp = sentences[j];
-					tmp = tmp.replace('&Ellipsis;', '...'); 
+					tmp = tmp.replace('&ellipsis;', '...'); 
 	
-					// replace %%link%% placeholders with actual links
-					while (tmp.indexOf('%%link%%') > -1)
-					{
-						tmp = tmp.replace(/%%link%%/i, links.shift());
-					}
+					// replace placeholders with actual links
+                    while (tmp.indexOf(LINK_PLACEHOLDER) >= 0)
+                    {
+                        tmp = tmp.replace(link_replace_regex, links.shift());
+                    }
 	
 					res.push(tmp);
 				}
