@@ -2,6 +2,7 @@
     "name": "Chrome Shack",
     "version": "1.0",
     "description": "Collection of scripts for Shacknews.",
+    "update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
     "options_page": "options.html",
     "background_page": "background.html",
     "icons": {
