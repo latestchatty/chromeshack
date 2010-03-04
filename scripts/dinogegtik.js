@@ -80,7 +80,7 @@ DinoGegtik =
         }
 	
 		// remove the rest of the html from the post
-		post = DinoGegtik.stripHtml(html);
+		post = stripHtml(html);
 
         var link_replace_regex = new RegExp("/" + LINK_PLACEHOLDER + "/i");
 
@@ -115,7 +115,6 @@ DinoGegtik =
 		return res; 
     },
 
-    stripHtml: function(html) { return String(html).replace(/(<([^>]+)>)/ig, ''); }
 }
 
 processPostEvent.addHandler(DinoGegtik.installComic);

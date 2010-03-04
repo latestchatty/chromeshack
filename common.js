@@ -8,6 +8,11 @@ function getDescendentByTagAndClassName(parent, tag, class)
     }
 }
 
+function stripHtml(html)
+{
+    return String(html).replace(/(<([^>]+)>)/ig, '');
+}
+
 // get a snapshot of the local storage settings
 var settings;
 chrome.extension.sendRequest({name: "getSettings"}, function(response)
