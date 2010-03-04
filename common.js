@@ -13,6 +13,17 @@ function stripHtml(html)
     return String(html).replace(/(<([^>]+)>)/ig, '');
 }
 
+Array.prototype.contains = function(obj)
+{
+    var i = this.length;
+    while (i--)
+    {
+        if (this[i] == obj)
+            return true;
+    }
+    return false;
+}
+
 // get a snapshot of the local storage settings
 var settings;
 chrome.extension.sendRequest({name: "getSettings"}, function(response)
@@ -26,5 +37,5 @@ function getSetting(name)
     var v = settings[name];
     if (v)
         v = JSON.parse(v);
-    return v;
+    return DefaultSettings[name];
 }

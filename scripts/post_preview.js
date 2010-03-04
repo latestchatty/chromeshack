@@ -100,5 +100,8 @@ PostPreview =
 
 }
 
-PostPreview.install();
-processPostBoxEvent.addHandler(PostPreview.installClickEvent);
+if (getSetting("enabled_scripts").contains("post_preview"))
+{
+    PostPreview.install();
+    processPostBoxEvent.addHandler(PostPreview.installClickEvent);
+}

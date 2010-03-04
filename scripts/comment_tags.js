@@ -33,4 +33,7 @@ CommentTags =
 
 }
 
-CommentTags.installCommentTags();
+if (getSetting("enabled_scripts").contains("comment_tags"))
+{
+    CommentTags.installCommentTags();
+}

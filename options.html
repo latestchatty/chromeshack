@@ -1,15 +1,31 @@
 <html>
     <head><title>Chrome Shack Options</title></head>
+    <script type="text/javascript" src="default_settings.js" />
     <script type="text/javascript" src="options.js" />
     <body onload="loadOptions()">
         <h2>LOL tags</h2>
-        <input type="checkbox" id="lol_enabled" checked="true" /><label for="lol_enabled">Enable LOL script</label>
-        <div id="lol_tags"></div>
-        <a href="#" onclick="addTag(); return false;">Add</a>
-        <br>
-        <button onclick="saveOptions()">Save</button>
-        <button onclick="loadOptions()">Reset</button>
-        <br>
-        <span id="status" />
+        <div>
+            <input type="checkbox" class="script_check" id="lol" /><label for="lol">Enable LOL script</label>
+            <div id="lol_tags"></div>
+            <a href="#" onclick="addTag(); return false;">Add</a>
+        </div>
+        <h2>Comment Tags</h2>
+        <div>
+            <input type="checkbox" class="script_check" id="comment_tags" /><label for="commenttags">Enable Comment Tags</label>
+        </div>
+        <h2>Post Preview</h2>
+        <div>
+            <input type="checkbox" class="script_check" id="post_preview" /><label for="postpreview">Enable Post Preview</label>
+        </div>
+        <h2>Dino Gegtik</h2>
+        <div>
+            <input type="checkbox" class="script_check" id="dinogegtik" /><label for="dinogegtik">Enable Dino Gegtik</label>
+        </div>
+        <div>
+            <button onclick="saveOptions()">Save</button>
+            <button onclick="loadOptions()">Reset</button>
+            <br>
+            <span id="status" />
+        </div>
     </body>
 </html>

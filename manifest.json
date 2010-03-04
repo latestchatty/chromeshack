@@ -23,6 +23,7 @@
     },
     {
         "js": [
+            "default_settings.js",
             "common.js",
             "init_events.js"
         ],

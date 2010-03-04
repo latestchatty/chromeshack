@@ -1,27 +1,18 @@
 var tags = [];
-var lol_enabled;
 
 function loadOptions()
 {
-    tags = getOption("lol_tags", [
-            {name: "lol", color: "#f80"},
-            {name: "inf", color: "#09c"},
-            {name: "unf", color: "#f00"},
-            {name: "tag", color: "#7b2"},
-            {name: "wtf", color: "#c000c0"}
-        ]);
-
-    lol_enabled = getOption("lol_enabled", true); 
-
+    tags = getOption("lol_tags");
     showLolTags();
+    showEnabledScripts();
 }
 
-function getOption(name, default_value)
+function getOption(name)
 {
     var value = localStorage[name];
     if (value)
         return JSON.parse(value);
-    return default_value;
+    return DefaultSettings[name];
 }
 
 function saveOption(name, value)
@@ -43,9 +34,6 @@ function showLolTags()
     // update the div that is displayed
     var lol_div = document.getElementById("lol_tags");
     lol_div.innerHTML = fake_div.innerHTML;
-
-    lol_check = document.getElementById("lol_enabled");
-    lol_check.checked = lol_enabled;
 }
 
 function removeTag(index)
@@ -75,21 +63,72 @@ function writeTagValues()
         new_tags[i] = {name: tag_name, color: tag_color};
     }
     tags = new_tags;
+}
 
-    lol_check = document.getElementById("lol_enabled");
-    lol_enabled = lol_check.checked;
+function showEnabledScripts()
+{
+    var enabled = getOption("enabled_scripts");
+
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++)
+    {
+        if (inputs[i].type == "checkbox" && inputs[i].className == "script_check")
+        {
+            var found = false;
+            for (var j = 0; j < enabled.length; j++)
+            {
+                if (enabled[j] == inputs[i].id)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            inputs[i].checked = found;
+        }
+    }
+}
+
+function getEnabledScripts()
+{
+    var enabled = [];
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++)
+    {
+        if (inputs[i].type == "checkbox" && inputs[i].className == "script_check")
+        {
+            if (inputs[i].checked)
+            {
+                enabled.push(inputs[i].id); 
+            }
+        }
+    }
+
+    return enabled;
+}
+
+function getDescendentByTagAndClassName(parent, tag, class) 
+{
+    var descendents = parent.getElementsByTagName(tag);
+    for (var i = 0; i < descendents.length; i++) 
+    {
+        if (descendents[i].className.indexOf(class) == 0) 
+            return descendents[i];
+    }
 }
 
 function saveOptions()
 {
     writeTagValues();
     saveOption("lol_tags", tags);
-    saveOption("lol_enabled", lol_enabled);
+
+    saveOption("enabled_scripts", getEnabledScripts());
     
     // Update status to let the user know options were saved
     var status = document.getElementById("status");
-    status.innerHtml = "Options Saved.";
+    status.innerHTML = "Options Saved.";
     setTimeout(function() {
         status.innerHTML = "";
-    }, 750);
+    }, 1000);
 }

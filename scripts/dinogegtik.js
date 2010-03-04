@@ -117,5 +117,8 @@ DinoGegtik =
 
 }
 
-processPostEvent.addHandler(DinoGegtik.installComic);
+if (getSetting("enabled_scripts").contains("dinogegtik"))
+{
+    processPostEvent.addHandler(DinoGegtik.installComic);
+}
 

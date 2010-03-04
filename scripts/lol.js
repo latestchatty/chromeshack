@@ -134,7 +134,7 @@ LOL =
 
 }
 
-if (getSetting('lol_enabled'))
+if (getSetting("enabled_scripts").contains("lol"))
 {
     LOL.installLink();
     processPostEvent.addHandler(LOL.installButtons);
