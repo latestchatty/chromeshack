@@ -75,14 +75,14 @@ DinoGegtik =
         {
             // save the link, and put a placeholder in
             links.push(m[0]);
-            html.replace(link_regex, LINK_PLACEHOLDER);
+            html = html.replace(link_regex, LINK_PLACEHOLDER);
             m = link_regex.exec(html);
         }
 	
 		// remove the rest of the html from the post
 		post = stripHtml(html);
 
-        var link_replace_regex = new RegExp("/" + LINK_PLACEHOLDER + "/i");
+        var link_replace_regex = new RegExp(LINK_PLACEHOLDER, "i");
 
 		// Split paragraphs
 		var lines = html.split('\n');
