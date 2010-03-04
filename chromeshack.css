@@ -1,6 +1,6 @@
 /* lol buttons */
 div.lol { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
-a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; }
+a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
 #lollink {
     display: block;
     width: 190px;
