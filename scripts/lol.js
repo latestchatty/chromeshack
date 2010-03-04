@@ -1,5 +1,8 @@
 LOL =
 {
+    URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
+    VERSION: "20090513",
+
     installButtons: function(item, id)
     {
         var lol_div_id = 'lol_' + id;
@@ -33,6 +36,7 @@ LOL =
     createButton: function(tag, id, color)
     {
         var button = document.createElement("a");
+        button.id = tag + id;
         button.href = "#";
         button.className = "lol_button";
         button.style.color = color;
@@ -40,7 +44,8 @@ LOL =
 
         button.addEventListener("click", function(e)
         {
-            LOL.lolThread(tag, id);
+            if (LOL.lolThread(tag, id))
+               this.removeEventListener('click', arguments.callee);
             e.preventDefault();
         });
 
@@ -54,8 +59,62 @@ LOL =
 
     lolThread: function(tag, id)
     {
-        // this is where the loling happings!
-        console.log(tag + "'ing post " + id);
+        var user = LOL.getUsername();
+        if (!user)
+        {
+            alert("You must be logged in to lol!");
+            return false;
+        }
+        
+        var moderation = LOL.getModeration(id);
+        if (moderation.length)
+            moderation = "&moderation=" + moderation;
+
+        var url = LOL.URL + "report.php?who=" + user + "&what=" + id + "&tag=" + tag + "&version=" + LOL.VERSION +  moderation;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onreadystatechange = function()
+        {
+            if (xhr.readyState == 4)
+            {
+                // it worked, I guess
+                var new_tag = "*";
+                for (var i = 0; i < tag.length; i++)
+                    new_tag += " " + tag[i].toUpperCase() + " ";
+                new_tag += " ' D *";
+
+                var tag_link = document.getElementById(tag + id);
+                tag_link.href = LOL.URL + "?user=" + encodeURIComponent(user);
+                tag_link.innerHTML = new_tag;
+            }
+        }
+        xhr.send();
+
+        return true;
+    },
+
+    getUsername: function()
+    {
+        var masthead = document.getElementById("masthead");
+        var username = getDescendentByTagAndClassName(masthead, "a", "username");
+        return stripHtml(username.innerHTML);
+    },
+
+    getModeration: function(id)
+    {
+        var tags = ["fpmod_offtopic", "fpmod_nws", "fpmod_stupid", "fpmod_informative", "fpmod_political"];
+        var item = document.getElementById("item_" + id);
+        var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
+        for (var i = 0; i < tags.length; i++)
+        {
+            if (fullpost.className.indexOf(tags[i]) >= 0)
+            {
+                return tags[i];
+            }
+        }
+
+        return "";
     }
 
 }

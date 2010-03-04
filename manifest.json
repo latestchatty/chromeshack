@@ -30,5 +30,8 @@
         "all_frames": false,
         "run_at": "document_start"
     }
+    ],
+    "permissions": [
+        "http://lmnopc.com/greasemonkey/shacklol/*" 
     ]
 }
