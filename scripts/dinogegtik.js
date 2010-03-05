@@ -33,7 +33,7 @@ DinoGegtik =
 
             postBody.appendChild(comic_div);
 
-            var max = lines.length > DinoGegtik.panels.lengh ? DinoGegtik.panels.length : lines.length;
+            var max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
             for (var i = 0; i < max; i++)
             {
                 var panel = document.createElement("div");
@@ -85,7 +85,7 @@ DinoGegtik =
         var link_replace_regex = new RegExp(LINK_PLACEHOLDER, "i");
 
 		// Split paragraphs
-		var lines = html.split('\n');
+		var lines = post.split('\n');
 		
 		// Get sentences from paragraphs
 		for (var i = 0; i < lines.length; i++)
