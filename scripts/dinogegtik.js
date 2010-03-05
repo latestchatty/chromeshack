@@ -46,19 +46,24 @@ DinoGegtik =
 
                 comic_div.appendChild(panel);
 
-                // the div isn't actually visible yet, so the scroll/client height properties will just be 0
-                // just wait a bit to resize the text
-                window.setTimeout(function()
-                {
-                    var size = 12;
-                    while (panel.scrollHeight > panel.clientHeight && size > 7)
-                    {
-                        panel.style.fontSize = "" + size + "px";
-                        size--;
-                    }
-                }, 200);
+                DinoGegtik.resizePanelText(panel);
             }
         }
+    },
+
+    resizePanelText: function(panel)
+    {
+        // the div isn't actually visible yet, so the scroll/client height properties will just be 0
+        // just wait a bit to resize the text
+        window.setTimeout(function()
+        {
+            var size = 12;
+            while (panel.scrollHeight > panel.clientHeight && size > 7)
+            {
+                panel.style.fontSize = "" + size + "px";
+                size--;
+            }
+        }, 200);
     },
 
     parsePostIntoLines: function(html)
