@@ -59,8 +59,7 @@ LOL =
 
         button.addEventListener("click", function(e)
         {
-            if (LOL.lolThread(tag, id))
-               this.removeEventListener('click', arguments.callee);
+            LOL.lolThread(tag, id, arguments.callee)
             e.preventDefault();
         });
 
@@ -72,13 +71,13 @@ LOL =
         return span;
     },
 
-    lolThread: function(tag, id)
+    lolThread: function(tag, id, handler)
     {
         var user = LOL.getUsername();
         if (!user)
         {
             alert("You must be logged in to lol!");
-            return false;
+            return;
         }
         
         var moderation = LOL.getModeration(id);
@@ -87,13 +86,11 @@ LOL =
 
         var url = LOL.URL + "report.php?who=" + user + "&what=" + id + "&tag=" + tag + "&version=" + LOL.VERSION +  moderation;
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.onreadystatechange = function()
+        getUrl(url, function(response)
         {
-            if (xhr.readyState == 4)
+            if (response.status == 200 && response.responseText.indexOf("ok") == 0)
             {
-                // it worked, I guess
+                // looks like it worked
                 var new_tag = "*";
                 for (var i = 0; i < tag.length; i++)
                     new_tag += " " + tag[i].toUpperCase() + " ";
@@ -102,11 +99,13 @@ LOL =
                 var tag_link = document.getElementById(tag + id);
                 tag_link.href = LOL.URL + "?user=" + encodeURIComponent(user);
                 tag_link.innerHTML = new_tag;
+                tag_link.removeEventListener('click', handler);
             }
-        }
-        xhr.send();
-
-        return true;
+            else
+            {
+                alert(response.responseText);
+            }
+        });
     },
 
     getUsername: function()
