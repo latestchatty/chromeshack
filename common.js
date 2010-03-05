@@ -46,5 +46,5 @@ function getUrl(url, callback)
     chrome.extension.sendRequest({"name": "getUrl", "url": url}, function(response)
     {
         callback(response);
-    }
+    });
 }
