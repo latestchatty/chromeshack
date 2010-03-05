@@ -4,10 +4,26 @@ function getSettings()
     return localStorage;
 }
 
+function getUrl(url, callback)
+{
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if (xhr.readyState == 4)
+        {
+            callback(xhr);
+        }
+    }
+    xhr.open("GET", url, true);
+    xhr.send();
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
         sendResponse(getSettings());
+    if (request.name == "getUrl")
+        getUrl(request.url, sendResponse);
     else
         sendResponse();
 });

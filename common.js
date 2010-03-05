@@ -39,3 +39,12 @@ function getSetting(name)
         return JSON.parse(v);
     return DefaultSettings[name];
 }
+
+// utility function to make an XMLHttpRequest
+function getUrl(url, callback)
+{
+    chrome.extension.sendRequest({"name": "getUrl", "url": url}, function(response)
+    {
+        callback(response);
+    }
+}
