@@ -1,6 +1,7 @@
 function loadOptions()
 {
     showLolTags(getOption("lol_tags"));
+    showPostPreviewLocation(getOption("post_preview_location"));
     showEnabledScripts();
 }
 
@@ -15,6 +16,18 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function showPostPreviewLocation(position)
+{
+    var select = document.getElementById("post_preview_location");
+    select.selectedIndex = (position == "Left") ? 0 : 1;
+}
+
+function getPostPreviewLocation()
+{
+    var select = document.getElementById("post_preview_location");
+    return select.value;
 }
 
 function showLolTags(tags)
@@ -114,6 +127,7 @@ function getDescendentByTagAndClassName(parent, tag, class)
 function saveOptions()
 {
     saveOption("lol_tags", getLolTagValues());
+    saveOption("post_preview_location", getPostPreviewLocation());
     saveOption("enabled_scripts", getEnabledScripts());
     
     // Update status to let the user know options were saved

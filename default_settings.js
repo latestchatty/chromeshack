@@ -14,4 +14,5 @@ DefaultSettings = {
         {name: "wtf", color: "#c000c0"}
     ],
 
+    post_preview_location: "Left"
 }

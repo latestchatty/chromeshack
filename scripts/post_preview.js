@@ -13,7 +13,10 @@ PostPreview =
             previewButton.id = "previewButton";
             previewButton.setAttribute("type", "button");
             previewButton.innerHTML = "Preview";
-            postButton.parentNode.insertBefore(previewButton, postButton);
+            if (getSetting("post_preview_location") == "Left")
+                postButton.parentNode.insertBefore(previewButton, postButton);
+            else
+                postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
 
             var previewArea = document.createElement("div");
             previewArea.id = "previewArea";
