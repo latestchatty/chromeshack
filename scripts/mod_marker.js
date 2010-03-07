@@ -56,7 +56,6 @@ ModMarker =
         var style = document.createElement("style");
         style.type = "text/css";
         style.appendChild(document.createTextNode(css));
-        console.log(style.innerHTML);
         document.getElementsByTagName("head")[0].appendChild(style);
     }
 
