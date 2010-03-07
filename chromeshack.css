@@ -16,7 +16,7 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
 /* comment tags */
 #shack_comment_tags { float:left; padding:5px; }
 #shack_comment_tags p { margin: 0.5em 0px 7px 0px; }
-#shack_comment_tags table a { cursor: pointer; }
+#shack_comment_tags .jt_italics  { font-style: italic; }
 div.newcommentform { position: relative !important; width: inherit !important; min-width: 580px; }
 #postform { float: left; }
 
