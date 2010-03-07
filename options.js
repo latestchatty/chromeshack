@@ -2,6 +2,7 @@ function loadOptions()
 {
     showLolTags(getOption("lol_tags"));
     showPostPreviewLocation(getOption("post_preview_location"));
+    showModMarkerCss(getOption("mod_marker_css"));
     showEnabledScripts();
 }
 
@@ -16,6 +17,16 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function showModMarkerCss(css)
+{
+    document.getElementById("mod_marker_css").value = css;
+}
+
+function getModMarkerCss()
+{
+    return document.getElementById("mod_marker_css").value;
 }
 
 function showPostPreviewLocation(position)
@@ -128,6 +139,7 @@ function saveOptions()
 {
     saveOption("lol_tags", getLolTagValues());
     saveOption("post_preview_location", getPostPreviewLocation());
+    saveOption("mod_marker_css", getModMarkerCss());
     saveOption("enabled_scripts", getEnabledScripts());
     
     // Update status to let the user know options were saved

@@ -15,6 +15,7 @@
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
             "scripts/dinogegtik.js",
+            "scripts/mod_marker.js",
             "chromeshack_posts.js"
         ],
         "css": [ "chromeshack.css" ],

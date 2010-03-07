@@ -3,7 +3,8 @@ DefaultSettings = {
         "lol",
         "comment_tags",
         "post_preview",
-        "dinogegtik"
+        "dinogegtik",
+        "mod_marker"
     ],
 
     lol_tags: [
@@ -14,5 +15,7 @@ DefaultSettings = {
         {name: "wtf", color: "#c000c0"}
     ],
 
-    post_preview_location: "Left"
+    post_preview_location: "Left",
+
+    mod_marker_css: "color: red !important"
 }
