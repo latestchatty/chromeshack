@@ -1,9 +1,6 @@
-var tags = [];
-
 function loadOptions()
 {
-    tags = getOption("lol_tags");
-    showLolTags();
+    showLolTags(getOption("lol_tags"));
     showEnabledScripts();
 }
 
@@ -20,49 +17,45 @@ function saveOption(name, value)
     localStorage[name] = JSON.stringify(value);
 }
 
-function showLolTags()
+function showLolTags(tags)
 {
-    // generate in a temporary div so we can pull out the innerHTML later
-    var fake_div = document.createElement("div");
+    var lol_div = document.getElementById("lol_tags");
+    lol_div.innerHTML = ""; // clear child nodes
+
     for (var i = 0; i < tags.length; i++)
     {
         var tag_row = document.createElement("div");
-        tag_row.innerHTML = "Tag: <input id='tag_name_" + i + "' value='" + tags[i].name + "'/> Color: <input id='tag_color_" + i + "' value='" + tags[i].color + "'/> <a href='#' onclick='removeTag(" + i + "); return false'>(remove)</a>";
-        fake_div.appendChild(tag_row);
+        tag_row.innerHTML = "Tag: <input class='name' value='" + tags[i].name + "'/> Color: <input class='color' value='" + tags[i].color + "'/> <a href='#' onclick='removeTag(this); return false'>(remove)</a>";
+        lol_div.appendChild(tag_row);
     }
-
-    // update the div that is displayed
-    var lol_div = document.getElementById("lol_tags");
-    lol_div.innerHTML = fake_div.innerHTML;
 }
 
-function removeTag(index)
+function removeTag(node)
 {
-    // save current values before redisplaying
-    writeTagValues();
-    tags.splice(index, 1);
-    showLolTags();
+    var tag_row = node.parentNode;
+    tag_row.parentNode.removeChild(tag_row);
 }
 
 function addTag()
 {
-    // save current values before redisplaying
-    writeTagValues();
-    tags[tags.length] = {name: "", color: ""};
-    showLolTags();
+    var tag_row = document.createElement("div");
+    tag_row.innerHTML = "Tag: <input class='name' value=''/> Color: <input class='color' value=''/> <a href='#' onclick='removeTag(this); return false'>(remove)</a>";
+
+    var lol_div = document.getElementById("lol_tags");
+    lol_div.appendChild(tag_row);
 }
 
-function writeTagValues()
+function getLolTagValues()
 {
-    var new_tags = [];
+    var tags = [];
     var lol_div = document.getElementById("lol_tags");
     for (var i = 0; i < lol_div.children.length; i++)
     {
-        var tag_name = document.getElementById("tag_name_" + i).value;
-        var tag_color = document.getElementById("tag_color_" + i).value;
-        new_tags[i] = {name: tag_name, color: tag_color};
+        var tag_name = getDescendentByTagAndClassName(lol_div.children[i], "input", "name").value;
+        var tag_color = getDescendentByTagAndClassName(lol_div.children[i], "input", "color").value;
+        tags[i] = {name: tag_name, color: tag_color};
     }
-    tags = new_tags;
+    return tags;
 }
 
 function showEnabledScripts()
@@ -120,9 +113,7 @@ function getDescendentByTagAndClassName(parent, tag, class)
 
 function saveOptions()
 {
-    writeTagValues();
-    saveOption("lol_tags", tags);
-
+    saveOption("lol_tags", getLolTagValues());
     saveOption("enabled_scripts", getEnabledScripts());
     
     // Update status to let the user know options were saved
