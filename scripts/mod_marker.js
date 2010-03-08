@@ -51,15 +51,7 @@ if (getSetting("enabled_scripts").contains("mod_marker"))
             css += " { " + getSetting("mod_marker_css") + " }\n";
             css += "div.oneline a.this_user { color: rgb(0, 191, 243) !important; }"
 
-            ModMarker.insertStyle(css);
-        },
-
-        insertStyle: function(css)
-        {
-            var style = document.createElement("style");
-            style.type = "text/css";
-            style.appendChild(document.createTextNode(css));
-            document.getElementsByTagName("head")[0].appendChild(style);
+            insertStyle(css);
         }
 
     }

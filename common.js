@@ -13,6 +13,14 @@ function stripHtml(html)
     return String(html).replace(/(<([^>]+)>)/ig, '');
 }
 
+function insertStyle(css)
+{
+    var style = document.createElement("style");
+    style.type = "text/css";
+    style.appendChild(document.createTextNode(css));
+    document.getElementsByTagName("head")[0].appendChild(style);
+}
+
 Array.prototype.contains = function(obj)
 {
     var i = this.length;
