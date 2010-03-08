@@ -1,5 +1,5 @@
-//if (getSetting("script_enabled").contains("category_banners"))
-//{
+if (getSetting("enabled_scripts").contains("category_banners"))
+{
     CategoryBanners =
     {
         install: function()
@@ -31,4 +31,4 @@
     }
 
     CategoryBanners.install();
-//}
+}
