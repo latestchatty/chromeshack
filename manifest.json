@@ -32,6 +32,12 @@
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
         "run_at": "document_start"
+    },
+    {
+        "js": [ "scripts/winchatty_search.js" ],
+        "matches": [ "http://www.shacknews.com/*" ],
+        "all_frames": false,
+        "run_at": "document_end"
     }
     ],
     "permissions": [
