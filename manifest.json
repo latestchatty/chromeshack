@@ -17,6 +17,7 @@
             "scripts/dinogegtik.js",
             "scripts/mod_marker.js",
             "scripts/category_banners.js",
+            "scripts/image_loader.js",
             "chromeshack_posts.js"
         ],
         "css": [ "chromeshack.css" ],
