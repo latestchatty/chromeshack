@@ -46,7 +46,8 @@ ModMarker =
             if (i > 0) css += ",\n";
             css += "div.olauthor_" + ModMarker.mods[i] + " a.oneline_user, .fpauthor_" + ModMarker.mods[i] + " span.author>a";
         }
-        css += " { " + getSetting("mod_marker_css") + " }";
+        css += " { " + getSetting("mod_marker_css") + " }\n";
+        css += "div.oneline a.this_user { color: rgb(0, 191, 243) !important; }"
 
         ModMarker.insertStyle(css);
     },
