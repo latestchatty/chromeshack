@@ -3,6 +3,7 @@ function loadOptions()
     showLolTags(getOption("lol_tags"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showModMarkerCss(getOption("mod_marker_css"));
+    showCategoryBanners(getOption("category_banners_visible"));
     showEnabledScripts();
 }
 
@@ -17,6 +18,48 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function showCategoryBanners(banners)
+{
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++)
+    {
+        if (inputs[i].type == "checkbox" && inputs[i].className == "category_banner")
+        {
+            var found = false;
+            for (var j = 0; j < banners.length; j++)
+            {
+                if (banners[j] == inputs[i].id)
+                {
+                    found = true;
+                    break;
+                }
+            }
+            inputs[i].checked = found;
+        }
+    }
+}
+
+function getCategoryBanners()
+{
+    var banners = [];
+
+    var inputs = document.getElementsByTagName("input");
+
+    for (var i = 0; i < inputs.length; i++)
+    {
+        if (inputs[i].type == "checkbox" && inputs[i].className == "category_banner")
+        {
+            if (inputs[i].checked)
+            {
+                banners.push(inputs[i].id); 
+            }
+        }
+    }
+
+    return banners;
 }
 
 function showModMarkerCss(css)
@@ -140,6 +183,7 @@ function saveOptions()
     saveOption("lol_tags", getLolTagValues());
     saveOption("post_preview_location", getPostPreviewLocation());
     saveOption("mod_marker_css", getModMarkerCss());
+    saveOption("category_banners_visible", getCategoryBanners());
     saveOption("enabled_scripts", getEnabledScripts());
     
     // Update status to let the user know options were saved
