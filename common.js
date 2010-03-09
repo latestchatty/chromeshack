@@ -57,4 +57,4 @@ function getUrl(url, callback)
     });
 }
 
-var current_version = 1.2;
+var current_version = 1.3;
