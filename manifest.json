@@ -36,6 +36,12 @@
         "run_at": "document_start"
     },
     {
+        "js": [ "common.js", "chromeshack_profile.js" ],
+        "matches": [ "http://www.shacknews.com/profile/*", "http://www.shacknews.com/profile.x*"],
+        "all_frames": false,
+        "run_at": "document_end"
+    },
+    {
         "js": [ "scripts/winchatty_search.js" ],
         "matches": [ "http://www.shacknews.com/*" ],
         "all_frames": false,
