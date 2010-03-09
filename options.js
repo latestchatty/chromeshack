@@ -92,7 +92,7 @@ function showLolTags(tags)
     for (var i = 0; i < tags.length; i++)
     {
         var tag_row = document.createElement("div");
-        tag_row.innerHTML = "Tag: <input class='name' value='" + tags[i].name + "'/> Color: <input class='color' value='" + tags[i].color + "'/> <a href='#' onclick='removeTag(this); return false'>(remove)</a>";
+        tag_row.innerHTML = "Tag: <input class='name' value='" + tags[i].name + "'/> Color: <input class='color' value='" + tags[i].color + "'/> <a href='#' class='remove' onclick='removeTag(this); return false'>(remove)</a>";
         lol_div.appendChild(tag_row);
     }
 }
@@ -135,6 +135,7 @@ function showEnabledScripts()
     {
         if (inputs[i].type == "checkbox" && inputs[i].className == "script_check")
         {
+            inputs[i].onclick = toggleSettingsVisible;
             var found = false;
             for (var j = 0; j < enabled.length; j++)
             {
@@ -144,7 +145,13 @@ function showEnabledScripts()
                     break;
                 }
             }
+
             inputs[i].checked = found;
+            var settings_div = document.getElementById(inputs[i].id + "_settings");
+            if (settings_div)
+            {
+                settings_div.style.display = found ? "block" : "none";
+            }
         }
     }
 }
@@ -167,6 +174,16 @@ function getEnabledScripts()
 
     return enabled;
 }
+
+function toggleSettingsVisible()
+{
+    var settings_div = document.getElementById(this.id + "_settings");
+    if (settings_div)
+    {
+        settings_div.style.display = this.checked ? "block" : "none";
+    }
+}
+
 
 function getDescendentByTagAndClassName(parent, tag, class) 
 {
