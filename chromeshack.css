@@ -13,6 +13,8 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
     color: #f00;
 }
 
+img.imageloader { max-width: 600px; max-height: 600px; }
+
 /* comment tags */
 #shack_comment_tags { float:left; padding:5px; }
 #shack_comment_tags p { margin: 0.5em 0px 7px 0px; }

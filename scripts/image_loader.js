@@ -49,6 +49,7 @@ if (getSetting("enabled_scripts").contains("image_loader"))
                     // image not showing, show it
                     var image = document.createElement("img");
                     image.src = ImageLoader.getImageUrl(link.href);
+                    image.className = "imageloader";
                     link.removeChild(link.firstChild);
                     link.appendChild(image);
                 }
