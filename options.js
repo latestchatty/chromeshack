@@ -210,3 +210,7 @@ function saveOptions()
         status.innerHTML = "";
     }, 1000);
 }
+
+// set the version number, so the page action icon will stop glowing once they visit the options page
+localStorage["version"] = current_version;
+chrome.extension.sendRequest({name: "updatePageActionIcons"});

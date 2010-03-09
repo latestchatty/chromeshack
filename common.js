@@ -56,3 +56,5 @@ function getUrl(url, callback)
         callback(response);
     });
 }
+
+var current_version = 1.2;

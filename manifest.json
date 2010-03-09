@@ -55,6 +55,7 @@
     }
     ],
     "permissions": [
+        "tabs",
         "http://www.lmnopc.com/greasemonkey/shacklol/*"
     ]
 }

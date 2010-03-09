@@ -2,8 +2,9 @@
     <head>
         <title>Chrome Shack Options</title>
         <link rel="stylesheet" type="text/css" href="options.css" />
-        <script type="text/javascript" src="default_settings.js" />
-        <script type="text/javascript" src="options.js" />
+        <script type="text/javascript" src="default_settings.js"></script>
+        <script type="text/javascript" src="common.js"></script>
+        <script type="text/javascript" src="options.js"></script>
     </head>
     <body onload="loadOptions()">
         <h2>
@@ -63,7 +64,7 @@
             <button onclick="saveOptions()">Save</button>
             <button onclick="loadOptions()">Reset</button>
             <br>
-            <span id="status" />
+            <span id="status"></span>
         </div>
     </body>
 </html>

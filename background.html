@@ -1,3 +1,4 @@
+<script type="text/javascript" src="common.js"></script>
 <script type="text/javascript">
 function getSettings()
 {
@@ -20,19 +21,48 @@ function getUrl(url, callback)
 
 function showPageAction(tabId, url)
 {
+    updatePageActionIcon(tabId, url);
     chrome.pageAction.show(tabId);
+}
+
+function updatePageActionIcon(tabId, url)
+{
+    var last_version = localStorage["version"];
+    if (!last_version || last_version < current_version)
+    {
+        chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack-new.png" });
+    }
+    else
+    {
+        chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
+    }
+}
+
+function updatePageActionIcons()
+{
+    chrome.windows.getAll({populate:true}, function(windows)
+    {
+        for (var i = 0; i < windows.length; i++){
+            var tabs = windows[i].tabs
+            for (var j = 0; j < tabs.length; j++)
+                updatePageActionIcon(tabs[j].id, tabs[j].url);
+        }
+    });
 }
 
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
+    console.log("Request for: " + request.name);
     if (request.name == "getSettings")
     {
         var tab = sender.tab;
         showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
     }
-    if (request.name == "getUrl")
+    else if (request.name == "getUrl")
         getUrl(request.url, sendResponse);
+    else if (request.name == "updatePageActionIcons")
+        updatePageActionIcons();
     else
         sendResponse();
 });
