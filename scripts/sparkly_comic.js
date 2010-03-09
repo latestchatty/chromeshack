@@ -51,33 +51,33 @@ if (getSetting("enabled_scripts").contains("sparkly_comic"))
         {
             // Let me show you my O face 
             if (line.indexOf('!') >= 0 || line.indexOf(":o") >= 0)
-                return "sparkly2.png";
+                return "sparkly2.jpg";
 
             // Sparkly gets mad.  You wouldn't like him when he's mad.   
             if (line.indexOf('&gt;:[') >= 0)
-                return "sparkly5.png";
+                return "sparkly5.jpg";
 
             // Sparkly gets sad.  You wouldn't like him when he's sad.   
             if (line.indexOf(':(') >= 0 || line.indexOf(':[') >= 0)
-                return "sparkly6.png";
+                return "sparkly6.jpg";
 
             // Que?  wtf?
             if (line.indexOf('?') >= 0 || line.indexOf("wtf") >= 0)
-                return "sparkly4.png";
+                return "sparkly4.jpg";
 
             // LOL or NWS
             if (line.indexOf('lol') >= 0 || line.indexOf('nws') >= 0)
-                return "sparkly3.png";
+                return "sparkly3.jpg";
 
             if (line.indexOf(':/') >= 0)
-                return "sparkly1.png";
+                return "sparkly1.jpg";
 
             // end on a smile
             if (i == (count - 1))
-                return "sparkly3.png";
+                return "sparkly3.jpg";
 
             // default sparkly
-            return "sparkly1.png";
+            return "sparkly1.jpg";
         },
 
         parsePostIntoLines: function(html)
