@@ -74,14 +74,18 @@ function getModMarkerCss()
 
 function showPostPreviewLocation(position)
 {
-    var select = document.getElementById("post_preview_location");
-    select.selectedIndex = (position == "Left") ? 0 : 1;
+    var left = document.getElementById("post_preview_left");
+    var right = document.getElementById("post_preview_right");
+    left.checked = (position == "Left");
+    right.checked = (position == "Right");
 }
 
 function getPostPreviewLocation()
 {
-    var select = document.getElementById("post_preview_location");
-    return select.value;
+    var left = document.getElementById("post_preview_left");
+    if (left.checked)
+        return "Left";
+    return "Right";
 }
 
 function showLolTags(tags)

@@ -25,10 +25,8 @@
         </h2>
         <div id="post_preview_settings">
             Button Location: 
-            <select id="post_preview_location">
-                <option>Left</option>
-                <option>Right</option>
-            </select>
+            <input type="radio" name="post_preview_location" id="post_preview_left"><label for="post_preview_left">Left</label>
+            <input type="radio" name="post_preview_location" id="post_preview_right"><label for="post_preview_right">Right</label>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="mod_marker" />
@@ -64,7 +62,7 @@
             <button onclick="saveOptions()">Save</button>
             <button onclick="loadOptions()">Reset</button>
             <br>
-            <span id="status"></span>
+            <span id="status"> </span>
         </div>
     </body>
 </html>
