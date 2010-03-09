@@ -18,10 +18,19 @@ function getUrl(url, callback)
     xhr.send();
 }
 
+function showPageAction(tabId, url)
+{
+    chrome.pageAction.show(tabId);
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
+    {
+        var tab = sender.tab;
+        showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
+    }
     if (request.name == "getUrl")
         getUrl(request.url, sendResponse);
     else
