@@ -1,4 +1,4 @@
-<script type="text/javascript" src="common.js"></script>
+<script type="text/javascript" src="version.js"></script>
 <script type="text/javascript">
 function getSettings()
 {
@@ -28,7 +28,7 @@ function showPageAction(tabId, url)
 function updatePageActionIcon(tabId, url)
 {
     var last_version = localStorage["version"];
-    if (!last_version || last_version < current_version)
+    if (!last_version || last_version < CURRENT_VERSION)
     {
         chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack-new.png" });
     }
