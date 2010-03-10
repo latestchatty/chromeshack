@@ -91,13 +91,12 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
     if (request.name == "getSettings")
     {
         var tab = sender.tab;
-        showPageAction(tab.id, tab.url);
+        if (tab)
+            showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
     }
     else if (request.name == "getUrl")
         getUrl(request.url, sendResponse);
-    else if (request.name == "updatePageActionIcons")
-        updatePageActionIcons();
     else if (request.name == "collapseThread")
         collapseThread(request.id);
     else if (request.name == "unCollapseThread")
