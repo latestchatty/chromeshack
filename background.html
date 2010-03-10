@@ -5,6 +5,19 @@ function getSettings()
     return localStorage;
 }
 
+function getSetting(name, default_value)
+{
+    var value = localStorage[name];
+    if (!value)
+        return default_value;
+    return JSON.parse(value);
+}
+
+function setSetting(name, value)
+{
+    localStorage[name] = JSON.stringify(value);
+}
+
 function getUrl(url, callback)
 {
     var xhr = new XMLHttpRequest();
@@ -27,15 +40,9 @@ function showPageAction(tabId, url)
 
 function updatePageActionIcon(tabId, url)
 {
-    var last_version = localStorage["version"];
-    if (!last_version || last_version < CURRENT_VERSION)
-    {
-        chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack-new.png" });
-    }
-    else
-    {
-        chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
-    }
+    var last_version = getSetting("version", 0);
+    var image = (last_version < CURRENT_VERSION) ? "shack-new.png" : "shack.png";
+    chrome.pageAction.setIcon({ "tabId": tabId, "path": image });
 }
 
 function updatePageActionIcons()
@@ -54,11 +61,7 @@ function collapseThread(id)
 {
     var MAX_LENGTH = 100;
 
-    var collapsed = localStorage["collapsed_threads"];
-    if (!collapsed)
-        collapsed = new Array();
-    else
-        collapsed = JSON.parse(collapsed);
+    var collapsed = getSetting("collapsed_threads", []);
 
     if (collapsed.indexOf(id) < 0)
     {
@@ -68,20 +71,18 @@ function collapseThread(id)
         if (collapsed.length > MAX_LENGTH * 1.25)
             collapsed.splice(MAX_LENGTH);
 
-        localStorage["collapsed_threads"] = JSON.stringify(collapsed);
+        setSetting("collapsed_threads", collapsed);
     }
 }
 
 function unCollapseThread(id)
 {
-    var collapsed = localStorage["collapsed_threads"];
-    if (collapsed)
+    var collapsed = getSetting("collapsed_threads", []);
+    var index = collapsed.indexOf(id);
+    if (index >= 0)
     {
-        collapsed = JSON.parse(collapsed);
-        var index = collapsed.indexOf(id);
-        if (index >= 0)
-            collapsed.splice(index, 1);
-        localStorage["collapsed_threads"] = JSON.stringify(collapsed);
+        collapsed.splice(index, 1);
+        setSetting("collapsed_threads", collapsed);
     }
 }
 
