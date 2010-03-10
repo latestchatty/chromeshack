@@ -24,6 +24,7 @@
             "scripts/category_banners.js",
             "scripts/image_loader.js",
             "scripts/sparkly_comic.js",
+            "scripts/collapse.js",
             "chromeshack_posts.js"
         ],
         "css": [ "chromeshack.css" ],

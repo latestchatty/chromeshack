@@ -23,5 +23,7 @@ DefaultSettings = {
         "offtopic",
         "political",
         "stupid"
-    ]
+    ],
+
+    collapsed_threads: []
 }

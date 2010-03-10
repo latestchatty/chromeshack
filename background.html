@@ -50,9 +50,43 @@ function updatePageActionIcons()
     });
 }
 
+function collapseThread(id)
+{
+    var MAX_LENGTH = 5;
+
+    var collapsed = localStorage["collapsed_threads"];
+    if (!collapsed)
+        collapsed = new Array();
+    else
+        collapsed = JSON.parse(collapsed);
+
+    if (collapsed.indexOf(id) < 0)
+    {
+        collapsed.unshift(id);
+
+        // remove a bunch if it gets too big
+        if (collapsed.length > MAX_LENGTH * 1.25)
+            collapsed.splice(MAX_LENGTH);
+
+        localStorage["collapsed_threads"] = JSON.stringify(collapsed);
+    }
+}
+
+function unCollapseThread(id)
+{
+    var collapsed = localStorage["collapsed_threads"];
+    if (collapsed)
+    {
+        collapsed = JSON.parse(collapsed);
+        var index = collapsed.indexOf(id);
+        if (index >= 0)
+            collapsed.splice(index, 1);
+        localStorage["collapsed_threads"] = JSON.stringify(collapsed);
+    }
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
-    console.log("Request for: " + request.name);
     if (request.name == "getSettings")
     {
         var tab = sender.tab;
@@ -63,6 +97,10 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
         getUrl(request.url, sendResponse);
     else if (request.name == "updatePageActionIcons")
         updatePageActionIcons();
+    else if (request.name == "collapseThread")
+        collapseThread(request.id);
+    else if (request.name == "unCollapseThread")
+        unCollapseThread(request.id);
     else
         sendResponse();
 });
