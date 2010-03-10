@@ -8,11 +8,11 @@ Event.prototype.addHandler = function(callback)
     this.eventHandlers.push(callback);
 }
 
-Event.prototype.raise = function(arg1, arg2)
+Event.prototype.raise = function(arg1, arg2, arg3)
 {
     for (var i = 0; i < this.eventHandlers.length; i++)
     {
-        this.eventHandlers[i](arg1, arg2);
+        this.eventHandlers[i](arg1, arg2, arg3);
     }
 }
 
