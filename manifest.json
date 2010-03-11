@@ -25,7 +25,8 @@
             "scripts/image_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
-            "chromeshack_posts.js"
+            "chromeshack_posts.js",
+            "settings.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],

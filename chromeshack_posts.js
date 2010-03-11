@@ -53,5 +53,7 @@ ChromeShack =
 
 }
 
-ChromeShack.install();
-ChromeShack.processFullPosts(document);
+settingsLoadedEvent.addHandler(function() {
+    ChromeShack.install();
+    ChromeShack.processFullPosts(document);
+});

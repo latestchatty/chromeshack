@@ -32,22 +32,6 @@ Array.prototype.contains = function(obj)
     return false;
 }
 
-// get a snapshot of the local storage settings
-var settings;
-chrome.extension.sendRequest({name: "getSettings"}, function(response)
-{
-    settings = response;
-});
-
-// utility function to get a setting out of the local storage snapshot
-function getSetting(name)
-{
-    var v = settings[name];
-    if (v)
-        return JSON.parse(v);
-    return DefaultSettings[name];
-}
-
 // utility function to make an XMLHttpRequest
 function getUrl(url, callback)
 {
