@@ -37,6 +37,7 @@
         "js": [
             "default_settings.js",
             "common.js",
+            "sentence_parser.js",
             "init_events.js"
         ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],

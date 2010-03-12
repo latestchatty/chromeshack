@@ -27,7 +27,7 @@ settingsLoadedEvent.addHandler(function()
                         return;
 
                     var postBody = getDescendentByTagAndClassName(fullpost, "div", "postbody");
-                    var lines = DinoGegtik.parsePostIntoLines(postBody.innerHTML);
+                    var lines = SentenceParser.parseIntoLines(postBody.innerHTML);
 
                     var comic_div = document.createElement("div");
                     comic_div.id = comic_id;
@@ -69,61 +69,6 @@ settingsLoadedEvent.addHandler(function()
                     }
                 }, 200);
             },
-
-            parsePostIntoLines: function(html)
-            {
-                var res = new Array(); 
-
-                var LINK_PLACEHOLDER = "%%link%%";
-            
-                // Extract all the links, store them in links[] and replace the link with a %%link%% placeholder in the post 
-                var links = new Array(); 
-                var link_regex = new RegExp(/<a.*? href=(\"|')(.*?)([\n|\r]*?)(\"|').*?>(.*?)([\n|\r]*?)<\/a>/i);
-                var m = link_regex.exec(html);
-                while (m)
-                {
-                    // save the link, and put a placeholder in
-                    links.push(m[0]);
-                    html = html.replace(link_regex, LINK_PLACEHOLDER);
-                    m = link_regex.exec(html);
-                }
-            
-                // remove the rest of the html from the post
-                post = stripHtml(html);
-
-                var link_replace_regex = new RegExp(LINK_PLACEHOLDER, "i");
-
-                // Split paragraphs
-                var lines = post.split('\n');
-                
-                // Get sentences from paragraphs
-                for (var i = 0; i < lines.length; i++)
-                {
-                    lines[i] = lines[i].replace('...', '&ellipsis;'); 
-            
-                    var sentences = lines[i].split('.');
-                    
-                    for (var j = 0; j < sentences.length; j++)
-                    {
-                        if (sentences[j].length)
-                        {
-                            var tmp = sentences[j];
-                            tmp = tmp.replace('&ellipsis;', '...'); 
-            
-                            // replace placeholders with actual links
-                            while (tmp.indexOf(LINK_PLACEHOLDER) >= 0)
-                            {
-                                tmp = tmp.replace(link_replace_regex, links.shift());
-                            }
-            
-                            res.push(tmp);
-                        }
-                    }
-                }
-
-                return res; 
-            },
-
         }
 
         processPostEvent.addHandler(DinoGegtik.installComic);

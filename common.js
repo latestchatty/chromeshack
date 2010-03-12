@@ -32,6 +32,11 @@ Array.prototype.contains = function(obj)
     return false;
 }
 
+String.prototype.trim = function()
+{
+    return this.replace(/^\s+|\s+$/g,"");
+}
+
 // utility function to make an XMLHttpRequest
 function getUrl(url, callback)
 {
