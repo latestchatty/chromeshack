@@ -7,6 +7,8 @@ settingsLoadedEvent.addHandler(function()
             URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
             VERSION: "20090513",
 
+            tags: getSetting("lol_tags"),
+
             installLink: function()
             {
                 var comments_tools = getDescendentByTagAndClassName(document, "div", "commentstools");
@@ -42,10 +44,9 @@ settingsLoadedEvent.addHandler(function()
                 lol_div.className = "lol";
                 
                 // generate all the buttons from settings
-                var tags = getSetting("lol_tags");
-                for (var i = 0; i < tags.length; i++)
+                for (var i = 0; i < LOL.tags.length; i++)
                 {
-                    lol_div.appendChild(LOL.createButton(tags[i].name, id, tags[i].color));
+                    lol_div.appendChild(LOL.createButton(LOL.tags[i].name, id, LOL.tags[i].color));
                 }
 
                 // add them in
@@ -59,7 +60,7 @@ settingsLoadedEvent.addHandler(function()
                 button.href = "#";
                 button.className = "lol_button";
                 button.style.color = color;
-                button.appendChild(document.createTextNode(tag));
+                button.innerText = tag;
 
                 button.addEventListener("click", function(e)
                 {
