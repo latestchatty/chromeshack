@@ -1,3 +1,4 @@
+<!DOCTYPE html> 
 <html>
     <head>
         <title>Chrome Shack Options</title>
@@ -6,6 +7,7 @@
         <script type="text/javascript" src="common.js"></script>
         <script type="text/javascript" src="version.js"></script>
         <script type="text/javascript" src="options.js"></script>
+        <meta charset="UTF-8" />
     </head>
     <body onload="loadOptions()">
         <h2>
@@ -26,8 +28,8 @@
         </h2>
         <div id="post_preview_settings">
             Button Location: 
-            <input type="radio" name="post_preview_location" id="post_preview_left"><label for="post_preview_left">Left</label>
-            <input type="radio" name="post_preview_location" id="post_preview_right"><label for="post_preview_right">Right</label>
+            <input type="radio" name="post_preview_location" id="post_preview_left"/><label for="post_preview_left">Left</label>
+            <input type="radio" name="post_preview_location" id="post_preview_right"/><label for="post_preview_right">Right</label>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="mod_marker" />
@@ -35,7 +37,7 @@
         </h2>
         <div id="mod_marker_settings">
             CSS:<br />
-            <textarea id="mod_marker_css" ></textarea>
+            <textarea id="mod_marker_css" rows="2" cols="25"></textarea>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="category_banners" />
@@ -66,7 +68,7 @@
         <div>
             <button onclick="saveOptions()">Save</button>
             <button onclick="loadOptions()">Reset</button>
-            <br>
+            <br/>
             <span id="status"> </span>
         </div>
     </body>
