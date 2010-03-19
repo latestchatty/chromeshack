@@ -3,6 +3,7 @@ function loadOptions()
     showLolTags(getOption("lol_tags"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showModMarkerCss(getOption("mod_marker_css"));
+    showOriginalPosterCss(getOption("original_poster_css"));
     showCategoryBanners(getOption("category_banners_visible"));
     showEnabledScripts();
 }
@@ -70,6 +71,16 @@ function showModMarkerCss(css)
 function getModMarkerCss()
 {
     return document.getElementById("mod_marker_css").value;
+}
+
+function showOriginalPosterCss(css)
+{
+    document.getElementById("original_poster_css").value = css;
+}
+
+function getOriginalPosterCss()
+{
+    return document.getElementById("original_poster_css").value;
 }
 
 function showPostPreviewLocation(position)
@@ -204,6 +215,7 @@ function saveOptions()
     saveOption("lol_tags", getLolTagValues());
     saveOption("post_preview_location", getPostPreviewLocation());
     saveOption("mod_marker_css", getModMarkerCss());
+    saveOption("original_poster_css", getOriginalPosterCss());
     saveOption("category_banners_visible", getCategoryBanners());
     saveOption("enabled_scripts", getEnabledScripts());
     

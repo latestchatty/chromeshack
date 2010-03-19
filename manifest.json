@@ -25,6 +25,7 @@
             "scripts/image_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
+            "scripts/highlight_original_poster.js",
             "chromeshack_posts.js",
             "settings.js"
         ],
