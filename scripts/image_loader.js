@@ -31,6 +31,9 @@ settingsLoadedEvent.addHandler(function()
                 if (/http\:\/\/(www\.)?fukung\.net\/v\//.test(href))
                     return href.replace(/(www\.)?fukung\.net\/v\//, 'media.fukung.net/images/');
 
+                if (/http\:\/\/imgur.com\/\w+$/.test(href))
+                    return href.replace(/imgur/, 'i.imgur') + ".jpg";
+
                 // not a special case, just use the link's href
                 return href;
             },
