@@ -17,5 +17,6 @@ Event.prototype.raise = function(arg1, arg2, arg3)
 }
 
 var processPostEvent = new Event();
+var fullPostsCompletedEvent = new Event();
 var processPostBoxEvent = new Event();
 var settingsLoadedEvent = new Event();

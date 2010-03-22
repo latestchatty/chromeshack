@@ -36,6 +36,7 @@ ChromeShack =
         {
             ChromeShack.processPost(item, item.id.substr(5));
         }
+        fullPostsCompletedEvent.raise();   
     },
 
     processPost: function(item, root_id)

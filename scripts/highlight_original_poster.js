@@ -8,7 +8,9 @@ settingsLoadedEvent.addHandler(function()
 
             css: getSetting("original_poster_css"),
 
-            highlight: function(item, id, is_root_post)
+            selectors: [],
+
+            gatherCss: function(item, id, is_root_post)
             {
                 if (is_root_post)
                 {
@@ -17,13 +19,24 @@ settingsLoadedEvent.addHandler(function()
                     if (fpauthor)
                     {
                         var authorId = fpauthor[1];
-                        var style = "div#root_" + id + " div.olauthor_" + authorId + " a.oneline_user { " + HighlightOriginalPoster.css + " }";
-                        insertStyle(style);
+                        HighlightOriginalPoster.selectors.push("div#root_" + id + " div.olauthor_" + authorId + " a.oneline_user ");
                     }
                 }
+            },
+
+            installCss: function()
+            {
+                if (HighlightOriginalPoster.selectors.length > 0)
+                {
+                    var css = HighlightOriginalPoster.selectors.join(", ");
+                    css += " { " + HighlightOriginalPoster.css + " }";
+                    insertStyle(css);
+                }
             }
+    
         }
 
-        processPostEvent.addHandler(HighlightOriginalPoster.highlight);
+        processPostEvent.addHandler(HighlightOriginalPoster.gatherCss);
+        fullPostsCompletedEvent.addHandler(HighlightOriginalPoster.installCss);
     }
 });
