@@ -16,6 +16,9 @@
     "content_scripts": [
     {
         "js": [
+            "common.js",
+            "sentence_parser.js",
+            "init_events.js",
             "scripts/lol.js",
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
@@ -27,23 +30,13 @@
             "scripts/collapse.js",
             "scripts/highlight_original_poster.js",
             "chromeshack_posts.js",
+            "default_settings.js",
             "settings.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
         "run_at": "document_end"
-    },
-    {
-        "js": [
-            "default_settings.js",
-            "common.js",
-            "sentence_parser.js",
-            "init_events.js"
-        ],
-        "matches": [ "http://www.shacknews.com/laryn.x*" ],
-        "all_frames": false,
-        "run_at": "document_start"
     },
     {
         "js": [ "common.js", "chromeshack_profile.js" ],
