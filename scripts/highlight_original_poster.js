@@ -32,6 +32,13 @@ settingsLoadedEvent.addHandler(function()
                     css += " { " + HighlightOriginalPoster.css + " }";
                     insertStyle(css);
                 }
+                HighlightOriginalPoster.uninstall();
+            },
+
+            uninstall: function()
+            {
+                processPostEvent.removeHandler(HighlightOriginalPoster.gatherCss);
+                fullPostsCompletedEvent.removeHandler(HighlightOriginalPoster.installCss);
             }
     
         }
