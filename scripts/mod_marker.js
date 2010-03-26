@@ -5,6 +5,18 @@ settingsLoadedEvent.addHandler(function()
         ModMarker = 
         {
             mods: [
+                // employees
+                "4",      // Steve Gibson
+                "43653",  // Maarten Goldstein
+                "175043", // Chris Faylor
+                "175046", // Nick Breckon
+                "188134", // Aaron Linde
+                "204735", // Alice O'Connor
+                "213066", // Jeff Mattas
+                "212323", // Garnett Lee
+                "44124",  // sHugamom
+
+                // mods
                 "3259"  , // degenerate
                 "10028" , // drucifer
                 "168479", // ajax
@@ -39,7 +51,9 @@ settingsLoadedEvent.addHandler(function()
                 "9211"  , // redfive
                 "7660"  , // sexpansion pack
                 "169927", // sgtsanity
-                "15130"   // utilitymaximizer
+                "15130" , // utilitymaximizer
+                "169942", // mikecyb - not listed on mods page
+                "185650"  // Dave-A - not listed on mods page
             ],
 
             install: function()
