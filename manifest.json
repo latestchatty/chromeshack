@@ -19,6 +19,7 @@
             "common.js",
             "sentence_parser.js",
             "init_events.js",
+            "scripts/message_user.js",
             "scripts/lol.js",
             "scripts/comment_tags.js",
             "scripts/post_preview.js",

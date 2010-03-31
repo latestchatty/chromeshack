@@ -86,6 +86,11 @@ function unCollapseThread(id)
     }
 }
 
+function launchPopup(url, left, top, width, height)
+{
+    chrome.windows.create({"url": url, "left": left, "width": width, "height": height});
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
@@ -101,6 +106,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
         collapseThread(request.id);
     else if (request.name == "unCollapseThread")
         unCollapseThread(request.id);
+    else if (request.name == "launchPopup")
+        launchPopup(request.url, request.left, request.top, request.width, request.height);
     else
         sendResponse();
 });
