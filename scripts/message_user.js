@@ -4,14 +4,6 @@ settingsLoadedEvent.addHandler(function()
     {
         MessageUser =
         {
-            installCss: function()
-            {
-                var css = "a.message_user { display: inline-block; margin-left: 10px; width: 13px; height: 9px; text-indent: -9999px; ";
-                css += "background: transparent url(" + chrome.extension.getURL("images/message.png") + "); }";
-
-                insertStyle(css);
-            },
-
             installLink: function(item, id)
             {
                 var message_id = "message_user_" + id;
@@ -60,7 +52,6 @@ settingsLoadedEvent.addHandler(function()
 
         }
 
-        MessageUser.installCss();
         processPostEvent.addHandler(MessageUser.installLink);
     }
 });

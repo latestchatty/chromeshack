@@ -99,3 +99,33 @@ div.sparklycomic div.panel span.shadow {
 
 div.sparklycomic div.panel span.shadow .jt_spoiler,
 div.sparklycomic div.panel span.shadow a { visibility: hidden }
+
+a.message_user {
+    display: inline-block;
+    margin-left: 10px;
+    width: 13px;
+    height: 9px;
+    text-indent: -9999px; 
+    background: transparent url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/message.png);
+}
+
+body.show_banner_offtopic div.fpmod_offtopic {
+    background-image: url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/banners/offtopic.png);
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #7D7D7D !important;
+}
+
+body.show_banner_political div.fpmod_political {
+    background-image: url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/banners/political.png);
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #F8A500 !important;
+}
+
+body.show_banner_stupid div.fpmod_stupid {
+    background-image: url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/banners/stupid.png);
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #379700 !important;
+}
