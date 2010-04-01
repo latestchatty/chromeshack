@@ -146,7 +146,6 @@ settingsLoadedEvent.addHandler(function()
 
             combineCss: function(users, group_css)
             {
-                console.log("adding group css.");
                 var css = "";
                 for (var i = 0; i < users.length; i++)
                 {
@@ -159,15 +158,12 @@ settingsLoadedEvent.addHandler(function()
 
             gatherOriginalPosterCss: function(item, id, is_root_post)
             {
-                console.log("gathering.");
                 if (is_root_post)
                 {
-                    console.log("found a root post");
                     var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
                     var fpauthor = HighlightUsers.authorRegex.exec(fullpost.className);
                     if (fpauthor)
                     {
-                        console.log("pushing an orignal poster selector");
                         var authorId = fpauthor[1];
                         HighlightUsers.originalPosterSelectors.push("div#root_" + id + " div.olauthor_" + authorId + " a.oneline_user ");
                     }
@@ -177,28 +173,22 @@ settingsLoadedEvent.addHandler(function()
 
             installCss: function()
             {
-                console.log("installing css");
                 if (HighlightUsers.originalPosterSelectors.length > 0)
                 {
-                    console.log("adding original poster css.");
                     HighlightUsers.css += HighlightUsers.originalPosterSelectors.join(", ");
                     HighlightUsers.css += " { " + HighlightUsers.originalPosterCss + " }\n";
                 }
                 if (HighlightUsers.css.length > 0)
                 {
-                    console.log("adding current user css.");
                     // don't highlight current user as mod/employee/dev
                     HighlightUsers.css += "div.oneline a.this_user { color: rgb(0, 191, 243) !important; }";
-                    console.log("inserting css.");
                     insertStyle(HighlightUsers.css);
                 }
-                console.log("uninstall");
                 HighlightUsers.uninstall();
             },
 
             uninstall: function()
             {
-                console.log("uninstalling.");
                 processPostEvent.removeHandler(HighlightUsers.gatherOrignalPosterCss);
                 fullPostsCompletedEvent.removeHandler(HighlightUsers.installCss);
             }
