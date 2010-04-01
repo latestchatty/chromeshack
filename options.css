@@ -12,3 +12,5 @@ a.remove { font-size: 10px; }
 input.name { width: 50px; }
 input.color { width: 50px; }
 textarea { width: 250; }
+
+div#highlight_groups input.built_in { background-color: #d3d3d3; }

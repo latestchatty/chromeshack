@@ -32,6 +32,14 @@
             <input type="radio" name="post_preview_location" id="post_preview_right"/><label for="post_preview_right">Right</label>
         </div>
         <h2>
+            <input type="checkbox" class="script_check" id="highlight_users" />
+            <label for="highlight_users">Highlight Users</label>
+        </h2>
+        <div id="highlight_users_settings">
+            <div id="highlight_groups"></div>
+            <a href="#" onclick="addHighlightGroup(); return false;">Add</a>
+        </div>
+        <h2>
             <input type="checkbox" class="script_check" id="mod_marker" />
             <label for="mod_marker">Mod Marker</label>
         </h2>

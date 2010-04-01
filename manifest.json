@@ -24,12 +24,11 @@
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
             "scripts/dinogegtik.js",
-            "scripts/mod_marker.js",
             "scripts/category_banners.js",
             "scripts/image_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
-            "scripts/highlight_original_poster.js",
+            "scripts/highlight_users.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"

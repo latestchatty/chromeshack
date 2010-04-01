@@ -5,6 +5,7 @@ function loadOptions()
     showModMarkerCss(getOption("mod_marker_css"));
     showOriginalPosterCss(getOption("original_poster_css"));
     showCategoryBanners(getOption("category_banners_visible"));
+    showHighlightUsers(getOption("highlight_users"));
     showEnabledScripts();
 }
 
@@ -19,6 +20,90 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function showHighlightUsers(groups)
+{
+    for (var i = 0; i < groups.length; i++)
+    {
+        var group = groups[i];
+        addHighlightGroup(group);
+    }
+}
+
+function addHighlightGroup(group)
+{
+    if (!group)
+        group = {name: "", checked: true, css: "", users: [] };
+
+    var settings = document.getElementById("highlight_groups");
+    var div = document.createElement("div");
+    div.className = "group";
+    var check = document.createElement("input");
+    check.type = "checkbox";
+    check.className = "group_enabled";
+    check.checked = group.enabled;
+    div.appendChild(check);
+
+    var name_box = document.createElement("input");
+    name_box.type = "text";
+    name_box.className = "group_name";
+    name_box.value = group.name;
+    div.appendChild(name_box);
+
+    if (group.built_in)
+    {
+        name_box.className += " built_in";
+        name_box.readOnly = true;
+    }
+    else
+    {
+        var users = document.createElement("input");
+        users.className = "group_users";
+        users.value = JSON.stringify(group.users);
+        div.appendChild(users);
+
+        var remove = document.createElement("a");
+        remove.href = "#";
+        remove.onclick = function () { settings.removeChild(div); };
+        remove.appendChild(document.createTextNode("(remove)"));
+        div.appendChild(remove);
+    }
+
+    div.appendChild(document.createElement("br"));
+
+    css = document.createElement("textarea");
+    css.className = "group_css";
+    css.rows = "2";
+    css.cols = "25";
+    css.value = group.css;
+    div.appendChild(css);
+
+    settings.appendChild(div);
+}
+
+function getHighlightGroups()
+{
+    var groups = [];
+
+    var settings = document.getElementById("highlight_groups");
+    var group_divs = settings.getElementsByTagName("div");
+    for (var i = 0; i < group_divs.length; i++)
+    {
+        var group = {};
+        var input_name = getDescendentByTagAndClassName(group_divs[i], "input", "group_name");
+        group.name = input_name.value;
+        group.built_in = input_name.readOnly;
+        group.enabled = getDescendentByTagAndClassName(group_divs[i], "input", "group_enabled").checked;
+        group.css = getDescendentByTagAndClassName(group_divs[i], "textarea", "group_css").value;
+        if (!group.built_in)
+        {
+            group.users = JSON.parse(getDescendentByTagAndClassName(group_divs[i], "input", "group_users").value);
+        }
+        groups.push(group);
+    }
+
+    return groups
 }
 
 function showCategoryBanners(banners)
@@ -212,12 +297,21 @@ function getDescendentByTagAndClassName(parent, tag, class)
 
 function saveOptions()
 {
-    saveOption("lol_tags", getLolTagValues());
-    saveOption("post_preview_location", getPostPreviewLocation());
-    saveOption("mod_marker_css", getModMarkerCss());
-    saveOption("original_poster_css", getOriginalPosterCss());
-    saveOption("category_banners_visible", getCategoryBanners());
-    saveOption("enabled_scripts", getEnabledScripts());
+    try
+    {
+        saveOption("lol_tags", getLolTagValues());
+        saveOption("post_preview_location", getPostPreviewLocation());
+        saveOption("mod_marker_css", getModMarkerCss());
+        saveOption("original_poster_css", getOriginalPosterCss());
+        saveOption("category_banners_visible", getCategoryBanners());
+        saveOption("enabled_scripts", getEnabledScripts());
+        saveOption("highlight_users", getHighlightGroups());
+    }
+    catch (err)
+    {
+        alert("There was an error while saving your settings:\n" + err); 
+        return;
+    }
     
     // Update status to let the user know options were saved
     var status = document.getElementById("status");
