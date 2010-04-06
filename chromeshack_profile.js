@@ -22,12 +22,16 @@ ProfilePage =
             document.getElementsByTagName("h3")[0].appendChild(lols);
 
             var status = getDescendentByTagAndClassName(document, 'ul', 'status');
+
+            var comments = status.lastElementChild.firstElementChild;
+            comments.href = "http://winchatty.com/search.php?author=" + escape(person);
+
             var search = document.createElement("li");
-            search.innerHTML = '<a href="http://www.shacknews.com/search.x?type=comments&terms=' + escape(person.replace('_', '')) + '&cs_user=">Vanity Search</a>';
+            search.innerHTML = '<a href="http://winchatty.com/search.php?terms=' + escape(person) + '">Vanity Search</a>';
             status.appendChild(search);
 
             var parent_author = document.createElement("li");
-            parent_author.innerHTML = '<a href="http://www.shacknews.com/search.x?type=comments&terms=&cs_user=&cs_parentauthor=' + escape(person) + '&s_type=all">Parent Author</a>';
+            parent_author.innerHTML = '<a href="http://winchatty.com/search.php?parentAuthor=' + escape(person) + '">Parent Author</a>';
             status.appendChild(parent_author);
         }
     }
