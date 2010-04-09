@@ -29,6 +29,7 @@
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
             "scripts/highlight_users.js",
+            "scripts/sfw.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"
