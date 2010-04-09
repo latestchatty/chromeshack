@@ -3,8 +3,12 @@ DefaultSettings = {
         "lol",
         "comment_tags",
         "post_preview",
+        "highlight_users",
+        "image_loader",
+        "collapse_threads",
+        "message_user",
         "dinogegtik",
-        "mod_marker"
+        "sparkly_comic"
     ],
 
     lol_tags: [
