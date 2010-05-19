@@ -5,6 +5,7 @@
     "update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
     "options_page": "options.html",
     "background_page": "background.html",
+    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWWHErcZ8ekxgRQ0J7InM4HgR/LoVOu0Olugg3VUHyQGJ7kpHvrMyeoDfOFxy9EagnQDtyZzxkkwhSzxr8cnh57qFxyTqI1P+RR1cSFcHsVocnLhkTI3uVwzEmDXJK8U4k1Z6NzY2Y/7TQkHQBqR4eBDTdxJks70wvt7gt2v047wIDAQAB",
     "page_action": {
         "default_icon": "shack.png",
         "default_title": "Chrome Shack",
