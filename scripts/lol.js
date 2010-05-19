@@ -117,6 +117,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var masthead = document.getElementById("masthead");
                 var username = getDescendentByTagAndClassName(masthead, "a", "username");
+                if (!username) return '';
                 return stripHtml(username.innerHTML);
             },
 
