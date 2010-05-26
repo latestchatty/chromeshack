@@ -27,6 +27,7 @@
             "scripts/dinogegtik.js",
             "scripts/category_banners.js",
             "scripts/image_loader.js",
+            "scripts/youtube_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
             "scripts/highlight_users.js",
