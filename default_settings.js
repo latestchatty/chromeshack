@@ -5,6 +5,7 @@ DefaultSettings = {
         "post_preview",
         "highlight_users",
         "image_loader",
+        "video_loader",
         "collapse_threads",
         "message_user",
         "dinogegtik",
