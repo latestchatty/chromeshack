@@ -115,6 +115,7 @@ settingsLoadedEvent.addHandler(function()
                     '173884','12149','125906','173374','190115',//Valve  Doug_Support - Doug Valente (Support), Erik Johnson - Erik Johnson, garymct - Gary McTaggart, locash - Patrick M (Support), RobinWalker
                     '170414','9172',//Vivendi Universal  ColoradoCNC, Pezman
                     '12656',//Zemnott  KnyteHawkk - Jared Larsen
+                    '170084', // deveus1 (Activision)
                     '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
                 ]
             },
