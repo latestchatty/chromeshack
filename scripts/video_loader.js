@@ -6,6 +6,21 @@ settingsLoadedEvent.addHandler(function()
         {
             VIDEO_TYPE_NONE: 0,
             VIDEO_TYPE_YOUTUBE: 1,
+            VIDEO_TYPE_VIMEO: 2,
+
+            playerId: 0,
+
+            install: function()
+            {
+                if (getSetting("video_loader_hd"))
+                {
+                    // inject our helper script if the user wants the videos to be auto-resized to HD versions
+                    var s = document.createElement("script");
+                    s.setAttribute("src", chrome.extension.getURL("scripts/video_loader_helper.js"));
+                    s.setAttribute("type", "text/javascript");
+                    document.head.appendChild(s);
+                }
+            },
 
             loadVideos: function(item, id)
             {
@@ -28,6 +43,8 @@ settingsLoadedEvent.addHandler(function()
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
                 else if (url.match(/youtu\.be\/.+/i))
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
+                else if (url.match(/vimeo\.com\/.+/i))
+                    return VideoLoader.VIDEO_TYPE_VIMEO
 
                 return VideoLoader.VIDEO_TYPE_NONE;
             },
@@ -52,6 +69,9 @@ settingsLoadedEvent.addHandler(function()
 
                         if (type == VideoLoader.VIDEO_TYPE_YOUTUBE)
                             video = VideoLoader.createYoutube(link.href);
+                        else if (type == VideoLoader.VIDEO_TYPE_VIMEO)
+                            video = VideoLoader.createVimeo(link.href);
+
 
                         // we actually created a video
                         if (video != null)
@@ -73,15 +93,40 @@ settingsLoadedEvent.addHandler(function()
             {
                 var video_id;
                 
-                if ((video_id = href.match(/www\.youtube\.com\/watch\?v=([^&]+)?/i)))
+                if ((video_id = href.match(/www\.youtube\.com\/watch\?v=([^&]+)/i)))
                     video_id = video_id[1];
                 else if ((video_id = href.match(/youtu\.be\/(.+)/i)))
                     video_id = video_id[1];
                 else
                     return null;
 
-                var url = "http://youtube.com/v/" + video_id + "&hl=en_US&fs=1";
+                var id = "youtube_player_" + this.playerId;
+                this.playerId++;
 
+                var url = "http://youtube.com/v/" + video_id + "&hl=en_US&fs=1&enablejsapi=1&version=3&hd=1&playerapiid=" + id;
+
+
+                var o = VideoLoader.createVideoObject(url);
+                o.id = id;
+                return o;
+            },
+
+            createVimeo: function(href)
+            {
+                var video_id;
+                
+                if ((video_id = href.match(/vimeo\.com\/(\d+)/i)))
+                    video_id = video_id[1];
+                else
+                    return null;
+
+                var url = "http://vimeo.com/moogaloop.swf?clip_id=" + video_id + "&show_title=1&show_byline=1&fullscreen=1";
+
+                return VideoLoader.createVideoObject(url);
+            },
+
+            createVideoObject: function(url)
+            {
                 var o = document.createElement("object");
                 o.setAttribute("width", 640);
                 o.setAttribute("height", 385);
@@ -107,9 +152,15 @@ settingsLoadedEvent.addHandler(function()
                 param.setAttribute("name", name);
                 param.setAttribute("value", value);
                 return param;
+            },
+
+            onYouTubePlayerReady: function(playerId)
+            {
+                console.log("youtube player ready.");
             }
         }
 
+        VideoLoader.install();
         processPostEvent.addHandler(VideoLoader.loadVideos);
     }
 });

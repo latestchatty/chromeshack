@@ -40,5 +40,8 @@ DefaultSettings = {
         { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: #FFC !important" },
         { name: "Game Devs", enabled: true, built_in: true, css: "color: purple !important" },
         { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important", users: [ 177008 ] }
-    ]
+    ],
+
+    video_loader_hd: true
+
 }

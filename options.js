@@ -4,6 +4,7 @@ function loadOptions()
     showPostPreviewLocation(getOption("post_preview_location"));
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
+    showVideoLoaderHD(getOption("video_loader_hd"));
     showEnabledScripts();
 }
 
@@ -18,6 +19,18 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function showVideoLoaderHD(enabled)
+{
+    var hd = document.getElementById("video_loader_hd");
+    hd.checked = enabled;
+}
+
+function getVideoLoaderHD()
+{
+    var hd = document.getElementById("video_loader_hd");
+    return hd.checked;
 }
 
 function showHighlightUsers(groups)
@@ -282,6 +295,7 @@ function saveOptions()
         saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
+        saveOption("video_loader_hd", getVideoLoaderHD());
     }
     catch (err)
     {
