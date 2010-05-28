@@ -13,6 +13,26 @@ function getSetting(name, default_value)
     return JSON.parse(value);
 }
 
+function migrateSettings(version)
+{
+    if (version == "1.7")
+    {
+        // enable a bunch of new things by default
+        scripts = getSetting("enabled_scripts");
+        if (scripts.indexOf("winchatty_coments_search") < 0)
+            scripts.push("winchatty_comments_search");
+
+        if (scripts.indexOf("video_loader" < 0))
+            scripts.push("video_loader");
+
+        // lots of people don't know this is here, just turn it on
+        if (scripts.indexOf("collapse_threads") < 0)
+            scripts.push("collapse_threads");
+
+        setSetting("enabled_scripts", scripts);
+    }
+}
+
 function setSetting(name, value)
 {
     localStorage[name] = JSON.stringify(value);
@@ -111,4 +131,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
     else
         sendResponse();
 });
+
+// attempt to update version settings
+var last_version = getSetting("version", 0);
+migrateSettings(last_version);
 </script>
