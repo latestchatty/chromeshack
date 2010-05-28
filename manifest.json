@@ -42,7 +42,12 @@
         "run_at": "document_end"
     },
     {
-        "js": [ "common.js", "chromeshack_profile.js" ],
+        "js": [
+            "common.js",
+            "init_events.js",
+            "chromeshack_profile.js",
+            "settings.js"
+        ],
         "matches": [ "http://www.shacknews.com/profile/*", "http://www.shacknews.com/profile.x*"],
         "all_frames": false,
         "run_at": "document_end"
