@@ -9,15 +9,35 @@ settingsLoadedEvent.addHandler(function()
                 var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
                 var links = postbody.getElementsByTagName("a");
 
-                var imageRegex = /\/[^:?]+\.(jpg|jpeg|png|gif|bmp)$/i;
-
                 for (var i = 0; i < links.length; i++)
                 {
-                    var href = ImageLoader.getImageUrl(links[i].href);
-                    if (href.match(imageRegex))
+                    if (ImageLoader.isImage(links[i].href))
                     {
                         links[i].addEventListener("click", ImageLoader.toggleImage);
                     }
+                }
+            },
+
+            isImage: function(href)
+            {
+                // some urls don't end in jpeg/png/etc so the normal test won't work
+                if (/http\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href))
+                {
+                    return true;
+                }
+                else if (/http\:\/\/yfrog.com\/\w+$/.test(href))
+                {
+                    return true;
+                }
+                else if (/http\:\/\/twitpic.com\/\w+$/.test(href))
+                {
+                    return true;
+                }
+                else
+                {
+                    href = ImageLoader.getImageUrl(href);
+                    var imageRegex = /\/[^:?]+\.(jpg|jpeg|png|gif|bmp|svg)$/i;
+                    return href.match(imageRegex);
                 }
             },
 
@@ -33,6 +53,17 @@ settingsLoadedEvent.addHandler(function()
 
                 if (/http\:\/\/imgur.com\/\w+$/.test(href))
                     return href.replace(/imgur/, 'i.imgur') + ".jpg";
+
+                if (/http\:\/\/yfrog.com\/\w+$/.test(href))
+                    return href + ":iphone";
+
+                // no way to get the full image for twitpic, just how a thumbnail
+                if ((m = /http\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
+                    return "http://twitpic.com/show/thumb/" + m[1];
+
+                // grab the username and the photo id
+                if ((m = /http\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
+                    return "http://picasaweb.google.com/data/media/api/user/" + m[1] + "/photoid/" + m[2];
 
                 // not a special case, just use the link's href
                 return href;
