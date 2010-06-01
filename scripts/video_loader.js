@@ -43,7 +43,9 @@ settingsLoadedEvent.addHandler(function()
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
                 else if (url.match(/youtu\.be\/.+/i))
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
-                else if (url.match(/vimeo\.com\/.+/i))
+                else if (url.match(/vimeo\.com\/\d+/i))
+                    return VideoLoader.VIDEO_TYPE_VIMEO
+                else if (url.match(/vimeo\.com\/moogaloop\.swf\?clip_id=\d+.*/i))
                     return VideoLoader.VIDEO_TYPE_VIMEO
 
                 return VideoLoader.VIDEO_TYPE_NONE;
@@ -116,6 +118,8 @@ settingsLoadedEvent.addHandler(function()
                 var video_id;
                 
                 if ((video_id = href.match(/vimeo\.com\/(\d+)/i)))
+                    video_id = video_id[1];
+                else if ((video_id = href.match(/vimeo\.com\/moogaloop\.swf\?clip_id=(\d+)/i)))
                     video_id = video_id[1];
                 else
                     return null;
