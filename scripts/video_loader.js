@@ -39,7 +39,7 @@ settingsLoadedEvent.addHandler(function()
 
             getVideoType: function(url)
             {
-                if (url.match(/www\.youtube\.com\/watch\?v=/i))
+                if (url.match(/www\.youtube\.com\/watch(_popup)?\?v=/i))
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
                 else if (url.match(/youtu\.be\/.+/i))
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
@@ -95,8 +95,8 @@ settingsLoadedEvent.addHandler(function()
             {
                 var video_id;
                 
-                if ((video_id = href.match(/www\.youtube\.com\/watch\?v=([^&]+)/i)))
-                    video_id = video_id[1];
+                if ((video_id = href.match(/www\.youtube\.com\/watch(_popup)?\?v=([^&]+)/i)))
+                    video_id = video_id[2];
                 else if ((video_id = href.match(/youtu\.be\/(.+)/i)))
                     video_id = video_id[1];
                 else
