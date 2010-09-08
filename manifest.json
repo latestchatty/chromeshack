@@ -39,7 +39,7 @@
         "css": [ "chromeshack.css" ],
         "matches": [ "http://www.shacknews.com/laryn.x*" ],
         "all_frames": false,
-        "run_at": "document_end"
+        "run_at": "document_idle"
     },
     {
         "js": [
@@ -50,13 +50,13 @@
         ],
         "matches": [ "http://www.shacknews.com/profile/*", "http://www.shacknews.com/profile.x*"],
         "all_frames": false,
-        "run_at": "document_end"
+        "run_at": "document_idle"
     },
     {
         "js": [ "scripts/winchatty_search.js" ],
         "matches": [ "http://www.shacknews.com/*" ],
         "all_frames": false,
-        "run_at": "document_end"
+        "run_at": "document_idle"
     }
     ],
     "permissions": [
