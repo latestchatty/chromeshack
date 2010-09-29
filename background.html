@@ -111,6 +111,32 @@ function launchPopup(url, left, top, width, height)
     chrome.windows.create({"url": url, "left": left, "width": width, "height": height});
 }
 
+function addContextMenus()
+{
+    // get rid of any old and busted context menus
+    chrome.contextMenus.removeAll();
+
+    // add some basic context menus
+    chrome.contextMenus.create(
+    {
+        title: "Show comment history",
+        contexts: [ 'link' ],
+        onclick: showCommentHistoryClick,
+        documentUrlPatterns: [ "http://*.shacknews.com/*" ],
+        targetUrlPatterns: [ "http://*.shacknews.com/profile/*" ]
+    });
+}
+
+function showCommentHistoryClick(info, tab)
+{
+    var match = /\/profile\/(.+)$/.exec(info.linkUrl);
+    if (match)
+    {
+        var search_url = "http://winchatty.com/search?author=" + escape(match[1]);
+        chrome.tabs.create({windowId: tab.windowId, index: tab.index + 1, url: search_url});
+    }
+}
+
 chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
@@ -131,6 +157,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
     else
         sendResponse();
 });
+
+addContextMenus();
 
 // attempt to update version settings
 var last_version = getSetting("version", 0);

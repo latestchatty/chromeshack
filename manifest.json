@@ -12,6 +12,7 @@
         "popup": "options.html"
     },
     "icons": {
+        "16": "shack.png",
         "128": "icon.png"
     },
     "content_scripts": [
@@ -61,6 +62,7 @@
     ],
     "permissions": [
         "tabs",
+        "contextMenus",
         "http://www.lmnopc.com/greasemonkey/shacklol/*"
     ]
 }
