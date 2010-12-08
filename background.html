@@ -146,6 +146,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
             showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
     }
+    else if (request.name == "setSetting")
+        setSetting(request.key, request.value);
     else if (request.name == "getUrl")
         getUrl(request.url, sendResponse);
     else if (request.name == "collapseThread")

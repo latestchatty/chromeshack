@@ -16,3 +16,7 @@ chrome.extension.sendRequest({name: "getSettings"}, function(response)
     settingsLoadedEvent.raise();
 });
 
+function setSetting(name, value)
+{
+    chrome.extension.sendRequest({name: "setSetting", key: name, value: value});
+}

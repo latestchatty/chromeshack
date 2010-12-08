@@ -33,6 +33,7 @@
             "scripts/collapse.js",
             "scripts/highlight_users.js",
             "scripts/sfw.js",
+            "scripts/new_comment_highlighter.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"
