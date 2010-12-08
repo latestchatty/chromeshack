@@ -31,6 +31,14 @@ function migrateSettings(version)
 
         setSetting("enabled_scripts", scripts);
     }
+    else if (version == 1.9)
+    {
+        scripts = getSetting("enabled_scripts");
+        if (scripts.indexOf("new_comment_highlighter") < 0)
+            scripts.push("new_comment_highlighter");
+
+        setSetting("enabled_scripts", scripts);
+    }
 }
 
 function setSetting(name, value)
