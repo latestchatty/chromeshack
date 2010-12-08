@@ -64,6 +64,9 @@ settingsLoadedEvent.addHandler(function()
                     "204735", // Alice O'Connor
                     "213066", // Jeff Mattas
                     "212323", // Garnett Lee
+                    "217677", // Brian Leahy
+                    "227220", // Ackbar2020
+                    "203311", // greg-m
                     "44124"  // sHugamom
                 ],
 
@@ -116,6 +119,7 @@ settingsLoadedEvent.addHandler(function()
                     '170414','9172',//Vivendi Universal  ColoradoCNC, Pezman
                     '12656',//Zemnott  KnyteHawkk - Jared Larsen
                     '170084', // deveus1 (Activision)
+                    '139966', // lord cecil
                     '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
                 ]
             },
