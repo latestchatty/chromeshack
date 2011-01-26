@@ -9,6 +9,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var last_id = getSetting("new_comment_highlighter_last_id");
                 var new_last_id = NewCommentHighlighter.findLastID();
+                last_id = new_last_id - 540;
 
                 // only highlight if we wouldn't highlight everything on the page
                 if (last_id != null && (new_last_id - last_id) < 1000)
@@ -31,13 +32,16 @@ settingsLoadedEvent.addHandler(function()
                 {
                     var post = new_posts.snapshotItem(i);
 
-                    // taken from the newcommentsmarker greasemokey script
-                    if (post.className == 'last')
-                        post.className += ' newcommenthighlighter_newpostlast';
-                    else if (post.className == 'sel last')
+                    // root post
+                    if (post.className == 'sel last')
                         post.className += ' newcommenthighlighter_newrootpost';
+                    else if (post.className == 'last')
+                        post.className += ' newcommenthighlighter_last';
                     else if (post.className == '')
-                        post.className += ' newcommenthighlighter_newpost';
+                        post.className += 'newcommenthighlighter';
+
+                    if (post == post.parentNode.childNodes[1])
+                        post.parentNode.className = 'newcommenthighlighter';
                 }
 
                 NewCommentHighlighter.displayNewCommentCount(new_posts.snapshotLength);
