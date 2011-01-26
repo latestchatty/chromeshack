@@ -33,6 +33,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
+                else if (/http\:\/\/pichars.org\/\w+$/.test(href))
+                {
+                    return true;
+                }
                 else
                 {
                     href = ImageLoader.getImageUrl(href);
@@ -64,6 +68,10 @@ settingsLoadedEvent.addHandler(function()
                 // grab the username and the photo id
                 if ((m = /http\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
                     return "http://picasaweb.google.com/data/media/api/user/" + m[1] + "/photoid/" + m[2];
+
+                // pichars images are in the in the /store/ directory with the same name
+                if (/http\:\/\/pichars.org\/\w+$/.test(href) && !/http\:\/\/pichars.org\/store\/\w+$/.test(href))
+                    return href.replace(/org/, 'org/store');
 
                 // not a special case, just use the link's href
                 return href;
