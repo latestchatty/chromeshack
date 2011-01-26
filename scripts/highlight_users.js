@@ -67,6 +67,7 @@ settingsLoadedEvent.addHandler(function()
                     "217677", // Brian Leahy
                     "227220", // Ackbar2020
                     "203311", // greg-m
+                    "223050", // XAVdeMATOS
                     "44124"  // sHugamom
                 ],
 
@@ -120,6 +121,7 @@ settingsLoadedEvent.addHandler(function()
                     '12656',//Zemnott  KnyteHawkk - Jared Larsen
                     '170084', // deveus1 (Activision)
                     '139966', // lord cecil
+                    '175142', // eonix (Relic)
                     '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
                 ]
             },
