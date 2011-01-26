@@ -9,7 +9,6 @@ settingsLoadedEvent.addHandler(function()
             {
                 var last_id = getSetting("new_comment_highlighter_last_id");
                 var new_last_id = NewCommentHighlighter.findLastID();
-                last_id = new_last_id - 540;
 
                 // only highlight if we wouldn't highlight everything on the page
                 if (last_id != null && (new_last_id - last_id) < 1000)
