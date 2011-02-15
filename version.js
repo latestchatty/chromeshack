@@ -1,1 +1,1 @@
-var CURRENT_VERSION = '1.10';
+var CURRENT_VERSION = '1.11';
