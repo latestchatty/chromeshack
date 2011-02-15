@@ -64,6 +64,7 @@
     "permissions": [
         "tabs",
         "contextMenus",
-        "http://www.lmnopc.com/greasemonkey/shacklol/*"
+        "http://www.lmnopc.com/greasemonkey/shacklol/*",
+        "http://*.shacknews.com/*"
     ]
 }
