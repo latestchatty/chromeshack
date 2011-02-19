@@ -48,9 +48,9 @@ settingsLoadedEvent.addHandler(function()
 
             displayNewCommentCount: function(count)
             {
-                var query = '//p[@class="postcount"]';
-                var p = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                p.innerHTML += ' (<span class="newcommenthighlighter_bluetext">' + count + '</span> new posts)';
+					var query = '//div[@id="chatty_settings"]';
+					var cs = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+					cs.innerHTML = cs.innerHTML.replace(' Comments', ' Comments (' + count + ' New)');
             },
 
             getPostsAfter: function(last_id)
