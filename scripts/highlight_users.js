@@ -157,7 +157,8 @@ settingsLoadedEvent.addHandler(function()
                 for (var i = 0; i < users.length; i++)
                 {
                     if (i > 0) css += ",\n";
-                    css += "div.olauthor_" + users[i] + " a.oneline_user, .fpauthor_" + users[i] + " span.author>a";
+                    // css += "div.olauthor_" + users[i] + " a.oneline_user, .fpauthor_" + users[i] + " span.author>a";
+                    css += "div.olauthor_" + users[i] + " span.oneline_user, .fpauthor_" + users[i] + " span.author span.user>a";
                 }
                 css += " { " + group_css + " }\n";
                 HighlightUsers.css += css;
@@ -176,7 +177,6 @@ settingsLoadedEvent.addHandler(function()
                     }
                 }
             },
-
 
             installCss: function()
             {
