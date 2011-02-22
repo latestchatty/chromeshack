@@ -7,7 +7,6 @@ DefaultSettings = {
         "image_loader",
         "video_loader",
         "collapse_threads",
-        "message_user",
         "dinogegtik",
         "sparkly_comic",
         "winchatty_comments_search"

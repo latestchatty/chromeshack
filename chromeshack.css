@@ -100,15 +100,6 @@ div.sparklycomic div.panel span.shadow {
 div.sparklycomic div.panel span.shadow .jt_spoiler,
 div.sparklycomic div.panel span.shadow a { visibility: hidden }
 
-a.message_user {
-    display: inline-block;
-    margin-left: 10px;
-    width: 13px;
-    height: 9px;
-    text-indent: -9999px; 
-    background: transparent url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/message.png);
-}
-
 body.show_banner_offtopic div.fpmod_offtopic {
     background-image: url(chrome-extension://mcnpepegfcikofcogenpncheiohblnpp/images/banners/offtopic.png);
     background-position: right top;

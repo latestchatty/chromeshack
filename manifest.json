@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.11",
+    "version": "1.2",
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
     "options_page": "options.html",
@@ -21,7 +21,6 @@
             "common.js",
             "sentence_parser.js",
             "init_events.js",
-            "scripts/message_user.js",
             "scripts/lol.js",
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
@@ -31,15 +30,15 @@
             "scripts/video_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
-            "scripts/highlight_users.js",
             "scripts/sfw.js",
             "scripts/new_comment_highlighter.js",
+            "scripts/highlight_users.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"
         ],
         "css": [ "chromeshack.css" ],
-        "matches": [ "http://www.shacknews.com/laryn.x*" ],
+        "matches": [ "http://www.shacknews.com/chatty*" ],
         "all_frames": false,
         "run_at": "document_idle"
     },
@@ -62,9 +61,9 @@
     }
     ],
     "permissions": [
-        "tabs",
-        "contextMenus",
-        "http://www.lmnopc.com/greasemonkey/shacklol/*",
-        "http://*.shacknews.com/*"
+        "tabs"
+        , "contextMenus"
+        , "http://www.lmnopc.com/greasemonkey/shacklol/*"
+        , "http://*.shacknews.com/*"
     ]
 }
