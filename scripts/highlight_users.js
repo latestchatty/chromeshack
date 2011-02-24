@@ -68,6 +68,7 @@ settingsLoadedEvent.addHandler(function()
                     "227220", // Ackbar2020
                     "203311", // greg-m
                     "223050", // XAVdeMATOS
+                    "14475", // Shacknews
                     "44124"  // sHugamom
                 ],
 
