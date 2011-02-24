@@ -177,6 +177,13 @@ span.newcommenthighlighter_bluetext {
         color: #00BFF3;
 }
 
+/* highlight Shacknews front-page comment threads, taken from Nitrium's Stylish script */
+#chatty_comments_wrap div.fpauthor_14475
+{
+	border-top: solid 1px #089dc6 !important;
+    background-color: #192635 !important;
+}
+
 // taken from http://www.shacknews.com/chatty?id=25347975#itemanchor_25347975
 #container {color: #ccc !important; background: #0c1118 !important; } 
 div#chatty_comments_wrap {border-top: 1px solid #252930 !important; } 
