@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.12",
+    "version": "1.13",
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
     "options_page": "options.html",
@@ -38,7 +38,10 @@
             "settings.js"
         ],
         "css": [ "chromeshack.css" ],
-        "matches": [ "http://www.shacknews.com/chatty*" ],
+        "matches": [
+            "http://www.shacknews.com/chatty*",
+            "http://new.shacknews.com/chatty*"
+        ],
         "all_frames": false,
         "run_at": "document_idle"
     },
