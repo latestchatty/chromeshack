@@ -37,7 +37,7 @@ DefaultSettings = {
     highlight_users: [
         { name: "Mods", enabled: true, built_in: true, css: "color: red !important" },
         { name: "Employees", enabled: true, built_in: true, css: "color: green !important" },
-        { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: #FFC !important" },
+        { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow !important" },
         { name: "Game Devs", enabled: true, built_in: true, css: "color: purple !important" },
         { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important", users: [ 177008 ] }
     ],
