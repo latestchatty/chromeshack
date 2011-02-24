@@ -10,61 +10,62 @@ settingsLoadedEvent.addHandler(function()
                 var postform = document.getElementById("postform");
                 if (postform)
                 {
-                    var comment_tags = document.createElement("div");
-                    comment_tags.id = "shack_comment_tags";
-                    comment_tags.appendChild(document.createElement("p")).innerHTML = "Comment Tags:";
-                    var table = comment_tags.appendChild(document.createElement("table"));
-                    table.cellPadding = 2;
-                    table.border = 0;
-                    table.cellSpacing = 0;
+                    var table = document.createElement("table");
+                    table.id = "shacktags_legend_table";
+                    table.style.display = "table";
+                    var tbody = table.appendChild(document.createElement("tbody"));
 
-                    var row = table.appendChild(document.createElement("tr"));
+                    var row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "red", "r{", "}r", "jt_red");
                     CommentTags.addTag(row, "italics", "/[", "]/", "jt_italics");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "green", "g{", "}g", "jt_green");
                     CommentTags.addTag(row, "bold", "b[", "]b", "jt_bold");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "blue", "b{", "}b", "jt_blue");
                     CommentTags.addTag(row, "quote", "q[", "]q", "jt_quote");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "yellow", "y{", "}y", "jt_yellow");
                     CommentTags.addTag(row, "sample", "s[", "]s", "jt_sample");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "olive", "e[", "]e", "jt_olive");
                     CommentTags.addTag(row, "underline", "_[", "]_", "jt_underline");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "limegreen", "l[", "]l", "jt_lime");
                     CommentTags.addTag(row, "strike", "-[", "]-", "jt_strike");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "orange", "n[", "]n", "jt_orange");
                     CommentTags.addTag(row, "spoiler", "o[", "]o", "jt_spoiler", "return doSpoiler(event);");
 
-                    row = table.appendChild(document.createElement("tr"));
+                    row = tbody.appendChild(document.createElement("tr"));
                     CommentTags.addTag(row, "multisync", "p[", "]p", "jt_pink");
                     CommentTags.addTag(row, "code", "/{{", "}}/", "jt_code");
 
-                    postform.parentNode.insertBefore(comment_tags, postform.nextSibling);
+                    var shacktag_legends = document.getElementById("shacktags_legend");
+                    var original_shacktags_legend_table = document.getElementById("shacktags_legend_table");
+                    shacktag_legends.removeChild(original_shacktags_legend_table);
+                    shacktag_legends.appendChild(table);
                 }
             },
 
             addTag: function(row, name, opening_tag, closing_tag, class, click)
             {
                 var name_td = row.appendChild(document.createElement("td"));
-                name_td.className = class;
-                name_td.appendChild(document.createTextNode(name));
+                var span = name_td.appendChild(document.createElement("span"));
+                span.className = class;
+                span.appendChild(document.createTextNode(name));
                 if (click && click.length > 0)
                     name_td.setAttribute("onclick", click);
 
                 var code_td = row.appendChild(document.createElement("td"));
                 var button = code_td.appendChild(document.createElement("a"));
-                button.appendChild(document.createTextNode(opening_tag + " ... " + closing_tag));
+                button.appendChild(document.createTextNode(opening_tag + "..." + closing_tag));
                 button.href = "#";
                 button.addEventListener("click", function(e)
                 {
