@@ -184,7 +184,7 @@ span.newcommenthighlighter_bluetext {
     background-color: #192635 !important;
 }
 
-// taken from http://www.shacknews.com/chatty?id=25347975#itemanchor_25347975
+/* taken from http://www.shacknews.com/chatty?id=25347975#itemanchor_25347975 */
 #container {color: #ccc !important; background: #0c1118 !important; } 
 div#chatty_comments_wrap {border-top: 1px solid #252930 !important; } 
 .border-grd {background: transparent !important; height: 5px !important; margin: 0 !important; } 
