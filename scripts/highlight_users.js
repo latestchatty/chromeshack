@@ -173,7 +173,7 @@ settingsLoadedEvent.addHandler(function()
                     if (fpauthor)
                     {
                         var authorId = fpauthor[1];
-                        HighlightUsers.originalPosterSelectors.push("div#root_" + id + " div.olauthor_" + authorId + " a.oneline_user ");
+                        HighlightUsers.originalPosterSelectors.push("div#root_" + id + " div.olauthor_" + authorId + " .oneline_user ");
                     }
                 }
             },
