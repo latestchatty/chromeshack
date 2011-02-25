@@ -176,3 +176,20 @@ span.newcommenthighlighter_bluetext {
         color: #00BFF3;
 }
 
+.countdown-wrap {
+    height: 8px;
+    width: 48px;
+    position: absolute;
+    bottom: 25px;;
+    right: 0px;
+    margin: 0 5px;
+    background-color: #bdbdbd;
+}
+
+.countdown-value
+{
+    height: 100%;
+}
+
+
+

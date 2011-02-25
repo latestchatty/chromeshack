@@ -3,6 +3,8 @@ ExpirationWatcher =
     // 1000ms * 60s * 60m * 24hr
     post_ttl: 1000 * 60 * 60 * 24,
 
+    bar_colors: new Array('#00FF00','#00FF00','#11FF00','#33FF00','#55FF00','#77FF00','#99FF00','#BBFF00','#DDFF00','#FFFF00','#FFEE00','#FFDD00','#FFCC00','#FFBB00','#FFAA00','#FF9900','#FF9900','#FF7700','#FF6600','#FF5500','#FF3300','#FF2200','#FF1100','#FF0000'),
+
     showExpiration: function(item, id, is_root_post)
     {
         if (is_root_post)
@@ -13,6 +15,8 @@ ExpirationWatcher =
             var now = Date.now();
 
             var time_left = expiration_time - now;
+            var percent = 100;
+            var color = ExpirationWatcher.bar_colors[23];
             if (time_left > 0)
             {
                 var total_seconds = Math.round(time_left / 1000);
@@ -23,13 +27,24 @@ ExpirationWatcher =
                 var seconds = total_seconds % 60;
 
                 var desc = "Expires in " + total_hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.";
-                postdate.title = desc;
+                var percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
+                color = ExpirationWatcher.bar_colors[23 - total_hours];
             }
             else
             {
-                postdate.style.textDecoration = "line-through";
-                postdate.title = "Expired";
+                var desc = "Expired.";
             }
+
+            var wrap = document.createElement("div");
+            wrap.className = "countdown-wrap";
+            wrap.title = desc;
+
+            var value = wrap.appendChild(document.createElement("div"));
+            value.className = "countdown-value";
+            value.style.backgroundColor = color;
+            value.style.width = percent + "%";
+
+            postdate.parentNode.insertBefore(wrap, postdate);
         }
 
     },
