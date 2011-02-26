@@ -39,6 +39,14 @@ function migrateSettings(version)
 
         setSetting("enabled_scripts", scripts);
     }
+    else if (version == 1.14)
+    {
+        scripts = getSetting("enabled_scripts");
+        if (scripts.indexOf("expiration_watcher") < 0)
+            scripts.push("expiration_watcher");
+
+        setSetting("enabled_scripts", scripts);
+    }
 
     if (version != CURRENT_VERSION)
     {

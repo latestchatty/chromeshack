@@ -9,7 +9,8 @@ DefaultSettings = {
         "collapse_threads",
         "dinogegtik",
         "sparkly_comic",
-        "winchatty_comments_search"
+        "winchatty_comments_search",
+        "expiration_watcher"
     ],
 
     lol_tags: [
