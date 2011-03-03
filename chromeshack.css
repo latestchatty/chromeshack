@@ -176,19 +176,28 @@ span.newcommenthighlighter_bluetext {
         color: #00BFF3;
 }
 
+.postdate {
+    right: 55px !important;
+}
+
 .countdown-wrap {
     height: 8px;
     width: 48px;
     position: absolute;
-    bottom: 25px;;
-    right: 0px;
-    margin: 0 5px;
-    background-color: #bdbdbd;
+    bottom: 6px;
+    right: 5px;
+    background-color: #ddd;
+    -webkit-border-radius: 4px;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(0.4, #ccc), color-stop(0.6, #ccc), color-stop(1, #eee)); 
 }
 
 .countdown-value
 {
     height: 100%;
+    width: 0;
+    -webkit-border-radius: 4px;
+    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, rgba(255, 255, 255, .4)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .4)), color-stop(.75, rgba(255, 255, 255, .4)), color-stop(.75, transparent), to(transparent));
+    -webkit-background-size: 25px 25px;
 }
 
 
