@@ -16,41 +16,43 @@ settingsLoadedEvent.addHandler(function()
                     var postdate = getDescendentByTagAndClassName(item, "div", "postdate");
                     var expiration_time = ExpirationWatcher.calculateExpirationTime(postdate);
 
-                    var now = Date.now();
-
-                    var time_left = expiration_time - now;
-                    var percent = 100;
-                    var color = ExpirationWatcher.bar_colors[23];
-                    if (time_left > 0)
-                    {
-                        var total_seconds = Math.round(time_left / 1000);
-                        var total_minutes = Math.floor(total_seconds / 60);
-                        var total_hours = Math.floor(total_minutes / 60);
-
-                        var minutes = total_minutes % 60;
-                        var seconds = total_seconds % 60;
-
-                        var desc = "Expires in " + total_hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.";
-                        var percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
-                        color = ExpirationWatcher.bar_colors[23 - total_hours];
-                    }
-                    else
-                    {
-                        var desc = "Expired.";
-                    }
-
                     var wrap = document.createElement("div");
                     wrap.className = "countdown-wrap";
-                    wrap.title = desc;
 
                     var value = wrap.appendChild(document.createElement("div"));
                     value.className = "countdown-value";
-                    value.style.backgroundColor = color;
-                    value.style.width = percent + "%";
 
+                    ExpirationWatcher.updateExpirationTime(expiration_time, wrap, value);
                     postdate.parentNode.insertBefore(wrap, postdate);
                 }
 
+            },
+
+            updateExpirationTime: function(expiration_time, wrap, value)
+            {
+                var now = Date.now();
+
+                var time_left = expiration_time - now;
+                var percent = 100;
+                var color = ExpirationWatcher.bar_colors[23];
+                var desc = "Expired."
+                if (time_left > 0)
+                {
+                    var total_seconds = Math.round(time_left / 1000);
+                    var total_minutes = Math.floor(total_seconds / 60);
+                    var total_hours = Math.floor(total_minutes / 60);
+
+                    var minutes = total_minutes % 60;
+                    var seconds = total_seconds % 60;
+
+                    var desc = "Expires in " + total_hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.";
+                    percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
+                    color = ExpirationWatcher.bar_colors[23 - total_hours];
+                }
+
+                wrap.title = desc;
+                value.style.backgroundColor = color;
+                value.style.width = percent + "%";
             },
 
             calculateExpirationTime: function(postdate_element)
