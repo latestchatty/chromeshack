@@ -5,6 +5,7 @@ function loadOptions()
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
+    showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showEnabledScripts();
 }
 
@@ -175,6 +176,26 @@ function getPostPreviewLocation()
     return "Right";
 }
 
+function showExpirationWatcherStyle(style)
+{
+	document.getElementById('expiration_watcher_bar').checked = (style === 'Bar');
+	document.getElementById('expiration_watcher_wolf3d').checked = (style === 'Wolf3d');
+}
+
+function getExpirationWatcherStyle()
+{
+	var bar = document.getElementById('expiration_watcher_bar'); 
+	if (bar.checked)
+	{
+		return 'Bar';
+	}
+	else
+	{
+		return 'Wolf3d';
+	}
+}
+
+
 function showLolTags(tags)
 {
     var lol_div = document.getElementById("lol_tags");
@@ -296,6 +317,7 @@ function saveOptions()
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
+        saveOption("expiration_watcher_style", getExpirationWatcherStyle()); 
     }
     catch (err)
     {

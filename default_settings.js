@@ -1,4 +1,5 @@
 DefaultSettings = {
+
     enabled_scripts: [
         "lol",
         "comment_tags",
@@ -43,6 +44,8 @@ DefaultSettings = {
         { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important", users: [ 177008 ] }
     ],
 
-    video_loader_hd: true
+    video_loader_hd: true,
+    
+    expiration_watcher_style: "Bar"
 
 }
