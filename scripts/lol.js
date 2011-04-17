@@ -29,7 +29,7 @@ settingsLoadedEvent.addHandler(function()
 
                 LOL.counts = getSetting("lol-counts");
 
-                var last_lol_count_time = getSetting("lol-count-time");
+                var last_lol_count_time = getSetting("lol-counts-time");
                 if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
                 {
                     console.log("need lol counts");
