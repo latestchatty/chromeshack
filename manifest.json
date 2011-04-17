@@ -35,6 +35,7 @@
             "scripts/highlight_users.js",
             "scripts/local_timestamp.js",
             "scripts/expiration_watcher.js",
+            "scripts/shack-userpopup.user.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"
@@ -68,6 +69,7 @@
     "permissions": [
         "contextMenus"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
+        , "http://shackapi.stonedonkey.com/*"
         , "http://*.shacknews.com/*"
     ]
 }
