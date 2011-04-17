@@ -5,9 +5,13 @@ settingsLoadedEvent.addHandler(function()
         LOL =
         {
             URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
+            COUNT_URL: "http://www.lmnopc.com/greasemonkey/shacklol/api.php?special=getcounts",
             VERSION: "20090513",
 
             tags: getSetting("lol_tags"),
+
+            counts: null,
+            processed_posts: false,
 
             installLink: function()
             {
@@ -21,6 +25,15 @@ settingsLoadedEvent.addHandler(function()
                     link.style.backgroundImage = "url(" + chrome.extension.getURL("../images/lol.png") + ")";
                     link.appendChild(document.createTextNode("[ L O L ` d ]"));
                     comments_tools.appendChild(link);
+                }
+
+                LOL.counts = getSetting("lol-counts");
+
+                var last_lol_count_time = getSetting("lol-count-time");
+                if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
+                {
+                    console.log("need lol counts");
+                    LOL.getCounts();
                 }
             },
 
@@ -51,6 +64,9 @@ settingsLoadedEvent.addHandler(function()
 
                 // add them in
                 author.appendChild(lol_div);
+
+                if (LOL.counts)
+                    LOL.showThreadCounts(id);
             },
 
             createButton: function(tag, id, color)
@@ -135,11 +151,135 @@ settingsLoadedEvent.addHandler(function()
                 }
 
                 return "";
+            },
+
+            finishPosts: function()
+            {
+                // mark the posts as finished
+                LOL.processed_posts = true;
+            },
+
+            showThreadCounts: function(threadId)
+            {
+                var rootId = -1; 
+            
+                // Make sure this is a rootId 
+                if (document.getElementById('root_' + threadId))
+                {
+                    rootId = threadId; 
+                }
+                else
+                {
+                    // If this is a subthread, the root needs to be found
+                    var liItem = document.getElementById('item_' + threadId); 
+                    if (liItem)
+                    {
+                        do 
+                        {
+                            liItem = liItem.parentNode; 
+                            
+                            if (liItem.className == 'root')
+                            {
+                                rootId = liItem.id.split('_')[1];
+                                break;
+                            }
+                        }
+                        while (liItem.parentNode != null)
+                    }
+                }
+                
+                if (rootId == -1)
+                {
+                    console.log('Could not find root for ' + threadId); 
+                    return; 
+                }
+            
+                // If there aren't any tagged threads in this root there's no need to proceed 
+                if (!LOL.counts[rootId])
+                {
+                    console.log('No lols for ' + rootId);
+                    return; 
+                }
+                
+                // Update all the ids under the rootId we're in 
+                for (id in LOL.counts[rootId])
+                {	
+                    for (tag in LOL.counts[rootId][id])
+                    {
+                        // Add * x indicators in the fullpost 
+                        var tgt = document.getElementById(tag + id); 
+                        if (tgt)
+                        {
+                            if (tgt.innerHTML.indexOf(' × ') == -1)
+                            {
+                                tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
+                            } 
+                        }
+                        else
+                        {
+                            console.log(tag + id + ' not found');
+                        }
+                    
+                        // Add (lol * 3) indicators to the onelines
+                        if (!document.getElementById('oneline_' + tag + 's_' + id))
+                        {
+                            tgt = document.getElementById('item_' + id);
+                            if (tgt)
+                            {
+                                tgt = getDescendentByTagAndClassName(tgt, 'div', 'oneline');
+                                if (tgt) 
+                                {
+                                    divOnelineTags = document.createElement('div'); 
+                                    divOnelineTags.id = 'oneline_' + tag + 's_' + id;
+                                    divOnelineTags.className = 'oneline_tags'; 
+                                    tgt.appendChild(divOnelineTags);
+                                    
+                                     // add the button 
+                                    spanOnelineTag = document.createElement('span'); 
+                                    spanOnelineTag.id = 'oneline_' + tag + '_' + id;
+                                    spanOnelineTag.className = 'oneline_' + tag;  
+                                    spanOnelineTag.appendChild(document.createTextNode(tag + ' * ' + LOL.counts[rootId][id][tag])); 
+                                    divOnelineTags.appendChild(spanOnelineTag); 
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            getCounts: function()
+            {
+                console.log("getting lol counts");
+                getUrl(LOL.COUNT_URL, function(response)
+                {
+                    console.log("response status: " + response.status);
+                    console.log("response text: " + response.responseText);
+                    if (response.status == 200)
+                    {
+                        console.log("got lol counts");
+                        LOL.counts = JSON.parse(response.responseText);
+                        setSetting("lol-counts", LOL.counts);
+                        setSetting("lol-counts-time", new Date().getTime());
+                        LOL.displayCounts();
+                    }
+                });
+            },
+
+            displayCounts: function(counts)
+            {
+                // only do this if the posts have already been processed, otherwise
+                // each post will handle displaying its own counts
+                if (LOL.processed_posts)
+                {
+                    console.log("too slow!");
+                    // this should go through and re-update all the root posts with their new tags, but whatever
+                }
             }
 
         }
 
         LOL.installLink();
         processPostEvent.addHandler(LOL.installButtons);
+        fullPostsCompletedEvent.addHandler(LOL.finishPosts);
     }
 });
