@@ -109,18 +109,15 @@
 		GM_log(addr);
 		
 		// use xmlhttpRequest to post the data
-	  	GM_xmlhttpRequest({ 
-			method: "GET",
-	  		url: addr,
-			onload: function(response) {
-				
+        getUrl(addr, function(response)
+            {
 				hideWorkingBar();
 				
 				var postCount = JSON.parse(response.responseText);
 				
 				alert(postCount['user'] + ' has ' + addCommas(postCount['count']) + ' posts');
 			}
-	  	});
+	  	);
 	}
 
 	function createListItem(text, url, className)
