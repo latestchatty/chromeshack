@@ -9,6 +9,7 @@ settingsLoadedEvent.addHandler(function()
             VERSION: "20090513",
 
             tags: getSetting("lol_tags"),
+            showCounts: getSetting("lol_show_counts"),
 
             counts: null,
             processed_posts: false,
@@ -27,13 +28,16 @@ settingsLoadedEvent.addHandler(function()
                     comments_tools.appendChild(link);
                 }
 
-                LOL.counts = getSetting("lol-counts");
-
-                var last_lol_count_time = getSetting("lol-counts-time");
-                if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
+                if (LOL.showCounts)
                 {
-                    console.log("need lol counts");
-                    LOL.getCounts();
+                    LOL.counts = getSetting("lol-counts");
+
+                    var last_lol_count_time = getSetting("lol-counts-time");
+                    if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
+                    {
+                        console.log("need lol counts");
+                        LOL.getCounts();
+                    }
                 }
             },
 

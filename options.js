@@ -1,6 +1,6 @@
 function loadOptions()
 {
-    showLolTags(getOption("lol_tags"));
+    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
@@ -196,8 +196,11 @@ function getExpirationWatcherStyle()
 }
 
 
-function showLolTags(tags)
+function showLolTags(tags, show_counts)
 {
+
+    document.getElementById("lol_show_counts").checked = show_counts;
+
     var lol_div = document.getElementById("lol_tags");
     lol_div.innerHTML = ""; // clear child nodes
 
@@ -235,6 +238,11 @@ function getLolTagValues()
         tags[i] = {name: tag_name, color: tag_color};
     }
     return tags;
+}
+
+function getLolShowCounts()
+{
+    return document.getElementById("lol_show_counts").checked;
 }
 
 function showEnabledScripts()
@@ -312,6 +320,7 @@ function saveOptions()
     try
     {
         saveOption("lol_tags", getLolTagValues());
+        saveOption("lol_show_counts", getLolShowCounts());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());

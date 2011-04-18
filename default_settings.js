@@ -22,6 +22,8 @@ DefaultSettings = {
         {name: "wtf", color: "#c000c0"}
     ],
 
+    lol_show_counts: false,
+
     post_preview_location: "Left",
 
     mod_marker_css: "color: red !important",
