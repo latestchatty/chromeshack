@@ -13,7 +13,7 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
 }
 
 .oneline_tags { display: inline; overflow: hidden; white-space: nowrap; }
-.oneline_tags span { margin: 0 2px 0 2px; padding: 0 2px; -moz-border-radius: 3px; background-color: #f8f; color: #000; font-size: 10px; font-weight: bold; }
+.oneline_tags span { margin: 0 2px 0 2px; padding: 0 2px; -webkit-border-radius: 3px; background-color: #f8f; color: #000; font-size: 10px; font-weight: bold; }
 .oneline_tags .oneline_lol { background-color: #f80; }
 .oneline_tags .oneline_inf { background-color: #09c; }
 .oneline_tags .oneline_unf { background-color: #f00; }
