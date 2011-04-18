@@ -74,7 +74,7 @@ settingsLoadedEvent.addHandler(function()
                     percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
                     
                     var total_hours = Math.floor(time_left / 3600000 );
-                    color = ExpirationWatcher.bar_colors[27 - total_hours];
+                    color = ExpirationWatcher.bar_colors[17 - total_hours];
                 }
 
                 wrap.title = desc;
