@@ -42,7 +42,6 @@ settingsLoadedEvent.addHandler(function()
                     else
                     {
                         var postId = link.href.match(/[?&]id=([^&#]*)/);
-                        console.log(postId);
                         
                         var singlePost = "http://www.shacknews.com/frame_chatty.x?root=&id=" + postId[1];
                         
