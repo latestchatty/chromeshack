@@ -219,4 +219,15 @@ span.newcommenthighlighter_bluetext {
 }
 
 
+/* get post */
+div.getPost {
+	padding: 3px 0 25px 0;
+	margin-bottom: 3px;
+	border: 1px #94FFB9 solid;
+	height: 1%;
+	position: relative;
+}
 
+div.getPost div.refresh, div.getPost div.reply, div.getPost div.postmeta a.closepost {display: none;}
+
+div.getPost span.user a {text-decoration: none;}
