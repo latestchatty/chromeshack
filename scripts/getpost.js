@@ -23,7 +23,7 @@ settingsLoadedEvent.addHandler(function()
             isChattyLink: function(href)
             {
                 if (/shacknews.com\/chatty\?id=\d+\#itemanchor_\d+$/.test(href)
-                || /shacknews.com\/article\/\d+\/\D+\d+#itemanchor_\d+/.test(href))
+                || /shacknews.com\/article\/\d+\/(\w+|[-|\d])*\?id=\d+#itemanchor_\d+/.test(href))
                 {
                     return true;
                 }
