@@ -47,9 +47,17 @@ settingsLoadedEvent.addHandler(function()
 
             getImageUrl: function(href)
             {
+                // change shackpics to chattypics
+                if (/shackpics\.com/.test(href))
+                {
+                    href = href.replace(/shackpics\.com/, 'chattypics.com');
+                    if (/chattypics\.com\/viewer\.x/.test(href))
+                        href = href.replace(/viewer\.x/, 'viewer.php');
+                }
+
                 // change shackpics image page into image
-                if (/shackpics\.com\/viewer\.x/.test(href))
-                    return href.replace(/viewer\.x\?file=/, 'files/');
+                if (/chattypics\.com\/viewer\.php/.test(href))
+                    return href.replace(/viewer\.php\?file=/, 'files/');
 
                 // change fuking image page into image
                 if (/http\:\/\/(www\.)?fukung\.net\/v\//.test(href))
