@@ -4,6 +4,8 @@
 // @description Adds dropdown menus to users
 // @include http://shacknews.com/*
 // @include http://www.shacknews.com/*
+// @match http://shacknews.com/*
+// @match http://www.shacknews.com/*
 // @exclude http://www.shacknews.com/frame_chatty.x*
 // @exclude http://bananas.shacknews.com/*
 // @exclude http://*.gmodules.com/*
@@ -16,7 +18,10 @@
 	This is the user menu stuff stripped out of the [lol] Greasemonkey script
 	
 	DO *NOT* RUN ALONG WITH THE CURRENT REVISION OF THE [LOL] SCRIPT UNLESS
-	YOU LIKE YOUR SHIT FUCKED UP ALL OVER THE PLACE.   
+	YOU LIKE YOUR SHIT FUCKED UP ALL OVER THE PLACE.
+	
+	2011-04-26
+		* First stab at profiles   
 
 */
 (function() {
@@ -54,12 +59,187 @@
 		+ 'span.author .userDropdown li a:hover,'
 		+ '.userDropdown li a:hover { color: #fff; text-shadow: 0 0 10px #fff; text-decoration: underline !important; }'
 		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
+		+ '.tw-profile { position: fixed; width: 630px; height: 320px; border: 1px solid #444; padding: 10px 10px 10px 0; overflow: auto; top: 50%; margin-top: -160px; left: 50%; margin-left: -320px; background: #000; color: #fff; z-index: 9999; font-size: 12px; border-radius: 10px; }'
+		+ '.tw-profile a { color: #fff; }'
+		+ '.tw-profile h2 { margin: 4px 0; padding: 0 0 0 10px; font-size: 20px; font-weight: bold; }' 
+		+ '.tw-profile .tw-panel { float: left; width: 200px; height: 280px; overflow: auto; margin-left: 10px; }'
+		+ '.tw-profile .tw-accounts { margin-left: 10px; }'
+		+ '.tw-profile .tw-panel h3 { margin: 0; font-size: 14px; font-weight: bold; background-color: #333; padding: 2px 4px; border-radius: 3px; }' 
+		+ '.tw-profile .tw-panel dl { margin: 0; padding: 0 0 0.5em 0; border-bottom: 1px dashed #333; }'
+		+ '.tw-profile .tw-panel dl dt { font-weight: bold; margin: 0.5em 0 0 0 ; border-top: 1px dashed #333; padding-top: 0.5em;   }'
+		+ '.tw-profile .tw-panel dl dt:first-child { border-top: none; padding-top: 0; }'
+		+ '.tw-profile .tw-panel dl dd { margin: 0; padding: 0 0 0 0.5em; }'
+		+ '.tw-profile .tw-close { position: fixed; top: 50%; left: 50%; margin-top: 180px; margin-left: -2.5em; background: #800; font-size: 18px; padding: 4px 10px; font-weight: bold; cursor: pointer; -moz-border-radius: 10px; width: 5em; text-align: center;  }'
 	);
 	
 	function findUsername()
 	{
 		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.data);
 	}
+	
+	function createTextWrapper(tag, text,url)
+	{	
+		var ret = document.createElement(tag);
+		
+		if (text == null) 
+		{
+			ret.innerHTML = '&nbsp;'; 
+		}
+		else if (text.length == 0)
+		{
+			ret.innerHTML = '&nbsp;'; 
+		}
+		else
+		{
+			if (url != null)
+			{
+				if (url.length)
+				{
+					var a = document.createElement('a'); 
+					a.href = url;
+					a.target = '_blank'; 
+					
+					a.appendChild(document.createTextNode(text)); 
+					
+					ret.appendChild(a); 
+				}			
+			}
+			else
+			{
+				ret.appendChild(document.createTextNode(text));
+			}
+		} 
+		return ret;  
+	}
+	
+	function drawProfile(data)
+	{
+		username = data['data']['username']; 
+	
+		pDiv = document.createElement('div'); 
+		pDiv.className = 'tw-profile';
+		
+		pDiv.appendChild(createTextWrapper('h2', username));
+
+		// Create General panel		
+		pnl = document.createElement('div');
+		pnl.className = 'tw-panel'; 
+		
+		pnl.appendChild(createTextWrapper('h3', 'General'));
+		
+		dl = document.createElement('dl');
+		
+		dl.appendChild(createTextWrapper('dt', 'Age'));  
+		dl.appendChild(createTextWrapper('dd', data['data']['age'])); 
+		
+		dl.appendChild(createTextWrapper('dt', 'Location'));  
+		dl.appendChild(createTextWrapper('dd', data['data']['location']));
+		
+		dl.appendChild(createTextWrapper('dt', 'Gender'));  
+		dl.appendChild(createTextWrapper('dd', data['data']['gender']));
+		
+		dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 
+
+		var actualUser = '&user=' + encodeURIComponent(findUsername()); 
+		dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'http://lmnopc.com/greasemonkey/shacklol/user.php?authoredby=' + username + actualUser));
+		
+		// Create menu item for reading post count
+		var aPostCount = document.createElement('a');
+		aPostCount.appendChild(document.createTextNode('Get Post Count'));
+		aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(username) }, false);  
+		dt = document.createElement('dt');
+		dt.appendChild(aPostCount); 
+		dl.appendChild(dt); 
+				
+		pnl.appendChild(dl); 
+		
+		pDiv.appendChild(pnl); 
+		
+		// Create Accounts panel
+		pnl = document.createElement('div');
+		pnl.className = 'tw-panel'; 
+		
+		pnl.appendChild(createTextWrapper('h3', 'Accounts'));
+		
+		dl = document.createElement('dl');
+		
+		accounts = data['data']['services'];
+		if (accounts != null)
+		{ 
+			for (i = 0, ii = accounts.length; i < ii; i++)
+			{
+				dl.appendChild(createTextWrapper('dt', accounts[i]['service']));  
+				dl.appendChild(createTextWrapper('dd', accounts[i]['user'])); 
+			}
+		}
+		
+		pnl.appendChild(dl);
+		
+		pDiv.appendChild(pnl);
+		
+		// Create About panel
+		pnl = document.createElement('div');
+		pnl.className = 'tw-panel'; 
+		
+		pnl.appendChild(createTextWrapper('h3', 'About'));
+		pnl.appendChild(createTextWrapper('div', data['data']['about']));
+		
+		pDiv.appendChild(pnl);
+		
+		// Add close button
+		btn = document.createElement('div'); 
+		btn.className = 'tw-close';
+		btn.appendChild(document.createTextNode('CLOSE'));
+		btn.setAttribute('title', 'Close Profile'); 
+		btn.addEventListener('click', function(e) { e.target.parentNode.style.display = 'none'; }, false);
+		
+		pDiv.appendChild(btn);  
+		
+		// Add profile to page
+		document.getElementsByTagName('body')[0].appendChild(pDiv); 
+	}
+	
+	function displayProfile(username)
+	{
+		// Scrub username
+		username = trim(stripHtml(username));
+	
+		// Display working... message		
+		displayWorkingBar('Retrieving profile data for ' + username + '...'); 
+	
+		// 
+		var addr = 'http://gamewith.us/_widgets/shack-profile-popup.php?user=' + encodeURIComponent(username); 
+        console.log(addr);
+		
+		// use xmlhttpRequest to post the data
+        getUrl(addr, function(response) {
+				
+				hideWorkingBar();
+				
+				var data = null; 
+				
+				try 
+				{
+					data = JSON.parse(response.responseText);  
+				}
+				catch (ex)
+				{
+					alert('Profile retrieval failed: ' + ex.message);
+					return;  
+				}
+				
+				if (data['status'] == '0')
+				{
+					alert(data['message']); 
+					return;
+				} 
+				
+				drawProfile(data); 
+			}
+	  	);
+		
+	}
+	
 
 	function displayWorkingBar(message)
 	{
@@ -106,11 +286,11 @@
 	
 		// 
 		var addr = 'http://shackapi.stonedonkey.com/postcount/' + encodeURIComponent(username) + '.json'
-		GM_log(addr);
+        console.log(addr);
 		
 		// use xmlhttpRequest to post the data
-        getUrl(addr, function(response)
-            {
+        getUrl(addr, function(response) {
+				
 				hideWorkingBar();
 				
 				var postCount = JSON.parse(response.responseText);
@@ -215,6 +395,17 @@
 		{
 			e.preventDefault();
 			e.stopPropagation();
+
+			/*			
+			if (navigator.userAgent.indexOf('Firefox') !== -1)
+			{
+				displayProfile(t.innerHTML);
+			}
+			else
+			{
+				displayUserMenu(t, t.innerHTML, t.innerHTML);
+			}
+			*/
 			displayUserMenu(t, t.innerHTML, t.innerHTML);
 		}
 		
@@ -231,6 +422,17 @@
 		{
 			e.preventDefault();
 			e.stopPropagation();
+
+			/*
+			if (navigator.userAgent.indexOf('Firefox') !== -1)
+			{
+				displayProfile(t.innerHTML);
+			}
+			else
+			{ 
+				displayUserMenu(t, t.innerHTML, 'You');
+			}
+			*/
 			displayUserMenu(t, t.innerHTML, 'You');
 		}
 	}, false); 
