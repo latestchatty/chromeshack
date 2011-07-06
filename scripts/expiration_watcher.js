@@ -110,6 +110,11 @@ settingsLoadedEvent.addHandler(function()
                 var pos = raw_time_string.indexOf("AM") + raw_time_string.indexOf("PM")+1;
                 raw_time_string = raw_time_string.substring(0,pos) + " " + raw_time_string.substr(pos);
 
+                 // timezone needs to be in parentheses 
+                var zone = raw_time_string.substring(pos+4).trim();
+                raw_time_string = raw_time_string.substring(0,pos+4) + "(" + zone + ")";
+
+
                 var post_time = Date.parse(raw_time_string);
                 return post_time + ExpirationWatcher.post_ttl;
             }
