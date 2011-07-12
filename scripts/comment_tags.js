@@ -54,11 +54,11 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
-            addTag: function(row, name, opening_tag, closing_tag, class, click)
+            addTag: function(row, name, opening_tag, closing_tag, class_name, click)
             {
                 var name_td = row.appendChild(document.createElement("td"));
                 var span = name_td.appendChild(document.createElement("span"));
-                span.className = class;
+                span.className = class_name;
                 span.appendChild(document.createTextNode(name));
                 if (click && click.length > 0)
                     name_td.setAttribute("onclick", click);
