@@ -305,12 +305,12 @@ function toggleSettingsVisible()
 }
 
 
-function getDescendentByTagAndClassName(parent, tag, class) 
+function getDescendentByTagAndClassName(parent, tag, class_name) 
 {
     var descendents = parent.getElementsByTagName(tag);
     for (var i = 0; i < descendents.length; i++) 
     {
-        if (descendents[i].className.indexOf(class) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0) 
             return descendents[i];
     }
 }
