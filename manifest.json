@@ -36,7 +36,6 @@
             "scripts/local_timestamp.js",
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
-            "scripts/shack-userpopup.user.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js"
@@ -62,7 +61,10 @@
         "run_at": "document_idle"
     },
     {
-        "js": [ "scripts/winchatty_search.js" ],
+        "js": [ 
+            "scripts/winchatty_search.js", 
+            "scripts/shack-userpopup.user.js"
+        ],
         "matches": [ "http://www.shacknews.com/*" ],
         "all_frames": false,
         "run_at": "document_idle"

@@ -8,6 +8,11 @@ settingsLoadedEvent.addHandler(function()
             post_ttl: 1000 * 60 * 60 * 18,
 
             bar_colors: new Array('#00C300' ,'#00C800' ,'#00D800' ,'#00DF00' ,'#00ED00' ,'#00F500' ,'#00FE00' ,'#2AFF00' ,'#D4FF00' ,'#FEFF00' ,'#FFEE00' ,'#FFCF00' ,'#FF9900' ,'#FF9900' ,'#FF8000' ,'#FF4B00' ,'#FF1A00' ,'#FF0000'),
+
+			install: function()
+			{
+				document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
+			}, 
             
             showExpiration: function(item, id, is_root_post)
             {
@@ -29,10 +34,10 @@ settingsLoadedEvent.addHandler(function()
 	                    ExpirationWatcher.updateExpirationTime(expiration_time, wrap, value);
 	                    postdate.parentNode.insertBefore(wrap, postdate);
 	                }
-	                else if (style === "Wolf3d")
+	                else if (style === "Doom")
 	                {
 	                    var value = document.createElement("div");
-	                    value.className = "countdown-wolf3d";
+	                    value.className = "countdown-doom";
 
 						// Calculate the amount of time this thread has left 
 		                var now = Date.now();
@@ -120,6 +125,7 @@ settingsLoadedEvent.addHandler(function()
             }
         }
 
+        ExpirationWatcher.install();
         processPostEvent.addHandler(ExpirationWatcher.showExpiration);
     }
 });

@@ -179,7 +179,7 @@ function getPostPreviewLocation()
 function showExpirationWatcherStyle(style)
 {
 	document.getElementById('expiration_watcher_bar').checked = (style === 'Bar');
-	document.getElementById('expiration_watcher_wolf3d').checked = (style === 'Wolf3d');
+	document.getElementById('expiration_watcher_doom').checked = (style === 'Doom');
 }
 
 function getExpirationWatcherStyle()
@@ -191,7 +191,7 @@ function getExpirationWatcherStyle()
 	}
 	else
 	{
-		return 'Wolf3d';
+		return 'Doom';
 	}
 }
 

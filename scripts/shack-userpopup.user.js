@@ -77,7 +77,7 @@
 		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.data);
 	}
 	
-	function createTextWrapper(tag, text,url)
+	function createTextWrapper(tag, text, url)
 	{	
 		var ret = document.createElement(tag);
 		
@@ -237,10 +237,8 @@
 				drawProfile(data); 
 			}
 	  	);
-		
 	}
 	
-
 	function displayWorkingBar(message)
 	{
 		var workingBar = document.getElementById('lolWorkingBar');
@@ -345,8 +343,8 @@
 		
 			// Create menu items and add them to ulUser
 			ulUser.appendChild(createListItem(your + ' Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 		
-			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all')); 		
-			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all', 'userDropdown-separator'));
+			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc'));
+			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
 
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
 			var actualUser = '&user=' + encodeURIComponent(findUsername()); 
