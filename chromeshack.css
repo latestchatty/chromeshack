@@ -184,8 +184,10 @@ span.newcommenthighlighter_bluetext {
         color: #00BFF3;
 }
 
-.expiration-watcher-bar .postdate { right: 55px !important; }
-.expiration-watcher-doom .postdate { right: 35px !important; }
+.expiration-watcher-bar .fullpost .postdate { right: 55px !important; }
+.expiration-watcher-doom .fullpost .postdate { right: 35px !important; }
+.expiration-watcher-bar .capcontainer .fullpost .postdate, 
+.expiration-watcher-doom .capcontainer .fullpost .postdate { right: 0px !important; }
 
 .countdown-wrap {
     height: 8px;
