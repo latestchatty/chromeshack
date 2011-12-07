@@ -8,6 +8,19 @@ function getDescendentByTagAndClassName(parent, tag, class_name)
     }
 }
 
+function getDescendentsByTagAndClassName(parent, tag, class_name) 
+{
+    var descendents = parent.getElementsByTagName(tag);
+    var descArray = new Array();
+    for (var i = 0; i < descendents.length; i++) 
+    {
+        if (descendents[i].className.indexOf(class_name) == 0) 
+            descArray.push(descendents[i]);
+    }
+
+    return descArray;
+}
+
 function stripHtml(html)
 {
     return String(html).replace(/(<([^>]+)>)/ig, '');
