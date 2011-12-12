@@ -387,6 +387,7 @@
 		var t = e.target; 
 		var p = t.parentNode;
 		var pp = p.parentNode;
+		var ppp = pp.parentNode;
 		
 		// Post author clicked 
 		if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
@@ -408,10 +409,11 @@
 		}
 		
 		// User name clicked
-		else if ((t.tagName == 'LI') && (t.className == 'user light') && (pp.tagName == 'DIV') && (pp.id == 'user'))
+		else if ((t.tagName == 'A') && (p.className == 'user light') && (ppp.tagName == 'DIV') && (ppp.id == 'user'))
 		{
 			e.preventDefault();
 			e.stopPropagation();
+			
 			displayUserMenu(t, t.innerHTML, 'You');
 		}
 		
