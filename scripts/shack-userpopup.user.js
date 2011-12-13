@@ -74,7 +74,7 @@
 	
 	function findUsername()
 	{
-		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.data);
+		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.innerText);
 	}
 	
 	function createTextWrapper(tag, text, url)
