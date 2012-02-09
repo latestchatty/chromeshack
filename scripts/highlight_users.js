@@ -121,8 +121,9 @@ settingsLoadedEvent.addHandler(function()
                     '170414','9172',//Vivendi Universal  ColoradoCNC, Pezman
                     '12656',//Zemnott  KnyteHawkk - Jared Larsen
                     '170084', // deveus1 (Activision)
-                    '139966', // lord cecil
+                    '139966', // lord cecil (Uber Entertainment)
                     '175142', // eonix (Relic)
+                    '171493', // whippedcracker (Vigil Games)
                     '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
                 ]
             },
