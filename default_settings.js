@@ -22,7 +22,7 @@ DefaultSettings = {
         {name: "wtf", color: "#c000c0"}
     ],
 
-    lol_show_counts: false,
+    lol_show_counts: 'limited',
 
     post_preview_location: "Left",
 
