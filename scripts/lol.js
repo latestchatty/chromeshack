@@ -28,7 +28,7 @@ settingsLoadedEvent.addHandler(function()
                     comments_tools.appendChild(link);
                 }
 
-                if (LOL.showCounts)
+                if (LOL.showCounts != 'none')
                 {
                     LOL.counts = getSetting("lol-counts");
 
@@ -170,7 +170,7 @@ settingsLoadedEvent.addHandler(function()
                 // Make sure this is a rootId 
                 if (document.getElementById('root_' + threadId))
                 {
-                    rootId = threadId; 
+                    rootId = threadId;
                 }
                 else
                 {
@@ -204,12 +204,21 @@ settingsLoadedEvent.addHandler(function()
                     console.log('No lols for ' + rootId);
                     return; 
                 }
+
+                // Store the tag names in an array for easy comparisons in the loop
+                tag_names = [];
+                for (i = 0; i < LOL.tags.length; i++)
+                    tag_names.push(LOL.tags[i].name);
                 
                 // Update all the ids under the rootId we're in 
                 for (id in LOL.counts[rootId])
                 {	
                     for (tag in LOL.counts[rootId][id])
                     {
+                        // If showCounts is configured as limited and this tag isn't in the user's list of tags, skip it
+                        if ((LOL.showCounts == 'limited') && (tag_names.indexOf(tag) == -1))
+                            continue;
+
                         // Add * x indicators in the fullpost 
                         var tgt = document.getElementById(tag + id); 
                         if (tgt)

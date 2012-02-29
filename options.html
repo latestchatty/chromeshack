@@ -15,7 +15,12 @@
             <label for="lol">LOL tags</label>
         </h2>
         <div id="lol_settings">
-            <input type="checkbox" id="lol_show_counts" /><label for="lol_show_counts">Show LOL counts</label>
+            <label>Show LOL Counts:</label>
+            <select id="lol_show_counts">
+                <option value="limited">Limited</option>
+                <option value="all">All</option>
+                <option value="none">None</option>
+            </select>
             <div id="lol_tags"></div>
             <a href="#" onclick="addTag(); return false;">Add</a>
         </div>

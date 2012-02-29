@@ -47,6 +47,22 @@ function migrateSettings(version)
 
         setSetting("enabled_scripts", scripts);
     }
+    else if (version == 1.22)
+    {
+        /*
+        Migrate lol_show_counts setting
+
+        If lol_show_counts was false, set value to 'none'
+        if lol_show_counts was true, set value to 'limited'
+
+        User will have to manually change setting to 'all'
+        to enable that feature
+        */
+        if (getSetting('lol_show_counts', false) === false)
+            setSetting('lol_show_counts', 'none');
+        else
+            setSetting('lol_show_counts', 'limited');
+    }
 
     if (version != CURRENT_VERSION)
     {

@@ -195,11 +195,18 @@ function getExpirationWatcherStyle()
 	}
 }
 
-
 function showLolTags(tags, show_counts)
 {
-
-    document.getElementById("lol_show_counts").checked = show_counts;
+    // Set the selected item
+    lol_show_counts = document.getElementById("lol_show_counts");
+    for (var i = 0; i < lol_show_counts.options.length; i++)
+    {
+        if (lol_show_counts.options[i].value == show_counts)
+        {
+            lol_show_counts.options[i].selected = true;
+            break;
+        }
+    }
 
     var lol_div = document.getElementById("lol_tags");
     lol_div.innerHTML = ""; // clear child nodes
@@ -242,7 +249,7 @@ function getLolTagValues()
 
 function getLolShowCounts()
 {
-    return document.getElementById("lol_show_counts").checked;
+    return document.getElementById("lol_show_counts").value;
 }
 
 function showEnabledScripts()

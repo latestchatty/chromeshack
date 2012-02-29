@@ -74,7 +74,7 @@
 	
 	function findUsername()
 	{
-		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.data);
+		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.innerText);
 	}
 	
 	function createTextWrapper(tag, text, url)
@@ -298,15 +298,16 @@
 	  	);
 	}
 
-	function createListItem(text, url, className)
+	function createListItem(text, url, className, target)
 	{
 		var a = document.createElement('a');
 		a.href = url; 
+		if (typeof(target) != 'undefined') { a.target = target; }
 		a.appendChild(document.createTextNode(text)); 
 	
 		var li = document.createElement('li');
 		if (typeof(className) != 'undefined') { li.className = className; } 
-		
+
 		// Prevent menu clicks from bubbling up 
 		a.addEventListener('click', function(e) { e.stopPropagation(); }, false);
 		
@@ -342,6 +343,7 @@
 			}
 		
 			// Create menu items and add them to ulUser
+			ulUser.appendChild(createListItem('View ' + your + ' Profile', 'http://chattyprofil.es/p/' + username, 'userDropdown-separator', '_blank'));
 			ulUser.appendChild(createListItem(your + ' Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 		
 			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc'));
 			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
@@ -387,6 +389,7 @@
 		var t = e.target; 
 		var p = t.parentNode;
 		var pp = p.parentNode;
+		var ppp = pp.parentNode;
 		
 		// Post author clicked 
 		if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
@@ -408,10 +411,11 @@
 		}
 		
 		// User name clicked
-		else if ((t.tagName == 'LI') && (t.className == 'user light') && (pp.tagName == 'DIV') && (pp.id == 'user'))
+		else if ((t.tagName == 'A') && (p.className == 'user light') && (ppp.tagName == 'DIV') && (ppp.id == 'user'))
 		{
 			e.preventDefault();
 			e.stopPropagation();
+			
 			displayUserMenu(t, t.innerHTML, 'You');
 		}
 		
