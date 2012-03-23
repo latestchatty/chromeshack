@@ -69,7 +69,8 @@ settingsLoadedEvent.addHandler(function()
                     "203311", // greg-m
                     "223050", // XAVdeMATOS
                     "14475", // Shacknews
-                    "44124"  // sHugamom
+                    "44124",  // sHugamom
+                    "10024812" // John Keefer
                 ],
 
                 "Game Devs":
