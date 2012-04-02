@@ -20,10 +20,10 @@ settingsLoadedEvent.addHandler(function()
                     "168479", // ajax
                     "5334"  , // dante
                     "7438"  , // enigmatic
-                    "169489", // s[genjuro]s
+                    //"169489", // s[genjuro]s (service ended Feb 02 2012)
                     "8105"  , // hirez
-                    "5278"  , // lacker
-                    "6674"  , // pupismyname
+                    //"5278"  , // lacker (service ended Feb 02 2012)
+                    //"6674"  , // pupismyname (service ended Feb 02 2012)
                     "32016" , // thekidd
                     "1194"  , // zakk
                     "171402", // brickmatt
@@ -36,11 +36,11 @@ settingsLoadedEvent.addHandler(function()
                     "169049", // rauol duke
                     "8349"  , // sexninja!!!!
                     "194196", // ninjase
-                    "6933"  , // tomservo
+                    //"6933"  , // tomservo (service ended Feb 02 2012)
                     "9085"  , // busdriver3030
                     "8048"  , // cygnus x-1
                     "6380"  , // dognose
-                    "167953", // edlin
+                    //"167953", // edlin (service ended Feb 02 2012)
                     "12398" , // geedeck
                     "171127", // helvetica
                     "7570"  , // kaiser
@@ -49,27 +49,35 @@ settingsLoadedEvent.addHandler(function()
                     "9211"  , // redfive
                     "7660"  , // sexpansion pack
                     "169927", // sgtsanity
-                    "15130" , // utilitymaximizer
+                    //"15130" , // utilitymaximizer (service ended Feb 02 2012)
                     "169942", // mikecyb - not listed on mods page
-                    "185650"  // Dave-A - not listed on mods page
+                    "185650", // Dave-A - not listed on mods page
+                    "16880" , // serpico74
+                    "9509"  , // Deathlove
+                    "174581", // Frozen Pixel
+                    "44566"   // Morgin
                 ],
 
                 "Employees":
                 [
-                    "4",      // Steve Gibson
-                    "43653",  // Maarten Goldstein
-                    "175043", // Chris Faylor
-                    "175046", // Nick Breckon
-                    "188134", // Aaron Linde
-                    "204735", // Alice O'Connor
-                    "213066", // Jeff Mattas
-                    "212323", // Garnett Lee
-                    "217677", // Brian Leahy
-                    "227220", // Ackbar2020
-                    "203311", // greg-m
-                    "223050", // XAVdeMATOS
-                    "14475", // Shacknews
-                    "44124"  // sHugamom
+                    "4"       , // Steve Gibson
+                    "43653"   , // Maarten Goldstein
+                    "175043"  , // Chris Faylor
+                    "175046"  , // Nick Breckon
+                    "188134"  , // Aaron Linde
+                    "204735"  , // Alice O'Connor
+                    "213066"  , // Jeff Mattas
+                    "212323"  , // Garnett Lee
+                    "217677"  , // Brian Leahy
+                    "227220"  , // Ackbar2020
+                    "203311"  , // greg-m
+                    "223050"  , // XAVdeMATOS
+                    "14475"   , // Shacknews
+                    "44124"   , // sHugamom
+                    "172752"  , // Chris Remo
+                    "232839"  , // TylerJSmith
+                    "10011901", // OzzieMejia
+                    "10024812"  // John Keefer (Keefinator)
                 ],
 
                 "Game Devs":
@@ -124,6 +132,7 @@ settingsLoadedEvent.addHandler(function()
                     '139966', // lord cecil (Uber Entertainment)
                     '175142', // eonix (Relic)
                     '171493', // whippedcracker (Vigil Games)
+                    '11544', //Fred Garvin (formerly of BioWare, currently does sound direction for games)
                     '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
                 ]
             },
