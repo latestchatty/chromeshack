@@ -43,9 +43,9 @@
         ],
         "css": [ "chromeshack.css" ],
         "matches": [
-            "http://www.shacknews.com/chatty*",
+            "*://www.shacknews.com/chatty*",
             "http://new.shacknews.com/chatty*",
-            "http://www.shacknews.com/article/*"
+            "*://www.shacknews.com/article/*"
         ],
         "all_frames": false,
         "run_at": "document_idle"
@@ -57,7 +57,7 @@
             "chromeshack_profile.js",
             "settings.js"
         ],
-        "matches": [ "http://www.shacknews.com/profile/*", "http://www.shacknews.com/profile.x*"],
+        "matches": [ "*://www.shacknews.com/profile/*", "*://www.shacknews.com/profile.x*"],
         "all_frames": false,
         "run_at": "document_idle"
     },
@@ -66,7 +66,7 @@
             "scripts/winchatty_search.js", 
             "scripts/shack-userpopup.user.js"
         ],
-        "matches": [ "http://www.shacknews.com/*" ],
+        "matches": [ "*://www.shacknews.com/*" ],
         "all_frames": false,
         "run_at": "document_idle"
     }
@@ -75,6 +75,7 @@
         "contextMenus"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
+        , "*://www.shacknews.com/*"
         , "http://*.shacknews.com/*"
     ]
 }
