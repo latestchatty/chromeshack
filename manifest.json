@@ -2,14 +2,18 @@
     "name": "Chrome Shack",
     "version": "1.22",
     "description": "Collection of scripts for Shacknews.",
-    "update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
+    //"update_url": "http://adam.hughes.cc/shack/chromeshack/autoupdate.xml",
     "options_page": "options.html",
-    "background_page": "background.html",
+    "manifest_version": 2,
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "content_security_policy": "script-src 'self'; object-src 'self'",
     "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCWWHErcZ8ekxgRQ0J7InM4HgR/LoVOu0Olugg3VUHyQGJ7kpHvrMyeoDfOFxy9EagnQDtyZzxkkwhSzxr8cnh57qFxyTqI1P+RR1cSFcHsVocnLhkTI3uVwzEmDXJK8U4k1Z6NzY2Y/7TQkHQBqR4eBDTdxJks70wvt7gt2v047wIDAQAB",
     "page_action": {
         "default_icon": "shack.png",
         "default_title": "Chrome Shack",
-        "popup": "options.html"
+        "default_popup": "options.html"
     },
     "icons": {
         "16": "shack.png",
@@ -72,9 +76,12 @@
     }
     ],
     "permissions": [
-        "contextMenus"
-        , "http://www.lmnopc.com/greasemonkey/shacklol/*"
-        , "http://shackapi.stonedonkey.com/*"
-        , "http://*.shacknews.com/*"
+        "contextMenus",
+        "http://www.lmnopc.com/greasemonkey/shacklol/*",
+        "http://shackapi.stonedonkey.com/*",
+        "http://*.shacknews.com/*"
+    ],
+    "web_accessible_resources": [
+        "images/lol.png"
     ]
 }
