@@ -35,7 +35,7 @@ settingsLoadedEvent.addHandler(function()
                     var last_lol_count_time = getSetting("lol-counts-time");
                     if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
                     {
-                        console.log("need lol counts");
+                        //console.log("need lol counts");
                         LOL.getCounts();
                     }
                 }
@@ -113,7 +113,7 @@ settingsLoadedEvent.addHandler(function()
 
                 getUrl(url, function(response)
                 {
-                    if (response.status == 200 && response.responseText.indexOf("ok") == 0)
+                    if (response.indexOf("ok") == 0)
                     {
                         // looks like it worked
                         var new_tag = "*";
@@ -128,7 +128,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                     else
                     {
-                        alert(response.responseText);
+                        alert(response);
                     }
                 });
             },
@@ -194,14 +194,14 @@ settingsLoadedEvent.addHandler(function()
                 
                 if (rootId == -1)
                 {
-                    console.log('Could not find root for ' + threadId); 
+                    //console.log('Could not find root for ' + threadId); 
                     return; 
                 }
             
                 // If there aren't any tagged threads in this root there's no need to proceed 
                 if (!LOL.counts[rootId])
                 {
-                    console.log('No lols for ' + rootId);
+                    //console.log('No lols for ' + rootId);
                     return; 
                 }
 
@@ -230,7 +230,7 @@ settingsLoadedEvent.addHandler(function()
                         }
                         else
                         {
-                            console.log(tag + id + ' not found');
+                            //console.log(tag + id + ' not found');
                         }
                     
                         // Add (lol * 3) indicators to the onelines
@@ -262,15 +262,15 @@ settingsLoadedEvent.addHandler(function()
 
             getCounts: function()
             {
-                console.log("getting lol counts");
+                //console.log("getting lol counts");
                 getUrl(LOL.COUNT_URL, function(response)
                 {
-                    console.log("response status: " + response.status);
-                    console.log("response text: " + response.responseText);
-                    if (response.status == 200)
+                    //console.log("response status: " + response.status);
+                    //console.log("response text: " + response.responseText);
+                    if (response)
                     {
-                        console.log("got lol counts");
-                        LOL.counts = JSON.parse(response.responseText);
+                        //console.log("got lol counts");
+                        LOL.counts = JSON.parse(response);
                         setSetting("lol-counts", LOL.counts);
                         setSetting("lol-counts-time", new Date().getTime());
                         LOL.displayCounts();
@@ -284,7 +284,7 @@ settingsLoadedEvent.addHandler(function()
                 // each post will handle displaying its own counts
                 if (LOL.processed_posts)
                 {
-                    console.log("too slow!");
+                    //console.log("too slow!");
                     // this should go through and re-update all the root posts with their new tags, but whatever
                 }
             }

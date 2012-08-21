@@ -83,7 +83,12 @@ function getUrl(url, callback)
     {
         if (xhr.readyState == 4)
         {
-            callback(xhr);
+            // Chrome 21 stringifies the data sent to callback?  It seems to be
+            //      expecting JSON...
+            //      We hit an unhandled exception; the stack trace includes a
+            //      chromeHidden.JSON.stringify method.
+            //callback(xhr);
+            callback(xhr.responseText);
         }
     }
     xhr.open("GET", url, true);
@@ -152,7 +157,7 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
     {
@@ -171,6 +176,8 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
         unCollapseThread(request.id);
     else
         sendResponse();
+
+    return true;
 });
 
 addContextMenus();

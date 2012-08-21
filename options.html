@@ -8,7 +8,7 @@
         <script type="text/javascript" src="options.js"></script>
         <meta charset="UTF-8" />
     </head>
-    <body onload="loadOptions()">
+    <body>
         <h2>
             <input type="checkbox" class="script_check" id="lol" />
             <label for="lol">LOL tags</label>
@@ -21,7 +21,7 @@
                 <option value="none">None</option>
             </select>
             <div id="lol_tags"></div>
-            <a href="#" onclick="addTag(); return false;">Add</a>
+            <a href="#" id="add_tag">Add</a>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="comment_tags" />
@@ -51,7 +51,7 @@
         </h2>
         <div id="highlight_users_settings">
             <div id="highlight_groups"></div>
-            <a href="#" onclick="addHighlightGroup(); return false;">Add</a>
+            <a href="#" id="add_highlight_group">Add</a>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="new_comment_highlighter" />
@@ -107,8 +107,8 @@
             <label for="elder_scroll">Elder Scroll</label>
         </h2>
         <div>
-            <button onclick="saveOptions()">Save</button>
-            <button onclick="loadOptions()">Reset</button>
+            <button id="save_options">Save</button>
+            <button id="load_options">Reset</button>
             <br/>
             <span id="status"> </span>
         </div>
