@@ -132,11 +132,12 @@ settingsLoadedEvent.addHandler(function()
                 {
                     divThreads.removeChild(ElderScroll.getDivMessage());
                     
-                    if (response.status == 200 && response.statusText.toLowerCase() == 'ok')
+                    // Need better condition
+                    if (response)
                     {
                         // a _bad_ way of doing this...
                         var divResponse = document.createElement('div');
-                        divResponse.innerHTML = response.responseText;
+                        divResponse.innerHTML = response;
 
                         var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
                         var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');

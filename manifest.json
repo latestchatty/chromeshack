@@ -82,6 +82,7 @@
         "http://*.shacknews.com/*"
     ],
     "web_accessible_resources": [
+        "scripts/video_loader_helper.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",
@@ -93,6 +94,7 @@
         "images/sparkly/sparkly6.jpg",
         "images/dinogegtik.png",
         "images/doom_health.png",
-        "images/lol.png"
+        "images/lol.png",
+        "shack.png"
     ]
 }
