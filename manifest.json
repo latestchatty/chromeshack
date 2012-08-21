@@ -67,8 +67,8 @@
     },
     {
         "js": [ 
-            "scripts/winchatty_search.js"
-            //"scripts/shack-userpopup.user.js"
+            "scripts/winchatty_search.js",
+            "scripts/shack-userpopup.user.js"
         ],
         "matches": [ "http://www.shacknews.com/*" ],
         "all_frames": false,
