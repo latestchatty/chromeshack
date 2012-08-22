@@ -206,8 +206,8 @@ settingsLoadedEvent.addHandler(function()
                 }
 
                 // Store the tag names in an array for easy comparisons in the loop
-                tag_names = [];
-                for (i = 0; i < LOL.tags.length; i++)
+                var tag_names = [];
+                for (var i = 0; i < LOL.tags.length; i++)
                     tag_names.push(LOL.tags[i].name);
                 
                 // Update all the ids under the rootId we're in 
