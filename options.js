@@ -77,12 +77,10 @@ function addHighlightGroup(group)
 
         var remove = document.createElement("a");
         remove.href = "#";
-        //remove.onclick = function () { settings.removeChild(div); };
         remove.appendChild(document.createTextNode("(remove)"));
-        div.appendChild(remove);
-
-
         remove.addEventListener('click', function(){settings.removeChild(div)} );
+
+        div.appendChild(remove);
     }
 
     div.appendChild(document.createElement("br"));
@@ -217,16 +215,18 @@ function showLolTags(tags, show_counts)
     for (var i = 0; i < tags.length; i++)
     {
         var tag_row = document.createElement("div");
+
         tag_row.innerHTML = "Tag: <input class='name' value='" + tags[i].name + "'/> Color: <input class='color' value='" + tags[i].color + "'/>";
 
         var remove_link = document.createElement("a");
+        remove_link.href = "#";
         remove_link.className = "remove";
-        remove_link.innerHTML = "(remove)";
-        remove_link.setAttribute("href", "#");
-
+        remove_link.appendChild(document.createTextNode("(remove)"));
 
         tag_row.appendChild(remove_link);
         lol_div.appendChild(tag_row);
+
+        remove_link.addEventListener('click', function() { lol_div.removeChild(this.parentNode)} );
     }
 }
 
@@ -238,10 +238,18 @@ function removeTag(node)
 
 function addTag()
 {
-    var tag_row = document.createElement("div");
-    tag_row.innerHTML = "Tag: <input class='name' value=''/> Color: <input class='color' value=''/> <a href='#' onclick='removeTag(this); return false'>(remove)</a>";
-
     var lol_div = document.getElementById("lol_tags");
+
+    var tag_row = document.createElement("div");
+    tag_row.innerHTML = "Tag: <input class='name' value=''/> Color: <input class='color' value=''/>";
+
+    var remove_link = document.createElement("a");
+    remove_link.href = "#";
+    remove_link.classname = "remove";
+    remove_link.appendChild(document.createTextNode("(remove)"));
+    remove_link.addEventListener('click', function() {lol_div.removeChild(tag_row)});
+
+    tag_row.appendChild(remove_link);
     lol_div.appendChild(tag_row);
 }
 
