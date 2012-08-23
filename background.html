@@ -1,4 +1,3 @@
-<script type="text/javascript" src="version.js"></script>
 <script type="text/javascript">
 function getSettings()
 {
@@ -64,12 +63,13 @@ function migrateSettings(version)
             setSetting('lol_show_counts', 'limited');
     }
 
-    if (version != CURRENT_VERSION)
+    var current_version = chrome.app.getDetails().version;
+    if (version != current_version)
     {
         chrome.tabs.create({url: "release_notes.html"});
     }
 
-    setSetting("version", CURRENT_VERSION);
+    setSetting("version", current_version);
 }
 
 function setSetting(name, value)
