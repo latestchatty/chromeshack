@@ -77,20 +77,6 @@ function setSetting(name, value)
     localStorage[name] = JSON.stringify(value);
 }
 
-function getUrl(url, callback)
-{
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState == 4)
-        {
-            callback(xhr);
-        }
-    }
-    xhr.open("GET", url, true);
-    xhr.send();
-}
-
 function showPageAction(tabId, url)
 {
     chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
@@ -164,8 +150,6 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
     }
     else if (request.name == "setSetting")
         setSetting(request.key, request.value);
-    else if (request.name == "getUrl")
-        getUrl(request.url, sendResponse);
     else if (request.name == "collapseThread")
         collapseThread(request.id);
     else if (request.name == "unCollapseThread")
