@@ -220,7 +220,7 @@
 				
 				try 
 				{
-					data = JSON.parse(response.responseText);  
+					data = JSON.parse(response);  
 				}
 				catch (ex)
 				{
@@ -291,7 +291,7 @@
 				
 				hideWorkingBar();
 				
-				var postCount = JSON.parse(response.responseText);
+				var postCount = JSON.parse(response);
 				
 				alert(postCount['user'] + ' has ' + addCommas(postCount['count']) + ' posts');
 			}

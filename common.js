@@ -53,7 +53,7 @@ String.prototype.trim = function()
 // utility function to make an XMLHttpRequest
 function getUrl(url, callback)
 {
-    chrome.extension.sendRequest({"name": "getUrl", "url": url}, function(response)
+    chrome.extension.sendMessage({"name": "getUrl", "url": url}, function(response)
     {
         callback(response);
     });
