@@ -37,6 +37,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
+                else if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
+                {
+                    return true;
+                }
                 else
                 {
                     href = ImageLoader.getImageUrl(href);
@@ -80,6 +84,10 @@ settingsLoadedEvent.addHandler(function()
                 // pichars images are in the in the /store/ directory with the same name
                 if (/http\:\/\/pichars.org\/\w+$/.test(href) && !/http\:\/\/pichars.org\/store\/\w+$/.test(href))
                     return href.replace(/org/, 'org/store');
+
+                // new dropbox sharing links can be viewed directly by setting the "dl" flag
+                if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href) && !/dl=1$/.test(href))
+                    return href + "?dl=1";
 
                 // not a special case, just use the link's href
                 return href;
