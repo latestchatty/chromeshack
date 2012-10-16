@@ -15,47 +15,50 @@ settingsLoadedEvent.addHandler(function()
             built_in_groups: {
                 "Mods":
                 [
-                    "3259"  , // degenerate
-                    "10028" , // drucifer
-                    "168479", // ajax
-                    "5334"  , // dante
-                    "7438"  , // enigmatic
-                    //"169489", // s[genjuro]s (service ended Feb 02 2012)
-                    "8105"  , // hirez
-                    //"5278"  , // lacker (service ended Feb 02 2012)
-                    //"6674"  , // pupismyname (service ended Feb 02 2012)
-                    "32016" , // thekidd
-                    "1194"  , // zakk
-                    "171402", // brickmatt
-                    "6585"  , // carnivac
-                    "168256", // edgewise
-                    "169197", // filtersweep
-                    "9980"  , // haiku
-                    "44583" , // jokemon
-                    "3243"  , // p[multisync]p
-                    "169049", // rauol duke
-                    "8349"  , // sexninja!!!!
-                    "194196", // ninjase
-                    //"6933"  , // tomservo (service ended Feb 02 2012)
-                    "9085"  , // busdriver3030
-                    "8048"  , // cygnus x-1
-                    "6380"  , // dognose
-                    //"167953", // edlin (service ended Feb 02 2012)
+                    // Head Mods
                     "12398" , // geedeck
                     "171127", // helvetica
+                    "169049", // rauol duke
+                    // Pleb Mods
+                    "168479", // ajax
+                    "9085"  , // busdriver3030
+                    "5334"  , // dante
+                    "185650", // Dave-A
+                    "9509"  , // Deathlove
+                    "3259"  , // degenerate
+                    "6380"  , // dognose
+                    "10028" , // drucifer
+                    "168256", // edgewise
+                    "169197", // filtersweep
+                    "174581", // Frozen Pixel
                     "7570"  , // kaiser
+                    "169942", // mikecyb
+                    "44566"   // Morgin
+                    "3243"  , // p[multisync]p
+                    "194196", // ninjase
                     "8316"  , // paranoid android
                     "9031"  , // portax
                     "9211"  , // redfive
                     "7660"  , // sexpansion pack
                     "169927", // sgtsanity
+                    "32016" , // thekidd
+                    "1194"  , // zakk
+                    // Dead mods                
+                    //"7438"  , // enigmatic (service ended Aug 01 2012?)
+                    //"169489", // s[genjuro]s (service ended Feb 02 2012)
+                    //"8105"  , // hirez (service ended Aug 01 2012)
+                    //"5278"  , // lacker (service ended Feb 02 2012)
+                    //"6674"  , // pupismyname (service ended Feb 02 2012)
+                    //"171402", // brickmatt (service ended Aug 01 2012)
+                    //"6585"  , // carnivac (service ended Aug 01 2012?)
+                    //"9980"  , // haiku (service ended Aug 01 2012?)
+                    //"44583" , // jokemon (service ended Aug 01 2012?)
+                    //"8349"  , // sexninja!!!! (service ended Aug 01 2012?)
+                    //"6933"  , // tomservo (service ended Feb 02 2012)
+                    //"8048"  , // cygnus x-1 (service ended Aug 01 2012?)
+                    //"167953", // edlin (service ended Feb 02 2012)
                     //"15130" , // utilitymaximizer (service ended Feb 02 2012)
-                    "169942", // mikecyb - not listed on mods page
-                    "185650", // Dave-A - not listed on mods page
-                    "16880" , // serpico74
-                    "9509"  , // Deathlove
-                    "174581", // Frozen Pixel
-                    "44566"   // Morgin
+                    //"16880" , // serpico74 (service ended Aug 01 2012?)
                 ],
 
                 "Employees":
