@@ -113,6 +113,7 @@ settingsLoadedEvent.addHandler(function()
                     '183170','172349',//Naughty Dog  Cowbs (previously known as cpnkegel)
                     '1347',//NCSoft  Zoid - Dave Kirsch
                     '12631',//Nerve Software  Normality - Joel Martin
+                    '3750',//Obsidian Entertainment - Adam Brennecke (Jabby)
                     '12963','6507','27483','169925','11816','4257',//Pandemic Studios  darweidu, Freshview, gndagger, Rampancy, sammyl, tostador
                     '170163',//Piranha Games  Buckyfg1
                     '4262',//Planet Moon  cheshirecat
