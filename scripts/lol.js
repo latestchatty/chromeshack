@@ -6,7 +6,7 @@ settingsLoadedEvent.addHandler(function()
         {
             URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
             COUNT_URL: "http://www.lmnopc.com/greasemonkey/shacklol/api.php?special=getcounts",
-            VERSION: "20090513",
+            VERSION: "20121024",
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
