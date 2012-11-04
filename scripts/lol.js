@@ -10,9 +10,12 @@ settingsLoadedEvent.addHandler(function()
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
+            ughThreshhold: getSetting('lol_ugh_threshhold'),
 
             counts: null,
             processed_posts: false,
+
+            posts: Array(),
 
             installLink: function()
             {
@@ -71,6 +74,8 @@ settingsLoadedEvent.addHandler(function()
 
                 if (LOL.counts)
                     LOL.showThreadCounts(id);
+
+                LOL.posts.push(id);
             },
 
             createButton: function(tag, id, color)
@@ -215,6 +220,12 @@ settingsLoadedEvent.addHandler(function()
                 {	
                     for (tag in LOL.counts[rootId][id])
                     {
+                        // Evaluate [ugh]s
+                        // Must be root post, ughThreshhold must be enabled, tag must be ugh, and counts have to be gte the ughThreshhold
+                        if ((id == rootId) && (LOL.ughThreshhold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshhold)) {
+                            chrome.extension.sendRequest({name: "collapseThread", "id": id});
+                        }
+
                         // If showCounts is configured as limited and this tag isn't in the user's list of tags, skip it
                         if ((LOL.showCounts == 'limited') && (tag_names.indexOf(tag) == -1))
                             continue;
@@ -251,9 +262,17 @@ settingsLoadedEvent.addHandler(function()
                                     spanOnelineTag = document.createElement('span'); 
                                     spanOnelineTag.id = 'oneline_' + tag + '_' + id;
                                     spanOnelineTag.className = 'oneline_' + tag;  
-                                    spanOnelineTag.appendChild(document.createTextNode(tag + ' * ' + LOL.counts[rootId][id][tag])); 
+                                    spanOnelineTag.appendChild(document.createTextNode(tag + ' × ' + LOL.counts[rootId][id][tag]));
                                     divOnelineTags.appendChild(spanOnelineTag); 
                                 }
+                            }
+                        }
+                        else
+                        {
+                            var span = document.getElementById('oneline_' + tag + '_' + id);
+                            if (typeof(span) != 'undefined')
+                            {
+                                span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
                             }
                         }
                     }
@@ -270,10 +289,16 @@ settingsLoadedEvent.addHandler(function()
                     if (response.status == 200)
                     {
                         console.log("got lol counts");
-                        LOL.counts = JSON.parse(response.responseText);
-                        setSetting("lol-counts", LOL.counts);
-                        setSetting("lol-counts-time", new Date().getTime());
-                        LOL.displayCounts();
+
+                        var temp = JSON.parse(response.responseText);
+                        if (LOL.counts != temp)
+                        {
+                            console.log('lol counts changed!');
+                            LOL.counts = temp;
+                            setSetting("lol-counts", LOL.counts);
+                            setSetting("lol-counts-time", new Date().getTime());
+                            LOL.displayCounts();
+                        }
                     }
                 });
             },
@@ -284,8 +309,11 @@ settingsLoadedEvent.addHandler(function()
                 // each post will handle displaying its own counts
                 if (LOL.processed_posts)
                 {
-                    console.log("too slow!");
-                    // this should go through and re-update all the root posts with their new tags, but whatever
+                    // Loop through all the processed posts and update lol counts
+                    for (var i = 0; i < LOL.posts.length; i++)
+                    {
+                        LOL.showThreadCounts(LOL.posts[i]);
+                    }
                 }
             }
 

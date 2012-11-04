@@ -1,6 +1,6 @@
 function loadOptions()
 {
-    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"));
+    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshhold"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
@@ -195,7 +195,7 @@ function getExpirationWatcherStyle()
 	}
 }
 
-function showLolTags(tags, show_counts)
+function showLolTags(tags, show_counts, ugh_threshhold)
 {
     // Set the selected item
     lol_show_counts = document.getElementById("lol_show_counts");
@@ -204,6 +204,16 @@ function showLolTags(tags, show_counts)
         if (lol_show_counts.options[i].value == show_counts)
         {
             lol_show_counts.options[i].selected = true;
+            break;
+        }
+    }
+
+    lol_ugh_threshhold = document.getElementById('lol_ugh_threshhold');
+    for (var i = 0; i < lol_ugh_threshhold.options.length; i++)
+    {
+        if (lol_ugh_threshhold.options[i].value == ugh_threshhold)
+        {
+            lol_ugh_threshhold.options[i].selected = true;
             break;
         }
     }
@@ -250,6 +260,11 @@ function getLolTagValues()
 function getLolShowCounts()
 {
     return document.getElementById("lol_show_counts").value;
+}
+
+function getLolUghThreshhold()
+{
+    return document.getElementById('lol_ugh_threshhold').value;
 }
 
 function showEnabledScripts()
@@ -328,6 +343,7 @@ function saveOptions()
     {
         saveOption("lol_tags", getLolTagValues());
         saveOption("lol_show_counts", getLolShowCounts());
+        saveOption("lol_ugh_threshhold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());

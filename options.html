@@ -8,6 +8,9 @@
         <script type="text/javascript" src="version.js"></script>
         <script type="text/javascript" src="options.js"></script>
         <meta charset="UTF-8" />
+        <style type="text/css">
+        body { font-family: helvetica, arial, sans-serif; font-size: 12px; }
+        </style>
     </head>
     <body onload="loadOptions()">
         <h2>
@@ -21,8 +24,30 @@
                 <option value="all">All</option>
                 <option value="none">None</option>
             </select>
-            <div id="lol_tags"></div>
-            <a href="#" onclick="addTag(); return false;">Add</a>
+            <fieldset>
+                <legend>Tags</legend>
+                <div id="lol_tags"></div>
+                <a href="#" onclick="addTag(); return false;">Add</a>
+            </fieldset>
+            <fieldset>
+                <legend>[ughs]</legend>
+                <p>[ugh] is a special tag type. Posts with the selected number of [ugh]s are automatically collapsed when you load the page.</p>
+                <label>[ugh] Threshhold:</label>
+                <select id="lol_ugh_threshhold">
+                    <option value="0">Disabled</option>
+                    <option value="1">Collapse posts with 1 [ugh]</option>
+                    <option value="2">Collapse posts with 2 [ugh]s</option>
+                    <option value="3">Collapse posts with 3 [ugh]s</option>
+                    <option value="4">Collapse posts with 4 [ugh]s</option>
+                    <option value="5">Collapse posts with 5 [ugh]s</option>
+                    <option value="6">Collapse posts with 6 [ugh]s</option>
+                    <option value="7">Collapse posts with 7 [ugh]s</option>
+                    <option value="8">Collapse posts with 8 [ugh]s</option>
+                    <option value="9">Collapse posts with 9 [ugh]s</option>
+                    <option value="10">Collapse posts with 10 [ugh]s</option>
+                </select>
+                <p>Remember that [ugh] is a special tag. Don't tag things with it unless they're super depressing soul-sucking posts that you don't feel should be posted on the Shack. If you don't agree to this, don't install and use the tag. Misusers will be banned.</p>
+            </fieldset>
         </div>
         <h2>
             <input type="checkbox" class="script_check" id="comment_tags" />
