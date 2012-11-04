@@ -1,14 +1,18 @@
 {
     "name": "Chrome Shack",
     "version": "1.25",
+    "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
     "options_page": "options.html",
-    "background_page": "background.html",
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "background": {
+        "scripts": [ "background.js" ]
+    },
     "page_action": {
         "default_icon": "shack.png",
         "default_title": "Chrome Shack",
-        "popup": "options.html"
+        "default_popup": "options.html"
     },
     "icons": {
         "16": "shack.png",
@@ -63,5 +67,21 @@
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
         , "*://*.shacknews.com/*"
+    ],
+    "web_accessible_resources": [
+        "scripts/video_loader_helper.js",
+        "images/banners/offtopic.png",
+        "images/banners/political.png",
+        "images/banners/stupid.png",
+        "images/sparkly/sparkly1.jpg",
+        "images/sparkly/sparkly2.jpg",
+        "images/sparkly/sparkly3.jpg",
+        "images/sparkly/sparkly4.jpg",
+        "images/sparkly/sparkly5.jpg",
+        "images/sparkly/sparkly6.jpg",
+        "images/dinogegtik.png",
+        "images/doom_health.png",
+        "images/lol.png",
+        "shack.png"
     ]
 }

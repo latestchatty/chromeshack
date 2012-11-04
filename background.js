@@ -1,4 +1,3 @@
-<script type="text/javascript">
 function getSettings()
 {
     return localStorage;
@@ -139,7 +138,7 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
     {
@@ -163,4 +162,3 @@ addContextMenus();
 // attempt to update version settings
 var last_version = getSetting("version", 0);
 migrateSettings(last_version);
-</script>
