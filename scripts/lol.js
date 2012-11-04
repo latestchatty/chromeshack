@@ -223,7 +223,17 @@ settingsLoadedEvent.addHandler(function()
                         // Evaluate [ugh]s
                         // Must be root post, ughThreshhold must be enabled, tag must be ugh, and counts have to be gte the ughThreshhold
                         if ((id == rootId) && (LOL.ughThreshhold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshhold)) {
-                            chrome.extension.sendRequest({name: "collapseThread", "id": id});
+                            var root = document.getElementById('root_' + id);
+                            if (root.className.indexOf('collapsed') == -1)
+                            {
+                                var close = getDescendentByTagAndClassName(root, "a", "closepost");
+                                var show = getDescendentByTagAndClassName(root, "a", "showpost");
+                                close.addEventListener("click", function() { Collapse.close(id); });
+                                show.addEventListener("click", function() { Collapse.show(id); });
+                                root.className += " collapsed";
+                                show.className = "showpost";
+                                close.className = "closepost hidden";
+                            }
                         }
 
                         // If showCounts is configured as limited and this tag isn't in the user's list of tags, skip it
@@ -290,13 +300,18 @@ settingsLoadedEvent.addHandler(function()
                     {
                         console.log("got lol counts");
 
-                        var temp = JSON.parse(response.responseText);
-                        if (LOL.counts != temp)
+                        // Store original LOL.counts
+                        var oldLolCounts = LOL.counts;
+
+                        LOL.counts = JSON.parse(response.responseText);
+
+                        setSetting("lol-counts", LOL.counts);
+                        setSetting("lol-counts-time", new Date().getTime());
+
+                        // Call displayCounts again only if the counts have actually changed
+                        if (LOL.counts != oldLolCounts)
                         {
                             console.log('lol counts changed!');
-                            LOL.counts = temp;
-                            setSetting("lol-counts", LOL.counts);
-                            setSetting("lol-counts-time", new Date().getTime());
                             LOL.displayCounts();
                         }
                     }
