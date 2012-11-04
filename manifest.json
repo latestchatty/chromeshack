@@ -50,19 +50,7 @@
         "run_at": "document_idle"
     },
     {
-        "js": [
-            "common.js",
-            "init_events.js",
-            "chromeshack_profile.js",
-            "settings.js"
-        ],
-        "matches": [ "http://www.shacknews.com/profile/*", "http://www.shacknews.com/profile.x*"],
-        "all_frames": false,
-        "run_at": "document_idle"
-    },
-    {
         "js": [ 
-            "scripts/winchatty_search.js", 
             "scripts/shack-userpopup.user.js"
         ],
         "matches": [ "http://www.shacknews.com/*" ],
