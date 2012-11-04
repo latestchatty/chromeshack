@@ -53,7 +53,7 @@
         "js": [ 
             "scripts/shack-userpopup.user.js"
         ],
-        "matches": [ "http://www.shacknews.com/*" ],
+        "matches": [ "*://www.shacknews.com/*" ],
         "all_frames": false,
         "run_at": "document_idle"
     }
@@ -62,6 +62,6 @@
         "contextMenus"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
-        , "http://*.shacknews.com/*"
+        , "*://*.shacknews.com/*"
     ]
 }
