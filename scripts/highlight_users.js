@@ -33,7 +33,7 @@ settingsLoadedEvent.addHandler(function()
                     "174581", // Frozen Pixel
                     "7570"  , // kaiser
                     "169942", // mikecyb
-                    "44566"   // Morgin
+                    "44566" , // Morgin
                     "3243"  , // p[multisync]p
                     "194196", // ninjase
                     "8316"  , // paranoid android
