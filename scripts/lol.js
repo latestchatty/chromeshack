@@ -38,7 +38,6 @@ settingsLoadedEvent.addHandler(function()
                     var last_lol_count_time = getSetting("lol-counts-time");
                     if (!last_lol_count_time || (new Date().getTime() - last_lol_count_time) > 120000)
                     {
-                        console.log("need lol counts");
                         LOL.getCounts();
                     }
                 }
@@ -298,15 +297,10 @@ settingsLoadedEvent.addHandler(function()
 
             getCounts: function()
             {
-                console.log("getting lol counts");
                 getUrl(LOL.COUNT_URL, function(response)
                 {
-                    console.log("response status: " + response.status);
-                    console.log("response text: " + response.responseText);
                     if (response.status == 200)
                     {
-                        console.log("got lol counts");
-
                         // Store original LOL.counts
                         var oldLolCounts = LOL.counts;
 
@@ -318,7 +312,6 @@ settingsLoadedEvent.addHandler(function()
                         // Call displayCounts again only if the counts have actually changed
                         if (LOL.counts != oldLolCounts)
                         {
-                            console.log('lol counts changed!');
                             LOL.displayCounts();
                         }
                     }
