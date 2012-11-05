@@ -31,6 +31,7 @@ settingsLoadedEvent.addHandler(function()
                     "168256", // edgewise
                     "169197", // filtersweep
                     "174581", // Frozen Pixel
+                    "8105"  , // hirez
                     "7570"  , // kaiser
                     "169942", // mikecyb
                     "44566" , // Morgin
@@ -46,7 +47,6 @@ settingsLoadedEvent.addHandler(function()
                     // Dead mods                
                     //"7438"  , // enigmatic (service ended Aug 01 2012?)
                     //"169489", // s[genjuro]s (service ended Feb 02 2012)
-                    //"8105"  , // hirez (service ended Aug 01 2012)
                     //"5278"  , // lacker (service ended Feb 02 2012)
                     //"6674"  , // pupismyname (service ended Feb 02 2012)
                     //"171402", // brickmatt (service ended Aug 01 2012)
