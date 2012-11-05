@@ -33,6 +33,25 @@ function migrateSettings(version)
         }
     }
 
+    // add 'ugh' tag if not already added
+    if (version == 1.25 || version == 1.26)
+    {
+        var tags = getSetting("lol_tags", false);
+        if (tags != false)
+        {
+            var has_ugh = false;
+            for (var i = 0; i < tags.length; i++)
+                if (tags[i].name == 'ugh')
+                    has_ugh = true;
+
+            if (!has_ugh)
+            {
+                tags.push({name: "ugh", color: "#0b0"});
+                setSetting('lol_tags', tags);
+            }
+        }
+    }
+
     var current_version = chrome.app.getDetails().version;
     if (version != current_version)
     {
