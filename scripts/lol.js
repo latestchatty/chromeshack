@@ -10,7 +10,7 @@ settingsLoadedEvent.addHandler(function()
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
-            ughThreshhold: parseInt(getSetting('lol_ugh_threshhold')),
+            ughThreshold: parseInt(getSetting('lol_ugh_threshold')),
 
             counts: null,
             processed_posts: false,
@@ -214,15 +214,15 @@ settingsLoadedEvent.addHandler(function()
                 var tag_names = [];
                 for (var i = 0; i < LOL.tags.length; i++)
                     tag_names.push(LOL.tags[i].name);
-                
+
                 // Update all the ids under the rootId we're in 
                 for (id in LOL.counts[rootId])
                 {	
                     for (tag in LOL.counts[rootId][id])
                     {
                         // Evaluate [ugh]s
-                        // Must be root post, ughThreshhold must be enabled, tag must be ugh, and counts have to be gte the ughThreshhold
-                        if ((id == rootId) && (LOL.ughThreshhold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshhold)) {
+                        // Must be root post, ughThreshold must be enabled, tag must be ugh, and counts have to be gte the ughThreshold
+                        if ((id == rootId) && (LOL.ughThreshold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshold)) {
                             var root = document.getElementById('root_' + id);
                             if (root.className.indexOf('collapsed') == -1)
                             {

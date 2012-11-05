@@ -11,6 +11,16 @@ function getSetting(name, default_value)
     return JSON.parse(value);
 }
 
+function deleteSetting(name)
+{
+    for (var key in localStorage)
+    {
+        if (key == name) {
+            localStorage.splice(key, 1);
+        }
+    }
+}
+
 function migrateSettings(version)
 {
     if (version == "1.7")
@@ -60,6 +70,15 @@ function migrateSettings(version)
             setSetting('lol_show_counts', 'none');
         else
             setSetting('lol_show_counts', 'limited');
+    }
+    else if (version == 1.27)
+    {
+        var derp = getSetting('lol_ugh_threshhold', false);
+        if (derp != false)
+        {
+            setSetting('lol_ugh_threshold', derp);
+            deleteSetting('lol_ugh_threshhold');
+        }
     }
 
     var current_version = chrome.app.getDetails().version;

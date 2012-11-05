@@ -25,7 +25,7 @@ DefaultSettings = {
 
     lol_show_counts: 'limited',
 
-    lol_ugh_threshhold: '0',
+    lol_ugh_threshold: '0',
 
     post_preview_location: "Left",
 

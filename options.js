@@ -1,6 +1,6 @@
 function loadOptions()
 {
-    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshhold"));
+    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
@@ -195,7 +195,7 @@ function getExpirationWatcherStyle()
 	}
 }
 
-function showLolTags(tags, show_counts, ugh_threshhold)
+function showLolTags(tags, show_counts, ugh_threshold)
 {
     // Set the selected item
     lol_show_counts = document.getElementById("lol_show_counts");
@@ -208,12 +208,12 @@ function showLolTags(tags, show_counts, ugh_threshhold)
         }
     }
 
-    lol_ugh_threshhold = document.getElementById('lol_ugh_threshhold');
-    for (var i = 0; i < lol_ugh_threshhold.options.length; i++)
+    lol_ugh_threshold = document.getElementById('lol_ugh_threshold');
+    for (var i = 0; i < lol_ugh_threshold.options.length; i++)
     {
-        if (lol_ugh_threshhold.options[i].value == ugh_threshhold)
+        if (lol_ugh_threshold.options[i].value == ugh_threshold)
         {
-            lol_ugh_threshhold.options[i].selected = true;
+            lol_ugh_threshold.options[i].selected = true;
             break;
         }
     }
@@ -272,7 +272,7 @@ function getLolShowCounts()
 
 function getLolUghThreshhold()
 {
-    return document.getElementById('lol_ugh_threshhold').value;
+    return document.getElementById('lol_ugh_threshold').value;
 }
 
 function showEnabledScripts()
@@ -351,7 +351,7 @@ function saveOptions()
     {
         saveOption("lol_tags", getLolTagValues());
         saveOption("lol_show_counts", getLolShowCounts());
-        saveOption("lol_ugh_threshhold", getLolUghThreshhold());
+        saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());
