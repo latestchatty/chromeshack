@@ -10,7 +10,7 @@ settingsLoadedEvent.addHandler(function()
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
-            ughThreshhold: getSetting('lol_ugh_threshhold'),
+            ughThreshhold: parseInt(getSetting('lol_ugh_threshhold')),
 
             counts: null,
             processed_posts: false,
