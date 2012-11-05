@@ -23,55 +23,7 @@ function deleteSetting(name)
 
 function migrateSettings(version)
 {
-    if (version == "1.7")
-    {
-        // enable a bunch of new things by default
-        scripts = getSetting("enabled_scripts");
-        if (scripts.indexOf("winchatty_coments_search") < 0)
-            scripts.push("winchatty_comments_search");
-
-        if (scripts.indexOf("video_loader" < 0))
-            scripts.push("video_loader");
-
-        // lots of people don't know this is here, just turn it on
-        if (scripts.indexOf("collapse_threads") < 0)
-            scripts.push("collapse_threads");
-
-        setSetting("enabled_scripts", scripts);
-    }
-    else if (version == 1.9)
-    {
-        scripts = getSetting("enabled_scripts");
-        if (scripts.indexOf("new_comment_highlighter") < 0)
-            scripts.push("new_comment_highlighter");
-
-        setSetting("enabled_scripts", scripts);
-    }
-    else if (version == 1.14)
-    {
-        scripts = getSetting("enabled_scripts");
-        if (scripts.indexOf("expiration_watcher") < 0)
-            scripts.push("expiration_watcher");
-
-        setSetting("enabled_scripts", scripts);
-    }
-    else if (version == 1.21)
-    {
-        /*
-        Migrate lol_show_counts setting
-
-        If lol_show_counts was false, set value to 'none'
-        if lol_show_counts was true, set value to 'limited'
-
-        User will have to manually change setting to 'all'
-        to enable that feature
-        */
-        if (getSetting('lol_show_counts', false) === false)
-            setSetting('lol_show_counts', 'none');
-        else
-            setSetting('lol_show_counts', 'limited');
-    }
-    else if (version == 1.26)
+    if (version == 1.26)
     {
         var derp = getSetting('lol_ugh_threshhold', false);
         if (derp != false)
