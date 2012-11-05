@@ -71,7 +71,7 @@ function migrateSettings(version)
         else
             setSetting('lol_show_counts', 'limited');
     }
-    else if (version == 1.27)
+    else if (version == 1.26)
     {
         var derp = getSetting('lol_ugh_threshhold', false);
         if (derp != false)
