@@ -242,16 +242,23 @@ settingsLoadedEvent.addHandler(function()
 
                         // Add * x indicators in the fullpost 
                         var tgt = document.getElementById(tag + id); 
+                        if (!tgt && id == rootId)
+                        {
+                            // create the button if it doesn't exist
+                            var lol_button = LOL.createButton(tag, id, '#ddd');
+                            var lol_div = document.getElementById('lol_' + id);
+                            lol_div.appendChild(lol_button);
+
+                            // get the link
+                            tgt = document.getElementById(tag + id); 
+                        }
+
                         if (tgt)
                         {
                             if (tgt.innerHTML.indexOf(' × ') == -1)
                             {
                                 tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
                             } 
-                        }
-                        else
-                        {
-                            console.log(tag + id + ' not found');
                         }
                     
                         // Add (lol * 3) indicators to the onelines
