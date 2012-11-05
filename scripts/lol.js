@@ -221,7 +221,7 @@ settingsLoadedEvent.addHandler(function()
                     {
                         // Evaluate [ugh]s
                         // Must be root post, ughThreshold must be enabled, tag must be ugh, and counts have to be gte the ughThreshold
-                        if ((id == rootId) && (LOL.ughThreshold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshold)) {
+                        if ((id == rootId) && (threadId == rootId) && (LOL.ughThreshold > 0) && (tag == 'ugh') && (LOL.counts[rootId][id][tag] >= LOL.ughThreshold)) {
                             var root = document.getElementById('root_' + id);
                             if (root.className.indexOf('collapsed') == -1)
                             {
