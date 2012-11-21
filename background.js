@@ -1,6 +1,10 @@
 function getSettings()
 {
-    return localStorage;
+    // work around chrome bug 161028
+    var s = {};
+    for (var key in localStorage)
+        s[key] = localStorage[key];
+    return s;
 }
 
 function getSetting(name, default_value)
