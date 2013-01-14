@@ -264,3 +264,9 @@ div.getPost span.user a {text-decoration: none;}
     50% { -webkit-transform: rotate(20deg); }
     100% { -webkit-transform: rotate(-20deg); }
 }
+
+/* fix for shack legends being cut off */
+
+div.newcommentform {
+    width: 785px !important;
+}
