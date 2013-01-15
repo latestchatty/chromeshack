@@ -305,3 +305,15 @@ div.newcommentformexpand {
 #fileUploadInput, .uploadLabel {
     color: silver;
 }
+
+#uploadChatty, #uploadImgur {
+    width: 10px;
+}
+
+label.imageUploadLabel {
+    text-transform: none !important;
+    color: silver !important;
+    display: inline !important;
+    margin-bottom: 10px !important;
+    padding-right: 10px;
+}

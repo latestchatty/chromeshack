@@ -67,6 +67,7 @@
     "permissions": [
         "contextMenus"
         , "https://api.imgur.com/*"
+        , "http://chattypics.com/*"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
         , "*://*.shacknews.com/*"

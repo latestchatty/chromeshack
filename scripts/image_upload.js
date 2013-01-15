@@ -16,6 +16,8 @@ settingsLoadedEvent.addHandler(function()
 
             imgurClientId: "Client-ID c045579f61fc802",
 
+            chattyPicsUrl : "http://chattypics.com/upload.php",
+
             insertForm: function() {
                 // var imgurl = chrome.extension.getURL( "../images/image_upload.png");
                 // var image = $("<img/>", { src : imgurl });
@@ -55,24 +57,44 @@ settingsLoadedEvent.addHandler(function()
                 $(".newcommentform").addClass("newcommentformexpand");
                 var legendtable = $('#shacktags_legend_table')
                 var uploadDiv = $("<div />", { id : "uploadDiv"});
+                var chattyUploadLabel = $("<label>", { class : 'imageUploadLabel'});
+                var chattyUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadChatty'});
+                chattyUpload.click(function() {
+                    $("#urlUploadInput").hide();
+                    $("#urlUploadButton").hide();
+                    $("#urlUploadLabel").hide();
+                });
+                chattyUploadLabel.append(chattyUpload);
+                chattyUploadLabel.append($("<span>ChattyPics</span>"));
+                var imgurUploadLabel = $("<label>", { class : 'imageUploadLabel'});
+                var imgurUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadImgur', checked : 'true'});
+                imgurUpload.click(function() {
+                    $("#urlUploadInput").show()
+                    $("#urlUploadButton").show()
+                    $("#urlUploadLabel").show();
+                });
+                imgurUploadLabel.append(imgurUpload);
+                imgurUploadLabel.append($("<span>Imgur</span>"));
                 var fileUploadInput = $("<input>", { type : "file", id : "fileUploadInput", accept : "image/*"});
-                var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput"});
                 var fileUploadButton = $("<button></button>", { id : 'fileUploadButton'});
                 fileUploadButton.text("Upload File");
                 fileUploadButton.click(function() {
                     ImageUpload.doFileUpload(this);
                     return false;
                 });
-                var urlUploadButton = $("<button></button>", { id : 'fileUploadButton'});
+                var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput"});
+                var urlUploadButton = $("<button></button>", { id : 'urlUploadButton'});
                 urlUploadButton.text("Upload URL");
                 urlUploadButton.click(function() {
                     ImageUpload.doUrlUpload(this);
                     return false;
                 });
-                uploadDiv.append($("<div class='uploadLabel'>File Upload:</div>"));
+                uploadDiv.append(imgurUploadLabel);
+                uploadDiv.append(chattyUploadLabel);
+                uploadDiv.append($("<div class='uploadLabel' id='fileUploadLabel'>File Upload:</div>"));
                 uploadDiv.append(fileUploadInput);
                 uploadDiv.append(fileUploadButton);
-                uploadDiv.append($("<br/><br/><div class='uploadLabel'>URL Upload:</div>"));
+                uploadDiv.append($("<br/><br/><div class='uploadLabel' id='urlUploadLabel'>URL Upload:</div>"));
                 uploadDiv.append(urlUploadInput);
                 uploadDiv.append(urlUploadButton);
                 uploadDiv.insertAfter(legendtable);
@@ -102,6 +124,7 @@ settingsLoadedEvent.addHandler(function()
             },
 
             doFileUpload: function (obj) {
+                var isChattyPics  = $("#uploadChatty").is(':checked');
                 var fileinput = $("#fileUploadInput")[0];
                 if (fileinput.files.length == 0) {
                     ImageUpload.removeUploadMessage();
@@ -111,15 +134,21 @@ settingsLoadedEvent.addHandler(function()
                 var file = fileinput.files[0];
                 var fd = new FormData();
                 fd.append("type", "file");
-                fd.append("image", file);
-                ImageUpload.doImgurUpload(fd);
+
+                if(isChattyPics) {
+                    fd.append("userfile[]", file);
+                    ImageUpload.doChattyPicsUpload(fd);
+                } else {
+                    fd.append("image", file);
+                    ImageUpload.doImgurUpload(fd);
+                }
             },
 
             doImgurUpload: function (formdata) {
                 ImageUpload.removeUploadMessage();
                 formdata.append("key", ImageUpload.imgurApiKey);
                 var apiurl = ImageUpload.imgurApiBaseUrl + ImageUpload.imgurApiImageEndpoint;
-                ImageUpload.addUploadMessage("silver", "Uploading...");
+                ImageUpload.addUploadMessage("silver", "Uploading to Imgur...");
                 $.ajax( {
                     type: "POST",
                     url : apiurl,
@@ -142,6 +171,29 @@ settingsLoadedEvent.addHandler(function()
                     });
             },
 
+            doChattyPicsUpload: function (formdata) {
+                ImageUpload.removeUploadMessage();
+                ImageUpload.addUploadMessage("silver", "Uploading to ChattyPics...");
+                $.ajax( {
+                    type: "POST",
+                    url : ImageUpload.chattyPicsUrl,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    enctype : 'multipart/form-data',
+                    data : formdata
+                })
+                    .success(function(data) {
+                        ImageUpload.handleChattyUploadSuccess(data);
+                    })
+                    .error(function(data) {
+                        ImageUpload.handleUploadFailure(data);
+                    })
+                    .complete(function(data) {
+                        return false;
+                    });
+            },
+
             handleUploadSuccess: function(respdata) {
                 var link = respdata.data.link;
                 ImageUpload.insertTextAtCursor("frm_body", link);
@@ -150,11 +202,22 @@ settingsLoadedEvent.addHandler(function()
                 ImageUpload.addUploadMessage("green", "Success!");
             },
 
+            handleChattyUploadSuccess : function(data) {
+                var response = $(data);
+                var link11 = response.find("#link11");
+                var link = link11[0];
+                var url = $(link).val();
+                ImageUpload.insertTextAtCursor("frm_body", url);
+                ImageUpload.hideImageUploadForm(this);
+                ImageUpload.showImageUploadForm(this);
+                ImageUpload.addUploadMessage("green", "Success!");
+            },
+
             handleUploadFailure: function(respdata) {
                 ImageUpload.removeUploadMessage();
-                var responseText = $.parseJSON(respdata.responseText);
                 var error = "";
                 try {
+                    var responseText = $.parseJSON(respdata.responseText);
                     error = responseText.data.error;
                 } catch (e) {}
                 if(error.length > 0) {
