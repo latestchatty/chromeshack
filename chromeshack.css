@@ -267,6 +267,10 @@ div.getPost span.user a {text-decoration: none;}
 
 /* fix for shack legends being cut off */
 
+p.rules {
+    margin: 3px;
+}
+
 div.newcommentformfix {
     width: 785px !important;
 }
@@ -275,7 +279,7 @@ div.newcommentformfix {
 
 
 div.newcommentformexpand {
-    width: 1085px !important;
+    height: 390px;
 }
 
 
@@ -288,6 +292,7 @@ div.newcommentformexpand {
     width: 125px;
     height: 22px;
     font-size: 12px;
+    margin-left: 5px;
 }
 
 #fileUploadInput, #urlUploadInput {
@@ -295,11 +300,31 @@ div.newcommentformexpand {
 }
 
 #uploadDiv {
+ /**
     display: table !important;
     position: absolute;
     left: 200px;
     width: 290px;
     height: 228px;
+**/
+}
+
+#filedroparea {
+    border-style: dashed;
+    border-color: #666666;
+    border-width: 2px;
+    height: 20px;
+    width: 150px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.dragOver {
+    background-color: #555555;
+}
+
+#uploadCell1, #uploadCell2, #uploadCell3 {
+    vertical-align: middle;
 }
 
 #fileUploadInput, .uploadLabel {

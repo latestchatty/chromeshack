@@ -53,28 +53,31 @@ settingsLoadedEvent.addHandler(function()
             showImageUploadForm: function(obj) {
                 $("#imageUploadButton").toggle();
                 $("#cancelUploadButton").toggle();
-                $(".newcommentform").removeClass("newcommentformfix");
+                //$(".newcommentform").removeClass("newcommentformfix");
                 $(".newcommentform").addClass("newcommentformexpand");
-                var legendtable = $('#shacktags_legend_table')
+                $(".inlinereply").addClass("newcommentformexpand");
+                //$(".newcommentform").css("height", "390px");
+                //$(".inlinereply").css("height", "390px");
+                //var legendtable = $('#shacktags_legend_table')
+                var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/></tr></table>");
                 var uploadDiv = $("<div />", { id : "uploadDiv"});
+                $("#postform").append(uploadDiv);
+                uploadDiv.append(uploadtable);
                 var chattyUploadLabel = $("<label>", { class : 'imageUploadLabel'});
                 var chattyUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadChatty'});
                 chattyUpload.click(function() {
-                    $("#urlUploadInput").hide();
-                    $("#urlUploadButton").hide();
-                    $("#urlUploadLabel").hide();
-                });
+                    $("#uploadCell3").css('visibility', 'hidden');
+                })
                 chattyUploadLabel.append(chattyUpload);
                 chattyUploadLabel.append($("<span>ChattyPics</span>"));
                 var imgurUploadLabel = $("<label>", { class : 'imageUploadLabel'});
                 var imgurUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadImgur', checked : 'true'});
                 imgurUpload.click(function() {
-                    $("#urlUploadInput").show()
-                    $("#urlUploadButton").show()
-                    $("#urlUploadLabel").show();
+                    $("#uploadCell3").css('visibility', 'visible');
                 });
                 imgurUploadLabel.append(imgurUpload);
                 imgurUploadLabel.append($("<span>Imgur</span>"));
+                /**
                 var fileUploadInput = $("<input>", { type : "file", id : "fileUploadInput", accept : "image/*"});
                 var fileUploadButton = $("<button></button>", { id : 'fileUploadButton'});
                 fileUploadButton.text("Upload File");
@@ -82,22 +85,47 @@ settingsLoadedEvent.addHandler(function()
                     ImageUpload.doFileUpload(this);
                     return false;
                 });
-                var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput"});
+                **/
+                var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput", defaultValue : 'Image URL'});
                 var urlUploadButton = $("<button></button>", { id : 'urlUploadButton'});
                 urlUploadButton.text("Upload URL");
                 urlUploadButton.click(function() {
                     ImageUpload.doUrlUpload(this);
                     return false;
                 });
-                uploadDiv.append(imgurUploadLabel);
-                uploadDiv.append(chattyUploadLabel);
-                uploadDiv.append($("<div class='uploadLabel' id='fileUploadLabel'>File Upload:</div>"));
-                uploadDiv.append(fileUploadInput);
-                uploadDiv.append(fileUploadButton);
-                uploadDiv.append($("<br/><br/><div class='uploadLabel' id='urlUploadLabel'>URL Upload:</div>"));
-                uploadDiv.append(urlUploadInput);
-                uploadDiv.append(urlUploadButton);
-                uploadDiv.insertAfter(legendtable);
+                var uploadCell1 = $("#uploadCell1");
+                var uploadCell2 = $("#uploadCell2");
+                var uploadCell3 = $("#uploadCell3");
+                uploadCell1.append(imgurUploadLabel);
+                // uploadCell1.append($("<br/>"));
+                uploadCell1.append(chattyUploadLabel);
+                //uploadCell2.append($("<div class='uploadLabel' id='fileUploadLabel'>File Upload:</div>"));
+                //uploadCell2.append(fileUploadInput);
+                //uploadCell2.append(fileUploadButton);
+                var filedroparea = $("<div id='filedroparea'>Drag An Image</div>")
+                uploadCell2.append(filedroparea);
+                filedroparea.dropArea();
+
+                filedroparea.on('drop', function(e){
+                    e.preventDefault();
+                    e = e.originalEvent;
+                    var files = e.dataTransfer.files;
+                    if (/image/.test(files[0].type)) {
+                        ImageUpload.doFileUpload(files[0]);
+                    } else {
+                        ImageUpload.removeUploadMessage();
+                        alert("You must select a image to upload!");
+                        $(e.target).removeClass("dragOver");
+                        return;
+                    }
+                });
+
+                //uploadCell3.append($("<div class='uploadLabel' id='urlUploadLabel'>URL Upload:</div>"));
+                uploadCell3.append(" - or - ");
+                uploadCell3.append(urlUploadInput);
+                uploadCell3.append(urlUploadButton);
+                //uploadDiv.insertAfter(legendtable);
+
             },
 
             hideImageUploadForm: function (obj) {
@@ -123,15 +151,9 @@ settingsLoadedEvent.addHandler(function()
                 ImageUpload.doImgurUpload(fd);
             },
 
-            doFileUpload: function (obj) {
+            doFileUpload: function (file) {
                 var isChattyPics  = $("#uploadChatty").is(':checked');
-                var fileinput = $("#fileUploadInput")[0];
-                if (fileinput.files.length == 0) {
-                    ImageUpload.removeUploadMessage();
-                    alert("You must select a image to upload!");
-                    return;
-                }
-                var file = fileinput.files[0];
+
                 var fd = new FormData();
                 fd.append("type", "file");
 
@@ -196,7 +218,8 @@ settingsLoadedEvent.addHandler(function()
 
             handleUploadSuccess: function(respdata) {
                 var link = respdata.data.link;
-                ImageUpload.insertTextAtCursor("frm_body", link);
+                //ImageUpload.insertTextAtCursor("frm_body", link);
+                $("#frm_body").insertAtCaret(link);
                 ImageUpload.hideImageUploadForm(this);
                 ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
@@ -207,7 +230,8 @@ settingsLoadedEvent.addHandler(function()
                 var link11 = response.find("#link11");
                 var link = link11[0];
                 var url = $(link).val();
-                ImageUpload.insertTextAtCursor("frm_body", url);
+                //ImageUpload.insertTextAtCursor("frm_body", url);
+                $("#frm_body").insertAtCaret(url);
                 ImageUpload.hideImageUploadForm(this);
                 ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
@@ -228,7 +252,7 @@ settingsLoadedEvent.addHandler(function()
             },
 
             addUploadMessage: function(color, text, detailMsg) {
-                var msg = $("<h2></h2>", { id : "uploadMsg", style: "color: "+color});
+                var msg = $("<h3></h3>", { id : "uploadMsg", style: "color: "+color});
                 msg.text(text);
                 $("#uploadDiv").append(msg);
                 if(detailMsg != undefined && detailMsg.length > 0) {
@@ -245,42 +269,6 @@ settingsLoadedEvent.addHandler(function()
 
             setImgurHeader: function (xhr) {
                 xhr.setRequestHeader(ImageUpload.imgurClientIdHeader, ImageUpload.imgurClientId);
-            },
-
-            // Stolen from http://www.scottklarr.com/topic/425/how-to-insert-text-into-a-textarea-where-the-cursor-is/
-
-            insertTextAtCursor: function (areaId,text) {
-                var txtarea = document.getElementById(areaId);
-                var scrollPos = txtarea.scrollTop;
-                var strPos = 0;
-                var br = ((txtarea.selectionStart || txtarea.selectionStart == '0') ?
-                    "ff" : (document.selection ? "ie" : false ) );
-                if (br == "ie") {
-                    txtarea.focus();
-                    var range = document.selection.createRange();
-                    range.moveStart ('character', -txtarea.value.length);
-                    strPos = range.text.length;
-                }
-                else if (br == "ff") strPos = txtarea.selectionStart;
-
-                var front = (txtarea.value).substring(0,strPos);
-                var back = (txtarea.value).substring(strPos,txtarea.value.length);
-                txtarea.value=front+text+back;
-                strPos = strPos + text.length;
-                if (br == "ie") {
-                    txtarea.focus();
-                    var range = document.selection.createRange();
-                    range.moveStart ('character', -txtarea.value.length);
-                    range.moveStart ('character', strPos);
-                    range.moveEnd ('character', 0);
-                    range.select();
-                }
-                else if (br == "ff") {
-                    txtarea.selectionStart = strPos;
-                    txtarea.selectionEnd = strPos;
-                    txtarea.focus();
-                }
-                txtarea.scrollTop = scrollPos;
             }
 
         }
