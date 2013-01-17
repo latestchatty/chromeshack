@@ -275,6 +275,16 @@ div.newcommentformfix {
     width: 785px !important;
 }
 
+/* make it easier to see what button is highlighted, give them some space */
+button {
+    margin-right: 2px !important;
+    margin-left: 2px !important;
+    color: #555555 !important;
+}
+button:focus {
+    color: #000000 !important;
+}
+
 /* image upload stuff */
 
 
