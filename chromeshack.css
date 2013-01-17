@@ -289,7 +289,7 @@ div.newcommentformexpand {
     border-color: #fff #e9e9de #e9e9de #fff;
     color: #000;
     font-weight: bold;
-    width: 125px;
+    width: 75px;
     height: 22px;
     font-size: 12px;
     margin-left: 5px;
@@ -297,17 +297,16 @@ div.newcommentformexpand {
 
 #fileUploadInput, #urlUploadInput {
     border: solid 1px #444;
+    width: 100px;
 }
 
-#uploadDiv {
- /**
-    display: table !important;
-    position: absolute;
-    left: 200px;
-    width: 290px;
-    height: 228px;
-**/
+#fileUploadInput {
+    width: 85px;
+    background-color: transparent;
+    border: 0px;
+    margin-right: 5px;
 }
+
 
 #filedroparea {
     border-style: dashed;

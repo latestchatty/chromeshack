@@ -59,33 +59,24 @@ settingsLoadedEvent.addHandler(function()
                 //$(".newcommentform").css("height", "390px");
                 //$(".inlinereply").css("height", "390px");
                 //var legendtable = $('#shacktags_legend_table')
-                var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/></tr></table>");
+                var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/><td id='uploadCell4'/></tr></table>");
                 var uploadDiv = $("<div />", { id : "uploadDiv"});
                 $("#postform").append(uploadDiv);
                 uploadDiv.append(uploadtable);
                 var chattyUploadLabel = $("<label>", { class : 'imageUploadLabel'});
                 var chattyUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadChatty'});
                 chattyUpload.click(function() {
-                    $("#uploadCell3").css('visibility', 'hidden');
+                    $("#uploadCell4").css('visibility', 'hidden');
                 })
                 chattyUploadLabel.append(chattyUpload);
                 chattyUploadLabel.append($("<span>ChattyPics</span>"));
                 var imgurUploadLabel = $("<label>", { class : 'imageUploadLabel'});
                 var imgurUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadImgur', checked : 'true'});
                 imgurUpload.click(function() {
-                    $("#uploadCell3").css('visibility', 'visible');
+                    $("#uploadCell4").css('visibility', 'visible');
                 });
                 imgurUploadLabel.append(imgurUpload);
                 imgurUploadLabel.append($("<span>Imgur</span>"));
-                /**
-                var fileUploadInput = $("<input>", { type : "file", id : "fileUploadInput", accept : "image/*"});
-                var fileUploadButton = $("<button></button>", { id : 'fileUploadButton'});
-                fileUploadButton.text("Upload File");
-                fileUploadButton.click(function() {
-                    ImageUpload.doFileUpload(this);
-                    return false;
-                });
-                **/
                 var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput", defaultValue : 'Image URL'});
                 var urlUploadButton = $("<button></button>", { id : 'urlUploadButton'});
                 urlUploadButton.text("Upload URL");
@@ -96,12 +87,9 @@ settingsLoadedEvent.addHandler(function()
                 var uploadCell1 = $("#uploadCell1");
                 var uploadCell2 = $("#uploadCell2");
                 var uploadCell3 = $("#uploadCell3");
+                var uploadCell4 = $("#uploadCell4");
                 uploadCell1.append(imgurUploadLabel);
-                // uploadCell1.append($("<br/>"));
                 uploadCell1.append(chattyUploadLabel);
-                //uploadCell2.append($("<div class='uploadLabel' id='fileUploadLabel'>File Upload:</div>"));
-                //uploadCell2.append(fileUploadInput);
-                //uploadCell2.append(fileUploadButton);
                 var filedroparea = $("<div id='filedroparea'>Drag An Image</div>")
                 uploadCell2.append(filedroparea);
                 filedroparea.dropArea();
@@ -110,21 +98,25 @@ settingsLoadedEvent.addHandler(function()
                     e.preventDefault();
                     e = e.originalEvent;
                     var files = e.dataTransfer.files;
-                    if (/image/.test(files[0].type)) {
-                        ImageUpload.doFileUpload(files[0]);
-                    } else {
-                        ImageUpload.removeUploadMessage();
-                        alert("You must select a image to upload!");
-                        $(e.target).removeClass("dragOver");
-                        return;
+                    for(var i=0; i<files.length; i++) {
+                        if (/image/.test(files[i].type)) {
+                            ImageUpload.doFileUpload(files[i]);
+                        }
                     }
                 });
 
-                //uploadCell3.append($("<div class='uploadLabel' id='urlUploadLabel'>URL Upload:</div>"));
-                uploadCell3.append(" - or - ");
-                uploadCell3.append(urlUploadInput);
-                uploadCell3.append(urlUploadButton);
-                //uploadDiv.insertAfter(legendtable);
+                var fileinput = $("<input>", { type : 'file', id : 'fileUploadInput', accept: 'image/*', multiple : 'multiple' });
+                fileinput.change(function (e) {
+                    var files = e.target.files;
+                    for (var i=0; i < files.length; i++) {
+                        ImageUpload.doFileUpload(files[i]);
+                    }
+                })
+                uploadCell3.append(" or ");
+                uploadCell3.append(fileinput);
+                uploadCell4.append(" or ");
+                uploadCell4.append(urlUploadInput);
+                uploadCell4.append(urlUploadButton);
 
             },
 
@@ -219,7 +211,7 @@ settingsLoadedEvent.addHandler(function()
             handleUploadSuccess: function(respdata) {
                 var link = respdata.data.link;
                 //ImageUpload.insertTextAtCursor("frm_body", link);
-                $("#frm_body").insertAtCaret(link);
+                $("#frm_body").insertAtCaret(link + "\n");
                 ImageUpload.hideImageUploadForm(this);
                 ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
@@ -231,7 +223,7 @@ settingsLoadedEvent.addHandler(function()
                 var link = link11[0];
                 var url = $(link).val();
                 //ImageUpload.insertTextAtCursor("frm_body", url);
-                $("#frm_body").insertAtCaret(url);
+                $("#frm_body").insertAtCaret(url + "\n");
                 ImageUpload.hideImageUploadForm(this);
                 ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
