@@ -267,6 +267,87 @@ div.getPost span.user a {text-decoration: none;}
 
 /* fix for shack legends being cut off */
 
-div.newcommentform {
+p.rules {
+    margin: 3px;
+}
+
+div.newcommentformfix {
     width: 785px !important;
+}
+
+/* make it easier to see what button is highlighted, give them some space */
+button {
+    margin-right: 2px !important;
+    margin-left: 2px !important;
+    color: #555555 !important;
+}
+button:focus {
+    color: #000000 !important;
+}
+
+/* image upload stuff */
+
+
+div.newcommentformexpand {
+    height: 390px;
+}
+
+
+#imageUploadButton, #cancelUploadButton, #fileUploadButton, #urlUploadButton  {
+    background-color: #e9e9de;
+    border-width: 2px;
+    border-color: #fff #e9e9de #e9e9de #fff;
+    color: #000;
+    font-weight: bold;
+    width: 75px;
+    height: 22px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+#fileUploadInput, #urlUploadInput {
+    border: solid 1px #444;
+    width: 100px;
+}
+
+#fileUploadInput {
+    width: 85px;
+    background-color: transparent;
+    border: 0px;
+    margin-right: 5px;
+}
+
+
+#filedroparea {
+    border-style: dashed;
+    border-color: #666666;
+    border-width: 2px;
+    height: 20px;
+    width: 150px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.dragOver {
+    background-color: #555555;
+}
+
+#uploadCell1, #uploadCell2, #uploadCell3 {
+    vertical-align: middle;
+}
+
+#fileUploadInput, .uploadLabel {
+    color: silver;
+}
+
+#uploadChatty, #uploadImgur {
+    width: 10px;
+}
+
+label.imageUploadLabel {
+    text-transform: none !important;
+    color: silver !important;
+    display: inline !important;
+    margin-bottom: 10px !important;
+    padding-right: 10px;
 }
