@@ -6,6 +6,7 @@ function loadOptions()
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
+	 showCloudPinning(getOption("cloud_pinning"));
     showEnabledScripts();
 }
 
@@ -32,6 +33,18 @@ function getVideoLoaderHD()
 {
     var hd = document.getElementById("video_loader_hd");
     return hd.checked;
+}
+
+function showCloudPinning(enabled)
+{
+	var check = document.getElementById("cloud_pinning");
+	check.checked = enabled;
+}
+
+function getCloudPinning()
+{
+	var check = document.getElementById("cloud_pinning");
+	return check.checked;
 }
 
 function showHighlightUsers(groups)

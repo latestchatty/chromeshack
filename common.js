@@ -64,3 +64,37 @@ function getUrl(url, callback)
     xhr.open("GET", url, true);
     xhr.send();
 }
+
+function putUrl(url, data, callback)
+{
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function()
+	{
+		if(xhr.readyState == 4)
+		{
+			if(xhr != undefined && xhr != null)
+			{
+				callback(xhr);
+			}
+		}
+	}
+	xhr.open("PUT", url, true);
+	xhr.send(data);
+}
+
+function postUrl(url, data, callback)
+{
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function()
+	{
+		if(xhr.readyState == 4)
+		{
+			if(xhr != undefined && xhr != null)
+			{
+				callback(xhr);
+			}
+		}
+	}
+	xhr.open("POST", url, true);
+	xhr.send(data);
+}

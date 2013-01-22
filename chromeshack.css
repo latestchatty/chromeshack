@@ -1,3 +1,6 @@
+div.pin { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
+a.pin_button { color: #16ff60; padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
+
 /* lol buttons */
 div.lol { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
 a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
