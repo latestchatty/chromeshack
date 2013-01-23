@@ -75,12 +75,15 @@ class PinList
 
 class Pinning
 	@finishedLoadingPinList = false
+	constructor: (@pinOnReply) ->
+		return
 
 	initialize: () =>
 		@pinText = "pin"
 		@unpinText = "unpin"
 		@pinList = new PinList()
 		@pinList.initializePinList(@_listLoaded)
+		return
 
 	addPinLinks: (item, id, isRootPost) =>
 		#Only add pin links to root posts.
@@ -104,12 +107,51 @@ class Pinning
 		authorElement.appendChild(newDiv)
 		return
 
+	addPostBoxHandlers: () =>
+		unless(@pinOnReply)
+			return
+
+		postform = document.getElementById("postform")
+		if (postform)
+			rootElement = @_findParentElementWithClassName(postform, 'root')
+			if(rootElement)
+				id = rootElement.id.replace('root_', '')
+				#If we're not pinned, then we can pin after replying
+				if(!@pinList.isIdPinned(id))
+					console.log("Root post is not pinned and pinning on reply is enabled.")
+					btn = document.getElementById("frm_submit")
+					if(btn)
+						console.log("Installing listener for root post id #{id}")
+						btn.addEventListener('click', (e) =>
+							@pinList.addPinnedPost(id, () =>
+								console.log("Successfully pinned post after replying. Removing listener.")
+								#this is .. gotta love javascript.
+								btn.removeEventListener('click', arguments.callee)
+								button = document.getElementById("pin_button_#{id}")
+								if(button)
+									button.innerHTML = @unpinText
+								return
+							)
+							return
+						)
+		return
+
+	_findParentElementWithClassName: (startingElement, className) =>
+		if(startingElement.parentNode)
+			if(startingElement.parentNode.classList.contains(className))
+				return startingElement.parentNode
+			else
+				return @_findParentElementWithClassName(startingElement.parentNode, className)
+
+		return null
+
 	_listLoaded: () =>
 		@finishedLoadingPinList = true
 		for pinnedItem in @pinList.pinnedList
 			pinButton = document.getElementById("pin_button_#{pinnedItem}")
 			if(pinButton)
 				pinButton.innerHTML = @unpinText
+		return
 
 	_buttonClicked: (elementId, postId) =>
 		#Toggle pinning...
@@ -123,7 +165,7 @@ class Pinning
 				@pinList.removePinnedPost(postId, () =>
 					button.innerHTML = @pinText
 				)
-
+		return
 
 	_createElement: (elementId, postId, pinsLoaded) =>
 		div = document.createElement("div")
@@ -154,7 +196,9 @@ class Pinning
 #Add hook for initializing ourselves if we're enabled.
 settingsLoadedEvent.addHandler(() =>
 	if (getSetting("enabled_scripts").contains("cloud_pinning"))
-		@p = new Pinning()
+		@p = new Pinning(getSetting("pin_on_reply"))
 		@p.initialize()
 		processPostEvent.addHandler(@p.addPinLinks)
+		processPostBoxEvent.addHandler(@p.addPostBoxHandlers)
+	return
 )

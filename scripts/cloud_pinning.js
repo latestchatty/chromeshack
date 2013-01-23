@@ -120,26 +120,32 @@
 
   Pinning = (function() {
 
-    function Pinning() {
+    Pinning.finishedLoadingPinList = false;
+
+    function Pinning(pinOnReply) {
+      this.pinOnReply = pinOnReply;
       this._createElement = __bind(this._createElement, this);
 
       this._buttonClicked = __bind(this._buttonClicked, this);
 
       this._listLoaded = __bind(this._listLoaded, this);
 
+      this._findParentElementWithClassName = __bind(this._findParentElementWithClassName, this);
+
+      this.addPostBoxHandlers = __bind(this.addPostBoxHandlers, this);
+
       this.addPinLinks = __bind(this.addPinLinks, this);
 
       this.initialize = __bind(this.initialize, this);
 
+      return;
     }
-
-    Pinning.finishedLoadingPinList = false;
 
     Pinning.prototype.initialize = function() {
       this.pinText = "pin";
       this.unpinText = "unpin";
       this.pinList = new PinList();
-      return this.pinList.initializePinList(this._listLoaded);
+      this.pinList.initializePinList(this._listLoaded);
     };
 
     Pinning.prototype.addPinLinks = function(item, id, isRootPost) {
@@ -159,21 +165,61 @@
       authorElement.appendChild(newDiv);
     };
 
+    Pinning.prototype.addPostBoxHandlers = function() {
+      var btn, id, postform, rootElement,
+        _this = this;
+      if (!this.pinOnReply) {
+        return;
+      }
+      postform = document.getElementById("postform");
+      if (postform) {
+        rootElement = this._findParentElementWithClassName(postform, 'root');
+        if (rootElement) {
+          id = rootElement.id.replace('root_', '');
+          if (!this.pinList.isIdPinned(id)) {
+            console.log("Root post is not pinned and pinning on reply is enabled.");
+            btn = document.getElementById("frm_submit");
+            if (btn) {
+              console.log("Installing listener for root post id " + id);
+              btn.addEventListener('click', function(e) {
+                _this.pinList.addPinnedPost(id, function() {
+                  var button;
+                  console.log("Successfully pinned post after replying. Removing listener.");
+                  btn.removeEventListener('click', arguments.callee);
+                  button = document.getElementById("pin_button_" + id);
+                  if (button) {
+                    button.innerHTML = _this.unpinText;
+                  }
+                });
+              });
+            }
+          }
+        }
+      }
+    };
+
+    Pinning.prototype._findParentElementWithClassName = function(startingElement, className) {
+      if (startingElement.parentNode) {
+        if (startingElement.parentNode.classList.contains(className)) {
+          return startingElement.parentNode;
+        } else {
+          return this._findParentElementWithClassName(startingElement.parentNode, className);
+        }
+      }
+      return null;
+    };
+
     Pinning.prototype._listLoaded = function() {
-      var pinButton, pinnedItem, _i, _len, _ref, _results;
+      var pinButton, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
       _ref = this.pinList.pinnedList;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pinnedItem = _ref[_i];
         pinButton = document.getElementById("pin_button_" + pinnedItem);
         if (pinButton) {
-          _results.push(pinButton.innerHTML = this.unpinText);
-        } else {
-          _results.push(void 0);
+          pinButton.innerHTML = this.unpinText;
         }
       }
-      return _results;
     };
 
     Pinning.prototype._buttonClicked = function(elementId, postId) {
@@ -182,11 +228,11 @@
       button = document.getElementById(elementId);
       if (button) {
         if (button.innerHTML === this.pinText) {
-          return this.pinList.addPinnedPost(postId, function() {
+          this.pinList.addPinnedPost(postId, function() {
             return button.innerHTML = _this.unpinText;
           });
         } else {
-          return this.pinList.removePinnedPost(postId, function() {
+          this.pinList.removePinnedPost(postId, function() {
             return button.innerHTML = _this.pinText;
           });
         }
@@ -225,9 +271,10 @@
 
   settingsLoadedEvent.addHandler(function() {
     if (getSetting("enabled_scripts").contains("cloud_pinning")) {
-      _this.p = new Pinning();
+      _this.p = new Pinning(getSetting("pin_on_reply"));
       _this.p.initialize();
-      return processPostEvent.addHandler(_this.p.addPinLinks);
+      processPostEvent.addHandler(_this.p.addPinLinks);
+      processPostBoxEvent.addHandler(_this.p.addPostBoxHandlers);
     }
   });
 
