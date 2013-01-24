@@ -147,11 +147,32 @@ class Pinning
 
 	_listLoaded: () =>
 		@finishedLoadingPinList = true
+		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+		firstChattyComment = commentBlock.firstElementChild
+
 		for pinnedItem in @pinList.pinnedList
 			pinButton = document.getElementById("pin_button_#{pinnedItem}")
 			if(pinButton)
 				pinButton.innerHTML = @unpinText
+			#move existing thread if it's there
+			el = document.getElementById("root_#{pinnedItem}")
+			if(el)
+				el.parentNode.removeChild(el)
+				commentBlock.insertBefore(el, firstChattyComment)
+			else
+				#load it dynamically
+				@_loadPinnedThread(pinnedItem, commentBlock, firstChattyComment)
+
 		return
+
+	_loadPinnedThread: (threadId, pinnedSection, firstComment) =>
+		getUrl("http://www.shacknews.com/chatty?id=#{threadId}", (res) =>
+			doc = document.implementation.createHTMLDocument("example")
+			doc.documentElement.innerHTML = res.responseText
+			p = doc.getElementById("root_#{threadId}")
+			pinnedSection.insertBefore(p, firstComment)
+			return
+		)
 
 	_buttonClicked: (elementId, postId) =>
 		#Toggle pinning...

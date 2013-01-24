@@ -128,6 +128,8 @@
 
       this._buttonClicked = __bind(this._buttonClicked, this);
 
+      this._loadPinnedThread = __bind(this._loadPinnedThread, this);
+
       this._listLoaded = __bind(this._listLoaded, this);
 
       this._findParentElementWithClassName = __bind(this._findParentElementWithClassName, this);
@@ -210,8 +212,10 @@
     };
 
     Pinning.prototype._listLoaded = function() {
-      var pinButton, pinnedItem, _i, _len, _ref;
+      var commentBlock, el, firstChattyComment, pinButton, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
+      commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+      firstChattyComment = commentBlock.firstElementChild;
       _ref = this.pinList.pinnedList;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pinnedItem = _ref[_i];
@@ -219,7 +223,25 @@
         if (pinButton) {
           pinButton.innerHTML = this.unpinText;
         }
+        el = document.getElementById("root_" + pinnedItem);
+        if (el) {
+          el.parentNode.removeChild(el);
+          commentBlock.insertBefore(el, firstChattyComment);
+        } else {
+          this._loadPinnedThread(pinnedItem, commentBlock, firstChattyComment);
+        }
       }
+    };
+
+    Pinning.prototype._loadPinnedThread = function(threadId, pinnedSection, firstComment) {
+      var _this = this;
+      return getUrl("http://www.shacknews.com/chatty?id=" + threadId, function(res) {
+        var doc, p;
+        doc = document.implementation.createHTMLDocument("example");
+        doc.documentElement.innerHTML = res.responseText;
+        p = doc.getElementById("root_" + threadId);
+        pinnedSection.insertBefore(p, firstComment);
+      });
     };
 
     Pinning.prototype._buttonClicked = function(elementId, postId) {
