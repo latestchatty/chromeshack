@@ -269,5 +269,8 @@ div.getPost span.user a {text-decoration: none;}
 }
 
 div.pinnedPosts {
-    border: 1px #6B90DA solid;
+    border: 1px #3f5190 solid;
+    margin-top: 20px;
+    /*-webkit-border-radius: 10px;*/
+    padding-right: 6px;
 }

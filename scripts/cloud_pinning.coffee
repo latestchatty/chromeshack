@@ -163,6 +163,12 @@ class Pinning
 		@finishedLoadingPinList = true
 		pinnedDiv = document.createElement('div')
 		pinnedDiv.classList.add('pinnedPosts')
+		bannerImage = document.createElement('img')
+		bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png")
+#		title = document.createElement('span')
+#		title.classList.add('pinnedPostTitle')
+#		title.innerHTML = 'Pinned Posts'
+		pinnedDiv.appendChild(bannerImage)
 
 		for pinnedItem in @pinList.pinnedList
 			pinButton = document.getElementById("pin_button_#{pinnedItem}")
