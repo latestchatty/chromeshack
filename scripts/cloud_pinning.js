@@ -227,29 +227,33 @@
     Pinning.prototype._listLoaded = function() {
       var bannerImage, commentBlock, el, pinButton, pinnedDiv, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
-      pinnedDiv = document.createElement('div');
-      pinnedDiv.classList.add('pinnedPosts');
-      bannerImage = document.createElement('img');
-      bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png");
-      pinnedDiv.appendChild(bannerImage);
-      _ref = this.pinList.pinnedList;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        pinnedItem = _ref[_i];
-        pinButton = document.getElementById("pin_button_" + pinnedItem);
-        if (pinButton) {
-          pinButton.innerHTML = this.unpinText;
-        }
-        el = document.getElementById("root_" + pinnedItem);
-        if (el) {
-          el.parentNode.removeChild(el);
-          pinnedDiv.appendChild(el);
-        } else {
-          this._loadPinnedThread(pinnedItem, pinnedDiv);
+      if (this.pinList.pinnedList.length > 0) {
+        pinnedDiv = document.createElement('div');
+        pinnedDiv.classList.add('pinnedPosts');
+        bannerImage = document.createElement('img');
+        bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png");
+        pinnedDiv.appendChild(bannerImage);
+        _ref = this.pinList.pinnedList;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          pinnedItem = _ref[_i];
+          pinButton = document.getElementById("pin_button_" + pinnedItem);
+          if (pinButton) {
+            pinButton.innerHTML = this.unpinText;
+          }
+          el = document.getElementById("root_" + pinnedItem);
+          if (el) {
+            el.parentNode.removeChild(el);
+            pinnedDiv.appendChild(el);
+          } else {
+            this._loadPinnedThread(pinnedItem, pinnedDiv);
+          }
         }
       }
       commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
       commentBlock.removeChild(this.loadingPinnedDiv);
-      commentBlock.insertBefore(pinnedDiv, commentBlock.firstElementChild);
+      if (pinnedDiv) {
+        commentBlock.insertBefore(pinnedDiv, commentBlock.firstElementChild);
+      }
     };
 
     Pinning.prototype._loadPinnedThread = function(threadId, pinnedSection, firstComment) {
