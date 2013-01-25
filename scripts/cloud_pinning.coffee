@@ -75,12 +75,26 @@ class PinList
 
 class Pinning
 	@finishedLoadingPinList = false
+	@loadingPinnedDiv = null
+
 	constructor: (@pinOnReply) ->
 		return
 
 	initialize: () =>
 		@pinText = "pin"
 		@unpinText = "unpin"
+		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+		@loadingPinnedDiv = document.createElement('div')
+		s = document.createElement('span')
+		s.innerText = 'Loading Pinned Posts'
+		loadingImg = document.createElement('img')
+		loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif")
+
+		@loadingPinnedDiv.appendChild(s)
+		@loadingPinnedDiv.appendChild(loadingImg)
+
+		firstChattyComment = commentBlock.firstElementChild
+		commentBlock.insertBefore(@loadingPinnedDiv, firstChattyComment)
 		@pinList = new PinList()
 		@pinList.initializePinList(@_listLoaded)
 		return
@@ -147,8 +161,8 @@ class Pinning
 
 	_listLoaded: () =>
 		@finishedLoadingPinList = true
-		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
-		firstChattyComment = commentBlock.firstElementChild
+		pinnedDiv = document.createElement('div')
+		pinnedDiv.classList.add('pinnedPosts')
 
 		for pinnedItem in @pinList.pinnedList
 			pinButton = document.getElementById("pin_button_#{pinnedItem}")
@@ -158,11 +172,15 @@ class Pinning
 			el = document.getElementById("root_#{pinnedItem}")
 			if(el)
 				el.parentNode.removeChild(el)
-				commentBlock.insertBefore(el, firstChattyComment)
+				pinnedDiv.appendChild(el)
+				#commentBlock.insertBefore(el, firstChattyComment)
 			else
 				#load it dynamically
-				@_loadPinnedThread(pinnedItem, commentBlock, firstChattyComment)
+				@_loadPinnedThread(pinnedItem, pinnedDiv)
 
+		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+		commentBlock.removeChild(@loadingPinnedDiv)
+		commentBlock.insertBefore(pinnedDiv, commentBlock.firstElementChild)
 		return
 
 	_loadPinnedThread: (threadId, pinnedSection, firstComment) =>
@@ -170,7 +188,8 @@ class Pinning
 			doc = document.implementation.createHTMLDocument("example")
 			doc.documentElement.innerHTML = res.responseText
 			p = doc.getElementById("root_#{threadId}")
-			pinnedSection.insertBefore(p, firstComment)
+			pinnedSection.appendChild(p)
+			#pinnedSection.insertBefore(p, firstComment)
 			return
 		)
 
