@@ -81,6 +81,7 @@ class Pinning
 		return
 
 	initialize: () =>
+		#this won't work with page 2 of the chatty....
 		@showPinnedPosts = ((window.location.search.length is 0) and (window.location.href.indexOf('/chatty') > 0))
 		@pinText = "pin"
 		@unpinText = "unpin"
