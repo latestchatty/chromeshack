@@ -130,6 +130,8 @@
 
       this._buttonClicked = __bind(this._buttonClicked, this);
 
+      this._showPinnedPostsWhenFinished = __bind(this._showPinnedPostsWhenFinished, this);
+
       this._loadPinnedThread = __bind(this._loadPinnedThread, this);
 
       this._listLoaded = __bind(this._listLoaded, this);
@@ -147,18 +149,24 @@
 
     Pinning.prototype.initialize = function() {
       var commentBlock, firstChattyComment, loadingImg, s;
+      this.showPinnedPosts = (window.location.search.length === 0) && (window.location.href.indexOf('/chatty') > 0);
       this.pinText = "pin";
       this.unpinText = "unpin";
-      commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
-      this.loadingPinnedDiv = document.createElement('div');
-      s = document.createElement('span');
-      s.innerText = 'Loading Pinned Posts';
-      loadingImg = document.createElement('img');
-      loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif");
-      this.loadingPinnedDiv.appendChild(s);
-      this.loadingPinnedDiv.appendChild(loadingImg);
-      firstChattyComment = commentBlock.firstElementChild;
-      commentBlock.insertBefore(this.loadingPinnedDiv, firstChattyComment);
+      if (this.showPinnedPosts) {
+        commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+        this.loadingPinnedDiv = document.createElement('div');
+        this.loadingPinnedDiv.classList.add('pinnedLoading');
+        s = document.createElement('span');
+        s.classList.add('pinnedLoading');
+        s.innerText = 'Loading Pinned Posts';
+        loadingImg = document.createElement('img');
+        loadingImg.classList.add('pinnedLoading');
+        loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif");
+        this.loadingPinnedDiv.appendChild(s);
+        this.loadingPinnedDiv.appendChild(loadingImg);
+        firstChattyComment = commentBlock.firstElementChild;
+        commentBlock.insertBefore(this.loadingPinnedDiv, firstChattyComment);
+      }
       this.pinList = new PinList();
       this.pinList.initializePinList(this._listLoaded);
     };
@@ -225,14 +233,17 @@
     };
 
     Pinning.prototype._listLoaded = function() {
-      var bannerImage, commentBlock, el, pinButton, pinnedDiv, pinnedItem, _i, _len, _ref;
+      var bannerImage, el, pinButton, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
       if (this.pinList.pinnedList.length > 0) {
-        pinnedDiv = document.createElement('div');
-        pinnedDiv.classList.add('pinnedPosts');
-        bannerImage = document.createElement('img');
-        bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png");
-        pinnedDiv.appendChild(bannerImage);
+        if (this.showPinnedPosts) {
+          this.remainingToLoad = this.pinList.pinnedList.length;
+          this.pinnedDiv = document.createElement('div');
+          this.pinnedDiv.classList.add('pinnedPosts');
+          bannerImage = document.createElement('img');
+          bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png");
+          this.pinnedDiv.appendChild(bannerImage);
+        }
         _ref = this.pinList.pinnedList;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           pinnedItem = _ref[_i];
@@ -240,23 +251,22 @@
           if (pinButton) {
             pinButton.innerHTML = this.unpinText;
           }
-          el = document.getElementById("root_" + pinnedItem);
-          if (el) {
-            el.parentNode.removeChild(el);
-            pinnedDiv.appendChild(el);
-          } else {
-            this._loadPinnedThread(pinnedItem, pinnedDiv);
+          if (this.showPinnedPosts) {
+            el = document.getElementById("root_" + pinnedItem);
+            if (el) {
+              el.parentNode.removeChild(el);
+              this.pinnedDiv.appendChild(el);
+              this.remainingToLoad--;
+              this._showPinnedPostsWhenFinished();
+            } else {
+              this._loadPinnedThread(pinnedItem, this.pinnedDiv);
+            }
           }
         }
       }
-      commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
-      commentBlock.removeChild(this.loadingPinnedDiv);
-      if (pinnedDiv) {
-        commentBlock.insertBefore(pinnedDiv, commentBlock.firstElementChild);
-      }
     };
 
-    Pinning.prototype._loadPinnedThread = function(threadId, pinnedSection, firstComment) {
+    Pinning.prototype._loadPinnedThread = function(threadId, pinnedSection) {
       var _this = this;
       return getUrl("http://www.shacknews.com/chatty?id=" + threadId, function(res) {
         var doc, p;
@@ -264,7 +274,20 @@
         doc.documentElement.innerHTML = res.responseText;
         p = doc.getElementById("root_" + threadId);
         pinnedSection.appendChild(p);
+        _this.remainingToLoad--;
+        _this._showPinnedPostsWhenFinished();
       });
+    };
+
+    Pinning.prototype._showPinnedPostsWhenFinished = function() {
+      var commentBlock;
+      if (this.remainingToLoad === 0) {
+        commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+        commentBlock.removeChild(this.loadingPinnedDiv);
+        if (this.pinnedDiv) {
+          return commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
+        }
+      }
     };
 
     Pinning.prototype._buttonClicked = function(elementId, postId) {
@@ -278,7 +301,15 @@
           });
         } else {
           this.pinList.removePinnedPost(postId, function() {
-            return button.innerHTML = _this.pinText;
+            var el;
+            if (_this.showPinnedPosts) {
+              el = document.getElementById("root_" + postId);
+              if (el) {
+                return el.parentNode.removeChild(el);
+              }
+            } else {
+              return button.innerHTML = _this.pinText;
+            }
           });
         }
       }

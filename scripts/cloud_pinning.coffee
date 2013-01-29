@@ -81,20 +81,26 @@ class Pinning
 		return
 
 	initialize: () =>
+		@showPinnedPosts = ((window.location.search.length is 0) and (window.location.href.indexOf('/chatty') > 0))
 		@pinText = "pin"
 		@unpinText = "unpin"
-		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
-		@loadingPinnedDiv = document.createElement('div')
-		s = document.createElement('span')
-		s.innerText = 'Loading Pinned Posts'
-		loadingImg = document.createElement('img')
-		loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif")
+		if(@showPinnedPosts)
+			commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+			@loadingPinnedDiv = document.createElement('div')
+			@loadingPinnedDiv.classList.add('pinnedLoading')
+			s = document.createElement('span')
+			s.classList.add('pinnedLoading')
+			s.innerText = 'Loading Pinned Posts'
+			loadingImg = document.createElement('img')
+			loadingImg.classList.add('pinnedLoading')
+			loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif")
 
-		@loadingPinnedDiv.appendChild(s)
-		@loadingPinnedDiv.appendChild(loadingImg)
+			@loadingPinnedDiv.appendChild(s)
+			@loadingPinnedDiv.appendChild(loadingImg)
 
-		firstChattyComment = commentBlock.firstElementChild
-		commentBlock.insertBefore(@loadingPinnedDiv, firstChattyComment)
+			firstChattyComment = commentBlock.firstElementChild
+			commentBlock.insertBefore(@loadingPinnedDiv, firstChattyComment)
+
 		@pinList = new PinList()
 		@pinList.initializePinList(@_listLoaded)
 		return
@@ -163,44 +169,52 @@ class Pinning
 		@finishedLoadingPinList = true
 
 		if(@pinList.pinnedList.length > 0)
-			pinnedDiv = document.createElement('div')
-			pinnedDiv.classList.add('pinnedPosts')
-			bannerImage = document.createElement('img')
-			bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png")
-	#		title = document.createElement('span')
-	#		title.classList.add('pinnedPostTitle')
-	#		title.innerHTML = 'Pinned Posts'
-			pinnedDiv.appendChild(bannerImage)
+			if(@showPinnedPosts)
+				@remainingToLoad = @pinList.pinnedList.length
+
+				@pinnedDiv = document.createElement('div')
+				@pinnedDiv.classList.add('pinnedPosts')
+				bannerImage = document.createElement('img')
+				bannerImage.src = chrome.extension.getURL("../images/banners/pinned.png")
+
+				@pinnedDiv.appendChild(bannerImage)
 
 			for pinnedItem in @pinList.pinnedList
 				pinButton = document.getElementById("pin_button_#{pinnedItem}")
 				if(pinButton)
 					pinButton.innerHTML = @unpinText
-				#move existing thread if it's there
-				el = document.getElementById("root_#{pinnedItem}")
-				if(el)
-					el.parentNode.removeChild(el)
-					pinnedDiv.appendChild(el)
-					#commentBlock.insertBefore(el, firstChattyComment)
-				else
-					#load it dynamically
-					@_loadPinnedThread(pinnedItem, pinnedDiv)
 
-		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
-		commentBlock.removeChild(@loadingPinnedDiv)
-		if(pinnedDiv)
-			commentBlock.insertBefore(pinnedDiv, commentBlock.firstElementChild)
+				if(@showPinnedPosts)
+					#move existing thread if it's there
+					el = document.getElementById("root_#{pinnedItem}")
+					if(el)
+						el.parentNode.removeChild(el)
+						@pinnedDiv.appendChild(el)
+						@remainingToLoad--
+						@_showPinnedPostsWhenFinished()
+					else
+						#load it dynamically
+						@_loadPinnedThread(pinnedItem, @pinnedDiv)
+
 		return
 
-	_loadPinnedThread: (threadId, pinnedSection, firstComment) =>
+	_loadPinnedThread: (threadId, pinnedSection) =>
 		getUrl("http://www.shacknews.com/chatty?id=#{threadId}", (res) =>
 			doc = document.implementation.createHTMLDocument("example")
 			doc.documentElement.innerHTML = res.responseText
 			p = doc.getElementById("root_#{threadId}")
 			pinnedSection.appendChild(p)
-			#pinnedSection.insertBefore(p, firstComment)
+			@remainingToLoad--
+			@_showPinnedPostsWhenFinished()
 			return
 		)
+
+	_showPinnedPostsWhenFinished: () =>
+		if(@remainingToLoad is 0)
+			commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+			commentBlock.removeChild(@loadingPinnedDiv)
+			if(@pinnedDiv)
+				commentBlock.insertBefore(@pinnedDiv, commentBlock.firstElementChild)
 
 	_buttonClicked: (elementId, postId) =>
 		#Toggle pinning...
@@ -212,7 +226,12 @@ class Pinning
 				)
 			else
 				@pinList.removePinnedPost(postId, () =>
-					button.innerHTML = @pinText
+					if(@showPinnedPosts)
+						el = document.getElementById("root_#{postId}")
+						if(el)
+							el.parentNode.removeChild(el)
+					else
+						button.innerHTML = @pinText
 				)
 		return
 

@@ -274,3 +274,22 @@ div.pinnedPosts {
     /*-webkit-border-radius: 10px;*/
     padding-right: 6px;
 }
+
+div.pinnedLoading {
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-top: 20px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+span.pinnedLoading
+{
+    vertical-align: middle;
+}
+
+img.pinnedLoading
+{
+    vertical-align: middle;
+    margin-left: 5px;
+}
