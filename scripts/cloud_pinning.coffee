@@ -190,11 +190,16 @@ class Pinning
 					if(el)
 						el.parentNode.removeChild(el)
 						@pinnedDiv.appendChild(el)
-						@remainingToLoad--
-						@_showPinnedPostsWhenFinished()
+						#@remainingToLoad--
+						#@_showPinnedPostsWhenFinished()
 					else
 						#load it dynamically
 						@_loadPinnedThread(pinnedItem, @pinnedDiv)
+
+			commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+			commentBlock.removeChild(@loadingPinnedDiv)
+			if(@pinnedDiv)
+				commentBlock.insertBefore(@pinnedDiv, commentBlock.firstElementChild)
 
 		return
 
@@ -204,8 +209,8 @@ class Pinning
 			doc.documentElement.innerHTML = res.responseText
 			p = doc.getElementById("root_#{threadId}")
 			pinnedSection.appendChild(p)
-			@remainingToLoad--
-			@_showPinnedPostsWhenFinished()
+			#@remainingToLoad--
+			#@_showPinnedPostsWhenFinished()
 			return
 		)
 

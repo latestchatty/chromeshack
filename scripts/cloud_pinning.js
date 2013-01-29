@@ -233,7 +233,7 @@
     };
 
     Pinning.prototype._listLoaded = function() {
-      var bannerImage, el, pinButton, pinnedItem, _i, _len, _ref;
+      var bannerImage, commentBlock, el, pinButton, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
       if (this.pinList.pinnedList.length > 0) {
         if (this.showPinnedPosts) {
@@ -256,12 +256,15 @@
             if (el) {
               el.parentNode.removeChild(el);
               this.pinnedDiv.appendChild(el);
-              this.remainingToLoad--;
-              this._showPinnedPostsWhenFinished();
             } else {
               this._loadPinnedThread(pinnedItem, this.pinnedDiv);
             }
           }
+        }
+        commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+        commentBlock.removeChild(this.loadingPinnedDiv);
+        if (this.pinnedDiv) {
+          commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
         }
       }
     };
@@ -274,8 +277,6 @@
         doc.documentElement.innerHTML = res.responseText;
         p = doc.getElementById("root_" + threadId);
         pinnedSection.appendChild(p);
-        _this.remainingToLoad--;
-        _this._showPinnedPostsWhenFinished();
       });
     };
 
