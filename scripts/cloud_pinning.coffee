@@ -15,6 +15,9 @@ class PinList
 				console.log("Got settings data: #{res.responseText}")
 				@pinnedList = JSON.parse(res.responseText)['watched']
 				success()
+			else if(res.status is 404) #User didn't exist.
+				@pinnedList = new Array()
+				success()
 		)
 		return
 
@@ -25,10 +28,20 @@ class PinList
 
 		if(!@pinnedList.contains(id))
 			getUrl("https://shacknotify.bit-shift.com:12244/users/#{username}/settings", (res) =>
+				update = false
 				if(res.status is 200)
 					settingsData = JSON.parse(res.responseText)
 					@pinnedList.push(parseInt(id))
 					settingsData['watched'] = @pinnedList
+					update = true
+				else if (res.status is 404)
+					@pinnedList.push(parseInt(id))
+					settingsData = {
+						watched: @pinnedList
+					}
+					update = true
+
+				if (update)
 					postUrl("https://shacknotify.bit-shift.com:12244/users/#{username}/settings", JSON.stringify(settingsData), (res) =>
 						if(res.status is 200)
 							if(success)
@@ -44,7 +57,7 @@ class PinList
 
 		if(@pinnedList.contains(id))
 			getUrl("https://shacknotify.bit-shift.com:12244/users/#{username}/settings", (res) =>
-				if(res.status is 200)
+				if(res.status is 200) #If we're removing, we can't act on someone that doesn't have settings already saved.
 					settingsData = JSON.parse(res.responseText)
 					@pinnedList.remove(parseInt(id))
 					settingsData['watched'] = @pinnedList
@@ -197,10 +210,10 @@ class Pinning
 						#load it dynamically
 						@_loadPinnedThread(pinnedItem, @pinnedDiv)
 
-			commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
-			commentBlock.removeChild(@loadingPinnedDiv)
-			if(@pinnedDiv)
-				commentBlock.insertBefore(@pinnedDiv, commentBlock.firstElementChild)
+		commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads')
+		commentBlock.removeChild(@loadingPinnedDiv)
+		if(@pinnedDiv)
+			commentBlock.insertBefore(@pinnedDiv, commentBlock.firstElementChild)
 
 		return
 
@@ -209,11 +222,15 @@ class Pinning
 			doc = document.implementation.createHTMLDocument("example")
 			doc.documentElement.innerHTML = res.responseText
 			p = doc.getElementById("root_#{threadId}")
+			#Cap all threads that are loaded from the outside since they won't be by default.
+			if(e.getElementsByTagName('li').length > 32)
+				p.classList.add('capped')
 			pinnedSection.appendChild(p)
 			#@remainingToLoad--
 			#@_showPinnedPostsWhenFinished()
 			return
 		)
+		return
 
 	_showPinnedPostsWhenFinished: () =>
 		if(@remainingToLoad is 0)

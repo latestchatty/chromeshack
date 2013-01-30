@@ -38,6 +38,9 @@
           console.log("Got settings data: " + res.responseText);
           _this.pinnedList = JSON.parse(res.responseText)['watched'];
           return success();
+        } else if (res.status === 404) {
+          _this.pinnedList = new Array();
+          return success();
         }
       });
     };
@@ -51,11 +54,21 @@
       }
       if (!this.pinnedList.contains(id)) {
         getUrl("https://shacknotify.bit-shift.com:12244/users/" + username + "/settings", function(res) {
-          var settingsData;
+          var settingsData, update;
+          update = false;
           if (res.status === 200) {
             settingsData = JSON.parse(res.responseText);
             _this.pinnedList.push(parseInt(id));
             settingsData['watched'] = _this.pinnedList;
+            update = true;
+          } else if (res.status === 404) {
+            _this.pinnedList.push(parseInt(id));
+            settingsData = {
+              watched: _this.pinnedList
+            };
+            update = true;
+          }
+          if (update) {
             return postUrl("https://shacknotify.bit-shift.com:12244/users/" + username + "/settings", JSON.stringify(settingsData), function(res) {
               if (res.status === 200) {
                 if (success) {
@@ -261,21 +274,24 @@
             }
           }
         }
-        commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
-        commentBlock.removeChild(this.loadingPinnedDiv);
-        if (this.pinnedDiv) {
-          commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
-        }
+      }
+      commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+      commentBlock.removeChild(this.loadingPinnedDiv);
+      if (this.pinnedDiv) {
+        commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
       }
     };
 
     Pinning.prototype._loadPinnedThread = function(threadId, pinnedSection) {
       var _this = this;
-      return getUrl("http://www.shacknews.com/chatty?id=" + threadId, function(res) {
+      getUrl("http://www.shacknews.com/chatty?id=" + threadId, function(res) {
         var doc, p;
         doc = document.implementation.createHTMLDocument("example");
         doc.documentElement.innerHTML = res.responseText;
         p = doc.getElementById("root_" + threadId);
+        if (e.getElementsByTagName('li').length > 32) {
+          p.classList.add('capped');
+        }
         pinnedSection.appendChild(p);
       });
     };
