@@ -161,9 +161,25 @@
     }
 
     Pinning.prototype.initialize = function() {
+      var commentBlock, firstChattyComment, loadingImg, s;
       this.showPinnedPosts = (window.location.search.length === 0) && (window.location.href.indexOf('/chatty') > 0);
       this.pinText = "pin";
       this.unpinText = "unpin";
+      if (this.showPinnedPosts) {
+        commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
+        this.loadingPinnedDiv = document.createElement('div');
+        this.loadingPinnedDiv.classList.add('pinnedLoading');
+        s = document.createElement('span');
+        s.classList.add('pinnedLoading');
+        s.innerText = 'Loading Pinned Posts';
+        loadingImg = document.createElement('img');
+        loadingImg.classList.add('pinnedLoading');
+        loadingImg.src = chrome.extension.getURL("../images/loading-pinned.gif");
+        this.loadingPinnedDiv.appendChild(s);
+        this.loadingPinnedDiv.appendChild(loadingImg);
+        firstChattyComment = commentBlock.firstElementChild;
+        commentBlock.insertBefore(this.loadingPinnedDiv, firstChattyComment);
+      }
       this.pinList = new PinList();
       this.pinList.initializePinList(this._listLoaded);
     };
@@ -230,7 +246,7 @@
     };
 
     Pinning.prototype._listLoaded = function() {
-      var bannerImage, commentBlock, el, pinButton, pinnedItem, _i, _len, _ref;
+      var bannerImage, el, pinButton, pinnedItem, _i, _len, _ref;
       this.finishedLoadingPinList = true;
       if (this.pinList.pinnedList.length > 0) {
         if (this.showPinnedPosts) {
@@ -253,15 +269,13 @@
             if (el) {
               el.parentNode.removeChild(el);
               this.pinnedDiv.appendChild(el);
+              this.remainingToLoad--;
+              this._showPinnedPostsWhenFinished();
             } else {
               this._loadPinnedThread(pinnedItem, this.pinnedDiv);
             }
           }
         }
-      }
-      commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
-      if (this.pinnedDiv) {
-        commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
       }
     };
 
@@ -276,6 +290,9 @@
           p.classList.add('capped');
         }
         pinnedSection.appendChild(p);
+        processPostEvent.raise(p, threadId, true);
+        _this.remainingToLoad--;
+        _this._showPinnedPostsWhenFinished();
       });
     };
 
@@ -285,7 +302,7 @@
         commentBlock = getDescendentByTagAndClassName(document.getElementById('content'), 'div', 'threads');
         commentBlock.removeChild(this.loadingPinnedDiv);
         if (this.pinnedDiv) {
-          return commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
+          commentBlock.insertBefore(this.pinnedDiv, commentBlock.firstElementChild);
         }
       }
     };
@@ -299,11 +316,13 @@
           this.pinList.addPinnedPost(postId, function() {
             var el;
             button.innerHTML = _this.unpinText;
-            el = document.getElementById("root_" + postId);
-            if (el) {
-              el.parentNode.removeChild(el);
-              if (_this.pinnedDiv) {
-                return _this.pinnedDiv.appendChild(el);
+            if (_this.showPinnedPosts) {
+              el = document.getElementById("root_" + postId);
+              if (el) {
+                el.parentNode.removeChild(el);
+                if (_this.pinnedDiv) {
+                  return _this.pinnedDiv.appendChild(el);
+                }
               }
             }
           });
