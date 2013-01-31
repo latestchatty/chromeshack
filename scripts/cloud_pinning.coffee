@@ -223,7 +223,7 @@ class Pinning
 			doc.documentElement.innerHTML = res.responseText
 			p = doc.getElementById("root_#{threadId}")
 			#Cap all threads that are loaded from the outside since they won't be by default.
-			if(e.getElementsByTagName('li').length > 32)
+			if(p.getElementsByTagName('li').length > 32)
 				p.classList.add('capped')
 			pinnedSection.appendChild(p)
 			#@remainingToLoad--
