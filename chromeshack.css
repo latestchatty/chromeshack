@@ -1,3 +1,6 @@
+div.pin { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
+a.pin_button { color: #16ff60; padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
+
 /* lol buttons */
 div.lol { display:inline; float: none; padding-left: 10px; font-size: 14px !important; }
 a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
@@ -350,4 +353,29 @@ label.imageUploadLabel {
     display: inline !important;
     margin-bottom: 10px !important;
     padding-right: 10px;
+=======
+div.pinnedPosts {
+    border: 1px #3f5190 solid;
+    margin-top: 20px;
+    /*-webkit-border-radius: 10px;*/
+    padding-right: 6px;
+}
+
+div.pinnedLoading {
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-top: 20px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+span.pinnedLoading
+{
+    vertical-align: middle;
+}
+
+img.pinnedLoading
+{
+    vertical-align: middle;
+    margin-left: 5px;
 }

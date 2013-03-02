@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.27",
+    "version": "1.28",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -40,6 +40,7 @@
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
             "scripts/elder_scroll.js",
+				"scripts/cloud_pinning.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
@@ -73,6 +74,7 @@
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
         , "*://*.shacknews.com/*"
+        , "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
         "scripts/video_loader_helper.js",
@@ -88,6 +90,8 @@
         "images/dinogegtik.png",
         "images/doom_health.png",
         "images/lol.png",
+        "images/loading-pinned.gif",
+        "images/banners/pinned.png",
         "shack.png"
     ]
 }
