@@ -1,17 +1,5 @@
 /**
 *   Originally authored by indosaurus, re-written for chromeshack.
-*
-*   Upon reaching the bottom of the page the next page of posts will be loaded and appended to the
-*   threads.
-*
-*   It's named "elder scroll" because it's loading /[older]/ posts when you scroll HAHAHAAHAH *gun*
-*
-**/
-
-/*  TODO:
-*       let pxToLoadNew be set by the user?
-*       check if new thread ID matches an existing thread ID -> don't load it.
-*       appending new threads is too slow (see end of loadNextPage function)
 */
 
 settingsLoadedEvent.addHandler(function()
@@ -26,7 +14,7 @@ settingsLoadedEvent.addHandler(function()
 
             install: function()
             {
-                if (ElderScroll.getDivNavigation() != null)
+                if (ElderScroll.getDivNavigation() != 0)
                 {
                     window.addEventListener('scroll', ElderScroll.reachedBottom, false);
                     window.addEventListener('resize', ElderScroll.reachedBottom, false);
@@ -93,8 +81,6 @@ settingsLoadedEvent.addHandler(function()
                             ElderScroll.loadNextPage();
                         } else {
                             divThreads.appendChild(ElderScroll.createDivMessage('No more threads to load.', false));
-
-                            // lazy
                             ElderScroll.isLoadingNew = true;
                         }
                     }
