@@ -31,7 +31,7 @@ ChromeShack =
     processFullPosts: function(element)
     {
         // process fullposts
-        var items = document.evaluate("//div[contains(@class, 'fullpost')]/..", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        var items = document.evaluate(".//div[contains(@class, 'fullpost')]/..", element, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
         for (item = null, i = 0; item = items.snapshotItem(i); i++)
         {
             ChromeShack.processPost(item, item.id.substr(5));
