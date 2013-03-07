@@ -11,31 +11,38 @@ settingsLoadedEvent.addHandler(function()
             pxToLoadNew: 500,
             isLoadingNew: false,
             divLoadingInfo: null,
+            rootThreads: [],
 
             install: function()
             {
                 if (ElderScroll.getDivNavigation() != 0)
                 {
+                    ElderScroll.updateRootThreads();
                     window.addEventListener('scroll', ElderScroll.reachedBottom, false);
                     window.addEventListener('resize', ElderScroll.reachedBottom, false);
                 }
             },
             
+            updateRootThreads: function()
+            {
+                var items = document.evaluate(".//div[contains(@class, 'fullpost')]/..", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+                for (item = null, i = 0; item = items.snapshotItem(i); i++)
+                {
+                    ElderScroll.rootThreads.push(item.id.substr(5));
+                }
+            },
+
             createDivMessage: function(text, addLoadingAnimation)
             {
                 var divLoadingInfo = document.createElement('div');
                 divLoadingInfo.id = 'elderscroll-message';
                 divLoadingInfo.appendChild(document.createTextNode(text));
-                
-                //divLoadingInfo.innerText = text;
-                
+                                
                 if (addLoadingAnimation)
                 {
                     var shackLogo = document.createElement('div');
                     shackLogo.id = 'shackLogo';
-                    //.setAttribute("border", "100");
                     divLoadingInfo.appendChild(shackLogo);
-                    
                 }
                 
                 return divLoadingInfo;
@@ -129,26 +136,29 @@ settingsLoadedEvent.addHandler(function()
                         var newDivThreads = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'threads');
 
                         var fragment = document.createDocumentFragment();
+                        
+                        /* To try to preserve the DOM of the original page,
+                        we'll include text nodes even if they're just
+                        linebreaks. Some other script might rely on those being
+                        there. */
+                        fragment.appendChild(newDivThreads.childNodes[0].cloneNode(true));
 
-                        for (var i = 0; i < newDivThreads.childNodes.length; ++i)
+                        // Every 4th node is a new thread.
+                        for (var i = 1; i < newDivThreads.childNodes.length; i = i + 4)
                         {
-                            fragment.appendChild(newDivThreads.childNodes[i].cloneNode(true));
+                            if (newDivThreads.childNodes[i].tagName == 'DIV' && ElderScroll.rootThreads.indexOf(newDivThreads.childNodes[i].id.substr(5)) == -1 ) {
+                                ElderScroll.rootThreads.push(newDivThreads.childNodes[i].id.substr(5));
+                                fragment.appendChild(newDivThreads.childNodes[i].cloneNode(true));      // <div id="root...
+                                fragment.appendChild(newDivThreads.childNodes[i+1].cloneNode(true));    // text node
+                                fragment.appendChild(newDivThreads.childNodes[i+2].cloneNode(true));    // <hr class="ielarynxhack">
+                                fragment.appendChild(newDivThreads.childNodes[i+3].cloneNode(true));    // text node
+                            } else {
+                                if (newDivThreads.childNodes[i].tagName == 'DIV')
+                                    console.log("ElderScroll: Skipping dupe thread " + newDivThreads.childNodes[i].id);
+                            }
                         }
-                        
-                        /**
-                        *   TODO: Speed up this really slow operation somehow.
-                        *      This is probably due to the other content scripts all firing.  The
-                        *      more the user has enabled, the slower this entire operation is.
-                        **/
+
                         divThreads.appendChild(fragment.cloneNode(true));
-                        
-                        /** 
-                        * Just appending the new threads and their parent container is much faster,
-                        * but the other content scripts won't be able to modify the new threads as
-                        * they're no longer direct children of the original thread div.
-                        *
-                        * divThreads.appendChild(newDivThreads);
-                        **/
 
                         // update pageNavigation divs
                         var divThreadContainer = ElderScroll.getDivThreadContainer();
