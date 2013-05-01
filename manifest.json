@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.27",
+    "version": "1.28",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",

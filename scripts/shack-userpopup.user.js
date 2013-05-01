@@ -30,6 +30,8 @@
 	var benchmarkTimer = null;
 	var scriptStartTime = getTime();
 
+	var g_username = null;
+
 	function tw_log(str) { GM_log(str); }
 	function getTime() { benchmarkTimer = new Date(); return benchmarkTimer.getTime(); }
 
@@ -44,7 +46,7 @@
 
 	GM_addStyle(
 		'#user .user { position: relative; cursor: pointer; }'
-		+ '#user .user .hidden { display: none; }'
+		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
 		+ 'span.author span.user { cursor: pointer; }'
 		+ 'div.commentsblock span.author span.user a { text-decoration: none; }'
@@ -72,10 +74,20 @@
 		+ '.tw-profile .tw-close { position: fixed; top: 50%; left: 50%; margin-top: 180px; margin-left: -2.5em; background: #800; font-size: 18px; padding: 4px 10px; font-weight: bold; cursor: pointer; -moz-border-radius: 10px; width: 5em; text-align: center;  }'
 	);
 	
-	function findUsername()
-	{
-		return stripHtml(getElementByClassName(document.getElementById('user'), 'li', 'user').firstChild.innerText);
-	}
+    function findUsername()
+    {
+        if (g_username != null) {
+            return g_username;
+        }
+
+        var username = document.getElementById("user_posts");
+        if (username == null) {
+            g_username = '';
+        } else {
+            g_username = stripHtml(username.innerText);
+        }
+        return g_username;
+    }
 	
 	function createTextWrapper(tag, text, url)
 	{	
@@ -411,7 +423,7 @@
 		}
 		
 		// User name clicked
-		else if ((t.tagName == 'A') && (p.className == 'user light') && (ppp.tagName == 'DIV') && (ppp.id == 'user'))
+		else if ((t.tagName == 'A') && (t.id == 'user_posts'))
 		{
 			e.preventDefault();
 			e.stopPropagation();

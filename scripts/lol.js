@@ -139,10 +139,12 @@ settingsLoadedEvent.addHandler(function()
 
             getUsername: function()
             {
-                var masthead = document.getElementById("user");
-                var username = getDescendentByTagAndClassName(masthead, "li", "user");
-                if (!username) return '';
-                return stripHtml(username.innerHTML);
+                var username = document.getElementById("user_posts");
+                if (username == null) {
+                    return '';
+                } else {
+                    return stripHtml(username.innerHTML);
+                }
             },
 
             getModeration: function(id)
