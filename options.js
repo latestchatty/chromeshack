@@ -6,6 +6,8 @@ function loadOptions()
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
+	 showCloudPinning(getOption("cloud_pinning"));
+	showPinOnReply(getOption('pin_on_reply'));
     showEnabledScripts();
 }
 
@@ -32,6 +34,30 @@ function getVideoLoaderHD()
 {
     var hd = document.getElementById("video_loader_hd");
     return hd.checked;
+}
+
+function showCloudPinning(enabled)
+{
+	var check = document.getElementById("cloud_pinning");
+	check.checked = enabled;
+}
+
+function getCloudPinning()
+{
+	var check = document.getElementById("cloud_pinning");
+	return check.checked;
+}
+
+function getPinOnReply()
+{
+	var check = document.getElementById("pin_on_reply");
+	return check.checked;
+}
+
+function showPinOnReply(enabled)
+{
+	var check = document.getElementById("pin_on_reply");
+	check.checked = enabled;
 }
 
 function showHighlightUsers(groups)
@@ -357,7 +383,9 @@ function saveOptions()
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
-        saveOption("expiration_watcher_style", getExpirationWatcherStyle()); 
+        saveOption("expiration_watcher_style", getExpirationWatcherStyle());
+		 saveOption("cloud_pinning", getCloudPinning());
+		 saveOption("pin_on_reply", getPinOnReply());
     }
     catch (err)
     {
