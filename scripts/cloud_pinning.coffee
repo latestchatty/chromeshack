@@ -77,8 +77,7 @@ class PinList
 
 	_getUsername: () =>
 		unless(@username)
-			masthead = document.getElementById("user")
-			username = getDescendentByTagAndClassName(masthead, "li", "user")
+			username = document.getElementById('user_posts')
 			@username = stripHtml(username.innerHTML)
 
 		unless(@username)
@@ -95,7 +94,7 @@ class Pinning
 
 	initialize: () =>
 		#this won't work with page 2 of the chatty....
-		@showPinnedPosts = ((window.location.search.length is 0) and (window.location.href.indexOf('/chatty') > 0))
+		@showPinnedPosts = (((window.location.search.length is 0) and (window.location.href.indexOf('/chatty') > 0)) and @_getUsername().length > 0)
 		@pinText = "pin"
 		@unpinText = "unpin"
 		#This won't work right until I can figure out how to make the posts load asynchronusly and still have the LOL script and whatnot process it.
@@ -119,6 +118,16 @@ class Pinning
 		@pinList = new PinList()
 		@pinList.initializePinList(@_listLoaded)
 		return
+
+	_getUsername: () =>
+		unless(@username)
+			username = document.getElementById('user_posts')
+			@username = stripHtml(username.innerHTML)
+
+		unless(@username)
+			return ''
+
+		return @username
 
 	addPinLinks: (item, id, isRootPost) =>
 		#Only add pin links to root posts.
