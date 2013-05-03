@@ -257,10 +257,14 @@ settingsLoadedEvent.addHandler(function()
 
                         if (tgt)
                         {
-                            if (tgt.innerHTML.indexOf(' × ') == -1)
-                            {
-                                tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
-                            } 
+                            if (LOL.verboseCounts) {
+                                if (tgt.innerHTML.indexOf(' × ') == -1)
+                                {
+                                    tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
+                                }
+                            } else {
+                                tgt.innerHTML = LOL.counts[rootId][id][tag];
+                            }
                         }
                     
                         // Add (lol * 3) indicators to the onelines
@@ -283,7 +287,7 @@ settingsLoadedEvent.addHandler(function()
                                     spanOnelineTag.className = 'oneline_' + tag;
                                     var lolCountTag;
 									if (LOL.verboseCounts) {
-										lolCountTag = tag + '' + LOL.counts[rootId][id][tag];
+										lolCountTag = tag + ' × ' + LOL.counts[rootId][id][tag];
 									} else {
 										lolCountTag = LOL.counts[rootId][id][tag];
 									}
@@ -297,7 +301,7 @@ settingsLoadedEvent.addHandler(function()
                             var span = document.getElementById('oneline_' + tag + '_' + id);
                             if (typeof(span) != 'undefined')
                             {
-								if (LOL.verboseCounts == 'on') {
+								if (LOL.verboseCounts) {
 									span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
 								} else {
 									span.innerText = LOL.counts[rootId][id][tag];
