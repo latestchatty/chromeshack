@@ -10,6 +10,7 @@ settingsLoadedEvent.addHandler(function()
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
+			verboseCounts: getSetting("lol_verbose_counts"),
             ughThreshold: parseInt(getSetting('lol_ugh_threshold')),
 
             counts: null,
@@ -279,8 +280,14 @@ settingsLoadedEvent.addHandler(function()
                                      // add the button 
                                     spanOnelineTag = document.createElement('span'); 
                                     spanOnelineTag.id = 'oneline_' + tag + '_' + id;
-                                    spanOnelineTag.className = 'oneline_' + tag;  
-                                    spanOnelineTag.appendChild(document.createTextNode(tag + ' × ' + LOL.counts[rootId][id][tag]));
+                                    spanOnelineTag.className = 'oneline_' + tag;
+                                    var lolCountTag;
+									if (LOL.verboseCounts) {
+										lolCountTag = tag + '' + LOL.counts[rootId][id][tag];
+									} else {
+										lolCountTag = LOL.counts[rootId][id][tag];
+									}
+                                    spanOnelineTag.appendChild(document.createTextNode(lolCountTag));
                                     divOnelineTags.appendChild(spanOnelineTag); 
                                 }
                             }
@@ -290,7 +297,11 @@ settingsLoadedEvent.addHandler(function()
                             var span = document.getElementById('oneline_' + tag + '_' + id);
                             if (typeof(span) != 'undefined')
                             {
-                                span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
+								if (LOL.verboseCounts == 'on') {
+									span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
+								} else {
+									span.innerText = LOL.counts[rootId][id][tag];
+								}
                             }
                         }
                     }

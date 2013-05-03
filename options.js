@@ -296,6 +296,11 @@ function getLolShowCounts()
     return document.getElementById("lol_show_counts").value;
 }
 
+function getLolVerboseCounts()
+{
+	return document.getElementById("lol_verbose_counts").checked;
+}
+
 function getLolUghThreshhold()
 {
     return document.getElementById('lol_ugh_threshold').value;
@@ -377,6 +382,7 @@ function saveOptions()
     {
         saveOption("lol_tags", getLolTagValues());
         saveOption("lol_show_counts", getLolShowCounts());
+		saveOption("lol_verbose_counts", getLolVerboseCounts());
         saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("category_banners_visible", getCategoryBanners());
