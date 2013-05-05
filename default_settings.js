@@ -11,7 +11,8 @@ DefaultSettings = {
         "dinogegtik",
         "sparkly_comic",
         "winchatty_comments_search",
-        "expiration_watcher"
+        "expiration_watcher",
+		  "extend_login"
     ],
 
     lol_tags: [
