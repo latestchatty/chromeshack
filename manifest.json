@@ -47,7 +47,8 @@
             "scripts/jquery-1.8.3.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
-            "scripts/image_upload.js"
+            "scripts/image_upload.js",
+			   "scripts/login_extender.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [
@@ -69,7 +70,8 @@
     ],
     "permissions": [
         "contextMenus"
-        , "https://api.imgur.com/*"
+		  , "cookies"
+		  , "https://api.imgur.com/*"
         , "http://chattypics.com/*"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"

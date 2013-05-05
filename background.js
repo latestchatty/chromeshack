@@ -132,6 +132,60 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
+function extendLoginCookie()
+{
+	chrome.cookies.onChanged.addListener(function(changeInfo) {
+		if(changeInfo.removed) return; //Cookie was removed, don't do anything.
+		var cookie = changeInfo.cookie;
+
+		if(changeInfo.cause === "explicit")
+		{
+			if(cookie.name === "_shack_li_")
+			{
+//				alert("Cookie CHANGE\n" +
+//					"Cause: " + changeInfo.cause + "\n" +
+//					"Domain: " + cookie.domain + "\n" +
+//					"Url: " + cookie.url + "\n" +
+//					"Name: " + cookie.name + "\n" +
+//					"Value: " + cookie.value + "\n" +
+//					"Expiration: " + cookie.expirationDate);
+
+				var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+				var token = {
+					url : cookieUrl,
+					name : cookie.name,
+					value : cookie.value,
+					expirationDate : (new Date().getTime() / 1000) + 2592000, //Extend 30 days
+					secure : cookie.secure
+				};
+
+				chrome.cookies.set(token);//, function(c1) {
+//					if(c1 == null)
+//					{
+//						alert("Error extending cookie: " + chrome.runtime.lastError.message);
+//					}
+//					else
+//					{
+////						var origDate = new Date(1970, 0, 1);
+////						origDate.setSeconds(exp);
+//						var newDate = new Date(1970, 0, 1);
+//						newDate.setSeconds(c1.expirationDate);
+//
+//						console.log("Cookie extended from \n"
+//							+ origDate.toString() +
+//							"\n to \n"
+//							+ newDate.toString() +
+//							"Domain: " + c1.domain + "\n" +
+//							"Url: " + c1.url + "\n" +
+//							"Name: " + c1.name + "\n" +
+//							"Value: " + c1.value);
+//					}
+//				});
+			}
+		}
+	});
+}
+
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
 {
     if (request.name == "getSettings")
@@ -141,6 +195,8 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
             showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
     }
+	 else if (request.name == "extendLoginCookie")
+	     extendLoginCookie();
     else if (request.name == "setSetting")
         setSetting(request.key, request.value);
     else if (request.name == "collapseThread")
