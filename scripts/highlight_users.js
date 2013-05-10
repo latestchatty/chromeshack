@@ -21,6 +21,7 @@ settingsLoadedEvent.addHandler(function()
                     "169049", // rauol duke
                     // Pleb Mods
                     "168479", // ajax
+                    "228129", // bitchesbecrazy
                     "9085"  , // busdriver3030
                     "5334"  , // dante
                     "185650", // Dave-A
@@ -33,6 +34,7 @@ settingsLoadedEvent.addHandler(function()
                     "174581", // Frozen Pixel
                     "8105"  , // hirez
                     "7570"  , // kaiser
+                    "169887", // Megara9
                     "169942", // mikecyb
                     "44566" , // Morgin
                     "3243"  , // p[multisync]p
