@@ -253,7 +253,7 @@ settingsLoadedEvent.addHandler(function()
                         }
 
                         // If showCounts is configured as limited and this tag isn't in the user's list of tags, skip it
-                        if ((LOL.showCounts == 'limited') && (tag_names.indexOf(tag) == -1))
+                        if (((LOL.showCounts == 'limited') || (LOL.showCounts == 'short')) && (tag_names.indexOf(tag) == -1))
                             continue;
 
                         // Add * x indicators in the fullpost 
@@ -271,10 +271,14 @@ settingsLoadedEvent.addHandler(function()
 
                         if (tgt)
                         {
-                            if (tgt.innerHTML.indexOf(' × ') == -1)
+                            if (LOL.showCounts == 'short')
+                            {
+                                tgt.innerHTML = LOL.counts[rootId][id][tag];
+                            }
+                            else
                             {
                                 tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
-                            } 
+                            }
                         }
                     
                         // Add (lol * 3) indicators to the onelines
@@ -295,7 +299,14 @@ settingsLoadedEvent.addHandler(function()
                                     spanOnelineTag = document.createElement('span'); 
                                     spanOnelineTag.id = 'oneline_' + tag + '_' + id;
                                     spanOnelineTag.className = 'oneline_' + tag;  
-                                    spanOnelineTag.appendChild(document.createTextNode(tag + ' × ' + LOL.counts[rootId][id][tag]));
+                                    if (LOL.showCounts == 'short')
+                                    {
+                                        spanOnelineTag.appendChild(document.createTextNode(LOL.counts[rootId][id][tag]));
+                                    }
+                                    else
+                                    {
+                                        spanOnelineTag.appendChild(document.createTextNode(tag + ' × ' + LOL.counts[rootId][id][tag]));
+                                    }
                                     divOnelineTags.appendChild(spanOnelineTag); 
                                 }
                             }
@@ -305,7 +316,14 @@ settingsLoadedEvent.addHandler(function()
                             var span = document.getElementById('oneline_' + tag + '_' + id);
                             if (typeof(span) != 'undefined')
                             {
-                                span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
+                                if (LOL.showCounts == 'short')
+                                {
+                                    span.innerText = LOL.counts[rootId][id][tag];
+                                }
+                                else
+                                {
+                                    span.innerText = tag + ' × ' + LOL.counts[rootId][id][tag];
+                                }
                             }
                         }
                     }
