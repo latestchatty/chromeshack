@@ -43,6 +43,21 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
+            installCSS: function()
+            {
+                var css = '';
+                for (var i = 0; i < LOL.tags.length; i++)
+                {
+                    css += '.oneline_tags .oneline_' + LOL.tags[i].name + ' { background-color: ' + LOL.tags[i].color + '; }\n';
+                }
+
+                var styleBlock = document.createElement('style');
+                styleBlock.type = 'text/css';
+                styleBlock.appendChild(document.createTextNode(css));
+
+                document.getElementsByTagName('body')[0].appendChild(styleBlock);
+            },
+
             installButtons: function(item, id)
             {
                 var lol_div_id = 'lol_' + id;
@@ -337,6 +352,7 @@ settingsLoadedEvent.addHandler(function()
         }
 
         LOL.installLink();
+        LOL.installCSS();
         processPostEvent.addHandler(LOL.installButtons);
         fullPostsCompletedEvent.addHandler(LOL.finishPosts);
     }
