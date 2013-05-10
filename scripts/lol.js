@@ -277,7 +277,7 @@ settingsLoadedEvent.addHandler(function()
                             }
                             else
                             {
-                                tgt.innerHTML += ' &times; ' + LOL.counts[rootId][id][tag];
+                                tgt.innerHTML = tag + ' &times; ' + LOL.counts[rootId][id][tag];
                             }
                         }
                     
