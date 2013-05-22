@@ -82,7 +82,8 @@ settingsLoadedEvent.addHandler(function()
                     "172752"  , // Chris Remo
                     "232839"  , // TylerJSmith
                     "10011901", // OzzieMejia
-                    "10024812"  // John Keefer (Keefinator)
+                    "10024812", // John Keefer (Keefinator)
+                    "10005228"  // Andrew Yoon
                 ],
 
                 "Game Devs":
