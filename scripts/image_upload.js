@@ -18,6 +18,8 @@ settingsLoadedEvent.addHandler(function()
 
             chattyPicsUrl : "http://chattypics.com/upload.php",
 
+            uploadShown: false,
+
             insertForm: function() {
                 // var imgurl = chrome.extension.getURL( "../images/image_upload.png");
                 // var image = $("<img/>", { src : imgurl });
@@ -60,7 +62,14 @@ settingsLoadedEvent.addHandler(function()
                 //$(".inlinereply").css("height", "390px");
                 //var legendtable = $('#shacktags_legend_table')
                 var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/><td id='uploadCell4'/></tr></table>");
-                var uploadDiv = $("<div />", { id : "uploadDiv"});
+                var uploadDiv = $("<div />", { id : "uploadDiv"}).hide();
+                var showUpload = $('<a>').html('Show Image Upload').click(function () {
+                    uploadDiv.toggle();
+                    ImageUpload.uploadShown = !ImageUpload.uploadShown;
+                    var text = ImageUpload.uploadShown ? 'Hide Image Upload' : 'Show Image Upload';
+                    showUpload.html(text);
+                });
+                $('#postform').append(showUpload);
                 $("#postform").append(uploadDiv);
                 uploadDiv.append(uploadtable);
                 var chattyUploadLabel = $("<label>", { class : 'imageUploadLabel'});
