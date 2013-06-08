@@ -298,13 +298,18 @@
         var doc, p;
         doc = document.implementation.createHTMLDocument("example");
         doc.documentElement.innerHTML = res.responseText;
-        p = doc.getElementById("root_" + threadId);
-        if (p) {
-          if (p.getElementsByTagName('li').length > 32) {
-            p.classList.add('capped');
+        if (getDescendentByTagAndClassName(doc.getElementById('content'), 'p', 'all_threads_filtered')) {
+          console.log("Removing post ID " + threadId + " because it's not available.");
+          _this.pinList.removePinnedPost(threadId);
+        } else {
+          p = doc.getElementById("root_" + threadId);
+          if (p) {
+            if (p.getElementsByTagName('li').length > 32) {
+              p.classList.add('capped');
+            }
+            pinnedSection.appendChild(p);
+            processPostEvent.raise(p, threadId, true);
           }
-          pinnedSection.appendChild(p);
-          processPostEvent.raise(p, threadId, true);
         }
         _this.remainingToLoad--;
         _this._showPinnedPostsWhenFinished();

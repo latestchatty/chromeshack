@@ -226,14 +226,20 @@ class Pinning
 		getUrl("http://www.shacknews.com/chatty?id=#{threadId}", (res) =>
 			doc = document.implementation.createHTMLDocument("example")
 			doc.documentElement.innerHTML = res.responseText
-			p = doc.getElementById("root_#{threadId}")
-			if(p)
-				#Cap all threads that are loaded from the outside since they won't be by default.
-				if(p.getElementsByTagName('li').length > 32)
-					p.classList.add('capped')
-				pinnedSection.appendChild(p)
-				#re-raise the post processing event so all the things that modify a post run on this since it was loaded directly from the server.
-				processPostEvent.raise(p, threadId, true)
+			#If the post was nuked or is no longer available, remove it from the pinned list.
+			if(getDescendentByTagAndClassName(doc.getElementById('content'), 'p', 'all_threads_filtered'))
+				console.log("Removing post ID #{threadId} because it's not available.")
+				@pinList.removePinnedPost(threadId)
+			else
+				p = doc.getElementById("root_#{threadId}")
+				if(p)
+					#Cap all threads that are loaded from the outside since they won't be by default.
+					if(p.getElementsByTagName('li').length > 32)
+						p.classList.add('capped')
+					pinnedSection.appendChild(p)
+					#re-raise the post processing event so all the things that modify a post run on this since it was loaded directly from the server.
+					processPostEvent.raise(p, threadId, true)
+
 			@remainingToLoad--
 			@_showPinnedPostsWhenFinished()
 			return
