@@ -8,6 +8,16 @@ function getDescendentByTagAndClassName(parent, tag, class_name)
     }
 }
 
+function getDescendentByTagAndAnyClassName(parent, tag, class_name)
+{
+    var descendents = parent.getElementsByTagName(tag);
+    for (var i = 0; i < descendents.length; i++)
+    {
+        if (descendents[i].className.indexOf(class_name) !== -1)
+            return descendents[i];
+    }
+}
+
 function getDescendentsByTagAndClassName(parent, tag, class_name) 
 {
     var descendents = parent.getElementsByTagName(tag);
@@ -15,6 +25,19 @@ function getDescendentsByTagAndClassName(parent, tag, class_name)
     for (var i = 0; i < descendents.length; i++) 
     {
         if (descendents[i].className.indexOf(class_name) == 0) 
+            descArray.push(descendents[i]);
+    }
+
+    return descArray;
+}
+
+function getDescendentsByTagAndAnyClassName(parent, tag, class_name)
+{
+    var descendents = parent.getElementsByTagName(tag);
+    var descArray = new Array();
+    for (var i = 0; i < descendents.length; i++)
+    {
+        if (descendents[i].className.indexOf(class_name) !== -1)
             descArray.push(descendents[i]);
     }
 

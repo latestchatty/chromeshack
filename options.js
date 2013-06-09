@@ -6,9 +6,9 @@ function loadOptions()
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
-	 showCloudPinning(getOption("cloud_pinning"));
-	 showPinOnReply(getOption('pin_on_reply'));
-	 showExtendLogin(getOption('extend_login'));
+    showCloudPinning(getOption("cloud_pinning"));
+    showPinOnReply(getOption('pin_on_reply'));
+    showNwsIncognito(getOption('nws_incognito'));
     showEnabledScripts();
 }
 
@@ -50,14 +50,14 @@ function getCloudPinning()
 }
 
 
-function getExtendLogin()
+function getNwsIncognito()
 {
-	return document.getElementById("extend_login").checked;
+	return document.getElementById("nws_incognito").checked;
 }
 
-function showExtendLogin(enabled)
+function showNwsIncognito(enabled)
 {
-	document.getElementById("extend_login").checked = enabled;
+	document.getElementById("nws_incognito").checked = enabled;
 }
 
 function getPinOnReply()
@@ -396,9 +396,9 @@ function saveOptions()
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
         saveOption("expiration_watcher_style", getExpirationWatcherStyle());
-		  saveOption("cloud_pinning", getCloudPinning());
-		  saveOption("pin_on_reply", getPinOnReply());
-		  saveOption("extend_login", getExtendLogin());
+        saveOption("cloud_pinning", getCloudPinning());
+        saveOption("pin_on_reply", getPinOnReply());
+        saveOption("nws_incognito", getNwsIncognito());
     }
     catch (err)
     {

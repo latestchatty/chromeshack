@@ -132,58 +132,36 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
-function extendLoginCookie()
+function openIncognito(newUrl)
 {
-	chrome.cookies.onChanged.addListener(function(changeInfo) {
-		if(changeInfo.removed) return; //Cookie was removed, don't do anything.
-		var cookie = changeInfo.cookie;
-
-		if(changeInfo.cause === "explicit")
-		{
-			if(cookie.name === "_shack_li_")
-			{
-//				alert("Cookie CHANGE\n" +
-//					"Cause: " + changeInfo.cause + "\n" +
-//					"Domain: " + cookie.domain + "\n" +
-//					"Url: " + cookie.url + "\n" +
-//					"Name: " + cookie.name + "\n" +
-//					"Value: " + cookie.value + "\n" +
-//					"Expiration: " + cookie.expirationDate);
-
-				var cookieUrl = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
-				var token = {
-					url : cookieUrl,
-					name : cookie.name,
-					value : cookie.value,
-					expirationDate : (new Date().getTime() / 1000) + 2592000, //Extend 30 days
-					secure : cookie.secure
-				};
-
-				chrome.cookies.set(token);//, function(c1) {
-//					if(c1 == null)
-//					{
-//						alert("Error extending cookie: " + chrome.runtime.lastError.message);
-//					}
-//					else
-//					{
-////						var origDate = new Date(1970, 0, 1);
-////						origDate.setSeconds(exp);
-//						var newDate = new Date(1970, 0, 1);
-//						newDate.setSeconds(c1.expirationDate);
+//    chrome.windows.getAll({populate:true}, function(windowInfo) {
+//        var incognitoId = -1;
+//        if(windowInfo != null)
+//        {
+//            for(var i = 0; i<windowInfo.length; i++)
+//            {
+//                for(var t = 0; t < windowInfo[i].tabs.length; t++)
+//                {
+//                    var tabInfo = windowInfo[i].tabs[t];
+//                    if(tabInfo.incognito)
+//                    {
+//                        incognitoId = tabInfo.id;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
 //
-//						console.log("Cookie extended from \n"
-//							+ origDate.toString() +
-//							"\n to \n"
-//							+ newDate.toString() +
-//							"Domain: " + c1.domain + "\n" +
-//							"Url: " + c1.url + "\n" +
-//							"Name: " + c1.name + "\n" +
-//							"Value: " + c1.value);
-//					}
-//				});
-			}
-		}
-	});
+//        if(incognitoId >= 0)
+//        {
+//            chrome.windows.create({url:newUrl, incognito:true, type: 'normal', tabId: incognitoId});
+//        }
+//        else
+//        {
+    //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
+            chrome.windows.create({url:newUrl, incognito:true, type: 'normal'});
+//        }
+//    });
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
@@ -195,14 +173,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
             showPageAction(tab.id, tab.url);
         sendResponse(getSettings());
     }
-	 else if (request.name == "extendLoginCookie")
-	     extendLoginCookie();
     else if (request.name == "setSetting")
         setSetting(request.key, request.value);
     else if (request.name == "collapseThread")
         collapseThread(request.id);
     else if (request.name == "unCollapseThread")
         unCollapseThread(request.id);
+    else if (request.name === "launchIncognito")
+        openIncognito(request.value);
     else
         sendResponse();
 });

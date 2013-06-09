@@ -40,15 +40,15 @@
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
             "scripts/elder_scroll.js",
-				"scripts/cloud_pinning.js",
+            "scripts/cloud_pinning.js",
+            "scripts/nws_incognito.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
             "scripts/jquery-1.8.3.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
-            "scripts/image_upload.js",
-			   "scripts/login_extender.js"
+            "scripts/image_upload.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [
@@ -70,8 +70,9 @@
     ],
     "permissions": [
         "contextMenus"
-		  , "cookies"
-		  , "https://api.imgur.com/*"
+        , "cookies"
+        , "tabs"
+        , "https://api.imgur.com/*"
         , "http://chattypics.com/*"
         , "http://www.lmnopc.com/greasemonkey/shacklol/*"
         , "http://shackapi.stonedonkey.com/*"
