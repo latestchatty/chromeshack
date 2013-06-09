@@ -16,63 +16,59 @@ settingsLoadedEvent.addHandler(function()
             
             showExpiration: function(item, id, is_root_post)
             {
-            	var style = getSetting("expiration_watcher_style");
-            	
-                if (is_root_post)
+                var style = getSetting("expiration_watcher_style");
+
+                if (!is_root_post) return;
+
+                var postdate = getDescendentByTagAndClassName(item, "div", "postdate");
+                var expiration_time = ExpirationWatcher.calculateExpirationTime(postdate);
+                var now = Date.now();
+
+                var time_left = expiration_time - now;
+
+                if (style === "Bar")
                 {
-                    var postdate = getDescendentByTagAndClassName(item, "div", "postdate");
-                    var expiration_time = ExpirationWatcher.calculateExpirationTime(postdate);
+                    var wrap = document.createElement("div");
+                    //Give it a different style if it's expired so that it's easier to tell that it's done for good.
+                    wrap.className = (time_left > 0) ? "countdown-wrap" : "expired-wrap";
 
-	            	if (style === "Bar")
-	            	{
-	                    var wrap = document.createElement("div");
-	                    wrap.className = "countdown-wrap";
-	
-	                    var value = wrap.appendChild(document.createElement("div"));
-	                    value.className = "countdown-value";
-	
-	                    ExpirationWatcher.updateExpirationTime(expiration_time, wrap, value);
-	                    postdate.parentNode.insertBefore(wrap, postdate);
-	                }
-	                else if (style === "Doom")
-	                {
-	                    var value = document.createElement("div");
-	                    value.className = "countdown-doom";
+                    var value = wrap.appendChild(document.createElement("div"));
+                    value.className = (time_left > 0) ? "countdown-value" : "expired-value";
 
-						// Calculate the amount of time this thread has left 
-		                var now = Date.now();
-        		        var time_left = expiration_time - now;           
-						
-						// Calculate amount of time left and shift background image to display correct cel 
-						var hours_left = time_left / 3600000;
-						if (hours_left <= 1)
-						{
-							value.style.backgroundPosition = "0 -60px";
-						}
-						else if (hours_left <= 4)
-						{
-							value.style.backgroundPosition = "0 -30px";
-						}
-						
-						// Title contains readable time left 
-						value.title = ExpirationWatcher.getExpirationTimeDescription(now, expiration_time);
-	                    
-	                    // Insert div 
-	                    postdate.parentNode.insertBefore(value, postdate);
-	                }
+                    ExpirationWatcher.updateExpirationTime(time_left, wrap, value);
+                    postdate.parentNode.insertBefore(wrap, postdate);
+                }
+                else if (style === "Doom")
+                {
+                    var value = document.createElement("div");
+                    value.className = "countdown-doom";
+
+                    // Calculate amount of time left and shift background image to display correct cel
+                    var hours_left = time_left / 3600000;
+                    if (hours_left <= 1)
+                    {
+                        value.style.backgroundPosition = "0 -60px";
+                    }
+                    else if (hours_left <= 4)
+                    {
+                        value.style.backgroundPosition = "0 -30px";
+                    }
+
+                    // Title contains readable time left
+                    value.title = ExpirationWatcher.getExpirationTimeDescription(time_left);
+
+                    // Insert div
+                    postdate.parentNode.insertBefore(value, postdate);
                 }
 
             },
 
-            updateExpirationTime: function(expiration_time, wrap, value)
+            updateExpirationTime: function(time_left, wrap, value)
             {
-                var now = Date.now();
-
-                var time_left = expiration_time - now;
                 var percent = 100;
                 var color = ExpirationWatcher.bar_colors[17];
             
-			    var desc = ExpirationWatcher.getExpirationTimeDescription(now, expiration_time); 
+			    var desc = ExpirationWatcher.getExpirationTimeDescription(time_left);
 			    
                 if (time_left > 0)
                 {
@@ -87,10 +83,8 @@ settingsLoadedEvent.addHandler(function()
                 value.style.width = percent + "%";
             },
             
-            getExpirationTimeDescription: function(now, expiration_time)
+            getExpirationTimeDescription: function(time_left)
             {
-                var time_left = expiration_time - now;
-
                 if (time_left > 0)
                 {
                     var total_seconds = Math.round(time_left / 1000);
