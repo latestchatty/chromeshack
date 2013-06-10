@@ -132,36 +132,51 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
+
+var allowedIncognito = false;
+//Cache this because it has to be run in the context of the extension.
+chrome.extension.isAllowedIncognitoAccess(function (allowed){
+    allowedIncognito = allowed;
+});
+
+var lastOpenedIncognito = -1;
+
 function openIncognito(newUrl)
 {
-//    chrome.windows.getAll({populate:true}, function(windowInfo) {
-//        var incognitoId = -1;
-//        if(windowInfo != null)
-//        {
-//            for(var i = 0; i<windowInfo.length; i++)
-//            {
-//                for(var t = 0; t < windowInfo[i].tabs.length; t++)
-//                {
-//                    var tabInfo = windowInfo[i].tabs[t];
-//                    if(tabInfo.incognito)
-//                    {
-//                        incognitoId = tabInfo.id;
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if(incognitoId >= 0)
-//        {
-//            chrome.windows.create({url:newUrl, incognito:true, type: 'normal', tabId: incognitoId});
-//        }
-//        else
-//        {
+    chrome.windows.getAll({}, function(windowInfo) {
+        var incognitoId = -1;
+        if(windowInfo != null)
+        {
+            for(var i = 0; i<windowInfo.length; i++)
+            {
+                var w = windowInfo[i];
+                if(w.incognito)
+                {
+
+                    incognitoId = w.id;
+                    if(incognitoId === lastOpenedIncognito)
+                    {
+                        //If we found the last id we opened with, use that.
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(incognitoId >= 0)
+        {
+            chrome.tabs.create({url:newUrl, windowId: incognitoId, active: false});
+            lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
+        }
+        else
+        {
     //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-            chrome.windows.create({url:newUrl, incognito:true, type: 'normal'});
-//        }
-//    });
+            chrome.windows.create({url:newUrl, incognito:true, type: 'normal'}, function(windowInfo){
+                console.log('Window Id: ' + windowInfo.id);
+                lastOpenedIncognito = windowInfo.id;
+            });
+        }
+    });
 }
 
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
@@ -180,7 +195,12 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
     else if (request.name == "unCollapseThread")
         unCollapseThread(request.id);
     else if (request.name === "launchIncognito")
+    {
         openIncognito(request.value);
+        sendResponse();
+    }
+    else if (request.name === 'allowedIncognitoAccess')
+        sendResponse(allowedIncognito);
     else
         sendResponse();
 });
