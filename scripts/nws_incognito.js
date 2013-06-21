@@ -24,7 +24,7 @@ settingsLoadedEvent.addHandler(function() {
                         });
 
                         cloned.innerHTML += ' (Incognito)';
-                        postBody.replaceChild(cloned, links[iLink]);
+                        $(links[iLink]).replaceWith(cloned);
                     }
 
                     //If we're allowed incognito access, we can open all links.  Otherwise it's a shitstorm since it will open a new window for each link.
