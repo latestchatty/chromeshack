@@ -44,6 +44,7 @@ settingsLoadedEvent.addHandler(function()
                     "9211"  , // redfive
                     "7660"  , // sexpansion pack
                     "169927", // sgtsanity
+                    "2650"  , // thaperfectdrug (aka Dave-A)
                     "32016" , // thekidd
                     "1194"  , // zakk
                     // Dead mods                
