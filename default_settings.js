@@ -12,7 +12,9 @@ DefaultSettings = {
         "sparkly_comic",
         "winchatty_comments_search",
         "expiration_watcher",
-        "nws_incognito"
+        "nws_incognito",
+        "cloud_pinning",
+        "switchers"
     ],
 
     lol_tags: [

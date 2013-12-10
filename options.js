@@ -9,6 +9,7 @@ function loadOptions()
     showCloudPinning(getOption("cloud_pinning"));
     showPinOnReply(getOption('pin_on_reply'));
     showNwsIncognito(getOption('nws_incognito'));
+    showSwitchers(getOption("switchers"));
     showEnabledScripts();
 }
 
@@ -58,6 +59,16 @@ function getNwsIncognito()
 function showNwsIncognito(enabled)
 {
 	document.getElementById("nws_incognito").checked = enabled;
+}
+
+function getSwitchers()
+{
+    return document.getElementById("switchers").checked;
+}
+
+function showSwitchers(enabled)
+{
+    document.getElementById("switchers").checked = enabled;
 }
 
 function getPinOnReply()
@@ -399,6 +410,7 @@ function saveOptions()
         saveOption("cloud_pinning", getCloudPinning());
         saveOption("pin_on_reply", getPinOnReply());
         saveOption("nws_incognito", getNwsIncognito());
+        saveOption("switchers", getSwitchers());
     }
     catch (err)
     {
