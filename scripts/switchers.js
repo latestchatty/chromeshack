@@ -6,16 +6,17 @@ settingsLoadedEvent.addHandler(function () {
         Switchers =
         {
             offenders: [
-                {original: "MagicWishMonkey", new_name: "MaximDiscord", new_id: 160547 }
+                {original: "MagicWishMonkey", new_name: "MaximDiscord", original_id: 160547 },
+                {original: "thaperfectdrug", new_name: "Dave-A", original_id: 2650}
             ],
 
             loadSwitchers: function (item) {
                 for (var iOffender = 0; iOffender < Switchers.offenders.length; iOffender++)
                 {
                     var offender = Switchers.offenders[iOffender];
-                    var offenderPosts = getDescendentsByTagAndAnyClassName(item, "div", "olauthor_" + offender.new_id);
+                    var offenderPosts = getDescendentsByTagAndAnyClassName(item, "div", "olauthor_" + offender.original_id);
                     Switchers.rewritePosts(offenderPosts, offender);
-                    offenderPosts = getDescendentsByTagAndAnyClassName(item, "div", "fpauthor_" + offender.new_id);
+                    offenderPosts = getDescendentsByTagAndAnyClassName(item, "div", "fpauthor_" + offender.original_id);
                     Switchers.rewritePosts(offenderPosts, offender);
                 }
             },
