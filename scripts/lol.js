@@ -101,11 +101,11 @@ settingsLoadedEvent.addHandler(function()
                 button.style.color = color;
                 button.innerText = tag;
 
-                button.addEventListener("click", function(e)
-                {
-                    LOL.lolThread(tag, id, arguments.callee)
-                    e.preventDefault();
-                });
+                // store this stuff in data items instead of an anonymous handler function
+                button.dataset.loltag = tag;
+                button.dataset.threadid = id;
+
+                button.addEventListener("click", LOL.lolThread);
 
                 var span = document.createElement("span");
                 span.appendChild(document.createTextNode("["));
@@ -115,7 +115,7 @@ settingsLoadedEvent.addHandler(function()
                 return span;
             },
 
-            lolThread: function(tag, id, handler)
+            lolThread: function(e)
             {
                 var user = LOL.getUsername();
                 if (!user)
@@ -123,33 +123,47 @@ settingsLoadedEvent.addHandler(function()
                     alert("You must be logged in to lol!");
                     return;
                 }
-                
-                var moderation = LOL.getModeration(id);
-                if (moderation.length)
-                    moderation = "&moderation=" + moderation;
 
-                var url = LOL.URL + "report.php?who=" + user + "&what=" + id + "&tag=" + tag + "&version=" + LOL.VERSION +  moderation;
+                var element = e.target;
+                var tag = element.dataset.loltag;
+                var id = element.dataset.threadid;
+                var isloled = element.dataset.isloled == 'true';
+                
+                var url = LOL.URL + "report.php?who=" + user + "&what=" + id + "&tag=" + tag + "&version=" + LOL.VERSION;
+
+                if (isloled) {
+                    url = url + "&action=untag";
+                } else {
+                    var moderation = LOL.getModeration(id);
+                    if (moderation.length)
+                        url = url + "&moderation=" + moderation;
+                }
 
                 getUrl(url, function(response)
                 {
-                    if (response.status == 200 && response.responseText.indexOf("ok") == 0)
+                    if (response.status == 200 && (response.responseText.indexOf("ok") == 0 || response.responseText.indexOf("You have already") == 0))
                     {
                         // looks like it worked
-                        var new_tag = "*";
-                        for (var i = 0; i < tag.length; i++)
-                            new_tag += " " + tag[i].toUpperCase() + " ";
-                        new_tag += " ' D *";
+                        var new_tag;
+                        if (isloled) {
+                           new_tag = tag; 
+                        } else {
+                            new_tag = "*";
+                            for (var i = 0; i < tag.length; i++)
+                                new_tag += " " + tag[i].toUpperCase() + " ";
+                            new_tag += " ' D *";
+                        }
 
-                        var tag_link = document.getElementById(tag + id);
-                        tag_link.href = LOL.URL + "?user=" + encodeURIComponent(user);
-                        tag_link.innerHTML = new_tag;
-                        tag_link.removeEventListener('click', handler);
+                        element.innerHTML = new_tag;
+                        element.dataset.isloled = !isloled;
                     }
                     else
                     {
                         alert(response.responseText);
                     }
                 });
+
+                e.preventDefault();
             },
 
             getUsername: function()
@@ -164,6 +178,7 @@ settingsLoadedEvent.addHandler(function()
 
             getModeration: function(id)
             {
+                console.log("getting moderation for id: " + id);
                 var tags = ["fpmod_offtopic", "fpmod_nws", "fpmod_stupid", "fpmod_informative", "fpmod_political"];
                 var item = document.getElementById("item_" + id);
                 var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
