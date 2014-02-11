@@ -43,6 +43,7 @@
             "scripts/cloud_pinning.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
+            "scripts/hashtag.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
