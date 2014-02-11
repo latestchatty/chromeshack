@@ -72,7 +72,6 @@
     ],
     "permissions": [
         "contextMenus"
-        , "cookies"
         , "tabs"
         , "https://api.imgur.com/*"
         , "http://chattypics.com/*"
