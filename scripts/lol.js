@@ -129,17 +129,19 @@ settingsLoadedEvent.addHandler(function()
                 var id = element.dataset.threadid;
                 var isloled = element.dataset.isloled == 'true';
                 
-                var url = LOL.URL + "report.php?who=" + user + "&what=" + id + "&tag=" + tag + "&version=" + LOL.VERSION;
+                var url = LOL.URL + "report.php";
+
+                var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
 
                 if (isloled) {
-                    url = url + "&action=untag";
+                    data += '&action=untag';
                 } else {
                     var moderation = LOL.getModeration(id);
                     if (moderation.length)
-                        url = url + "&moderation=" + moderation;
+                        data += '&moderation=' + moderation;
                 }
 
-                getUrl(url, function(response)
+                postFormUrl(url, data, function(response)
                 {
                     if (response.status == 200 && (response.responseText.indexOf("ok") == 0 || response.responseText.indexOf("You have already") == 0))
                     {

@@ -121,3 +121,24 @@ function postUrl(url, data, callback)
 	xhr.open("POST", url, true);
 	xhr.send(data);
 }
+
+function postFormUrl(url, data, callback)
+{
+    // It's necessary to set the request headers for PHP's $_POST stuff to work properly
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if(xhr.readyState == 4)
+        {
+            if(xhr != undefined && xhr != null)
+            {
+                callback(xhr);
+            }
+        }
+    }
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-length", data.length);
+    xhr.setRequestHeader("Connection", "close");
+    xhr.send(data);
+}
