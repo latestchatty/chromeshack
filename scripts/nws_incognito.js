@@ -42,6 +42,7 @@ settingsLoadedEvent.addHandler(function() {
                                             chrome.runtime.sendMessage({name: "launchIncognito", value: allLinks[i]});
                                         }
                                     });
+                                return false;
                                 }).append($('<br/><br/>')));
                             }
                         }
