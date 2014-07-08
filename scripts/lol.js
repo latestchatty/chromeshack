@@ -174,7 +174,9 @@ settingsLoadedEvent.addHandler(function()
                 if (username == null) {
                     return '';
                 } else {
-                    return stripHtml(username.innerHTML);
+                    var m = username.href.match("/user/(.+)/posts");
+                    if (m == null) return '';
+                    return m[1];
                 }
             },
 
