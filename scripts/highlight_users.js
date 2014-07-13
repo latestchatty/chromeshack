@@ -106,6 +106,7 @@ settingsLoadedEvent.addHandler(function()
                     '175192',//Free Radical Design  jbury
                     '186653',//Flagship Studios  Ivan Sulic
                     '7466','173003','172749',//GarageGames  d3tached - (Torque X), sullisnack - Sean Sullivan, timaste - Tim Aste
+                    '10187646',//Full time indie contractor / developer now, timmytaste - Tim Aste (timaste line above)
                     '4605',//Gas Powered Games  hellchick - Caryn Law
                     '3829','169955','171337','6020','168552','172976','166528','4178','2236',//Gearbox Software  rickmus, byorn, DaMojo - Pat Krefting, duvalmagic - Randy Pitchford, kungfusquirrel, MADMikeDavis, mikeyzilla - Mike Neumann, wieder - Charlie Wiederhold, dopefish
                     '172526',//hb-studios  threeup
