@@ -8,6 +8,7 @@ settingsLoadedEvent.addHandler(function () {
             offenders: [
                 {original: "MagicWishMonkey", new_name: "MaximDiscord", original_id: 160547 },
                 {original: "thaperfectdrug", new_name: "Dave-A", original_id: 2650}
+                {original: "timaste", new_name: "timmytaste", original_id: 172749}
             ],
 
             loadSwitchers: function (item) {
