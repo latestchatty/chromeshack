@@ -45,13 +45,15 @@
 	function addCommas(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
 	GM_addStyle(
-		'#user .user { position: relative; cursor: pointer; }'
+		'#banner {overflow: visible !important; }'
+		+ '#user .user { position: relative; cursor: pointer; }'
 		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
 		+ 'span.author span.user { cursor: pointer; }'
 		+ 'div.commentsblock span.author span.user a { text-decoration: none; }'
+		+ '#banner .login .userDropdown a { color: #fff; }'
 		+ 'span.author .userdropdown,'
-		+ '.userDropdown { position: absolute !important; top: 1.5em; left: 0; width: 20em !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; }'
+		+ '.userDropdown { position: absolute !important; top: 1.5em; left: 0; width: 20em !important; background: #222 !important; z-index: 1000001; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; }'
 		+ 'span.author .userdropdown li,'
 		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block; width: 100%; line-height: 2.5em; border-bottom: 1px solid #333; z-index: 9999; }'
 		+ 'span.author .userDropdown li.userDropdown-separator ,'
@@ -330,8 +332,9 @@
 
 	function displayUserMenu(parentObj, username, friendlyName)
 	{
+		var your, vanitySearch, parentAuthor;
 		// Create the dropdown menu if it doesn't already exist 
-		ulUserDD = getElementByClassName(parentObj, 'ul', 'userDropdown'); 
+		var ulUserDD = getElementByClassName(parentObj, 'ul', 'userDropdown'); 
 		if (ulUserDD == null)
 		{
 			// Create UL that will house the dropdown menu 
@@ -422,13 +425,13 @@
 			displayUserMenu(t, t.innerHTML, t.innerHTML);
 		}
 		
-		// User name clicked
-		else if ((t.tagName == 'A') && (t.id == 'user_posts'))
+		//ME clicked
+		else if ((t.tagName == 'A') && (t.text == 'ME'))
 		{
 			e.preventDefault();
 			e.stopPropagation();
 			
-			displayUserMenu(t, t.innerHTML, 'You');
+			displayUserMenu(t, findUsername(), 'You');
 		}
 		
 		// OWN user name clicked as post author
