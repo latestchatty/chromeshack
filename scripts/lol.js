@@ -176,7 +176,7 @@ settingsLoadedEvent.addHandler(function()
                 } else {
                     var m = username.href.match("/user/(.+)/posts");
                     if (m == null) return '';
-                    return m[1];
+                    return unescape(m[1]).replace('+', ' ');
                 }
             },
 
