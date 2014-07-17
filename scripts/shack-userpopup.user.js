@@ -45,7 +45,9 @@
 	function addCommas(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
 	GM_addStyle(
-		'#user .user { position: relative; cursor: pointer; }'
+		'#banner { overflow: visible; }'
+		+ '#banner .login .userDropdown a  { color: #fff; }'
+		+ '#user .user { position: relative; cursor: pointer; }'
 		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
 		+ 'span.author span.user { cursor: pointer; }'
@@ -79,12 +81,16 @@
         if (g_username != null) {
             return g_username;
         }
-
         var username = document.getElementById("user_posts");
         if (username == null) {
             g_username = '';
         } else {
-            g_username = stripHtml(username.innerText);
+            var m = username.href.match("/user/(.+)/posts");
+            if (m == null) {
+                g_username = '';
+            } else {
+                g_username = unescape(m[1]).replace('+', ' ');
+            }
         }
         return g_username;
     }
@@ -422,17 +428,20 @@
 			displayUserMenu(t, t.innerHTML, t.innerHTML);
 		}
 		
-		// User name clicked
-		else if ((t.tagName == 'A') && (t.id == 'user_posts'))
+		// User name clicked (at the top of the banner?)
+		else if ((t.tagName == 'A') && (p.className == 'login') && (pp.className == 'navigation'))
 		{
-			e.preventDefault();
-			e.stopPropagation();
-			
-			displayUserMenu(t, t.innerHTML, 'You');
+			if (p.getElementsByTagName('A')[0] == t)
+			{
+				e.preventDefault();
+				e.stopPropagation();
+
+				displayUserMenu(t, findUsername(), 'You');
+			}
 		}
 		
 		// OWN user name clicked as post author
-		if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user this-user'))
+		else if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user this-user'))
 		{
 			e.preventDefault();
 			e.stopPropagation();
@@ -449,6 +458,19 @@
 			*/
 			displayUserMenu(t, t.innerHTML, 'You');
 		}
+		else {
+
+			var parentDropdown = e.target;
+			while (Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
+				console.log(typeof(parentDropdown) + ' /// ' + parentDropdown);
+				if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
+					parentDropdown.className += ' hidden';
+					break;
+				}
+				parentDropdown = parentDropdown.parentNode;
+			}
+		}
+
 	}, false); 
 
 	// log execution time
