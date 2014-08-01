@@ -27,26 +27,25 @@ settingsLoadedEvent.addHandler(function()
                     "185650", // Dave-A
                     "9509"  , // Deathlove
                     "3259"  , // degenerate
-                    "6380"  , // dognose
-                    "10028" , // drucifer
                     "168256", // edgewise
+                    "172215", // electroly
                     "169197", // filtersweep
                     "174581", // Frozen Pixel
                     "8105"  , // hirez
                     "7570"  , // kaiser
                     "169887", // Megara9
-                    "169942", // mikecyb
                     "44566" , // Morgin
                     "3243"  , // p[multisync]p
                     "194196", // ninjase
                     "8316"  , // paranoid android
                     "9031"  , // portax
                     "9211"  , // redfive
+                    "16880" , // Serpico74
                     "7660"  , // sexpansion pack
-                    "169927", // sgtsanity
+                    "208786", // squigiliwams 
                     "2650"  , // thaperfectdrug (aka Dave-A)
                     "32016" , // thekidd
-                    "1194"  , // zakk
+                    "1194"    // zakk
                     // Dead mods                
                     //"7438"  , // enigmatic (service ended Aug 01 2012?)
                     //"169489", // s[genjuro]s (service ended Feb 02 2012)
@@ -62,6 +61,10 @@ settingsLoadedEvent.addHandler(function()
                     //"167953", // edlin (service ended Feb 02 2012)
                     //"15130" , // utilitymaximizer (service ended Feb 02 2012)
                     //"16880" , // serpico74 (service ended Aug 01 2012?)
+                    //"10028" , // drucifer (service ended Jan 10 2014)
+                    //"6380"  , // dognose (service ended Jan 10 2014)
+                    //"169927", // sgtsanity (service ended Jan 10 2014)
+                    //"169942", // mikecyb (service ended Jan 10 2014)
                 ],
 
                 "Employees":
@@ -84,7 +87,12 @@ settingsLoadedEvent.addHandler(function()
                     "232839"  , // TylerJSmith
                     "10011901", // OzzieMejia
                     "10024812", // John Keefer (Keefinator)
-                    "10005228"  // Andrew Yoon
+                    "10005228", // Andrew Yoon
+                    "10186691", // the man with the briefcase
+                    "10187365", // staymighty
+                    "10187465", // xosammyjoe
+                    "3014718"   // hammersuit
+                    
                 ],
 
                 "Game Devs":
