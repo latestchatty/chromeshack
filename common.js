@@ -138,7 +138,5 @@ function postFormUrl(url, data, callback)
     }
     xhr.open("POST", url, true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.setRequestHeader("Content-length", data.length);
-    xhr.setRequestHeader("Connection", "close");
     xhr.send(data);
 }
