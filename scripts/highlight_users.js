@@ -91,7 +91,8 @@ settingsLoadedEvent.addHandler(function()
                     "10186691", // the man with the briefcase
                     "10187365", // staymighty
                     "10187465", // xosammyjoe
-                    "3014718"   // hammersuit
+                    "3014718" , // hammersuit
+                    "226769"    // Steve Watts (SporkyReeve)
                     
                 ],
 
