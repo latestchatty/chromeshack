@@ -18,7 +18,7 @@ settingsLoadedEvent.addHandler(function()
                     // Head Mods
                     "12398" , // geedeck
                     "171127", // helvetica
-                    "169049", // rauol duke
+                    "174581", // Frozen Pixel (promoted to head mod Aug 8 2014)
                     // Pleb Mods
                     "168479", // ajax
                     "228129", // bitchesbecrazy
@@ -30,7 +30,6 @@ settingsLoadedEvent.addHandler(function()
                     "168256", // edgewise
                     "172215", // electroly
                     "169197", // filtersweep
-                    "174581", // Frozen Pixel
                     "8105"  , // hirez
                     "7570"  , // kaiser
                     "169887", // Megara9
@@ -45,7 +44,13 @@ settingsLoadedEvent.addHandler(function()
                     "208786", // squigiliwams 
                     "2650"  , // thaperfectdrug (aka Dave-A)
                     "32016" , // thekidd
-                    "1194"    // zakk
+                    "1194"  , // zakk
+                    "169049", // rauol duke (resigned from head mod status Aug 8 2014)
+                    "14628" , // EvilDolemite (became mod Aug 8 2014)
+                    "169401", // LoioshDwaggie (became mod Aug 8 2014)
+                    "175142", // eonix (became mod Aug 8 2014)
+                    "126826"  // woddemandred (became mod Aug 8 2014)
+                    
                     // Dead mods                
                     //"7438"  , // enigmatic (service ended Aug 01 2012?)
                     //"169489", // s[genjuro]s (service ended Feb 02 2012)
