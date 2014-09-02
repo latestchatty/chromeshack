@@ -10,6 +10,7 @@ function loadOptions()
     showPinOnReply(getOption('pin_on_reply'));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
+    showNotifications(getOption("notifications"));
     showEnabledScripts();
 }
 
@@ -69,6 +70,16 @@ function getSwitchers()
 function showSwitchers(enabled)
 {
     document.getElementById("switchers").checked = enabled;
+}
+
+function getNotifications()
+{
+    return document.getElementById("enable_notifications").checked;
+}
+
+function showNotifications(enabled)
+{
+    document.getElementById("enable_notifications").checked = enabled;
 }
 
 function getPinOnReply()
@@ -383,6 +394,42 @@ function toggleSettingsVisible()
     }
 }
 
+function logInForNotifications(notificationuid)
+{
+    postFormUrl("https://winchatty.com/v2/notifications/registerNotifierClient",
+        encodeURI("id=" + notificationuid + "&name=Chrome Shack (" + (new Date()) + ")"),
+        function(res) {
+            //console.log("Response from register client " + res.responseText);
+            var result = JSON.parse(res.responseText);
+            if(result.result === "success") {
+                chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid}, function(tab){notificationLoginTabID = tab.id;});
+            }
+        }
+    );
+}
+
+function updateNotificationOptions() {
+    //Log the user in for notifications.
+    if (getNotifications()) {
+        var uid = getOption("notificationuid");
+        if (uid === "" || uid === undefined) {
+            getUrl("https://winchatty.com/v2/notifications/generateId", function (res) {
+                var data = JSON.parse(res.responseText);
+                var notificationUID = data.id;
+                //console.log("Got notification id of " + notificationUID);
+                saveOption("notificationuid", notificationUID);
+                logInForNotifications(notificationUID);
+            })
+        }
+        else {
+            //console.log("Notifications already set up using an id of " + notificationUID);
+        }
+    }
+    else {
+        saveOption("notificationuid", "");
+        //TODO: Log them out because they're disabling it. This requires a username and password.  For now we'll just kill the UID and they can remove it manually because... meh whatever.
+    }
+}
 
 function getDescendentByTagAndClassName(parent, tag, class_name) 
 {
@@ -396,6 +443,9 @@ function getDescendentByTagAndClassName(parent, tag, class_name)
 
 function saveOptions()
 {
+    // Update status to let the user know options were saved
+    var status = document.getElementById("status");
+
     try
     {
         saveOption("lol_tags", getLolTagValues());
@@ -411,15 +461,16 @@ function saveOptions()
         saveOption("pin_on_reply", getPinOnReply());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());
+        updateNotificationOptions();
+        saveOption("notifications", getNotifications());
     }
     catch (err)
     {
-        alert("There was an error while saving your settings:\n" + err); 
+        //alert("There was an error while saving your settings:\n" + err);
+        status.innerHTML = "Error: " + err;
         return;
     }
     
-    // Update status to let the user know options were saved
-    var status = document.getElementById("status");
     status.innerHTML = "Options Saved.";
     setTimeout(function() {
         status.innerHTML = "";

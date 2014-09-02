@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.38",
+    "version": "1.39",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -72,6 +72,7 @@
     ],
     "permissions": [
         "contextMenus"
+        , "notifications"
         , "tabs"
         , "https://api.imgur.com/*"
         , "http://chattypics.com/*"

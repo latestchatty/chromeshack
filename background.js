@@ -1,3 +1,22 @@
+function postFormUrl(url, data, callback)
+{
+    // It's necessary to set the request headers for PHP's $_POST stuff to work properly
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function()
+    {
+        if(xhr.readyState == 4)
+        {
+            if(xhr != undefined && xhr != null)
+            {
+                callback(xhr);
+            }
+        }
+    }
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.send(data);
+}
+
 function getSettings()
 {
     // work around chrome bug 161028
@@ -122,6 +141,60 @@ function addContextMenus()
     });
 }
 
+function startNotifications()
+{
+    chrome.notifications.onClicked.addListener(notificationClicked);
+    pollNotifications();
+}
+
+function pollNotifications()
+{
+    try {
+        var notificationuid = getSetting("notificationuid");
+        //console.log("Notification UID is " + notificationuid);
+        if (notificationuid != "" && notificationuid != undefined) {
+            //http://notifications.winchatty.com/v2/notifications/waitForNotification
+            postFormUrl("http://notifications.winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
+                function (res) {
+                    var notifications = JSON.parse(res.responseText);
+                    //console.log("notification response text: " + res.responseText);
+                    if(notifications.messages)
+                    {
+                        for(var i = 0; i < notifications.messages.length; i++) {
+                            var n = notifications.messages[i];
+                            chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                                    type:"basic",
+                                    title: n.subject,
+                                    message: n.body,
+                                    iconUrl:"icon.png"
+                                },
+                                function (nId) {
+                                    //console.log("Created notification id " + nId);
+                                });
+                        }
+                    }
+                    setTimeout(pollNotifications, 1000);
+                }
+            );
+
+        }
+        else {
+            //console.log("Notifications not set up.");
+        }
+    }
+    catch (e) {
+        setTimeout(pollNotifications, 10000);
+    }
+}
+
+function notificationClicked(notificationId) {
+    if(notificationId.indexOf("ChromeshackNotification") > -1) {
+        var postId = notificationId.replace("ChromeshackNotification", "");
+        chrome.tabs.create({url: "http://www.shacknews.com/chatty?id=" + postId + "#item_" + postId});
+        chrome.notifications.clear(notificationId, function () {});
+    }
+}
+
 function showCommentHistoryClick(info, tab)
 {
     var match = /\/profile\/(.+)$/.exec(info.linkUrl);
@@ -210,3 +283,5 @@ addContextMenus();
 // attempt to update version settings
 var last_version = getSetting("version", 0);
 migrateSettings(last_version);
+
+startNotifications();
