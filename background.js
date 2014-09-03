@@ -156,24 +156,29 @@ function pollNotifications()
             //http://notifications.winchatty.com/v2/notifications/waitForNotification
             postFormUrl("http://notifications.winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
                 function (res) {
-                    var notifications = JSON.parse(res.responseText);
-                    //console.log("notification response text: " + res.responseText);
-                    if(notifications.messages)
-                    {
-                        for(var i = 0; i < notifications.messages.length; i++) {
-                            var n = notifications.messages[i];
-                            chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                    type:"basic",
-                                    title: n.subject,
-                                    message: n.body,
-                                    iconUrl:"icon.png"
-                                },
-                                function (nId) {
-                                    //console.log("Created notification id " + nId);
-                                });
+                    try {
+                        if(res && res.responseText.length > 0) {
+                            var notifications = JSON.parse(res.responseText);
+                            //console.log("notification response text: " + res.responseText);
+                            if (notifications.messages) {
+                                for (var i = 0; i < notifications.messages.length; i++) {
+                                    var n = notifications.messages[i];
+                                    chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                                            type: "basic",
+                                            title: n.subject,
+                                            message: n.body,
+                                            iconUrl: "icon.png"
+                                        },
+                                        function (nId) {
+                                            //console.log("Created notification id " + nId);
+                                        });
+                                }
+                            }
                         }
                     }
-                    setTimeout(pollNotifications, 1000);
+                    finally {
+                        setTimeout(pollNotifications, 1000);
+                    }
                 }
             );
 
