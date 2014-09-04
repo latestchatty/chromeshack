@@ -162,24 +162,14 @@ body.shack_sfw tr.odd {background-color: #eee !important; }
 body.shack_sfw div.interiorcontent th, body.shack_sfw div.interiorform label { color: #000 !important; } 
 
 /* new comment marker */
-li.newcommenthighlighter {
-        background-image: url(data:image/gif;base64,R0lGODlhDAAyAKIAAAAAAP///wCLlwttdh1FSf///wAAAAAAACH5BAEAAAUALAAAAAAMADIAAAM6KLDcoM7ByCZ9t+ZlaY9CKI4D8Ukbtp0Nq62py8U0bGeyitf7feVA3k/oIYKMKF9ReWQme9Chs5VKAAA7) !important;
-}
-
-li.newcommenthighlighter_last {
-        background-image: url(data:image/gif;base64,R0lGODlhDAAJAKIAAAAAAP///wCLlwttdh1FSf///wAAAAAAACH5BAEAAAUALAAAAAAMAAkAAAMUKLDcoM7ByCZ9t+ZlaY9CKI4DkQAAOw%3D%3D) !important;
-}
-
-div.threads ul ul.newcommenthighlighter {
-        background-image: url(data:image/gif;base64,R0lGODlhAQACAJEAAAAAAP///wCLl////yH5BAEAAAMALAAAAAABAAIAAAIClAoAOw%3D%3D) !important;
-        background-repeat: y-repeat;
-}
-
-.newcommenthighlighter_newrootpost .postnumber a:link, .newcommenthighlighter_newrootpost .postnumber a:visited, .newcommenthighlighter_newrootpost .postnumber a:active, .newcommenthighlighter_newrootpost .postnumber a:hover {
-        background-image: url(data:image/gif;base64,R0lGODlhZAAUAKIAAAAAAP///wC8zACLlwCKluTz9GCemf///yH5BAEAAAcALAAAAABkABQAAANweLrc/jDKSau9OOvNu/9gKI6hYJ4nWRVs26qUMMz0LMBSUdcFHsko2eDme+gMSOSsV3QId8OmQwcdMKULGQFlwzJ0hKRh6WU8a8Tygbq7qk+2tHrNWrrnCiB+at075X50gYOEhYaHiImKi4yNjo8+CQA7) !important;;
-}
-span.newcommenthighlighter_bluetext {
-        color: #00BFF3;
+span.newcommenthighlighter {
+    /*border-bottom-color: #0099ff;
+    border-bottom-width: thin;
+    border-bottom-style: dotted;*/
+    border-left-color: #0099ff;
+    border-left-width: thin;
+    border-left-style: solid;
+    padding-left: 2px;
 }
 
 .expiration-watcher-bar .fullpost .postdate { right: 55px !important; }

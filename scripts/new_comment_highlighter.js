@@ -31,16 +31,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     var post = new_posts.snapshotItem(i);
 
-                    // root post
-                    if (post.className == 'sel last')
-                        post.className += ' newcommenthighlighter_newrootpost';
-                    else if (post.className == 'last')
-                        post.className += ' newcommenthighlighter_last';
-                    else if (post.className == '')
-                        post.className += 'newcommenthighlighter';
-
-                    if (post == post.parentNode.childNodes[1])
-                        post.parentNode.className = 'newcommenthighlighter';
+                    var preview = post.getElementsByClassName('oneline_body');
+                    if(preview.length > 0) {
+                        preview[0].className += " newcommenthighlighter";
+                    }
                 }
 
                 NewCommentHighlighter.displayNewCommentCount(new_posts.snapshotLength);
