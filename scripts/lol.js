@@ -170,14 +170,7 @@ settingsLoadedEvent.addHandler(function()
 
             getUsername: function()
             {
-                var username = document.getElementById("user_posts");
-                if (username == null) {
-                    return '';
-                } else {
-                    var m = username.href.match("/user/(.+)/posts");
-                    if (m == null) return '';
-                    return unescape(m[1]).replace('+', ' ');
-                }
+                return getShackUsername();
             },
 
             getModeration: function(id)

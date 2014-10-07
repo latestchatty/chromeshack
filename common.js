@@ -140,3 +140,26 @@ function postFormUrl(url, data, callback)
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.send(data);
 }
+
+function getCookieValue(name, defaultValue)
+{
+    var ret = defaultValue | '';
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++)
+    {
+        var cookie = cookies[i].trim().split('=');
+        if (cookie[0] == name)
+        {
+            ret = cookie[1];
+            break;
+        }
+    }
+    return ret;
+}
+
+var shackUsername = getCookieValue('_gig_llu');
+
+function getShackUsername()
+{
+    return shackUsername;
+}
