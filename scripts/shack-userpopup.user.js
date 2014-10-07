@@ -30,8 +30,6 @@
 	var benchmarkTimer = null;
 	var scriptStartTime = getTime();
 
-	var g_username = null;
-
 	function tw_log(str) { GM_log(str); }
 	function getTime() { benchmarkTimer = new Date(); return benchmarkTimer.getTime(); }
 
@@ -44,56 +42,59 @@
 	function removeClassName(obj, className) { var a = obj.className.split(' '); var i = a.indexOf(className); if (i != -1) { a.splice(i, 1); }obj.className = a.join(' '); }
 	function addCommas(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
-	GM_addStyle(
-		'#banner { overflow: visible; }'
-		+ '#banner .login .userDropdown a  { color: #fff; }'
-		+ '#user .user { position: relative; cursor: pointer; }'
-		+ '.userDropdown.hidden { display: none; }'
-		+ 'span.author { position: relative !important; }'
-		+ 'span.author span.user { cursor: pointer; }'
-		+ 'div.commentsblock span.author span.user a { text-decoration: none; }'
-		+ 'span.author .userdropdown,'
-		+ '.userDropdown { position: absolute !important; top: 1.5em; left: 0; width: 20em !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; }'
-		+ 'span.author .userdropdown li,'
-		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block; width: 100%; line-height: 2.5em; border-bottom: 1px solid #333; z-index: 9999; }'
-		+ 'span.author .userDropdown li.userDropdown-separator ,'
-		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666; }'
-		+ 'span.author .userDropdown li a,' 
-		+ '.userDropdown li a { display: block; width: 100%; margin: 0 1em; padding: 0; color: #ddd; font-weight: normal; font-size: 12px; }'
-		+ 'span.author .userDropdown li a:hover,'
-		+ '.userDropdown li a:hover { color: #fff; text-shadow: 0 0 10px #fff; text-decoration: underline !important; }'
-		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
-		+ '.tw-profile { position: fixed; width: 630px; height: 320px; border: 1px solid #444; padding: 10px 10px 10px 0; overflow: auto; top: 50%; margin-top: -160px; left: 50%; margin-left: -320px; background: #000; color: #fff; z-index: 9999; font-size: 12px; border-radius: 10px; }'
-		+ '.tw-profile a { color: #fff; }'
-		+ '.tw-profile h2 { margin: 4px 0; padding: 0 0 0 10px; font-size: 20px; font-weight: bold; }' 
-		+ '.tw-profile .tw-panel { float: left; width: 200px; height: 280px; overflow: auto; margin-left: 10px; }'
-		+ '.tw-profile .tw-accounts { margin-left: 10px; }'
-		+ '.tw-profile .tw-panel h3 { margin: 0; font-size: 14px; font-weight: bold; background-color: #333; padding: 2px 4px; border-radius: 3px; }' 
-		+ '.tw-profile .tw-panel dl { margin: 0; padding: 0 0 0.5em 0; border-bottom: 1px dashed #333; }'
-		+ '.tw-profile .tw-panel dl dt { font-weight: bold; margin: 0.5em 0 0 0 ; border-top: 1px dashed #333; padding-top: 0.5em;   }'
-		+ '.tw-profile .tw-panel dl dt:first-child { border-top: none; padding-top: 0; }'
-		+ '.tw-profile .tw-panel dl dd { margin: 0; padding: 0 0 0 0.5em; }'
-		+ '.tw-profile .tw-close { position: fixed; top: 50%; left: 50%; margin-top: 180px; margin-left: -2.5em; background: #800; font-size: 18px; padding: 4px 10px; font-weight: bold; cursor: pointer; -moz-border-radius: 10px; width: 5em; text-align: center;  }'
-	);
-	
-    function findUsername()
+    function getCookieValue(name, defaultValue)
     {
-        if (g_username != null) {
-            return g_username;
-        }
-        var username = document.getElementById("user_posts");
-        if (username == null) {
-            g_username = '';
-        } else {
-            var m = username.href.match("/user/(.+)/posts");
-            if (m == null) {
-                g_username = '';
-            } else {
-                g_username = unescape(m[1]).replace('+', ' ');
+        var ret = defaultValue | '';
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++)
+        {
+            var cookie = cookies[i].trim().split('=');
+            if (cookie[0] == name)
+            {
+                ret = cookie[1];
+                break;
             }
         }
-        return g_username;
+        return ret;
     }
+
+    var shackUsername = getCookieValue('_gig_llu');
+
+    function getShackUsername() { return shackUsername; }
+
+	GM_addStyle(
+        ''
+//		+ '#banner { overflow: visible; }'
+//		+ '#banner .login .userDropdown a  { color: #fff; }'
+//		+ '#user .user { position: relative; cursor: pointer; }'
+		+ '#userDropdownTrigger { position: relative; background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNMjU4Ljc0NCwyOTMuMjE0YzcwLjg5NSwwLDEyOC4zNjUtNTcuNDcyLDEyOC4zNjUtMTI4LjM2NmMwLTcwLjg5Ni01Ny40NzMtMTI4LjM2Ny0xMjguMzY1LTEyOC4zNjcKCQljLTcwLjg5NiwwLTEyOC4zNjgsNTcuNDcyLTEyOC4zNjgsMTI4LjM2N0MxMzAuMzc3LDIzNS43NDIsMTg3Ljg0OCwyOTMuMjE0LDI1OC43NDQsMjkzLjIxNHoiLz4KCTxwYXRoIGQ9Ik0zNzEuNTMzLDMyMi40MzJIMTQwLjQ2N2MtNzcuNTc3LDAtMTQwLjQ2Niw2Mi45MDktMTQwLjQ2NiwxNDAuNDg3djEyLjYwMWg1MTJ2LTEyLjYwMQoJCUM1MTIsMzg1LjM0MSw0NDkuMTEyLDMyMi40MzIsMzcxLjUzMywzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=); }'
+		+ '.userDropdown.hidden { display: none; }'
+//		+ 'span.author { position: relative !important; }'
+//		+ 'span.author span.user { cursor: pointer; }'
+//		+ 'div.commentsblock span.author span.user a { text-decoration: none; }'
+//		+ 'span.author .userdropdown,'
+		+ '.userDropdown { background-color: #333333 !important; position: absolute !important; top: 1.5em; left: 0; width: 20em !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
+//		+ 'span.author .userdropdown li,'
+		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100%; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
+//		+ 'span.author .userDropdown li.userDropdown-separator ,'
+		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
+//		+ 'span.author .userDropdown li a,'
+		+ '.userDropdown li a { display: block; width: 100% !important; margin: 0 !important; padding: 4px 10px !important; color: #ddd; font-weight: normal; font-size: 12px; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
+//		+ 'span.author .userDropdown li a:hover,'
+		+ '.userDropdown li a:hover { color: #fff; background-color: #524A60 !important; }'
+//		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
+//		+ '.tw-profile { position: fixed; width: 630px; height: 320px; border: 1px solid #444; padding: 10px 10px 10px 0; overflow: auto; top: 50%; margin-top: -160px; left: 50%; margin-left: -320px; background: #000; color: #fff; z-index: 9999; font-size: 12px; border-radius: 10px; }'
+//		+ '.tw-profile a { color: #fff; }'
+//		+ '.tw-profile h2 { margin: 4px 0; padding: 0 0 0 10px; font-size: 20px; font-weight: bold; }'
+//		+ '.tw-profile .tw-panel { float: left; width: 200px; height: 280px; overflow: auto; margin-left: 10px; }'
+//		+ '.tw-profile .tw-accounts { margin-left: 10px; }'
+//		+ '.tw-profile .tw-panel h3 { margin: 0; font-size: 14px; font-weight: bold; background-color: #333; padding: 2px 4px; border-radius: 3px; }'
+//		+ '.tw-profile .tw-panel dl { margin: 0; padding: 0 0 0.5em 0; border-bottom: 1px dashed #333; }'
+//		+ '.tw-profile .tw-panel dl dt { font-weight: bold; margin: 0.5em 0 0 0 ; border-top: 1px dashed #333; padding-top: 0.5em;   }'
+//		+ '.tw-profile .tw-panel dl dt:first-child { border-top: none; padding-top: 0; }'
+//		+ '.tw-profile .tw-panel dl dd { margin: 0; padding: 0 0 0 0.5em; }'
+		//+ '.tw-profile .tw-close { position: fixed; top: 50%; left: 50%; margin-top: 180px; margin-left: -2.5em; background: #800; font-size: 18px; padding: 4px 10px; font-weight: bold; cursor: pointer; -moz-border-radius: 10px; width: 5em; text-align: center;  }'
+	);
 	
 	function createTextWrapper(tag, text, url)
 	{	
@@ -158,7 +159,7 @@
 		
 		dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 
 
-		var actualUser = '&user=' + encodeURIComponent(findUsername()); 
+		var actualUser = '&user=' + encodeURIComponent(getShackUsername());
 		dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'http://lmnopc.com/greasemonkey/shacklol/user.php?authoredby=' + username + actualUser));
 		
 		// Create menu item for reading post count
@@ -367,7 +368,7 @@
 			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
 
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
-			var actualUser = '&user=' + encodeURIComponent(findUsername()); 
+			var actualUser = '&user=' + encodeURIComponent(getShackUsername());
 
 			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' Wrote', 'http://lmnopc.com/greasemonkey/shacklol/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
 			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [lol]\'d', 'http://lmnopc.com/greasemonkey/shacklol/user.php?loldby=' + username + actualUser, 'userDropdown-lol')); 		
@@ -429,14 +430,14 @@
 		}
 		
 		// User name clicked (at the top of the banner?)
-		else if ((t.tagName == 'A') && (p.className == 'login') && (pp.className == 'navigation'))
+		else if (t.id == 'userDropdownTrigger')
 		{
 			if (p.getElementsByTagName('A')[0] == t)
 			{
 				e.preventDefault();
 				e.stopPropagation();
 
-				displayUserMenu(t, findUsername(), 'You');
+				displayUserMenu(t, getShackUsername(), 'You');
 			}
 		}
 		
@@ -472,6 +473,14 @@
 		}
 
 	}, false); 
+
+    // Add button to the header
+    var divSocial = getElementByClassName(document.getElementsByTagName('header')[0], 'ul' ,'social');
+    var liUser = document.createElement('li');
+    var aUser = document.createElement('a');
+    aUser.setAttribute('id', 'userDropdownTrigger');
+    liUser.appendChild(aUser);
+    divSocial.appendChild(liUser);
 
 	// log execution time
 	tw_log(location.href + ' / ' + (getTime() - scriptStartTime) + 'ms');
