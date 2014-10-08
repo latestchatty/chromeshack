@@ -348,7 +348,6 @@
 			}
 		
 			// Create menu items and add them to ulUser
-			ulUser.appendChild(createListItem('View ' + your + ' Profile', 'http://chattyprofil.es/p/' + username, 'userDropdown-separator', '_blank'));
 			ulUser.appendChild(createListItem(your + ' Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 		
 			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc'));
 			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
