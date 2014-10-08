@@ -170,7 +170,7 @@ settingsLoadedEvent.addHandler(function()
 
             getUsername: function()
             {
-                return getShackUsername();
+                return document.getElementById('user_posts').innerHTML;
             },
 
             getModeration: function(id)
