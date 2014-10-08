@@ -42,31 +42,17 @@
 	function removeClassName(obj, className) { var a = obj.className.split(' '); var i = a.indexOf(className); if (i != -1) { a.splice(i, 1); }obj.className = a.join(' '); }
 	function addCommas(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
-    function getCookieValue(name, defaultValue)
+    function getShackUsername()
     {
-        var ret = defaultValue | '';
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++)
-        {
-            var cookie = cookies[i].trim().split('=');
-            if (cookie[0] == name)
-            {
-                ret = cookie[1];
-                break;
-            }
-        }
-        return ret;
-    }
-
-    var shackUsername = getCookieValue('_gig_llu');
-
-    function getShackUsername() { return shackUsername; }
+		return document.getElementById('user_posts').innerHTML;
+	}
 
 	GM_addStyle(
         ''
 //		+ '#banner { overflow: visible; }'
 //		+ '#banner .login .userDropdown a  { color: #fff; }'
 //		+ '#user .user { position: relative; cursor: pointer; }'
+		+ '.page-chatty #userDropdownTrigger'
 		+ '#userDropdownTrigger { position: relative; background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNMjU4Ljc0NCwyOTMuMjE0YzcwLjg5NSwwLDEyOC4zNjUtNTcuNDcyLDEyOC4zNjUtMTI4LjM2NmMwLTcwLjg5Ni01Ny40NzMtMTI4LjM2Ny0xMjguMzY1LTEyOC4zNjcKCQljLTcwLjg5NiwwLTEyOC4zNjgsNTcuNDcyLTEyOC4zNjgsMTI4LjM2N0MxMzAuMzc3LDIzNS43NDIsMTg3Ljg0OCwyOTMuMjE0LDI1OC43NDQsMjkzLjIxNHoiLz4KCTxwYXRoIGQ9Ik0zNzEuNTMzLDMyMi40MzJIMTQwLjQ2N2MtNzcuNTc3LDAtMTQwLjQ2Niw2Mi45MDktMTQwLjQ2NiwxNDAuNDg3djEyLjYwMWg1MTJ2LTEyLjYwMQoJCUM1MTIsMzg1LjM0MSw0NDkuMTEyLDMyMi40MzIsMzcxLjUzMywzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=); }'
 		+ '.userDropdown.hidden { display: none; }'
 //		+ 'span.author { position: relative !important; }'
@@ -473,6 +459,9 @@
 		}
 
 	}, false); 
+
+
+
 
     // Add button to the header
     var divSocial = getElementByClassName(document.getElementsByTagName('header')[0], 'ul' ,'social');
