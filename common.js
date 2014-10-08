@@ -156,10 +156,3 @@ function getCookieValue(name, defaultValue)
     }
     return ret;
 }
-
-var shackUsername = getCookieValue('_gig_llu');
-
-function getShackUsername()
-{
-    return shackUsername;
-}
