@@ -7,6 +7,8 @@ settingsLoadedEvent.addHandler(function()
             VIDEO_TYPE_NONE: 0,
             VIDEO_TYPE_YOUTUBE: 1,
             VIDEO_TYPE_VIMEO: 2,
+            VIDEO_TYPE_GIFV: 3,
+            VIDEO_TYPE_GFYCAT: 4,
 
             playerId: 0,
 
@@ -47,6 +49,10 @@ settingsLoadedEvent.addHandler(function()
                     return VideoLoader.VIDEO_TYPE_VIMEO
                 else if (url.match(/vimeo\.com\/moogaloop\.swf\?clip_id=\d+.*/i))
                     return VideoLoader.VIDEO_TYPE_VIMEO
+                else if (url.match(/i.imgur\.com\/\w+\.gifv?$/i))
+                    return VideoLoader.VIDEO_TYPE_GIFV
+                else if (VideoLoader.isGfycat(url))
+                    return VideoLoader.VIDEO_TYPE_GFYCAT
 
                 return VideoLoader.VIDEO_TYPE_NONE;
             },
@@ -73,6 +79,10 @@ settingsLoadedEvent.addHandler(function()
                             video = VideoLoader.createYoutube(link.href);
                         else if (type == VideoLoader.VIDEO_TYPE_VIMEO)
                             video = VideoLoader.createVimeo(link.href);
+                        else if (type == VideoLoader.VIDEO_TYPE_GIFV)
+                            video = VideoLoader.createGifv(link.href);
+                        else if (type == VideoLoader.VIDEO_TYPE_GFYCAT)
+                            video = VideoLoader.createGfycat(link.href);
 
 
                         // we actually created a video
@@ -129,6 +139,36 @@ settingsLoadedEvent.addHandler(function()
                 return VideoLoader.createVideoObject(url);
             },
 
+            createGifv: function(href)
+            {
+                var video_id;
+                
+                if ((video_id = href.match(/i.imgur\.com\/(\w+)/i)))
+                    video_id = video_id[1];
+                else
+                    return null;
+
+                var v = document.createElement("video");
+                v.setAttribute("src", "//i.imgur.com/" + video_id + ".mp4");
+                v.setAttribute("autoplay", "true");
+                v.setAttribute("loop", "true");
+                return v;
+            },
+
+            createGfycat: function(href)
+            {
+                var video_id = VideoLoader.getGfycatId(href);
+                
+                if (video_id === false)
+                    return null;
+
+                var v = document.createElement("video");
+                v.setAttribute("src", "//zippy.gfycat.com/" + video_id + ".webm");
+                v.setAttribute("autoplay", "true");
+                v.setAttribute("loop", "true");
+                return v;
+            },
+
             createVideoObject: function(url)
             {
                 var o = document.createElement("object");
@@ -161,6 +201,25 @@ settingsLoadedEvent.addHandler(function()
             onYouTubePlayerReady: function(playerId)
             {
                 console.log("youtube player ready.");
+            },
+
+            isGfycat: function(href)
+            {
+                // some urls don't end in jpeg/png/etc so the normal test won't work
+                if (/http\:\/\/gfycat\.com\/\w+$/.test(href))
+                {
+                    return true;
+                }
+
+                return false;
+            },
+
+            getGfycatId: function(href)
+            {
+                if ((m = /http\:\/\/gfycat.com\/(\w+)$/.exec(href)) != null)
+                    return m[1];
+
+                return false;
             }
         }
 

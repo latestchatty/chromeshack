@@ -4,13 +4,6 @@ settingsLoadedEvent.addHandler(function()
     {
         ImageLoader =
         {
-            install: function() {
-                var s = document.createElement("script");
-                s.setAttribute("src", "http://assets.gfycat.com/js/gfyajax-0.517d.js");
-                s.setAttribute("type", "text/javascript");
-                document.head.appendChild(s);
-            },
-
             loadImages: function(item, id)
             {
                 var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
@@ -48,9 +41,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
-                else if (ImageLoader.isGfycat(href))
+                else if (/http\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href))
                 {
-                    return true;
+                    // imgur gif(v) is loaded by the video loader
+                    return false;
                 }
                 else
                 {
@@ -110,17 +104,7 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     var link = this;
-                    if (link.childNodes[0].nodeName == "DIV")
-                    {
-                        if (e.target.className == "gfyVid") {
-                            // already showing image, collapse it
-                            link.innerHTML = link.href;
-                        }
-                        else {
-                            // probably clicked the controls, let it through
-                        }
-                    }
-                    else if (link.childNodes[0].nodeName == "IMG")
+                    if (link.childNodes[0].nodeName == "IMG")
                     {
                         // already showing image, collapse it
                         link.innerHTML = link.href;
@@ -129,54 +113,18 @@ settingsLoadedEvent.addHandler(function()
                     {
                         // image not showing, show it
                         var image = document.createElement("img");
-                        var isgfy = ImageLoader.isGfycat(link.href);
-                        if (isgfy)
-                        {
-                            image.className = "gfyitem";
-                            image.setAttribute("data-id", ImageLoader.getGfycatId(link.href));
-                            image.setAttribute("data-perimeter", "true");
-                            image.setAttribute("data-dot", "false");
-                        }
-                        else
-                        {
-                            image.src = ImageLoader.getImageUrl(link.href);
-                            image.className = "imageloader";
-                        }
+                        image.src = ImageLoader.getImageUrl(link.href);
+                        image.className = "imageloader";
                         link.removeChild(link.firstChild);
                         link.appendChild(image);
-
-                        if (isgfy) {
-                            var s = document.createElement("script");
-                            s.innerHTML = "gfyCollection.init()";
-                            document.head.appendChild(s);
-                        }
 
                     }
                     e.preventDefault();
                 }
-            },
-
-            isGfycat: function(href)
-            {
-                // some urls don't end in jpeg/png/etc so the normal test won't work
-                if (/http\:\/\/gfycat\.com\/\w+$/.test(href))
-                {
-                    return true;
-                }
-
-                return false;
-            },
-
-            getGfycatId: function(href)
-            {
-                if ((m = /http\:\/\/gfycat.com\/(\w+)$/.exec(href)) != null)
-                    return m[1].toLowerCase();
-
-                return false;
             }
+
         }
 
         processPostEvent.addHandler(ImageLoader.loadImages);
-        ImageLoader.install();
     }
 });
