@@ -12,18 +12,6 @@ settingsLoadedEvent.addHandler(function()
 
             playerId: 0,
 
-            install: function()
-            {
-                if (getSetting("video_loader_hd"))
-                {
-                    // inject our helper script if the user wants the videos to be auto-resized to HD versions
-                    var s = document.createElement("script");
-                    s.setAttribute("src", chrome.extension.getURL("scripts/video_loader_helper.js"));
-                    s.setAttribute("type", "text/javascript");
-                    document.head.appendChild(s);
-                }
-            },
-
             loadVideos: function(item, id)
             {
                 var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
@@ -104,23 +92,49 @@ settingsLoadedEvent.addHandler(function()
             createYoutube: function(href)
             {
                 var video_id;
+                var start = 0;
                 
-                if ((video_id = href.match(/www\.youtube\.com\/watch(_popup)?\?v=([^&]+)/i)))
+                if ((video_id = href.match(/www\.youtube\.com\/watch(_popup)?\?v=([^&#]+)(#t=(\d+))?/i)))
+                {
+                    start = video_id[4];
                     video_id = video_id[2];
-                else if ((video_id = href.match(/youtu\.be\/(.+)/i)))
+                }
+                else if ((video_id = href.match(/youtu\.be\/([^\?]+)(\?t=(.+))?/i)))
+                {
+                    start = VideoLoader.convertTime(video_id[3] || "");
                     video_id = video_id[1];
+                }
                 else
                     return null;
 
-                var id = "youtube_player_" + this.playerId;
-                this.playerId++;
+                var width = 640, height = 390;
+                if (getSetting("video_loader_hd"))
+                {
+                    // if they want hd, just make the player bigger, embed api will use higher quality
+                    width = 853;
+                    height = 480;
+                }
 
-                var url = "http://youtube.com/v/" + video_id + "&hl=en_US&fs=1&enablejsapi=1&version=3&hd=1&playerapiid=" + id;
+                var i = document.createElement("iframe");
+                i.setAttribute("id", "player");
+                i.setAttribute("type", "text/html");
+                i.setAttribute("width", width);
+                i.setAttribute("height", height);
+                i.setAttribute("src", "//www.youtube.com/embed/" + video_id + "?autoplay=1&iv_load_policy=3&rel=0&start=" + start);
+                i.setAttribute("frameborder", "0");
+                i.setAttribute("style", "width: " + width + "px");
 
+                return i;
+            },
 
-                var o = VideoLoader.createVideoObject(url);
-                o.id = id;
-                return o;
+            convertTime: function(duration)
+            {
+                // convert a time like "1m30s" to "90", this is terrible.
+                var match;
+                if ((match = duration.match(/((\d+)m)?((\d+)s)?/)))
+                    return 60 * parseInt(match[2] || 0) + parseInt(match[4] || 0);
+
+                return duration;
             },
 
             createVimeo: function(href)
@@ -223,7 +237,6 @@ settingsLoadedEvent.addHandler(function()
             }
         }
 
-        VideoLoader.install();
         processPostEvent.addHandler(VideoLoader.loadVideos);
     }
 });
