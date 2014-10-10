@@ -6,8 +6,6 @@ function loadOptions()
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
-    showCloudPinning(getOption("cloud_pinning"));
-    showPinOnReply(getOption('pin_on_reply'));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
@@ -39,19 +37,6 @@ function getVideoLoaderHD()
     return hd.checked;
 }
 
-function showCloudPinning(enabled)
-{
-	var check = document.getElementById("cloud_pinning");
-	check.checked = enabled;
-}
-
-function getCloudPinning()
-{
-	var check = document.getElementById("cloud_pinning");
-	return check.checked;
-}
-
-
 function getNwsIncognito()
 {
 	return document.getElementById("nws_incognito").checked;
@@ -80,18 +65,6 @@ function getNotifications()
 function showNotifications(enabled)
 {
     document.getElementById("enable_notifications").checked = enabled;
-}
-
-function getPinOnReply()
-{
-	var check = document.getElementById("pin_on_reply");
-	return check.checked;
-}
-
-function showPinOnReply(enabled)
-{
-	var check = document.getElementById("pin_on_reply");
-	check.checked = enabled;
 }
 
 function showHighlightUsers(groups)
@@ -457,8 +430,6 @@ function saveOptions()
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
         saveOption("expiration_watcher_style", getExpirationWatcherStyle());
-        saveOption("cloud_pinning", getCloudPinning());
-        saveOption("pin_on_reply", getPinOnReply());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());
         updateNotificationOptions();
