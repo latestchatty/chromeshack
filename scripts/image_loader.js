@@ -32,6 +32,23 @@ settingsLoadedEvent.addHandler(function()
                 return false;
             },
 
+            isImgurGifWithWrongExtension : function(href)
+            {
+                // detect imgur links that are actually gifs but are posted with the wrong extension (usually jpg)
+                if (/https?\:\/\/(i\.)?imgur.com\/\w+\.\w+$/.test(href))
+                {
+                    // have to make a request to find out if the webm/mp4 is zippy/fat/giant
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("HEAD", href, false);
+                    xhr.send();
+
+                    if (xhr.getResponseHeader("Content-Type") == "image/gif")
+                        return true;
+                }
+
+                return false;
+            },
+
             isImage: function(href)
             {
                 // some urls don't end in jpeg/png/etc so the normal test won't work
@@ -120,7 +137,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                     else
                     {
-                        if (ImageLoader.isVideo(link.href))
+                        if (ImageLoader.isVideo(link.href) || ImageLoader.isImgurGifWithWrongExtension(link.href))
                         {
                             var video = ImageLoader.createVideo(link.href);
                             link.removeChild(link.firstChild);
