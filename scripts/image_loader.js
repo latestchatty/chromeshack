@@ -11,11 +11,25 @@ settingsLoadedEvent.addHandler(function()
 
                 for (var i = 0; i < links.length; i++)
                 {
-                    if (ImageLoader.isImage(links[i].href))
+                    if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href))
                     {
                         links[i].addEventListener("click", ImageLoader.toggleImage);
                     }
                 }
+            },
+
+            isVideo: function(href)
+            {
+                if (/https?\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href))
+                {
+                    return true;
+                }
+                else if (/https?\:\/\/(\w+\.)?gfycat\.com\/\w+(\.gif)?$/.test(href))
+                {
+                    return true;
+                }
+
+                return false;
             },
 
             isImage: function(href)
@@ -40,11 +54,6 @@ settingsLoadedEvent.addHandler(function()
                 else if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
                 {
                     return true;
-                }
-                else if (/http\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href))
-                {
-                    // imgur gif(v) is loaded by the video loader
-                    return false;
                 }
                 else
                 {
@@ -104,25 +113,87 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     var link = this;
-                    if (link.childNodes[0].nodeName == "IMG")
+                    if (link.childNodes[0].nodeName == "IMG" || link.childNodes[0].nodeName == "VIDEO")
                     {
                         // already showing image, collapse it
                         link.innerHTML = link.href;
                     }
                     else
                     {
-                        // image not showing, show it
-                        var image = document.createElement("img");
-                        image.src = ImageLoader.getImageUrl(link.href);
-                        image.className = "imageloader";
-                        link.removeChild(link.firstChild);
-                        link.appendChild(image);
+                        if (ImageLoader.isVideo(link.href))
+                        {
+                            var video = ImageLoader.createVideo(link.href);
+                            link.removeChild(link.firstChild);
+                            link.appendChild(video);
+                        }
+                        else
+                        {
+                            // image not showing, show it
+                            var image = document.createElement("img");
+                            image.src = ImageLoader.getImageUrl(link.href);
+                            image.className = "imageloader";
+                            link.removeChild(link.firstChild);
+                            link.appendChild(image);
+                        }
 
                     }
                     e.preventDefault();
                 }
-            }
+            },
 
+            createVideo: function(href)
+            {
+                if (href.match(/imgur/))
+                    return ImageLoader.createGifv(href);
+                else if (href.match(/gfycat/))
+                    return ImageLoader.createGfycat(href);
+                return null;
+            },
+
+            createGifv: function(href)
+            {
+                var video_id;
+                
+                if ((video_id = href.match(/i.imgur\.com\/(\w+)/i)))
+                    video_id = video_id[1];
+                else
+                    return null;
+
+                var v = document.createElement("video");
+                v.setAttribute("src", "//i.imgur.com/" + video_id + ".mp4");
+                v.setAttribute("autoplay", "");
+                v.setAttribute("loop", "");
+                v.setAttribute("muted", "");
+                return v;
+            },
+
+            createGfycat: function(href)
+            {
+                var video_id;
+                if ((m = /https?\:\/\/(\w+\.)?gfycat.com\/(\w+)(\.gif)?$/.exec(href)) != null)
+                    video_id = m[2];
+
+                // have to make a request to find out if the webm/mp4 is zippy/fat/giant
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "//gfycat.com/cajax/get/" + video_id, false);
+                xhr.send();
+
+                var info = JSON.parse(xhr.responseText).gfyItem;
+
+                // use webm or mp4, whichever is smaller
+                var video_src = info.mp4Url;
+                if (info.mp4Size > info.webmSize)
+                    video_src = info.webmUrl;
+
+                var v = document.createElement("video");
+                v.setAttribute("src", video_src);
+                v.setAttribute("autoplay", "");
+                v.setAttribute("loop", "");
+                v.setAttribute("muted", "");
+                v.setAttribute("width", info.width);
+                v.setAttribute("height", info.height);
+                return v;
+            }
         }
 
         processPostEvent.addHandler(ImageLoader.loadImages);
