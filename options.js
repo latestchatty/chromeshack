@@ -375,7 +375,22 @@ function logInForNotifications(notificationuid)
             //console.log("Response from register client " + res.responseText);
             var result = JSON.parse(res.responseText);
             if(result.result === "success") {
-                chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid}, function(tab){notificationLoginTabID = tab.id;});
+                chrome.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
+                   function(tabs){
+                       if(tabs.length === 0) {
+                           chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                       } else {
+                           //Since they requested, we'll open the tab and make sure they're at the correct url.
+                           chrome.tabs.update(
+                              tabs[0].tabId,
+                              {
+                                  active: true,
+                                  highlighted: true,
+                                  url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
+                              }
+                           );
+                       }
+                   });
             }
         }
     );

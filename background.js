@@ -157,38 +157,63 @@ function pollNotifications()
             postFormUrl("http://notifications.winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
                 function (res) {
                     try {
-                        if(res && res.responseText.length > 0) {
+                        if(res && res.responseText.length > 0 && res.status === 200) {
                             var notifications = JSON.parse(res.responseText);
-                            //console.log("notification response text: " + res.responseText);
-                            if (notifications.messages) {
-                                for (var i = 0; i < notifications.messages.length; i++) {
-                                    var n = notifications.messages[i];
-                                    chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                            type: "basic",
-                                            title: n.subject,
-                                            message: n.body,
-                                            iconUrl: "icon.png"
-                                        },
-                                        function (nId) {
-                                            //console.log("Created notification id " + nId);
-                                        });
+                            if(!notifications.error) {
+                                //console.log("notification response text: " + res.responseText);
+                                if (notifications.messages) {
+                                    for (var i = 0; i < notifications.messages.length; i++) {
+                                        var n = notifications.messages[i];
+                                        chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                                               type: "basic",
+                                               title: n.subject,
+                                               message: n.body,
+                                               iconUrl: "icon.png"
+                                           },
+                                           function (nId) {
+                                               //console.log("Created notification id " + nId);
+                                           });
+                                    }
+                                }
+                                //If everything was successful, poll again in 15 seconds.
+                                setTimeout(pollNotifications, 15000);
+                                return;
+                            } else {
+                                if(notifications.code === 'ERR_UNKNOWN_CLIENT_ID') {
+                                    chrome.notifications.create("ErrorChromeshackNotification" , {
+                                        type: "basic",
+                                        title: "ChromeShack Error",
+                                        message: "Notifications are no longer enabled for this client, please try enabling them again.",
+                                        iconUrl: "icon.png"
+                                    },
+                                    function (nId) {});
+                                    setSetting('notificationuid', '');
+                                    setSetting('notifications', false);
+                                    return;
+                                } else if (notifications.code == 'ERR_CLIENT_NOT_ASSOCIATED') {
+                                    chrome.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
+                                       function(tabs){
+                                          // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
+                                          if(tabs.length === 0) {
+                                              chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                                          }
+                                       });
                                 }
                             }
                         }
-                    }
-                    finally {
-                        setTimeout(pollNotifications, 1000);
-                    }
+                    } catch (e) {}
+
+                    //If something went wrong, wait a minute before trying again.
+                    setTimeout(pollNotifications, 60000);
                 }
             );
-
         }
         else {
             //console.log("Notifications not set up.");
         }
     }
     catch (e) {
-        setTimeout(pollNotifications, 10000);
+        setTimeout(pollNotifications, 60000);
     }
 }
 
