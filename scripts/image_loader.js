@@ -28,6 +28,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
+                else if (/https?\:\/\/giphy\.com\/gifs\/\w+$/.test(href))
+                {
+                    return true;
+                }
 
                 return false;
             },
@@ -164,6 +168,8 @@ settingsLoadedEvent.addHandler(function()
                     return ImageLoader.createGifv(href);
                 else if (href.match(/gfycat/))
                     return ImageLoader.createGfycat(href);
+                else if (href.match(/giphy/))
+                    return ImageLoader.createGiphy(href);
                 return null;
             },
 
@@ -209,6 +215,22 @@ settingsLoadedEvent.addHandler(function()
                 v.setAttribute("muted", "");
                 v.setAttribute("width", info.width);
                 v.setAttribute("height", info.height);
+                return v;
+            },
+
+            createGiphy: function(href)
+            {
+                var video_id;
+                if ((m = /https?\:\/\/giphy\.com\/gifs\/(\w+)$/.exec(href)) != null)
+                    video_id = m[1];
+
+                var video_src = "//media.giphy.com/media/" + video_id + "/giphy.mp4";
+
+                var v = document.createElement("video");
+                v.setAttribute("src", video_src);
+                v.setAttribute("autoplay", "");
+                v.setAttribute("loop", "");
+                v.setAttribute("muted", "");
                 return v;
             }
         }
