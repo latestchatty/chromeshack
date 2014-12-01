@@ -41,6 +41,10 @@ settingsLoadedEvent.addHandler(function()
                 // detect imgur links that are actually gifs but are posted with the wrong extension (usually jpg)
                 if (/https?\:\/\/(i\.)?imgur.com\/\w+\.\w+$/.test(href))
                 {
+                    // fix when viewing shacknews as https
+                    if (window.location.protocol == "https:")
+                        href = href.replace("http:", "https:");
+
                     // have to make a request to find out if the webm/mp4 is zippy/fat/giant
                     var xhr = new XMLHttpRequest();
                     xhr.open("HEAD", href, false);
