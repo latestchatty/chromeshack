@@ -42,28 +42,55 @@
 	function removeClassName(obj, className) { var a = obj.className.split(' '); var i = a.indexOf(className); if (i != -1) { a.splice(i, 1); }obj.className = a.join(' '); }
 	function addCommas(nStr) { nStr += ''; x = nStr.split('.'); x1 = x[0]; x2 = x.length > 1 ? '.' + x[1] : ''; var rgx = /(\d+)(\d{3})/; while (rgx.test(x1)) { x1 = x1.replace(rgx, '$1' + ',' + '$2'); } return x1 + x2; }
 
+	function isLoggedIn()
+	{
+		return document.getElementById('user_posts') != null;
+	}
+
     function getShackUsername()
     {
 		return document.getElementById('user_posts').innerHTML;
 	}
 
 	GM_addStyle(
-        ''
-        + 'header > div.in { overflow: visible; }'
-        + 'header .social li:nth-child(4) { display: none; }' // Clear room for useful button...
-		+ '#userDropdownTrigger { position: relative; background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNMjU4Ljc0NCwyOTMuMjE0YzcwLjg5NSwwLDEyOC4zNjUtNTcuNDcyLDEyOC4zNjUtMTI4LjM2NmMwLTcwLjg5Ni01Ny40NzMtMTI4LjM2Ny0xMjguMzY1LTEyOC4zNjcKCQljLTcwLjg5NiwwLTEyOC4zNjgsNTcuNDcyLTEyOC4zNjgsMTI4LjM2N0MxMzAuMzc3LDIzNS43NDIsMTg3Ljg0OCwyOTMuMjE0LDI1OC43NDQsMjkzLjIxNHoiLz4KCTxwYXRoIGQ9Ik0zNzEuNTMzLDMyMi40MzJIMTQwLjQ2N2MtNzcuNTc3LDAtMTQwLjQ2Niw2Mi45MDktMTQwLjQ2NiwxNDAuNDg3djEyLjYwMWg1MTJ2LTEyLjYwMQoJCUM1MTIsMzg1LjM0MSw0NDkuMTEyLDMyMi40MzIsMzcxLjUzMywzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=); }'
+		''
+		+ 'header > div.in { overflow: visible; }'
+		+ '.social { display: none; }'
+		+ 'div#account-links { width: 300px !important; }'
+		+ 'header a.button.inbox { width: 50px !important; }'
+		+ 'header a.button.settings { width: 60px !important; }'
+		+ '.userDropdownButton { background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNMjU4Ljc0NCwyOTMuMjE0YzcwLjg5NSwwLDEyOC4zNjUtNTcuNDcyLDEyOC4zNjUtMTI4LjM2NmMwLTcwLjg5Ni01Ny40NzMtMTI4LjM2Ny0xMjguMzY1LTEyOC4zNjcKCQljLTcwLjg5NiwwLTEyOC4zNjgsNTcuNDcyLTEyOC4zNjgsMTI4LjM2N0MxMzAuMzc3LDIzNS43NDIsMTg3Ljg0OCwyOTMuMjE0LDI1OC43NDQsMjkzLjIxNHoiLz4KCTxwYXRoIGQ9Ik0zNzEuNTMzLDMyMi40MzJIMTQwLjQ2N2MtNzcuNTc3LDAtMTQwLjQ2Niw2Mi45MDktMTQwLjQ2NiwxNDAuNDg3djEyLjYwMWg1MTJ2LTEyLjYwMQoJCUM1MTIsMzg1LjM0MSw0NDkuMTEyLDMyMi40MzIsMzcxLjUzMywzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=) '
+		+ '     6px 50% / 10px no-repeat; width: 35px; }'
+		+ 'header.mini .menu-content.hide #account-links .userDropdownButton { border: 1px solid black !important; }'
 		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
 
 		+ 'div.threads ul ul span.author ul { margin-left: 0; background-image: none; bottom: auto; }'
 		+ 'div.threads ul ul li span.author li { padding-left: 0; background-image: none; }'
 
-		+ '.userDropdown { position: absolute !important; top: 1.5em; left: 0; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
+		+ '.userDropdown { position: absolute !important; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
+		+ '.menu-content.hide #account-links .userDropdownButton .userDropdown { top: 20px; right: 21px; }'
+		+ 'header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 60px; right: 75px; }'
+		+ '.user a .userDropdown { top: 1.5em; left: 0; }'
 		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
 		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
 		+ '.userDropdown li a { display: block; width: auto !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; font-family: "Open Sans", sans-serif; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
 		+ '.userDropdown li a:hover { color: #fff; background-color: #524A60 !important; }'
 		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
+
+		// Some responsive tweaks so it doesn't look bad at smaller widths
+		+ '@media (max-width: 1023px) {'
+		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 11px; }'
+		+ '    header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 110px; }'
+		+ '    header.mini a.button.inbox { width: 30px !important; }'
+		+ '    header.mini a.button.settings { width: 30px !important; }'
+		+ '    header.mini .menu-content.hide #account-links .userDropdownButton { overflow: hidden; } '
+		+ '}'
+
+		+ '@media (max-width: 767px) {'
+		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 295px; right: 21px; }'
+		+ '}'
+
 	);
 	
 	function createTextWrapper(tag, text, url)
@@ -332,9 +359,20 @@
 			}
 		
 			// Create menu items and add them to ulUser
-			ulUser.appendChild(createListItem(your + ' Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 		
-			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc'));
-			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
+			var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?a=' + username
+				: 'http://www.shacknews.com/user/' + username + '/posts';
+			ulUser.appendChild(createListItem(your + ' Posts', postsUrl));
+
+			var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?q=' + username
+				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
+			ulUser.appendChild(createListItem(vanitySearch, vanityUrl));
+
+			var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?pa=' + username
+				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
+			ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
 			var actualUser = '&user=' + encodeURIComponent(getShackUsername());
@@ -401,13 +439,10 @@
 		// User name clicked (at the top of the banner?)
 		else if (t.id == 'userDropdownTrigger')
 		{
-			if (p.getElementsByTagName('A')[0] == t)
-			{
-				e.preventDefault();
-				e.stopPropagation();
+			e.preventDefault();
+			e.stopPropagation();
 
-				displayUserMenu(t, getShackUsername(), 'You');
-			}
+			displayUserMenu(t, getShackUsername(), 'You');
 		}
 		
 		// OWN user name clicked as post author
@@ -442,16 +477,16 @@
 
 	}, false); 
 
-
-
-
-    // Add button to the header
-    var divSocial = getElementByClassName(document.getElementsByTagName('header')[0], 'ul' ,'social');
-    var liUser = document.createElement('li');
-    var aUser = document.createElement('a');
-    aUser.setAttribute('id', 'userDropdownTrigger');
-    liUser.appendChild(aUser);
-    divSocial.appendChild(liUser);
+	if (isLoggedIn())
+	{
+	    // Add the button to the account links area, which is visible in both incarnations of the top bar.
+	    var accountLinks = document.getElementById('account-links');
+	    var aUser = document.createElement('a');
+	    aUser.setAttribute('id', 'userDropdownTrigger');
+	    aUser.className = 'button userDropdownButton';
+	    aUser.innerHTML = 'me';
+	    accountLinks.appendChild(aUser);
+	}
 
 	// log execution time
 	tw_log(location.href + ' / ' + (getTime() - scriptStartTime) + 'ms');
