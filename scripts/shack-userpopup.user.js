@@ -64,6 +64,7 @@
 		+ 'header.mini .menu-content.hide #account-links .userDropdownButton { border: 1px solid black !important; }'
 		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
+		+ 'a.button.inbox.on { width: 70px !important; }'
 
 		+ 'div.threads ul ul span.author ul { margin-left: 0; background-image: none; bottom: auto; }'
 		+ 'div.threads ul ul li span.author li { padding-left: 0; background-image: none; }'
