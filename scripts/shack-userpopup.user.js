@@ -359,9 +359,20 @@
 			}
 		
 			// Create menu items and add them to ulUser
-			ulUser.appendChild(createListItem(your + ' Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 		
-			ulUser.appendChild(createListItem(vanitySearch, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc'));
-			ulUser.appendChild(createListItem(parentAuthor, 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc', 'userDropdown-separator'));
+			var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?a=' + username
+				: 'http://www.shacknews.com/user/' + username + '/posts';
+			ulUser.appendChild(createListItem(your + ' Posts', postsUrl));
+
+			var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?q=' + username
+				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
+			ulUser.appendChild(createListItem(vanitySearch, vanityUrl));
+
+			var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+				? 'https://winchatty.com/nusearch?pa=' + username
+				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
+			ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
 			var actualUser = '&user=' + encodeURIComponent(getShackUsername());
