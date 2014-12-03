@@ -8,7 +8,7 @@ function loadOptions()
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
-    showNotifications(getOption("notifications"));
+    showNotifications(getOption("notifications"), getOption("notifications_use_https"));
     showEnabledScripts();
 }
 
@@ -62,9 +62,15 @@ function getNotifications()
     return document.getElementById("enable_notifications").checked;
 }
 
-function showNotifications(enabled)
+function getNotificationsUseHttps()
+{
+    return document.getElementById("notifications_use_https").checked;   
+}
+
+function showNotifications(enabled, useHttps)
 {
     document.getElementById("enable_notifications").checked = enabled;
+    document.getElementById("notifications_use_https").checked = useHttps;
 }
 
 function showHighlightUsers(groups)
@@ -449,6 +455,7 @@ function saveOptions()
         saveOption("switchers", getSwitchers());
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
+        saveOption("notifications_use_https", getNotificationsUseHttps());
     }
     catch (err)
     {

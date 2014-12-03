@@ -220,7 +220,12 @@ function pollNotifications()
 function notificationClicked(notificationId) {
     if(notificationId.indexOf("ChromeshackNotification") > -1) {
         var postId = notificationId.replace("ChromeshackNotification", "");
-        chrome.tabs.create({url: "http://www.shacknews.com/chatty?id=" + postId + "#item_" + postId});
+        var url = "http";
+        if (getSetting("notifications_use_https", false)) {
+            url += "s";
+        }
+        url += "://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
+        chrome.tabs.create({url: url});
         chrome.notifications.clear(notificationId, function () {});
     }
 }
