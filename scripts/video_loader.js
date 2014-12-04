@@ -110,6 +110,7 @@ settingsLoadedEvent.addHandler(function()
                 i.setAttribute("src", "//www.youtube.com/embed/" + video_id + "?autoplay=1&iv_load_policy=3&rel=0&start=" + start);
                 i.setAttribute("frameborder", "0");
                 i.setAttribute("style", "width: " + width + "px");
+                i.setAttribute("allowfullscreen", "");
 
                 return i;
             },
