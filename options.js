@@ -9,6 +9,7 @@ function loadOptions()
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"), getOption("notifications_use_https"));
+    showUserFilters(getOption("user_filters"));
     showEnabledScripts();
 }
 
@@ -435,6 +436,65 @@ function getDescendentByTagAndClassName(parent, tag, class_name)
     }
 }
 
+function showUserFilters(userFilters) {
+    var usersLst = document.getElementById('filtered_users');
+    for (var i = 0; i < usersLst.length; i++) {
+        usersLst.remove(0);
+    }
+    if (userFilters) {
+        for (var i = 0; i < userFilters.length; i++) {
+            var newOption = document.createElement('option');
+            newOption.textContent = userFilters[i];
+            newOption.value = userFilters[i];
+            usersLst.appendChild(newOption);
+        }
+    }
+}
+
+function getUserFilters() {
+    var usersLst = document.getElementById('filtered_users');
+    var users = [];
+    var options = usersLst.getElementsByTagName('option');
+    for (var i = 0; i < options.length; i++) {
+        users.push(options[i].value);
+    }
+    return users;
+}
+
+function addUserFilter() {
+    var usernameTxt = document.getElementById('new_user_filter_text');
+    var usersLst = document.getElementById('filtered_users');
+    var username = usernameTxt.value.trim().toLowerCase();
+    if (username == '') {
+        alert('Please enter a username to filter.');
+        return;
+    }
+    var list = usersLst.getElementsByTagName('option');
+    for (var i = 0; i < list.length; i++) {
+        var existingUsername = list[i].value;
+        if (username == existingUsername) {
+            alert('That username is already filtered.');
+            usernameTxt.value = '';
+            return;
+        }
+    }
+    var newOption = document.createElement('option');
+    newOption.textContent = username;
+    newOption.value = username;
+    usersLst.appendChild(newOption);
+    usernameTxt.value = '';
+}
+
+function removeUserFilter() {
+    var usersLst = document.getElementById('filtered_users');
+    var index = usersLst.selectedIndex;
+    if (index >= 0) {
+        usersLst.remove(index);
+    } else {
+        alert('Please select a username to remove.');
+    }
+}
+
 function saveOptions()
 {
     // Update status to let the user know options were saved
@@ -456,6 +516,7 @@ function saveOptions()
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("notifications_use_https", getNotificationsUseHttps());
+        saveOption("user_filters", getUserFilters());
     }
     catch (err)
     {
@@ -476,4 +537,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('save_options').addEventListener('click', saveOptions);
     document.getElementById('load_options').addEventListener('click', loadOptions);
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
+    document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
+    document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
 });

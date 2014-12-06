@@ -167,6 +167,21 @@
             </h2>
             <p>Use WinChatty NuSearch instead of the Shacknews comment search when using the search box and the search links in the user dropdown menu.</p>
         </div>
+        <div id="custom_user_filters_group">
+            <h2>
+                <input type="checkbox" class="script_check" id="custom_user_filters" />
+                <label for="custom_user_filters">Custom User Filters</label>
+            </h2>
+            <p>Hide posts from the following users:</p>
+            <p>
+                <select id="filtered_users" size="5"></select>
+                <button id="remove_user_filter_btn">Remove</button>
+            </p>
+            <p>
+                <input id="new_user_filter_text">
+                <button id="add_user_filter_btn">Add</button>
+            </p>
+        </div>
         <div>
             <br/>
             <button id="save_options">Save</button>
