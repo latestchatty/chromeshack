@@ -488,6 +488,13 @@
 		accountLinks.appendChild(aUser);
 	}
 
+	settingsLoadedEvent.addHandler(function() {
+		if (getSetting("enabled_scripts").contains("use_winchatty_search")) {
+			var searchForm = document.getElementById('top-search').getElementsByTagName('form')[0];
+			searchForm.action = 'https://winchatty.com/nusearch';
+		}
+	});
+
 	// log execution time
 	tw_log(location.href + ' / ' + (getTime() - scriptStartTime) + 'ms');
 	
