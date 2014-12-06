@@ -478,15 +478,14 @@
 
 	}, false); 
 
-	if (isLoggedIn())
-	{
-	    // Add the button to the account links area, which is visible in both incarnations of the top bar.
-	    var accountLinks = document.getElementById('account-links');
-	    var aUser = document.createElement('a');
-	    aUser.setAttribute('id', 'userDropdownTrigger');
-	    aUser.className = 'button userDropdownButton';
-	    aUser.innerHTML = 'me';
-	    accountLinks.appendChild(aUser);
+	if (isLoggedIn()) {
+		// Add the button to the account links area, which is visible in both incarnations of the top bar.
+		var accountLinks = document.getElementById('account-links');
+		var aUser = document.createElement('a');
+		aUser.setAttribute('id', 'userDropdownTrigger');
+		aUser.className = 'button userDropdownButton';
+		aUser.innerHTML = 'me';
+		accountLinks.appendChild(aUser);
 	}
 
 	// log execution time
