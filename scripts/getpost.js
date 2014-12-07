@@ -43,7 +43,11 @@ settingsLoadedEvent.addHandler(function()
                     {
                         var postId = link.href.match(/[?&]id=([^&#]*)/);
                         
-                        var singlePost = "http://www.shacknews.com/frame_chatty.x?root=&id=" + postId[1];
+                        var singlePost = 'http';
+                        if (window.location.protocol == "https:") {
+                            singlePost += 's';
+                        }
+                        singlePost += "://www.shacknews.com/frame_chatty.x?root=&id=" + postId[1];
                         
                         var request = new XMLHttpRequest();
                         request.onreadystatechange = function()
