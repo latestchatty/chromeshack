@@ -54,6 +54,7 @@
 
 	GM_addStyle(
 		''
+		+ '.in { max-width: inherit !important; }'
 		+ 'header > div.in { overflow: visible; }'
 		+ '.social { display: none; }'
 		+ 'div#account-links { width: 300px !important; }'
@@ -70,8 +71,8 @@
 		+ 'div.threads ul ul li span.author li { padding-left: 0; background-image: none; }'
 
 		+ '.userDropdown { position: absolute !important; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
-		+ '.menu-content.hide #account-links .userDropdownButton .userDropdown { top: 20px; right: 21px; }'
-		+ 'header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 60px; right: 75px; }'
+		+ '.menu-content.hide #account-links .userDropdownButton .userDropdown { top: 20px; right: 10px; }'
+		+ 'header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 60px; right: 64px; }'
 		+ '.user a .userDropdown { top: 1.5em; left: 0; }'
 		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
 		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
@@ -80,6 +81,11 @@
 		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
 
 		// Some responsive tweaks so it doesn't look bad at smaller widths
+		+ '@media (max-width: 1240px) {'
+		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 21px; }'
+		+ '    header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 75px; }'
+		+ '}'
+
 		+ '@media (max-width: 1023px) {'
 		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 11px; }'
 		+ '    header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 110px; }'
