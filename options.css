@@ -34,7 +34,7 @@ span#status { color: white; font-weight: bold; }
 
 h2.group { font-size: 18pt; margin-top: 25px; background: #3264C8; color: white; border: none; padding-top: 5px; 
    padding-bottom: 5px; text-align: center; }
-div.group_header { font-size: 13pt; font-weight: bold; color: white; margin-top: 20px; }
+div.group_header { font-size: 12pt; font-weight: bold; color: white; margin-top: 15px; }
 
 div#video_loader_settings, div#highlight_users_settings, div#nws_incognito_settings { margin-left: 25px; }
 div#category_banners_settings ul, div#expiration_watcher_settings ul, div#post_preview_settings ul 
