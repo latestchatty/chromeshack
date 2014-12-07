@@ -119,7 +119,11 @@ settingsLoadedEvent.addHandler(function()
                 var divThreads = ElderScroll.getDivThreads();
                 divThreads.appendChild(ElderScroll.createDivMessage('Loading new posts...', true));
                 
-                var nextPageURL = "http://www.shacknews.com/chatty?page=" + ElderScroll.getNextPage();
+                var nextPageURL = 'http';
+                if (window.location.protocol == "https:") {
+                    nextPageURL += 's';
+                }
+                nextPageURL += '://www.shacknews.com/chatty?page=' + ElderScroll.getNextPage();
               
                 getUrl(nextPageURL, function(response)
                 {
