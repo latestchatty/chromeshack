@@ -19,15 +19,15 @@ settingsLoadedEvent.addHandler(function()
 
             installLink: function()
             {
-                var comments_tools = getDescendentByTagAndClassName(document, "div", "commentstools");
+                var comments_tools = document.getElementById('newcommentbutton');
                 if (comments_tools)
                 {
+                    GM_addStyle('a#lollink { background-image: none !important; text-indent: -25px !important; }');
                     var link = document.createElement("a");
                     link.id = "lollink";
                     link.href = LOL.URL + "?user=" + encodeURIComponent(LOL.getUsername());
                     link.title = "Check out what got the [lol]s";
-                    link.style.backgroundImage = "url(" + chrome.extension.getURL("../images/lol.png") + ")";
-                    link.appendChild(document.createTextNode("[ L O L ` d ]"));
+                    link.innerHTML = "* L O L ' d *";
                     comments_tools.appendChild(link);
                 }
 
