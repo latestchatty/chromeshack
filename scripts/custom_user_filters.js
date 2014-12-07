@@ -75,15 +75,15 @@
         if (changed) {
             setSetting('username_id_map', usernameIdMap);
         }
-    };
+    }
 
     function install() {
         // Re-filter when a thread is updated by the "refresh" button.
-        document.getElementById('dom_iframe').onload = function() {
+        document.getElementById('dom_iframe').addEventListener('load', function() {
             // This is fired BEFORE the onload inside the Ajax response, so we need to wait until
             // the inner onload has run.
             setTimeout(applyFilter, 0);
-        };
+        });
         applyFilter();
     }
 

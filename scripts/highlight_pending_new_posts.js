@@ -142,11 +142,11 @@
         installJumpToNewPostButton();
 
         // Recalculate the "jump to new post" button's visibility when the user refreshes a thread.
-        document.getElementById('dom_iframe').onload = function() {
+        document.getElementById('dom_iframe').addEventListener('load', function() {
             // This is fired BEFORE the onload inside the Ajax response, so we need to wait until
             // the inner onload has run.
             setTimeout(showOrHideJumpToNewPostButton, 0);
-        };
+        });
 
         // We need to get an initial event ID to start with.
         ajaxGet(
