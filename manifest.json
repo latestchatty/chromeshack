@@ -50,7 +50,8 @@
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
             "scripts/image_upload.js",
-            "scripts/custom_user_filters.js"
+            "scripts/custom_user_filters.js",
+            "scripts/highlight_pending_new_posts.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [
