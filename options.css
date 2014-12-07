@@ -6,7 +6,8 @@ h2 {
 }
 body {
     font-size: 12px;
-    min-width: 250px;
+    min-width: 515px;
+    height: 325px;
 }
 a.remove { font-size: 10px; }
 input.name { width: 50px; }
@@ -15,6 +16,28 @@ textarea { width: 250; }
 
 div#highlight_groups input.built_in { background-color: #d3d3d3; }
 
-select#filtered_users, input#new_user_filter_text { width: 165px; }
+select#filtered_users { width: 239px; }
+input#new_user_filter_text { width: 235px; }
 select#filtered_users { height: 90px; }
-div#custom_user_filters_group p button { float: right; width: 75px; }
+div#custom_user_filters_settings p button { float: right; width: 75px; }
+
+div#menu { width: 190px; position: fixed; left: 0px; top: 0px; height: 100%; background: #3264C8; }
+div#content { margin-left: 190px; margin-bottom: 15px; }
+div#menu ul#menu_list { list-style-type: none; padding-left: 10px; }
+div#menu ul#menu_list li { margin-bottom: 5px; }
+div#menu ul#menu_list li a { color: #C0C0FF; text-decoration: none; }
+div#menu ul#menu_list li a:hover { color: #C0C0FF; text-decoration: underline; }
+
+div#buttons { position: fixed; bottom: 0px; left: 0px; width: 175px; padding: 10px; }
+div#buttons button { width: 83px; }
+span#status { color: white; font-weight: bold; }
+
+h2.group { font-size: 18pt; margin-top: 25px; background: #3264C8; color: white; border: none; padding-top: 5px; 
+   padding-bottom: 5px; text-align: center; }
+div.group_header { font-size: 13pt; font-weight: bold; color: white; margin-top: 20px; }
+
+div#video_loader_settings, div#highlight_users_settings, div#nws_incognito_settings { margin-left: 25px; }
+div#category_banners_settings ul, div#expiration_watcher_settings ul, div#post_preview_settings ul 
+   { list-style-type: none; padding-left: 25px; }
+
+p.info { font-style: italic; }
