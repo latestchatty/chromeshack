@@ -72,35 +72,82 @@
             });
     }
 
-    function jumpToNewPost() {
-        var pendings = document.getElementsByClassName('refresh_pending');
-        if (pendings.length == 0) {
-            return;
+    function isCollapsed(aRefresh) {
+        var divRefresh = aRefresh.parentNode;
+        if (divRefresh === null) {
+            return false;
         }
-        var pending = pendings[0];
-        var divRefresh = pending.parentNode;
+        var divFullpost = divRefresh.parentNode;
+        if (divFullpost === null) {
+            return false;
+        }
+        var li = divFullpost.parentNode;
+        if (li === null) {
+            return false;
+        }
+        var ul = li.parentNode;
+        if (ul === null) {
+            return false;
+        }
+        var root = ul.parentNode;
+        return root !== null && root.tagName == 'DIV' && root.className.split(' ').indexOf('collapsed') !== -1;
+    }
+
+    function getNonCollapsedPendings() {
+        var pendings = document.getElementsByClassName('refresh_pending');
+        var filtered = [];
+
+        for (var i = 0; i < pendings.length; i++) {
+            if (!isCollapsed(pendings[i])) {
+                filtered.push(pendings[i]);
+            }
+        }
+
+        return filtered;
+    }
+
+    function getPostOffset(aRefresh) {
+        var divRefresh = aRefresh.parentNode;
         var divFullpost = divRefresh.parentNode;
         var li = divFullpost.parentNode;
         if (!startsWith(li.id, 'item_')) {
-            return;
+            return 0;
         }
-        $('html, body').animate({
-            scrollTop: ($(li).offset().top - 50) + 'px'
-        }, 'fast');
+        return $(li).offset().top - 50;
+    }
+
+    function jumpToNewPost() {
+        var aRefreshes = getNonCollapsedPendings();
+        if (aRefreshes.length > 1) {
+            var scroll = $(window).scrollTop();
+            for (var i = 0; i < aRefreshes.length; i++) {
+                var aRefresh = aRefreshes[i];
+                var offset = getPostOffset(aRefresh);
+                if (offset > scroll) {
+                    $('html, body').animate({ scrollTop: offset + 'px' }, 'fast');
+                    return;
+                }
+            }
+        }
+
+        var firstOffset = getPostOffset(aRefreshes[0]);;
+        $('html, body').animate({ scrollTop: firstOffset + 'px' }, 'fast');
     }
 
     function installJumpToNewPostButton() {
         var body = document.getElementsByTagName('body')[0];
-        var a = document.createElement('a');
-        a.id = 'jump_to_new_post';
-        a.innerHTML = '<span>&#9733;</span>';
-        a.style.display = 'none';
-        a.addEventListener('click', jumpToNewPost);
-        body.appendChild(a);
+
+        var star = document.createElement('a');
+        star.id = 'jump_to_new_post';
+        star.style.display = 'none';
+        star.innerHTML = '1';
+        star.addEventListener('click', jumpToNewPost);
+
+        body.appendChild(star);
     }
 
     function showOrHideJumpToNewPostButton() {
-        var pending = document.getElementsByClassName('refresh_pending');
+        var pending = getNonCollapsedPendings();
         var button = document.getElementById('jump_to_new_post');
         var indicator = '★ ';
         var titleHasIndicator = startsWith(document.title, indicator);
@@ -112,6 +159,8 @@
             if (!titleHasIndicator) {
                 document.title = indicator + document.title;
             }
+
+            document.getElementById('jump_to_new_post').innerHTML = indicator + pending.length.toString();
         } else {
             if (button !== null) {
                 button.style.display = 'none';
@@ -129,14 +178,24 @@
         }
 
         GM_addStyle(''
-            + 'a#jump_to_new_post { border: 1px solid navyblue; background: skyblue; color: black; position: fixed; '
-            + '    width: 70px; height: 70px; left: -45px; top: 20px; border-radius: 20px; z-index: 9999; }'
-            + 'a#jump_to_new_post:hover { color: white; }'
-            + 'a#jump_to_new_post span { position: fixed; left: -3px; top: 42px; font-size: 35px; }'
-            + 'a.refresh_pending { background: skyblue; border-radius: 10px; width: 15px !important; }'
-            + 'div#commenttools.commentstools .newcomment { width: 50%; }'
-            + 'div#commenttools.commentstools .pagenavigation { position: absolute; right: 0px; width: 60%; '
-            + '    text-align: left }'
+            // The button at the top of the page indicating new posts are available
+            + 'a#jump_to_new_post { border: 1px solid #a19aaf; background: #908a9d; position: fixed; '
+            + '    width: 50px; height: 22px; left: 740px; top: 8px; border-radius: 3px; z-index: 9999; '
+            + "    font-size: 18px; color: white; text-align: center; font-family: 'Open Sans'; }"
+            + 'a#jump_to_new_post:hover { background-color: #5c5070; border-color: #6f6088; }'
+            + '@media (max-width: 1240px) {'
+            + '    a#jump_to_new_post { left: 650px; }'
+            + '}'
+            + '@media (max-width: 1023px) {'
+            + '    a#jump_to_new_post { left: 560px; top: 5px; }'
+            + '}'
+            + '@media (max-width: 767px) {'
+            + '    a#jump_to_new_post { left: 10px; }'
+            + '}'
+            
+            // The thread refresh button when highlighted
+            + 'a.refresh_pending { background: skyblue; border-radius: 10px; width: 14px !important; '
+            + '    height: 15px !important; }'
         );
 
         installJumpToNewPostButton();
@@ -145,6 +204,12 @@
         document.getElementById('dom_iframe').addEventListener('load', function() {
             // This is fired BEFORE the onload inside the Ajax response, so we need to wait until
             // the inner onload has run.
+            setTimeout(showOrHideJumpToNewPostButton, 0);
+        });
+
+        // Trying to get a notification when the user collapses a post.  This is easy...
+        document.addEventListener('click', function() {
+            // Same trick as above; let's wait until other events have executed.
             setTimeout(showOrHideJumpToNewPostButton, 0);
         });
 
@@ -164,5 +229,5 @@
         if (getSetting("enabled_scripts").contains("highlight_pending_new_posts")) {
             install();
         }
-    });    
+    });
 })();
