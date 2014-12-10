@@ -40,4 +40,5 @@ div#video_loader_settings, div#highlight_users_settings, div#nws_incognito_setti
 div#category_banners_settings ul, div#expiration_watcher_settings ul, div#post_preview_settings ul 
    { list-style-type: none; padding-left: 25px; }
 
-p.info { font-style: italic; }
+p.info { font-style: italic; color: #808080; }
+p.indent { margin-left: 25px; }

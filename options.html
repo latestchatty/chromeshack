@@ -23,7 +23,7 @@
                 Tag posts using the ShackLOL system, and show how many tags each post in the chatty has received.
             </p>
             <div id="lol_settings">
-                <label>Show LOL Counts:</label>
+                <label>Show LOL counts:</label>
                 <select id="lol_show_counts">
                     <option value="limited">Limited</option>
                     <option value="short">Limited Counts Only</option>
@@ -37,8 +37,8 @@
                 </fieldset>
                 <fieldset>
                     <legend>[ughs]</legend>
-                    <p>[ugh] is a special tag type. Posts with the selected number of [ugh]s are automatically collapsed when you load the page.</p>
-                    <label>[ugh] Threshold:</label>
+                    <p class="info">[ugh] is a special tag type. Posts with the selected number of [ugh]s are automatically collapsed when you load the page.</p>
+                    <label>[ugh] threshold:</label>
                     <select id="lol_ugh_threshold">
                         <option value="0">Disabled</option>
                         <option value="1">Collapse posts with 1 [ugh]</option>
@@ -52,7 +52,7 @@
                         <option value="9">Collapse posts with 9 [ugh]s</option>
                         <option value="10">Collapse posts with 10 [ugh]s</option>
                     </select>
-                    <p>Remember that [ugh] is a special tag. Don't tag things with it unless they're super depressing soul-sucking posts that you don't feel should be posted on the Shack. If you don't agree to this, don't install and use the tag. Misusers will be banned.</p>
+                    <p class="info">Remember that [ugh] is a special tag. Don't tag things with it unless they're super depressing soul-sucking posts that you don't feel should be posted on the Shack. If you don't agree to this, don't install and use the tag. Misusers will be banned.</p>
                 </fieldset>
             </div>
 
@@ -72,7 +72,7 @@
 
             <h2>
                 <input type="checkbox" class="script_check" id="expiration_watcher" />
-                <label for="expiration_watcher">Expiration Meter</label>
+                <label for="expiration_watcher">Expiration Meters</label>
             </h2>
             <p class="info">Show a meter that indicates how close a thread is to expiring.</p>
             <div id="expiration_watcher_settings">
@@ -86,38 +86,46 @@
             <h2>
                 <label>Post Enhancements</label>
             </h2>
-            <p class="info">Various enhancements to the display of posts.</p>                
+            <p class="info">Various enhancements to the display of expanded posts.</p>                
             <div>
                 <p>
                     <input type="checkbox" class="script_check" id="image_loader" />
-                    <label for="image_loader">Inline images</label>
+                    <label for="image_loader">Embed images</label>
                 </p>
+                <p class="indent info">Replace links to images with a thumbnail of the image itself.</p>
                 <p>
                     <input type="checkbox" class="script_check" id="video_loader" />
-                    <label for="video_loader">Inline videos</label>
+                    <label for="video_loader">Embed videos</label>
                 </p>
+                <p class="indent info">Replace links to YouTube and Vimeo videos with the video itself.</p>
                 <div id="video_loader_settings">
                     <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
                 </div>
                 <p>
-                    <input type="checkbox" class="script_check" id="dinogegtik" />
-                    <label for="dinogegtik">Dino gegtik</label>
+                    <input type="checkbox" class="script_check" id="getpost" />
+                    <label for="getpost">Embed posts</label>
                 </p>
-                <p>
-                    <input type="checkbox" class="script_check" id="sparkly_comic" />
-                    <label for="sparkly_comic">Sparkly comic</label>
-                </p>
+                <p class="indent info">When clicking a link to a Shacknews post, show the post inline rather than in a new window.</p>
                 <p>
                     <input type="checkbox" class="script_check" id="hashtag" />
                     <label for="hashtag">Link hashtags</label>
                 </p>
+                <p class="indent info">Replace hashtags with a link to search Shacknews for other uses of that hashtag.</p>
                 <p>
                     <input type="checkbox" class="script_check" id="nws_incognito" />
                     <label for="nws_incognito">Open NWS links in incognito mode</label>
                 </p>
-                <div id="nws_incognito_settings">
-                    <p class="info">You must enable this extension to work in incognito mode.</p>
-                </div>
+                <p class="indent info">When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window.  You must enable this extension to work in incognito mode.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="dinogegtik" />
+                    <label for="dinogegtik">Dino gegtik</label>
+                </p>
+                <p class="indent info">Replace boring gegtik posts with a comic strip.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="sparkly_comic" />
+                    <label for="sparkly_comic">Sparkly comic</label>
+                </p>
+                <p class="indent info">Replace sparkly posts with a comic strip.</p>
             </div>
 
             <h2>
@@ -125,8 +133,7 @@
                 <label for="enable_notifications">Push Notifications</label>
             </h2>
             <p class="info">
-                Receive instant notifications when new posts matching specific criteria are made, even when Chrome
-                is closed.  You must restart Chrome after enabling notifications.
+                Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed.  You must restart Chrome after enabling notifications.
             </p>
             <div id="enable_notifications_settings">
                 <p>
@@ -140,6 +147,38 @@
 
 
             <h2 class="group">Viewing Threads</h2>
+
+            <h2>
+                <label>Highlighting</label>
+            </h2>
+            <p class="info">Color highlighting within the tree of thread replies.</p>
+            <div>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
+                    <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
+                </p>
+                <p class="indent info">Use the WinChatty push service to highlight threads that have received new replies that you need to refresh to see.  A button at the top of the chatty indicates how many threads have new posts and, upon clicking the button, will take you to the next thread with new posts.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="new_comment_highlighter" />
+                    <label for="new_comment_highlighter">Highlight new posts since last refresh</label>
+                </p>
+                <p class="indent info">After refreshing the chatty or an individual thread, show a blue bar next to posts which are new.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_users" />
+                    <label for="highlight_users">Highlight users</label>
+                </p>
+                <p class="indent info">Highlight usernames in various colors to indicate their membership in user-specified groups.</p>
+                <div id="highlight_users_settings">
+                    <div id="highlight_groups"></div>
+                    <a href="#" id="add_highlight_group">Add</a>
+                </div>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="collapse_threads" />
+                <label for="collapse_threads">Collapse Threads</label>
+            </h2>
+            <p class="info">Remember collapsed threads between page loads.</p>
 
             <h2>
                 <input type="checkbox" class="script_check" id="custom_user_filters" />
@@ -158,47 +197,10 @@
             </div>
 
             <h2>
-                <label>Highlighting</label>
-            </h2>
-            <p class="info">Color highlighting within the tree of thread replies.</p>
-            <div>
-                <p>
-                    <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
-                    <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
-                </p>
-                <p>
-                    <input type="checkbox" class="script_check" id="new_comment_highlighter" />
-                    <label for="new_comment_highlighter">Highlight new posts since last refresh</label>
-                </p>
-                <p>
-                    <input type="checkbox" class="script_check" id="highlight_users" />
-                    <label for="highlight_users">Highlight users</label>
-                </p>
-                <div id="highlight_users_settings">
-                    <div id="highlight_groups"></div>
-                    <a href="#" id="add_highlight_group">Add</a>
-                </div>
-            </div>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="collapse_threads" />
-                <label for="collapse_threads">Collapse Threads</label>
-            </h2>
-            <p class="info">Remember collapsed threads between page loads.</p>
-
-            <h2>
                 <input type="checkbox" class="script_check" id="switchers" />
                 <label for="switchers">Shame Switchers</label>
             </h2>
             <p class="info">Show the original username of shackers who changed names.</p>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="getpost" />
-                <label for="getpost">Get Post</label>
-            </h2>
-            <p class="info">
-                When clicking a link to a Shacknews post, show the post inline rather than in a new window.
-            </p>
 
 
             <h2 class="group">Composing Posts</h2>
