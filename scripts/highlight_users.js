@@ -45,7 +45,6 @@ settingsLoadedEvent.addHandler(function()
                     "2650"  , // thaperfectdrug (aka Dave-A)
                     "32016" , // thekidd
                     "1194"  , // zakk
-                    "169049", // rauol duke (resigned from head mod status Aug 8 2014)
                     "14628" , // EvilDolemite (became mod Aug 8 2014)
                     "169401", // LoioshDwaggie (became mod Aug 8 2014)
                     "175142", // eonix (became mod Aug 8 2014)
@@ -70,6 +69,7 @@ settingsLoadedEvent.addHandler(function()
                     //"6380"  , // dognose (service ended Jan 10 2014)
                     //"169927", // sgtsanity (service ended Jan 10 2014)
                     //"169942", // mikecyb (service ended Jan 10 2014)
+                    //"169049", // rauol duke (resigned from head mod status Aug 8 2014, turned in badge and gun on ??)
                 ],
 
                 "Employees":
