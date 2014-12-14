@@ -22,8 +22,7 @@ DefaultSettings = {
         {name: "inf", color: "#09c"},
         {name: "unf", color: "#f00"},
         {name: "tag", color: "#7b2"},
-        {name: "wtf", color: "#c000c0"},
-        {name: "ugh", color: "#0b0"}
+        {name: "wtf", color: "#c000c0"}
     ],
 
     lol_show_counts: 'limited',
