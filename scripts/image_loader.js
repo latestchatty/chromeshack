@@ -126,7 +126,7 @@ settingsLoadedEvent.addHandler(function()
 
                 // new dropbox sharing links can be viewed directly by setting the "dl" flag
                 if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href) && !/dl=1$/.test(href))
-                    return href + "?dl=1";
+                    return href.replace("?dl=0","") + "?dl=1";
 
                 // not a special case, just use the link's href
                 return href;
