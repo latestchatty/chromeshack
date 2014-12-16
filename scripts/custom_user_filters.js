@@ -38,7 +38,7 @@
             var postDiv = postDivs[i];
             var postLi = postDiv.parentNode;
             if (postLi.tagName === 'LI') {
-                postLi.style.display = 'none';
+                postLi.parentNode.removeChild(postLi);
             }
         }
     }
