@@ -46,6 +46,7 @@
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
+            "scripts/shack-userpopup.user.js",
             "scripts/jquery-1.8.3.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
@@ -64,9 +65,17 @@
     },
     {
         "js": [ 
+            "common.js",
+            "default_settings.js",
+            "settings.js",
             "scripts/shack-userpopup.user.js"
         ],
         "matches": [ "*://www.shacknews.com/*" ],
+        "exclude_matches": [
+            "*://www.shacknews.com/chatty*",
+            "*://new.shacknews.com/chatty*",
+            "*://www.shacknews.com/article/*"
+        ],
         "all_frames": false,
         "run_at": "document_idle"
     }

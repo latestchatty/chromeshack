@@ -177,6 +177,12 @@
             return;
         }
 
+        // Only install on the first page of the chatty.
+        var aSelectedPages = document.getElementsByClassName('selected_page');
+        if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== '1') {
+            return;
+        }
+
         GM_addStyle(''
             // The button at the top of the page indicating new posts are available
             + 'a#jump_to_new_post { border: 1px solid #a19aaf; background: #908a9d; position: fixed; '

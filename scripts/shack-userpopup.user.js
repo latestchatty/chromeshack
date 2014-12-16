@@ -54,8 +54,7 @@
 
 	GM_addStyle(
 		''
-		+ '.in { max-width: inherit !important; }'
-		+ 'header > div.in { overflow: visible; }'
+		+ 'header .in { max-width: inherit !important; }'
 		+ '.social { display: none; }'
 		+ 'div#account-links { width: 300px !important; }'
 		+ 'header a.button.inbox { width: 50px !important; }'
