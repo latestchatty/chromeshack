@@ -7,6 +7,7 @@ settingsLoadedEvent.addHandler(function()
             VIDEO_TYPE_NONE: 0,
             VIDEO_TYPE_YOUTUBE: 1,
             VIDEO_TYPE_VIMEO: 2,
+            VIDEO_TYPE_TWITCH: 3,
 
             loadVideos: function(item, id)
             {
@@ -33,6 +34,8 @@ settingsLoadedEvent.addHandler(function()
                     return VideoLoader.VIDEO_TYPE_VIMEO
                 else if (url.match(/vimeo\.com\/moogaloop\.swf\?clip_id=\d+.*/i))
                     return VideoLoader.VIDEO_TYPE_VIMEO
+                else if (url.match(/twitch\.tv\/\w+\/\w\/\d+.*/i))
+                    return VideoLoader.VIDEO_TYPE_TWITCH;
 
                 return VideoLoader.VIDEO_TYPE_NONE;
             },
@@ -59,6 +62,8 @@ settingsLoadedEvent.addHandler(function()
                             video = VideoLoader.createYoutube(link.href);
                         else if (type == VideoLoader.VIDEO_TYPE_VIMEO)
                             video = VideoLoader.createVimeo(link.href);
+                        else if (type == VideoLoader.VIDEO_TYPE_TWITCH)
+                            video = VideoLoader.createTwitch(link.href);
 
                         // we actually created a video
                         if (video != null)
@@ -119,8 +124,8 @@ settingsLoadedEvent.addHandler(function()
             {
                 // convert a time like "1m30s" to "90", this is terrible.
                 var match;
-                if ((match = duration.match(/((\d+)m)?((\d+)s)?/)))
-                    return 60 * parseInt(match[2] || 0) + parseInt(match[4] || 0);
+                if ((match = duration.match(/((\d+)h)?((\d+)m)?((\d+)s)?/)))
+                    return 3600 * parseInt(match[2] || 0) + 60 * parseInt(match[4] || 0) + parseInt(match[6] || 0);
 
                 return duration;
             },
@@ -169,6 +174,35 @@ settingsLoadedEvent.addHandler(function()
                 param.setAttribute("value", value);
                 return param;
             },
+
+            createTwitch: function(href)
+            {
+                var video_id, channel_id, start;
+
+                if((video_id = href.match(/twitch\.tv\/(\w+)\/(\w)\/(\d+)(\?t=(\w+))?/i)))
+                {
+                    channel_id = video_id[1];
+                    // twitch embed videoIds are garbage, b => a
+                    if(video_id[2] == 'b')
+                        video_id[2] = 'a';
+                    start = VideoLoader.convertTime(video_id[5] || "");
+                    video_id = video_id[2] + video_id[3];
+                }
+                else
+                    return null;
+
+                var o = document.createElement("object");
+                o.setAttribute("width", 620);
+                o.setAttribute("height", 378);
+                o.setAttribute("data", "http://www.twitch.tv/swflibs/TwitchPlayer.swf");
+                o.setAttribute("type", "application/x-shockwave-flash");
+                o.appendChild(VideoLoader.createParam("allowScriptAccess", "always"));
+                o.appendChild(VideoLoader.createParam("allowNetworking", "all"));
+                o.appendChild(VideoLoader.createParam("allowFullScreen", "true"));
+                o.appendChild(VideoLoader.createParam("flashvars", "channel=" + channel_id + "&auto_play=false&start_volume=25&videoId=" + video_id + "&playOffset=" + start));
+
+                return o;
+            }
         }
 
         processPostEvent.addHandler(VideoLoader.loadVideos);
