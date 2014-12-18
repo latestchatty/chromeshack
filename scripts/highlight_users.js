@@ -27,7 +27,6 @@ settingsLoadedEvent.addHandler(function()
                     "185650", // Dave-A
                     "9509"  , // Deathlove
                     "3259"  , // degenerate
-                    "168256", // edgewise
                     "172215", // electroly
                     "169197", // filtersweep
                     "8105"  , // hirez
@@ -70,6 +69,7 @@ settingsLoadedEvent.addHandler(function()
                     //"169927", // sgtsanity (service ended Jan 10 2014)
                     //"169942", // mikecyb (service ended Jan 10 2014)
                     //"169049", // rauol duke (resigned from head mod status Aug 8 2014, turned in badge and gun on ??)
+                    //"168256", // edgewise (resigned Dec 17 2014)
                 ],
 
                 "Employees":
