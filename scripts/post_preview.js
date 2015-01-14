@@ -64,37 +64,44 @@ settingsLoadedEvent.addHandler(function()
 
             generatePreview: function(text)
             {
-                var preview = text.replace(/&/g, "&amp;");
-                preview = preview.replace(/</g, "&lt;");
-                preview = preview.replace(/>/g, "&gt;");
-                preview = preview.replace(/r{/g, '<span class="jt_red">');
-                preview = preview.replace(/g{/g, '<span class="jt_green">');
-                preview = preview.replace(/b{/g, '<span class="jt_blue">');
-                preview = preview.replace(/y{/g, '<span class="jt_yellow">');
-                preview = preview.replace(/e\[/g, '<span class="jt_olive">');
-                preview = preview.replace(/l\[/g, '<span class="jt_lime">');
-                preview = preview.replace(/n\[/g, '<span class="jt_orange">');
-                preview = preview.replace(/p\[/g, '<span class="jt_pink">');
-                preview = preview.replace(/q\[/g, '<span class="jt_quote">');
-                preview = preview.replace(/s\[/g, '<span class="jt_sample">');
-                preview = preview.replace(/-\[/g, '<span class="jt_strike">');
-                preview = preview.replace(/}r|}g|}b|}y|\]e|\]l|\]n|\]p|\]q|\]s|\]-|\]o/g, "</span>");
-                preview = preview.replace(/i\[/g, "<i>");
-                preview = preview.replace(/\]i/g, "</i>");
-                preview = preview.replace(/\/\[/g, "<i>");
-                preview = preview.replace(/\]\//g, "</i>");
-                preview = preview.replace(/b\[/g, "<b>");
-                preview = preview.replace(/\]b/g, "</b>");
-                preview = preview.replace(/\*\[/g, "<b>");
-                preview = preview.replace(/\]\*/g, "</b>");
-                preview = preview.replace(/_\[/g, "<u>");
-                preview = preview.replace(/\]_/g, "</u>");
-                preview = preview.replace(/o\[/g, '<span class="jt_spoiler" onclick="return doSpoiler(event);">');
-                preview = preview.replace(/\/{{/g, '<pre class="jt_code">');
-                preview = preview.replace(/}}\//g, "</pre>");
-                preview = preview.replace(/\r\n/g, "<br>");
-                preview = preview.replace(/\n/g, "<br>");
-                preview = preview.replace(/\r/g, "<br>");
+                var preview = text;
+
+                var regexReplacements = {
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    'r{(.*)}r': '<span class="jt_red">$1</span>',
+                    'g{(.*)}g': '<span class="jt_green">$1</span>',
+                    'b{(.*)}b': '<span class="jt_blue">$1</span>',
+                    'y{(.*)}y': '<span class="jt_yellow">$1</span>',
+                    'e\\[(.*)\\]e': '<span class="jt_olive">$1</span>',
+                    'l\\[(.*)\\]l': '<span class="jt_lime">$1</span>',
+                    'n\\[(.*)\\]n': '<span class="jt_orange">$1</span>',
+                    'p\\[(.*)\\]p': '<span class="jt_pink">$1</span>',
+                    'q\\[(.*)\\]q': '<span class="jt_quote">$1</span>',
+                    's\\[(.*)\\]s': '<span class="jt_sample">$1</span>',
+                    '-\\[(.*)\\]-': '<span class="jt_strike">$1</span>',
+                    'i\\[(.*)\\]i': '<i>$1</i>',
+                    '\\/\\[(.*)\\]\\/': '<i>$1</i>',
+                    'b\\[(.*)\\]b': '<b>$1</b>',
+                    '\\*\\[(.*)\\]\\*': '<b>$1</b>',
+                    '_\\[(.*)\\]_': '<u>$1</u>',
+                    'o\\[(.*)\\]o': '<span class="jt_spoiler" onclick="return doSpoiler(event);">$1</span>',
+                    '\\/{{(.*)}}\\/': '<pre class="jt_code">$1</pre>',
+                    '\\r\\n': '<br>',
+                    '\\n': '<br>',
+                    '\\r': '<br>'
+                };
+
+                preview = preview.replace("/&/g", "&amp;");
+                for(var ix in regexReplacements) {
+                    if(regexReplacements.hasOwnProperty(ix)) {
+                        var rgx = new RegExp(ix, 'g');
+                        while(preview.match(rgx) !== null) {
+                            preview = preview.replace(rgx, regexReplacements[ix]);
+                        }
+                    }
+                }
+
                 preview = PostPreview.ConvertUrlToLink(preview);
 
                 return preview;

@@ -26,7 +26,7 @@ img.imageloader { max-width: 600px; max-height: 600px; }
     border:1px solid #AEAE9B;
     padding:3px;
     background:#222;
-    height:230px;
+    height:200px;
     width:570px;
     overflow:auto;
 }
