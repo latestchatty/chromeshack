@@ -28,8 +28,10 @@ DefaultSettings = {
     lol_show_counts: 'limited',
 
     lol_ugh_threshold: '0',
-
+    
     post_preview_location: "Left",
+    
+    post_preview_live: false,
 
     mod_marker_css: "color: red !important",
 
