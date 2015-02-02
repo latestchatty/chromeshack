@@ -2,6 +2,7 @@ function loadOptions()
 {
     showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
+    showPostPreviewLive(getOption("post_preview_live"));
     showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
@@ -214,6 +215,18 @@ function getPostPreviewLocation()
     if (left.checked)
         return "Left";
     return "Right";
+}
+
+function showPostPreviewLive(enabled)
+{
+    var live = document.getElementById("post_preview_live");
+    live.checked = enabled;
+}
+
+function getPostPreviewLive()
+{
+    var live = document.getElementById("post_preview_live");
+    return live.checked;
 }
 
 function showExpirationWatcherStyle(style)
@@ -506,6 +519,7 @@ function saveOptions()
         saveOption("lol_show_counts", getLolShowCounts());
         saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
+        saveOption("post_preview_live", getPostPreviewLive());
         saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
