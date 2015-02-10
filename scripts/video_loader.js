@@ -8,6 +8,9 @@ settingsLoadedEvent.addHandler(function()
             VIDEO_TYPE_YOUTUBE: 1,
             VIDEO_TYPE_VIMEO: 2,
             VIDEO_TYPE_TWITCH: 3,
+            VIDEO_TYPE_VINE: 4,
+
+            third_party_scripts: [],
 
             loadVideos: function(item, id)
             {
@@ -31,11 +34,13 @@ settingsLoadedEvent.addHandler(function()
                 else if (url.match(/youtu\.be\/.+/i))
                     return VideoLoader.VIDEO_TYPE_YOUTUBE;
                 else if (url.match(/vimeo\.com\/\d+/i))
-                    return VideoLoader.VIDEO_TYPE_VIMEO
+                    return VideoLoader.VIDEO_TYPE_VIMEO;
                 else if (url.match(/vimeo\.com\/moogaloop\.swf\?clip_id=\d+.*/i))
-                    return VideoLoader.VIDEO_TYPE_VIMEO
+                    return VideoLoader.VIDEO_TYPE_VIMEO;
                 else if (url.match(/twitch\.tv\/\w+\/\w\/\d+.*/i))
                     return VideoLoader.VIDEO_TYPE_TWITCH;
+                else if (url.match(/vine.co\/v\/\w+/i))
+                    return VideoLoader.VIDEO_TYPE_VINE;
 
                 return VideoLoader.VIDEO_TYPE_NONE;
             },
@@ -64,6 +69,8 @@ settingsLoadedEvent.addHandler(function()
                             video = VideoLoader.createVimeo(link.href);
                         else if (type == VideoLoader.VIDEO_TYPE_TWITCH)
                             video = VideoLoader.createTwitch(link.href);
+                        else if (type == VideoLoader.VIDEO_TYPE_VINE)
+                            video = VideoLoader.createVine(link.href);
 
                         // we actually created a video
                         if (video != null)
@@ -202,6 +209,33 @@ settingsLoadedEvent.addHandler(function()
                 o.appendChild(VideoLoader.createParam("flashvars", "channel=" + channel_id + "&auto_play=false&start_volume=25&videoId=" + video_id + "&playOffset=" + start));
 
                 return o;
+            },
+
+            createVine: function(href)
+            {
+                var video_id;
+
+                if ((video_id = href.match(/vine\.co\/v\/(\w+)/i)))
+                {
+                    video_id = video_id[1];
+                }
+                else
+                    return null;
+
+                if(VideoLoader.third_party_scripts.indexOf('vine') === -1) {
+                    var vineWidget = document.createElement("script");
+                    vineWidget.setAttribute("src", "https://platform.vine.co/static/scripts/embed.js");
+                    document.head.appendChild(vineWidget);
+                    VideoLoader.third_party_scripts.push('vine');
+                }
+
+                var i = document.createElement("iframe");
+                i.setAttribute("src", "//vine.co/v/" + video_id + "/embed/postcard");
+                i.setAttribute("width", 480);
+                i.setAttribute("height", 480);
+                i.setAttribute("frameborder", "0");
+
+                return i;
             }
         }
 
