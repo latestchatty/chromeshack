@@ -7,6 +7,7 @@ DefaultSettings = {
         "highlight_users",
         "image_loader",
         "video_loader",
+        "social_loader",
         "collapse_threads",
         "dinogegtik",
         "sparkly_comic",
