@@ -16,39 +16,39 @@ settingsLoadedEvent.addHandler(function()
                 "Mods":
                 [
                     // Head Mods
-                    "12398" , // geedeck
-                    "171127", // helvetica
-                    "174581", // Frozen Pixel (promoted to head mod Aug 8 2014)
+                    //"12398" , // geedeck (status unknown post modpocopalypse)
+                    //"171127", // helvetica (status unknown post modpocopalypse)
+                    //"174581", // Frozen Pixel (promoted to head mod Aug 8 2014) (status unknown post modpocopalypse)
                     // Pleb Mods
-                    "168479", // ajax
-                    "228129", // bitchesbecrazy
-                    "9085"  , // busdriver3030
-                    "5334"  , // dante
-                    "185650", // Dave-A
-                    "9509"  , // Deathlove
-                    "3259"  , // degenerate
-                    "168256", // edgewise
-                    "172215", // electroly
-                    "169197", // filtersweep
-                    "8105"  , // hirez
-                    "7570"  , // kaiser
-                    "169887", // Megara9
-                    "44566" , // Morgin
-                    "3243"  , // p[multisync]p
-                    "194196", // ninjase
-                    "8316"  , // paranoid android
-                    "9031"  , // portax
-                    "9211"  , // redfive
-                    "16880" , // Serpico74
-                    "7660"  , // sexpansion pack
-                    "208786", // squigiliwams 
-                    "2650"  , // thaperfectdrug (aka Dave-A)
-                    "32016" , // thekidd
-                    "1194"  , // zakk
-                    "14628" , // EvilDolemite (became mod Aug 8 2014)
-                    "169401", // LoioshDwaggie (became mod Aug 8 2014)
-                    "175142", // eonix (became mod Aug 8 2014)
-                    "126826"  // woddemandred (became mod Aug 8 2014)
+                    //"168479", // ajax (status unknown post modpocopalypse)
+                    //"228129", // bitchesbecrazy (status unknown post modpocopalypse)
+                    //"9085"  , // busdriver3030 (status unknown post modpocopalypse)
+                    //"5334"  , // dante (status unknown post modpocopalypse)
+                    //"185650", // Dave-A (status unknown post modpocopalypse)
+                    //"9509"  , // Deathlove (status unknown post modpocopalypse)
+                    //"3259"  , // degenerate (status unknown post modpocopalypse)
+                    //"168256", // edgewise (status unknown post modpocopalypse)
+                    //"172215", // electroly (status unknown post modpocopalypse)
+                    //"169197", // filtersweep (status unknown post modpocopalypse)
+                    //"8105"  , // hirez (status unknown post modpocopalypse)
+                    //"7570"  , // kaiser (status unknown post modpocopalypse)
+                    //"169887", // Megara9 (status unknown post modpocopalypse)
+                    //"44566" , // Morgin (status unknown post modpocopalypse)
+                    //"3243"  , // p[multisync]p (status unknown post modpocopalypse)
+                    //"194196", // ninjase (status unknown post modpocopalypse)
+                    //"8316"  , // paranoid android (status unknown post modpocopalypse)
+                    //"9031"  , // portax (status unknown post modpocopalypse)
+                    //"9211"  , // redfive (status unknown post modpocopalypse)
+                    //"16880" , // Serpico74 (status unknown post modpocopalypse)
+                    //"7660"  , // sexpansion pack (status unknown post modpocopalypse)
+                    //"208786", // squigiliwams  (status unknown post modpocopalypse)
+                    //"2650"  , // thaperfectdrug (aka Dave-A) (status unknown post modpocopalypse)
+                    //"32016" , // thekidd (status unknown post modpocopalypse)
+                    //"1194"  , // zakk (status unknown post modpocopalypse)
+                    //"14628" , // EvilDolemite (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"169401", // LoioshDwaggie (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"175142", // eonix (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"126826"  // woddemandred (became mod Aug 8 2014) (status unknown post modpocopalypse)
                     
                     // Dead mods                
                     //"7438"  , // enigmatic (service ended Aug 01 2012?)
