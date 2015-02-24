@@ -98,8 +98,8 @@ settingsLoadedEvent.addHandler(function()
                     "10187465", // xosammyjoe
                     "3014718" , // hammersuit
                     "226769"  , // Steve Watts (SporkyReeve)
-                    "10187754"  // Daniel Perez (Daniel_Perez)
-                    
+                    "10187754", // Daniel Perez (Daniel_Perez)
+                    "10187639"  // Greg Burke (GBurke59)
                 ],
 
                 "Game Devs":
