@@ -102,9 +102,9 @@ settingsLoadedEvent.addHandler(function()
                 if (/chattypics\.com\/viewer\.php/.test(href))
                     return href.replace(/viewer\.php\?file=/, 'files/');
 
-                // change fuking image page into image
-                if (/http\:\/\/(www\.)?fukung\.net\/v\//.test(href))
-                    return href.replace(/(www\.)?fukung\.net\/v\//, 'media.fukung.net/images/');
+                // change fukung image page into image
+                if (/http\:\/\/(www\.)?fukung\.net\/v\/\d+\//.test(href))
+                    return href.replace(/(www\.)?fukung\.net\/v\/\d+\//, 'media.fukung.net/imgs/');
 
                 if (/http\:\/\/imgur.com\/\w+$/.test(href))
                     return href.replace(/imgur/, 'i.imgur') + ".jpg";
