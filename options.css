@@ -32,8 +32,6 @@ div#buttons { position: fixed; bottom: 0px; left: 0px; width: 175px; padding: 10
 div#buttons button { width: 83px; }
 span#status { color: white; font-weight: bold; }
 
-#clear_settings { display: none; }
-
 h2.group { font-size: 18pt; margin-top: 25px; background: #3264C8; color: white; border: none; padding-top: 5px; 
    padding-bottom: 5px; text-align: center; }
 div.group_header { font-size: 12pt; font-weight: bold; color: white; margin-top: 15px; }

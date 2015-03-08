@@ -30,10 +30,9 @@ function saveOption(name, value)
 
 function clearSettings()
 {
-    if(confirm('Are you sure you want to reset to default settings?')) {
-      localStorage.clear();
-      loadOptions();
-    }
+    localStorage.clear();
+    loadOptions();
+    saveOptions();
 }
 
 function showVideoLoaderHD(enabled)
