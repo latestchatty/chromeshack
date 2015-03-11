@@ -12,6 +12,7 @@ function loadOptions()
     showNotifications(getOption("notifications"), getOption("notifications_use_https"));
     showUserFilters(getOption("user_filters"));
     showEnabledScripts();
+    trackChanges();
 }
 
 function getOption(name)
@@ -25,6 +26,13 @@ function getOption(name)
 function saveOption(name, value)
 {
     localStorage[name] = JSON.stringify(value);
+}
+
+function clearSettings()
+{
+    localStorage.clear();
+    loadOptions();
+    saveOptions();
 }
 
 function showVideoLoaderHD(enabled)
@@ -77,15 +85,21 @@ function showNotifications(enabled, useHttps)
 
 function showHighlightUsers(groups)
 {
+    var highlightGroups = document.getElementById("highlight_groups");
+    highlightGroups.innerHTML = "";
+
     for (var i = 0; i < groups.length; i++)
     {
         var group = groups[i];
-        addHighlightGroup(group);
+        addHighlightGroup(null, group);
     }
 }
 
-function addHighlightGroup(group)
+function addHighlightGroup(event, group)
 {
+    if(event)
+      event.preventDefault();
+
     if (!group)
         group = {name: "", checked: true, css: "", users: [] };
 
@@ -118,7 +132,10 @@ function addHighlightGroup(group)
 
         var remove = document.createElement("a");
         remove.href = "#";
-        remove.addEventListener('click', function () { settings.removeChild(div); });
+        remove.addEventListener('click', function (event) {
+            event.preventDefault();
+            settings.removeChild(div);
+        });
         remove.appendChild(document.createTextNode("(remove)"));
         div.appendChild(remove);
     }
@@ -133,6 +150,8 @@ function addHighlightGroup(group)
     div.appendChild(css);
 
     settings.appendChild(div);
+
+    trackChanges();
 }
 
 function getHighlightGroups()
@@ -276,17 +295,7 @@ function showLolTags(tags, show_counts, ugh_threshold)
 
     for (var i = 0; i < tags.length; i++)
     {
-        var tag_row = document.createElement("div");
-        tag_row.innerHTML = "Tag: <input class='name' value='" + tags[i].name + "'/> Color: <input class='color' value='" + tags[i].color + "'/>";
-
-        var remove_link = document.createElement("a");
-        remove_link.href = "#";
-        remove_link.className = "remove";
-        remove_link.appendChild(document.createTextNode(" (remove)"));
-        remove_link.addEventListener('click', function() { lol_div.removeChild(this.parentNode)});
-        tag_row.appendChild(remove_link);
-        
-        lol_div.appendChild(tag_row);
+        addTag(null, tags[i]);
     }
 }
 
@@ -296,13 +305,32 @@ function removeTag(node)
     tag_row.parentNode.removeChild(tag_row);
 }
 
-function addTag()
+function addTag(event, tag)
 {
-    var tag_row = document.createElement("div");
-    tag_row.innerHTML = "Tag: <input class='name' value=''/> Color: <input class='color' value=''/> <a href='#' onclick='removeTag(this); return false'>(remove)</a>";
+    if(event)
+        event.preventDefault();
+
+    if(!tag)
+        tag = {name:'', color: ''};
 
     var lol_div = document.getElementById("lol_tags");
+
+    var tag_row = document.createElement("div");
+    tag_row.innerHTML = "Tag: <input class='name' value='" + tag.name + "'/> Color: <input class='color' value='" + tag.color + "'/>";
+
+    var remove_link = document.createElement("a");
+    remove_link.href = "#";
+    remove_link.className = "remove";
+    remove_link.appendChild(document.createTextNode(" (remove)"));
+    remove_link.addEventListener('click', function(event) {
+        event.preventDefault();
+        lol_div.removeChild(this.parentNode);
+    });
+    tag_row.appendChild(remove_link);
+
     lol_div.appendChild(tag_row);
+
+    trackChanges();
 }
 
 function getLolTagValues()
@@ -474,7 +502,8 @@ function getUserFilters() {
     return users;
 }
 
-function addUserFilter() {
+function addUserFilter(event) {
+    event.preventDefault();
     var usernameTxt = document.getElementById('new_user_filter_text');
     var usersLst = document.getElementById('filtered_users');
     var username = usernameTxt.value.trim().toLowerCase();
@@ -498,7 +527,8 @@ function addUserFilter() {
     usernameTxt.value = '';
 }
 
-function removeUserFilter() {
+function removeUserFilter(event) {
+    event.preventDefault();
     var usersLst = document.getElementById('filtered_users');
     var index = usersLst.selectedIndex;
     if (index >= 0) {
@@ -542,14 +572,13 @@ function saveOptions()
     status.innerHTML = "Options Saved.";
     setTimeout(function() {
         status.innerHTML = "";
-    }, 1000);
+    }, 2000);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     loadOptions();
     document.getElementById('add_tag').addEventListener('click', addTag);
-    document.getElementById('save_options').addEventListener('click', saveOptions);
-    document.getElementById('load_options').addEventListener('click', loadOptions);
+    document.getElementById('clear_settings').addEventListener('click', clearSettings);
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
     document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
     document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
@@ -583,3 +612,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+
+
+function trackChanges() {
+    var links = document.getElementById('content').getElementsByTagName('a');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', saveOptions);
+    }
+
+    var inputs = document.getElementsByTagName("input");
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('change', saveOptions);
+    }
+
+    var selects = document.getElementsByTagName("select");
+    for (var i = 0; i < selects.length; i++) {
+        selects[i].addEventListener('change', saveOptions);
+    }
+
+    var textareas = document.getElementsByTagName("textarea");
+    for (var i = 0; i < textareas.length; i++) {
+        textareas[i].addEventListener('input', saveOptions);
+    }
+}
