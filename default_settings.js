@@ -11,6 +11,7 @@ DefaultSettings = {
         "collapse_threads",
         "dinogegtik",
         "sparkly_comic",
+        "shorten_posts",
         "winchatty_comments_search",
         "expiration_watcher",
         "nws_incognito",

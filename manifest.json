@@ -34,6 +34,7 @@
             "scripts/video_loader.js",
             "scripts/social_loader.js",
             "scripts/sparkly_comic.js",
+            "scripts/shorten_posts.js",
             "scripts/collapse.js",
             "scripts/sfw.js",
             "scripts/new_comment_highlighter.js",

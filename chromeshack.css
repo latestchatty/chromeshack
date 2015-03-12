@@ -161,6 +161,34 @@ body.shack_sfw td.date {color: #000 !important; }
 body.shack_sfw tr.odd {background-color: #eee !important; } 
 body.shack_sfw div.interiorcontent th, body.shack_sfw div.interiorform label { color: #000 !important; } 
 
+/* shorten posts */
+body.shorten_posts div.postbody {
+  max-height: 600px;
+  overflow-y: auto;
+}
+body.shorten_posts div.postbody.unshortened {
+  max-height: none;
+  overflow-y: visible;
+}
+body.shorten_posts div.toggle_shorten {
+    width: 19px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 0;
+    top: 45px;
+    text-align: center;
+}
+body.shorten_posts div.toggle_shorten a {
+    color: #555;
+    margin-left: 2px;
+    font-size: 16px;
+}
+body.shorten_posts div.toggle_shorten a:hover {
+    color: #bbb;
+    text-decoration: none;
+}
+
 /* new comment marker */
 span.newcommenthighlighter {
     /*border-bottom-color: #0099ff;
