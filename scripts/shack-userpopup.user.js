@@ -54,47 +54,37 @@
 
 	GM_addStyle(
 		''
-		+ 'header .in { max-width: inherit !important; }'
-		+ '.social { display: none; }'
-		+ 'div#account-links { width: 300px !important; }'
-		+ 'header a.button.inbox { width: 50px !important; }'
-		+ 'header a.button.settings { width: 60px !important; }'
-		+ '.userDropdownButton { background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCFET0NUWVBFIHN2ZyBQVUJMSUMgIi0vL1czQy8vRFREIFNWRyAxLjEvL0VOIiAiaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkIj4KPHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8cGF0aCBkPSJNMjU4Ljc0NCwyOTMuMjE0YzcwLjg5NSwwLDEyOC4zNjUtNTcuNDcyLDEyOC4zNjUtMTI4LjM2NmMwLTcwLjg5Ni01Ny40NzMtMTI4LjM2Ny0xMjguMzY1LTEyOC4zNjcKCQljLTcwLjg5NiwwLTEyOC4zNjgsNTcuNDcyLTEyOC4zNjgsMTI4LjM2N0MxMzAuMzc3LDIzNS43NDIsMTg3Ljg0OCwyOTMuMjE0LDI1OC43NDQsMjkzLjIxNHoiLz4KCTxwYXRoIGQ9Ik0zNzEuNTMzLDMyMi40MzJIMTQwLjQ2N2MtNzcuNTc3LDAtMTQwLjQ2Niw2Mi45MDktMTQwLjQ2NiwxNDAuNDg3djEyLjYwMWg1MTJ2LTEyLjYwMQoJCUM1MTIsMzg1LjM0MSw0NDkuMTEyLDMyMi40MzIsMzcxLjUzMywzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=) '
-		+ '     6px 50% / 10px no-repeat; width: 35px; -webkit-user-select: none; }'
-		+ 'header.mini .menu-content.hide #account-links .userDropdownButton { border: 1px solid black !important; }'
+		// Make sure the dropdown menu can break outside the box
+		+ 'body .in, .base-level { overflow: visible !important; }'
+
+		+ '.userDropdownButton { width: auto; -webkit-user-select: none; background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNTEyIDUxMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIHN0eWxlPSJmaWxsOiAjZmZmZmZmIj4KCTxwYXRoIGQ9Ik0yNTguNzQ0IDI5My4yMTRjNzAuODk1IDAgMTI4LjM2NS01Ny40NzIgMTI4LjM2NS0xMjguMzY2YzAtNzAuODk2LTU3LjQ3My0xMjguMzY3LTEyOC4zNjUtMTI4LjM2NyBjLTcwLjg5NiAwLTEyOC4zNjggNTcuNDcyLTEyOC4zNjggMTI4LjM2N0MxMzAuMzc3IDIzNS43IDE4Ny44IDI5My4yIDI1OC43IDI5My4yMTR6Ii8+Cgk8cGF0aCBkPSJNMzcxLjUzMyAzMjIuNDMySDE0MC40NjdjLTc3LjU3NyAwLTE0MC40NjYgNjIuOTA5LTE0MC40NjYgMTQwLjQ4N3YxMi42MDFoNTEydi0xMi42MDEgQzUxMiAzODUuMyA0NDkuMSAzMjIuNCAzNzEuNSAzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=") !important; background-size: 50% !important; background-repeat: no-repeat !important; background-position: 50% !important; }'
+ 		+ '.userDropdown.hidden { display: none; }'
 		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
-		+ 'a.button.inbox.on { width: 70px !important; }'
+
+		+ '#userDropdownTrigger .userDropdown li { }'
 
 		+ 'div.threads ul ul span.author ul { margin-left: 0; background-image: none; bottom: auto; }'
 		+ 'div.threads ul ul li span.author li { padding-left: 0; background-image: none; }'
 
 		+ '.userDropdown { position: absolute !important; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
-		+ '.menu-content.hide #account-links .userDropdownButton .userDropdown { top: 20px; right: 10px; }'
-		+ 'header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 60px; right: 64px; }'
 		+ '.user a .userDropdown { top: 1.5em; left: 0; }'
-		+ '.userDropdown li { background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
+		+ '.userDropdown li { overflow: auto; background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
 		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
-		+ '.userDropdown li a { display: block; width: auto !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; font-family: "Open Sans", sans-serif; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
+		+ '.userDropdown li a { display: block; width: 100% !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; font-family: "Open Sans", sans-serif; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
 		+ '.userDropdown li a:hover { color: #fff; background-color: #524A60 !important; }'
 		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
 
 		// Some responsive tweaks so it doesn't look bad at smaller widths
 		+ '@media (max-width: 1240px) {'
 		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 21px; }'
-		+ '    header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 75px; }'
 		+ '}'
 
 		+ '@media (max-width: 1023px) {'
 		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 11px; }'
-		+ '    header.mini .menu-content.hide #account-links .userDropdownButton .userDropdown { right: 110px; }'
-		+ '    header.mini a.button.inbox { width: 30px !important; }'
-		+ '    header.mini a.button.settings { width: 30px !important; }'
-		+ '    header.mini .menu-content.hide #account-links .userDropdownButton { overflow: hidden; } '
 		+ '}'
 
 		+ '@media (max-width: 767px) {'
-		+ '    .menu-content.hide #account-links .userDropdownButton .userDropdown { top: 295px; right: 21px; }'
 		+ '}'
 
 	);
@@ -484,13 +474,16 @@
 	}, false); 
 
 	if (isLoggedIn()) {
-		// Add the button to the account links area, which is visible in both incarnations of the top bar.
-		var accountLinks = document.getElementById('account-links');
-		var aUser = document.createElement('a');
-		aUser.setAttribute('id', 'userDropdownTrigger');
-		aUser.className = 'button userDropdownButton';
-		aUser.innerHTML = 'me';
-		accountLinks.appendChild(aUser);
+		var header = document.getElementById('header-new');
+		var hasCookies = getElementByClassName(header, 'div', 'has-cookie');
+		if (typeof(hasCookies) != 'undefined') {
+			var aUser = document.createElement('a');
+			aUser.setAttribute('id', 'userDropdownTrigger');
+			aUser.className = 'button userDropdownButton';
+			aUser.innerHTML = '&nbsp;';
+			// Insert the new element before the Inbox button
+			hasCookies.insertBefore(aUser, getElementByClassName(hasCookies, 'a', 'inbox'));
+		}
 	}
 
 	settingsLoadedEvent.addHandler(function() {
