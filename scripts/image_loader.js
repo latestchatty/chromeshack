@@ -187,6 +187,7 @@ settingsLoadedEvent.addHandler(function()
                     return null;
 
                 var v = document.createElement("video");
+                v.className = "imageloader";
                 v.setAttribute("src", "//i.imgur.com/" + video_id + ".mp4");
                 v.setAttribute("autoplay", "");
                 v.setAttribute("loop", "");
@@ -213,6 +214,7 @@ settingsLoadedEvent.addHandler(function()
                     video_src = info.webmUrl;
 
                 var v = document.createElement("video");
+                v.className = "imageloader";
                 v.setAttribute("src", video_src);
                 v.setAttribute("autoplay", "");
                 v.setAttribute("loop", "");
@@ -231,6 +233,7 @@ settingsLoadedEvent.addHandler(function()
                 var video_src = "//media.giphy.com/media/" + video_id + "/giphy.mp4";
 
                 var v = document.createElement("video");
+                v.className = "imageloader";
                 v.setAttribute("src", video_src);
                 v.setAttribute("autoplay", "");
                 v.setAttribute("loop", "");
