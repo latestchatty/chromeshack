@@ -66,7 +66,7 @@
 
 		+ '.userDropdown { position: absolute !important; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
 		+ '.user a .userDropdown { top: 1.5em; left: 0; }'
-		+ '.userDropdown li { overflow: auto; background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
+		+ '.userDropdown li { overflow: hidden; background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
 		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
 		+ '.userDropdown li a { display: block; width: 100% !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; font-family: "Open Sans", sans-serif; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
 		+ '.userDropdown li a:hover { color: #fff; background-color: #524A60 !important; }'
