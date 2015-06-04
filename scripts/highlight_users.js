@@ -158,7 +158,8 @@ settingsLoadedEvent.addHandler(function()
                     '171493', // whippedcracker (Vigil Games)
                     '11544', //Fred Garvin (formerly of BioWare, currently does sound direction for games)
                     '49660','169993','174785',//Former Game Indusrty People     Omning, robingchyo, Romsteady
-                    '173472' // drhazard (Volition)
+                    '173472', // drhazard (Volition)
+                    '171424' // freakynipples69 indie game dev, MindShaft Games
                 ]
             },
 
