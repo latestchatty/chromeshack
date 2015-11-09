@@ -525,6 +525,7 @@ function addUserFilter(event) {
     newOption.value = username;
     usersLst.appendChild(newOption);
     usernameTxt.value = '';
+    saveOptions();
 }
 
 function removeUserFilter(event) {
@@ -533,6 +534,7 @@ function removeUserFilter(event) {
     var index = usersLst.selectedIndex;
     if (index >= 0) {
         usersLst.remove(index);
+        saveOptions();
     } else {
         alert('Please select a username to remove.');
     }
