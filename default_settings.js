@@ -42,6 +42,8 @@ DefaultSettings = {
         "stupid"
     ],
 
+    autosaved_posts: [],
+
     collapsed_threads: [],
 
     original_poster_css: "font-weight: bold; color: #FFFFCC;",
