@@ -12,7 +12,7 @@ settingsLoadedEvent.addHandler(function() {
             CACHE_SIZE: 10,
 
             // The amount of time (ms) after typing before posts are cached 
-            CACHE_TIME: 500,
+            CACHE_TIME: 800,
 
             // Local copy of the cache to use within a single page view
             cache: [],

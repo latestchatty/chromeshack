@@ -390,10 +390,10 @@ div#autosaveNotification {
     position: absolute;
     bottom: 0;
     left: 0;
-    padding: 2px 5px; 
-    background-color: red;
+    padding: 2px 5px;
+    color: #888888;
 
-    -webkit-transition: opacity 0.7s linear;
+    -webkit-transition: opacity 0.6s linear;
 
     opacity: 0;
 }
