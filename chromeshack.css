@@ -391,9 +391,10 @@ div#autosaveNotification {
     bottom: 0;
     left: 0;
     padding: 2px 5px;
-    color: #888888;
+    color: #666666;
+    font-size: 12px;
 
-    -webkit-transition: opacity 0.6s linear;
+    -webkit-transition: opacity 0.3s linear;
 
     opacity: 0;
 }

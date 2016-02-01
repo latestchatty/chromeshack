@@ -12,7 +12,7 @@ settingsLoadedEvent.addHandler(function() {
             CACHE_SIZE: 10,
 
             // The amount of time (ms) after typing before posts are cached 
-            CACHE_TIME: 800,
+            CACHE_TIME: 500,
 
             // Local copy of the cache to use within a single page view
             cache: [],
@@ -34,7 +34,7 @@ settingsLoadedEvent.addHandler(function() {
                 clearTimeout(PostAutosave.timeoutId);
                 
                 var frm_body = document.getElementById('frm_body');
-                var postform = document.getElementById('postform');
+                var frm_submit = document.getElementById('frm_submit');
 
                 var id = document.getElementById('parent_id').value;
 
@@ -42,11 +42,12 @@ settingsLoadedEvent.addHandler(function() {
                 frm_body.addEventListener('input', function () { PostAutosave.triggerAutosave(id); }, true);
 
                 // Removes the cached post after it is submitted
-                postform.addEventListener('submit', function () { PostAutosave.removeAutosave(id); });
+                frm_submit.addEventListener('click', function () { PostAutosave.removeAutosave(id); });
             },
 
             triggerAutosave: function (id) {
                 clearTimeout(PostAutosave.timeoutId);
+                PostAutosave.hideNotification();
 
                 var frm_body = document.getElementById('frm_body');
 
@@ -60,7 +61,7 @@ settingsLoadedEvent.addHandler(function() {
 
                 for (var i = 0; i < posts.length; i++) {
                     if (posts[i].id == id) {
-                        PostAutosave.displayNotification("Loaded autosaved post!");
+                        PostAutosave.displayNotification("Draft loaded", false);
 
                         return posts[i].text;
                     }
@@ -75,7 +76,7 @@ settingsLoadedEvent.addHandler(function() {
                 if (!PostAutosave.updateAutosave(id, text))
                     PostAutosave.addAutosave(id, text);
 
-                PostAutosave.displayNotification("Autosaved post!");
+                PostAutosave.displayNotification("Draft saved", false);
             },
 
             addAutosave: function (id, text) {
@@ -139,13 +140,21 @@ settingsLoadedEvent.addHandler(function() {
                 setSetting(PostAutosave.CACHE_SETTING_NAME, posts);
             },
 
-            displayNotification: function(text) {
+            displayNotification: function(text, autohide) {
                 var notificationArea = document.getElementById('autosaveNotification');
 
                 notificationArea.innerText = text;
                 notificationArea.className = "visible";
 
-                setTimeout(function () { notificationArea.className = ""; }, 2000);
+                if (autohide)
+                    setTimeout(PostAutosave.hideNotification, 2000);
+            },
+
+            hideNotification: function () {
+                var notificationArea = document.getElementById('autosaveNotification');
+
+                notificationArea.innerText = '';
+                notificationArea.className = '';
             }
         }
 
