@@ -34,6 +34,8 @@ DefaultSettings = {
     
     post_preview_live: false,
 
+    autosaved_posts: [],
+
     mod_marker_css: "color: red !important",
 
     category_banners_visible: [
@@ -41,8 +43,6 @@ DefaultSettings = {
         "political",
         "stupid"
     ],
-
-    autosaved_posts: [],
 
     collapsed_threads: [],
 

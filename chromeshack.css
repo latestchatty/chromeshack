@@ -385,3 +385,19 @@ img.pinnedLoading
 }
 
 video.imageloader { width: auto !important }
+
+div#autosaveNotification {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 2px 5px; 
+    background-color: red;
+
+    -webkit-transition: opacity 0.7s linear;
+
+    opacity: 0;
+}
+
+div#autosaveNotification.visible {
+    opacity: 1;
+}
