@@ -47,7 +47,7 @@ settingsLoadedEvent.addHandler(function() {
 
             triggerAutosave: function (id) {
                 clearTimeout(PostAutosave.timeoutId);
-                PostAutosave.hideNotification();
+                PostAutosave.displayNotification("Saving...", false);
 
                 var frm_body = document.getElementById('frm_body');
 
@@ -61,7 +61,7 @@ settingsLoadedEvent.addHandler(function() {
 
                 for (var i = 0; i < posts.length; i++) {
                     if (posts[i].id == id) {
-                        PostAutosave.displayNotification("Draft loaded", false);
+                        PostAutosave.displayNotification("Draft restored", false);
 
                         return posts[i].text;
                     }
