@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if (/https?\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href))
+                if ( (/https?\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href)) || (/https?\:\/\/(i\.)?imgur.com\/\w+\.mp4?$/.test(href)) )
                 {
                     return true;
                 }
@@ -181,7 +181,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var video_id;
                 
-                if ((video_id = href.match(/i.imgur\.com\/(\w+)/i)))
+                if ((video_id = href.match(/[i.]?imgur\.com\/(\w+)/i)))
                     video_id = video_id[1];
                 else
                     return null;
