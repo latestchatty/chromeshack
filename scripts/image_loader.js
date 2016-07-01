@@ -181,7 +181,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var video_id;
                 
-                if ((video_id = href.match(/[i.]?imgur\.com\/(\w+)/i)))
+                if ((video_id = href.match(/imgur\.com\/(\w+)/i)))
                     video_id = video_id[1];
                 else
                     return null;
