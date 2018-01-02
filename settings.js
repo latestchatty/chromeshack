@@ -10,7 +10,7 @@ function getSetting(name)
     return DefaultSettings[name];
 }
 
-chrome.extension.sendMessage({name: "getSettings"}, function(response)
+chrome.runtime.sendMessage({name: "getSettings"}, function(response)
 {
     settings = response;
     settingsLoadedEvent.raise();
@@ -18,5 +18,5 @@ chrome.extension.sendMessage({name: "getSettings"}, function(response)
 
 function setSetting(name, value)
 {
-    chrome.extension.sendMessage({name: "setSetting", key: name, value: value});
+    chrome.runtime.sendMessage({name: "setSetting", key: name, value: value});
 }

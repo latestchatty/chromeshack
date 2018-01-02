@@ -36,12 +36,12 @@ settingsLoadedEvent.addHandler(function()
 
             close: function(id)
             {
-                chrome.extension.sendMessage({name: "collapseThread", "id": id});
+                chrome.runtime.sendMessage({name: "collapseThread", "id": id});
             },
 
             show: function(id)
             {
-                chrome.extension.sendMessage({name: "unCollapseThread", "id": id});
+                chrome.runtime.sendMessage({name: "unCollapseThread", "id": id});
             }
         }
 
