@@ -32,7 +32,6 @@
             "scripts/category_banners.js",
             "scripts/image_loader.js",
             "scripts/video_loader.js",
-            "scripts/social_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
             "scripts/sfw.js",
@@ -93,7 +92,6 @@
         , "http://shackapi.stonedonkey.com/*"
         , "*://*.shacknews.com/*"
         , "*://*.bit-shift.com/*"
-        , "*://chatty.nevares.com/*"
     ],
     "web_accessible_resources": [
         "scripts/video_loader_helper.js",
