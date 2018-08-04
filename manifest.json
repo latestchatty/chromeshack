@@ -88,7 +88,7 @@
         , "tabs"
         , "https://api.imgur.com/*"
         , "http://chattypics.com/*"
-        , "http://www.lmnopc.com/greasemonkey/shacklol/*"
+        , "https://lol.lmnopc.com/*"
         , "http://shackapi.stonedonkey.com/*"
         , "*://*.shacknews.com/*"
         , "*://*.bit-shift.com/*"

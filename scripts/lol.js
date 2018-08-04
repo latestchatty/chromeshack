@@ -4,9 +4,9 @@ settingsLoadedEvent.addHandler(function()
     {
         LOL =
         {
-            URL: "http://www.lmnopc.com/greasemonkey/shacklol/",
-            COUNT_URL: "http://www.lmnopc.com/greasemonkey/shacklol/api.php?special=getcounts",
-            VERSION: "20121024",
+            URL: "https://lol.lmnopc.com/",
+            COUNT_URL: "https://lol.lmnopc.com/api.php?special=getcounts",
+            VERSION: "20180804",
 
             tags: getSetting("lol_tags"),
             showCounts: getSetting("lol_show_counts"),
@@ -19,10 +19,9 @@ settingsLoadedEvent.addHandler(function()
 
             installLink: function()
             {
-                var comments_tools = document.getElementById('newcommentbutton');
+                var comments_tools = document.getElementById('commenttools');
                 if (comments_tools)
                 {
-                    GM_addStyle('a#lollink { background-image: none !important; text-indent: -25px !important; }');
                     var link = document.createElement("a");
                     link.id = "lollink";
                     link.href = LOL.URL + "?user=" + encodeURIComponent(LOL.getUsername());

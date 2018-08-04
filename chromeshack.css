@@ -13,6 +13,7 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
     top: 12px;
     text-indent: -9999px;
     color: #f00;
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/lol.png);
 }
 
 .oneline_tags { display: inline; overflow: hidden; white-space: nowrap; }

@@ -57,18 +57,17 @@
 		// Make sure the dropdown menu can break outside the box
 		+ 'body .in, .base-level { overflow: visible !important; }'
 
-		+ '.userDropdownButton { width: auto; -webkit-user-select: none; background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjUxMnB4IiBoZWlnaHQ9IjUxMnB4IiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgNTEyIDUxMiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnIHN0eWxlPSJmaWxsOiAjZmZmZmZmIj4KCTxwYXRoIGQ9Ik0yNTguNzQ0IDI5My4yMTRjNzAuODk1IDAgMTI4LjM2NS01Ny40NzIgMTI4LjM2NS0xMjguMzY2YzAtNzAuODk2LTU3LjQ3My0xMjguMzY3LTEyOC4zNjUtMTI4LjM2NyBjLTcwLjg5NiAwLTEyOC4zNjggNTcuNDcyLTEyOC4zNjggMTI4LjM2N0MxMzAuMzc3IDIzNS43IDE4Ny44IDI5My4yIDI1OC43IDI5My4yMTR6Ii8+Cgk8cGF0aCBkPSJNMzcxLjUzMyAzMjIuNDMySDE0MC40NjdjLTc3LjU3NyAwLTE0MC40NjYgNjIuOTA5LTE0MC40NjYgMTQwLjQ4N3YxMi42MDFoNTEydi0xMi42MDEgQzUxMiAzODUuMyA0NDkuMSAzMjIuNCAzNzEuNSAzMjIuNDMyeiIvPgo8L2c+Cjwvc3ZnPgo=") !important; background-size: 50% !important; background-repeat: no-repeat !important; background-position: 50% !important; }'
  		+ '.userDropdown.hidden { display: none; }'
 		+ 'span.author { position: relative !important; }'
 
 		+ 'div.threads ul ul span.author ul { margin-left: 0; background-image: none; bottom: auto; }'
 		+ 'div.threads ul ul li span.author li { padding-left: 0; background-image: none; }'
 
-		+ '.userDropdown { position: absolute !important; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
+		+ '.userDropdown { position: absolute !important; top: 28px; left: 0; width: auto !important; background: #222 !important; z-index: 9999; text-align: left; border: 1px solid #333; -moz-box-shadow: 3px 3px 4px #000; font-weight: normal; font-size: 12px; padding: 0 !important; }'
 		+ '.user a .userDropdown { top: 1.5em; left: 0; }'
-		+ '.userDropdown li { overflow: hidden; background-color: inherit; margin: 0; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
+		+ '.userDropdown li { overflow: hidden; background-color: inherit; margin: 0 !important; padding: 0 !important; background-image: none !important;  display: block !important; width: 100% !important; line-height: 2.5em; border-bottom: 1px solid #333 !important; z-index: 9999; }'
 		+ '.userDropdown li.userDropdown-separator { border-bottom: 1px solid #666 !important; }'
-		+ '.userDropdown li a { display: block; width: 100% !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; font-family: "Open Sans", sans-serif; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; }'
+		+ '.userDropdown li a { display: block; width: 100% !important; white-space: nowrap; padding: 4px 12px !important; margin: 0 !important; color: #ddd !important; font-weight: normal !important; font-size: 12px !important; border: 0 !important;  border-radius: 0 !important; background-color: transparent !important; text-align: left !important; }'
 		+ '.userDropdown li a:hover { color: #fff; background-color: #524A60 !important; }'
 		+ '#lolWorkingBar { position: fixed; left: 0; bottom: 0; height: 2.5em; width: 100%; line-height: 2.5em; background-color: #000; color: #fff; font-size: 150%; font-weight: bold; display: none; text-align: center; }'
 
@@ -147,10 +146,10 @@
 		dl.appendChild(createTextWrapper('dt', 'Gender'));  
 		dl.appendChild(createTextWrapper('dd', data['data']['gender']));
 		
-		dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'http://www.shacknews.com/user/' + username + '/posts')); 
+		dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'https://www.shacknews.com/user/' + username + '/posts'));
 
 		var actualUser = '&user=' + encodeURIComponent(getShackUsername());
-		dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'http://lmnopc.com/greasemonkey/shacklol/user.php?authoredby=' + username + actualUser));
+		dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser));
 		
 		// Create menu item for reading post count
 		var aPostCount = document.createElement('a');
@@ -342,7 +341,10 @@
 			{
 				your = 'Your';
 				vanitySearch = 'Vanity Search';
-				parentAuthor = 'Parent Author Search';  
+				parentAuthor = 'Parent Author Search';
+
+				// Add the account link to the dropdown menu
+				ulUser.appendChild(createListItem('Shack Account', '/settings', 'userDropdown-lol userDropdown-separator'));
 			}
 			else
 			{
@@ -354,28 +356,28 @@
 			// Create menu items and add them to ulUser
 			var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
 				? 'https://winchatty.com/nusearch?a=' + username
-				: 'http://www.shacknews.com/user/' + username + '/posts';
+				: 'https://www.shacknews.com/user/' + username + '/posts';
 			ulUser.appendChild(createListItem(your + ' Posts', postsUrl));
 
 			var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
 				? 'https://winchatty.com/nusearch?q=' + username
-				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
+				: 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
 			ulUser.appendChild(createListItem(vanitySearch, vanityUrl));
 
 			var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
 				? 'https://winchatty.com/nusearch?pa=' + username
-				: 'http://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
+				: 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
 			ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
 			var actualUser = '&user=' + encodeURIComponent(getShackUsername());
 
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' Wrote', 'http://lmnopc.com/greasemonkey/shacklol/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [lol]\'d', 'http://lmnopc.com/greasemonkey/shacklol/user.php?loldby=' + username + actualUser, 'userDropdown-lol')); 		
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [inf]\'d', 'http://lmnopc.com/greasemonkey/shacklol/user.php?tag=inf&loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [tag]\'d', 'http://lmnopc.com/greasemonkey/shacklol/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [unf]\'d', 'http://lmnopc.com/greasemonkey/shacklol/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'http://lmnopc.com/greasemonkey/shacklol/user.php?fanclub=' + username + actualUser, 'userDropdown-lol userDropdown-separator'));
+			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [lol]\'d', 'https://lol.lmnopc.com/user.php?loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [inf]\'d', 'https://lol.lmnopc.com/user.php?tag=inf&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [tag]\'d', 'https://lol.lmnopc.com/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [unf]\'d', 'https://lol.lmnopc.com/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://lol.lmnopc.com/user.php?fanclub=' + username + actualUser, 'userDropdown-lol userDropdown-separator'));
 			
 			// Create menu item for reading post count
 			var aPostCount = document.createElement('a');
@@ -471,16 +473,9 @@
 	}, false); 
 
 	if (isLoggedIn()) {
-		var header = document.getElementById('header-new');
-		var hasCookies = getElementByClassName(header, 'div', 'has-cookie');
-		if (typeof(hasCookies) != 'undefined') {
-			var aUser = document.createElement('a');
-			aUser.setAttribute('id', 'userDropdownTrigger');
-			aUser.className = 'button userDropdownButton';
-			aUser.innerHTML = '&nbsp;';
-			// Insert the new element before the Inbox button
-			hasCookies.insertBefore(aUser, getElementByClassName(hasCookies, 'a', 'inbox'));
-		}
+		// Add custom dropdown stuff to the Account button
+		var $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
+		$account.setAttribute ('id', 'userDropdownTrigger');
 	}
 
 	settingsLoadedEvent.addHandler(function() {
