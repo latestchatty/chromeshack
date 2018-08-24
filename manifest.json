@@ -25,6 +25,7 @@
             "sentence_parser.js",
             "init_events.js",
             "scripts/lol.js",
+            "scripts/scrolling_performance_hack.js",
             "scripts/comment_tags.js",
             "scripts/post_preview.js",
             "scripts/dinogegtik.js",

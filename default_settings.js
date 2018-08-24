@@ -15,7 +15,8 @@ DefaultSettings = {
         "expiration_watcher",
         "nws_incognito",
         "cloud_pinning",
-        "switchers"
+        "switchers",
+        "scrolling_performance_hack"
     ],
 
     lol_tags: [
