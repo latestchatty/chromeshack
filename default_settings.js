@@ -31,7 +31,7 @@ DefaultSettings = {
 
     lol_ugh_threshold: '0',
     
-    post_preview_location: "Left",
+    post_preview_location: "Right",
     
     post_preview_live: false,
 
