@@ -4,19 +4,15 @@ DefaultSettings = {
         "lol",
         "comment_tags",
         "post_preview",
-        "highlight_users",
-        "image_loader",
-        "video_loader",
-        "social_loader",
         "collapse_threads",
         "dinogegtik",
         "sparkly_comic",
         "winchatty_comments_search",
         "expiration_watcher",
         "nws_incognito",
-        "cloud_pinning",
-        "switchers",
-        "scrolling_performance_hack"
+        "scrolling_performance_hack",
+        "category_banners",
+        "new_comment_highlighter"
     ],
 
     lol_tags: [
