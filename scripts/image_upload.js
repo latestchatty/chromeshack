@@ -1,6 +1,5 @@
 settingsLoadedEvent.addHandler(function()
 {
-    processPostBoxEvent.addHandler(fixCommentFormSize);
     if (getSetting("enabled_scripts").contains("image_upload"))
     {
 
@@ -55,19 +54,17 @@ settingsLoadedEvent.addHandler(function()
             showImageUploadForm: function(obj) {
                 $("#imageUploadButton").toggle();
                 $("#cancelUploadButton").toggle();
-                //$(".newcommentform").removeClass("newcommentformfix");
-                $(".newcommentform").addClass("newcommentformexpand");
-                $(".inlinereply").addClass("newcommentformexpand");
                 //$(".newcommentform").css("height", "390px");
                 //$(".inlinereply").css("height", "390px");
                 //var legendtable = $('#shacktags_legend_table')
                 var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/><td id='uploadCell4'/></tr></table>");
                 var uploadDiv = $("<div />", { id : "uploadDiv"}).hide();
-                var showUpload = $('<a>').html('Show Image Upload').click(function () {
+                var showUpload = $('<a href="#">').html('Show Image Upload').addClass('showImageUploadLink').click(function () {
                     uploadDiv.toggle();
                     ImageUpload.uploadShown = !ImageUpload.uploadShown;
                     var text = ImageUpload.uploadShown ? 'Hide Image Upload' : 'Show Image Upload';
                     showUpload.html(text);
+                    return false;
                 });
                 $('#postform').append(showUpload);
                 $("#postform").append(uploadDiv);
@@ -221,8 +218,6 @@ settingsLoadedEvent.addHandler(function()
                 var link = respdata.data.link;
                 //ImageUpload.insertTextAtCursor("frm_body", link);
                 $("#frm_body").insertAtCaret(link + "\n");
-                ImageUpload.hideImageUploadForm(this);
-                ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
             },
 
@@ -233,8 +228,6 @@ settingsLoadedEvent.addHandler(function()
                 var url = $(link).val();
                 //ImageUpload.insertTextAtCursor("frm_body", url);
                 $("#frm_body").insertAtCaret(url + "\n");
-                ImageUpload.hideImageUploadForm(this);
-                ImageUpload.showImageUploadForm(this);
                 ImageUpload.addUploadMessage("green", "Success!");
             },
 
@@ -277,7 +270,3 @@ settingsLoadedEvent.addHandler(function()
     }
 
 });
-
-function fixCommentFormSize() {
-    $(".newcommentform").addClass("newcommentformfix");
-}

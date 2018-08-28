@@ -278,10 +278,6 @@ p.rules {
     margin: 3px;
 }
 
-div.newcommentformfix {
-    width: 785px !important;
-}
-
 /* make it easier to see what button is highlighted, give them some space */
 button {
     margin-right: 2px !important;
@@ -294,11 +290,12 @@ button:focus {
 
 /* image upload stuff */
 
-
-div.newcommentformexpand {
-    height: 390px;
+.showImageUploadLink {
+    background: black;
+    margin-top: 20px;
+    padding: 8px;
+    display: inline-block;
 }
-
 
 #imageUploadButton, #cancelUploadButton, #fileUploadButton, #urlUploadButton  {
     background-color: #e9e9de;
@@ -306,7 +303,7 @@ div.newcommentformexpand {
     border-color: #fff #e9e9de #e9e9de #fff;
     color: #000;
     font-weight: bold;
-    width: 75px;
+    width: 125px;
     height: 22px;
     font-size: 12px;
     margin-left: 5px;
@@ -318,7 +315,7 @@ div.newcommentformexpand {
 }
 
 #fileUploadInput {
-    width: 85px;
+    width: 200px;
     background-color: transparent;
     border: 0px;
     margin-right: 5px;
