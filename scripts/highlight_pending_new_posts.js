@@ -186,8 +186,8 @@
         GM_addStyle(''
             // The button at the top of the page indicating new posts are available
             + 'a#jump_to_new_post { border: 1px solid #a19aaf; background: #908a9d; position: fixed; '
-            + '    width: 50px; height: 22px; left: 740px; top: 8px; border-radius: 3px; z-index: 9999; '
-            + "    font-size: 18px; color: white; text-align: center; font-family: 'Open Sans'; "
+            + '    width: 50px; top: 0px; right: 0px; border-radius: 3px; z-index: 9999; '
+            + "    font-size: 18px; color: white; text-align: center; font-family: 'Shack Sans', sans-serif; "
             + '    -webkit-user-select: none; }'
             + 'a#jump_to_new_post:hover { background-color: #5c5070; border-color: #6f6088; }'
             + '@media (max-width: 1240px) {'
