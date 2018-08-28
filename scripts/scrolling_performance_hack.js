@@ -8,5 +8,8 @@ settingsLoadedEvent.addHandler(function() {
 
         // force the top bar to be collapsed because one of the event listeners was responsible for collapsing the bar
         $('header').removeClass('headroom--top').addClass('headroom--not-top');
+
+        // allow our other scripts to re-apply their own scroll handlers
+        scrollHackAppliedEvent.raise();
     }
 });
