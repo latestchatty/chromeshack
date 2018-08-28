@@ -103,7 +103,8 @@ settingsLoadedEvent.addHandler(function()
                     "10187730", // joshua hawkins
                     "10187323", // steven wong
                     "10187419", // squid wizard
-                    "10187781"  // beardedaxe
+                    "10187781", // beardedaxe
+                    "10188229"  // Bryan Carr (DoctorGames)
                 ],
 
                 "Game Devs":
