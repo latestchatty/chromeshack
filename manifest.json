@@ -34,7 +34,6 @@
             "scripts/video_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
-            "scripts/sfw.js",
             "scripts/new_comment_highlighter.js",
             "scripts/highlight_users.js",
             "scripts/local_timestamp.js",
