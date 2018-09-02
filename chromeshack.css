@@ -6,11 +6,11 @@ div.lol { display:inline; float: none; padding-left: 10px; font-size: 14px !impo
 a.lol_button { padding: 0 0.25em !important; text-decoration: underline !important; font-weight: normal !important}
 #lollink {
     display: block;
-    width: 190px;
-    height: 45px;
+    width: 152px;
+    height: 44px;
     position: absolute;
     left: 180px;
-    top: 12px;
+    top: 18px;
     text-indent: -9999px;
     color: #f00;
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/lol.png);
@@ -99,25 +99,32 @@ div.sparklycomic div.panel span.shadow {
 div.sparklycomic div.panel span.shadow .jt_spoiler,
 div.sparklycomic div.panel span.shadow a { visibility: hidden }
 
-body.show_banner_offtopic div.fpmod_offtopic {
+body.show_banners div.fpmod_offtopic {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/offtopic.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #7D7D7D !important;
 }
 
-body.show_banner_political div.fpmod_political {
+body.show_banners div.fpmod_political {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/political.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #F8A500 !important;
 }
 
-body.show_banner_stupid div.fpmod_stupid {
+body.show_banners div.fpmod_stupid {
     background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/stupid.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
+}
+
+body.show_banners div.fpmod_informative {
+    background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/interesting.png);
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #00bff3 !important;
 }
 
 

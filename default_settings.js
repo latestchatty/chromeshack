@@ -33,12 +33,6 @@ DefaultSettings = {
 
     mod_marker_css: "color: red !important",
 
-    category_banners_visible: [
-        "offtopic",
-        "political",
-        "stupid"
-    ],
-
     collapsed_threads: [],
 
     original_poster_css: "font-weight: bold; color: #FFFFCC;",

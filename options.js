@@ -3,7 +3,6 @@ function loadOptions()
     showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showPostPreviewLive(getOption("post_preview_live"));
-    showCategoryBanners(getOption("category_banners_visible"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
@@ -170,48 +169,6 @@ function getHighlightGroups()
     }
 
     return groups
-}
-
-function showCategoryBanners(banners)
-{
-    var inputs = document.getElementsByTagName("input");
-
-    for (var i = 0; i < inputs.length; i++)
-    {
-        if (inputs[i].type == "checkbox" && inputs[i].className == "category_banner")
-        {
-            var found = false;
-            for (var j = 0; j < banners.length; j++)
-            {
-                if (banners[j] == inputs[i].id)
-                {
-                    found = true;
-                    break;
-                }
-            }
-            inputs[i].checked = found;
-        }
-    }
-}
-
-function getCategoryBanners()
-{
-    var banners = [];
-
-    var inputs = document.getElementsByTagName("input");
-
-    for (var i = 0; i < inputs.length; i++)
-    {
-        if (inputs[i].type == "checkbox" && inputs[i].className == "category_banner")
-        {
-            if (inputs[i].checked)
-            {
-                banners.push(inputs[i].id); 
-            }
-        }
-    }
-
-    return banners;
 }
 
 function showPostPreviewLocation(position)
@@ -546,7 +503,6 @@ function saveOptions()
         saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("post_preview_live", getPostPreviewLive());
-        saveOption("category_banners_visible", getCategoryBanners());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());

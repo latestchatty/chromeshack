@@ -37,8 +37,6 @@ h2.group { font-size: 18pt; margin-top: 25px; background: #3264C8; color: white;
 div.group_header { font-size: 12pt; font-weight: bold; color: white; margin-top: 15px; }
 
 div#video_loader_settings, div#highlight_users_settings { margin-left: 25px; }
-div#category_banners_settings ul, div#expiration_watcher_settings ul, div#post_preview_settings ul 
-   { list-style-type: none; padding-left: 25px; }
 
 p.info { font-style: italic; color: #808080; }
 p.indent { margin-left: 25px; }
