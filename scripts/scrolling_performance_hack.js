@@ -11,6 +11,7 @@ settingsLoadedEvent.addHandler(function() {
         // later when we don't want it to), we will enable some CSS rules that make .headroom--top look the same as
         // .headroom--not-top
         document.body.className += ' scrolling_performance_hack';
+        $('header').removeClass('headroom--top').addClass('headroom--not-top');
 
         // allow our other scripts to re-apply their own scroll handlers
         scrollHackAppliedEvent.raise();
