@@ -9,7 +9,7 @@ function loadOptions()
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
-    showNotifications(getOption("notifications"), getOption("notifications_use_https"));
+    showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
     showEnabledScripts();
     trackChanges();
@@ -72,15 +72,9 @@ function getNotifications()
     return document.getElementById("enable_notifications").checked;
 }
 
-function getNotificationsUseHttps()
-{
-    return document.getElementById("notifications_use_https").checked;   
-}
-
-function showNotifications(enabled, useHttps)
+function showNotifications(enabled)
 {
     document.getElementById("enable_notifications").checked = enabled;
-    document.getElementById("notifications_use_https").checked = useHttps;
 }
 
 function showHighlightUsers(groups)
@@ -561,7 +555,6 @@ function saveOptions()
         saveOption("switchers", getSwitchers());
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
-        saveOption("notifications_use_https", getNotificationsUseHttps());
         saveOption("user_filters", getUserFilters());
     }
     catch (err)
