@@ -6,8 +6,11 @@ settingsLoadedEvent.addHandler(function() {
             event.stopImmediatePropagation();
         }, true);
 
-        // force the top bar to be collapsed because one of the event listeners was responsible for collapsing the bar
-        $('header').removeClass('headroom--top').addClass('headroom--not-top');
+        // force the top bar to be collapsed because one of the event listeners was responsible for collapsing the bar.
+        // instead of swapping the classes on the header element (thus allowing for some other code to put it back
+        // later when we don't want it to), we will enable some CSS rules that make .headroom--top look the same as
+        // .headroom--not-top
+        document.body.className += ' scrolling_performance_hack';
 
         // allow our other scripts to re-apply their own scroll handlers
         scrollHackAppliedEvent.raise();

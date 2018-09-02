@@ -342,3 +342,23 @@ img.pinnedLoading
 }
 
 video.imageloader { width: auto !important }
+
+/* prevent top bar from expanding */
+
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top #notification-center{margin-left:-2rem !important;opacity:0 !important;pointer-events:none !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-top{height:0 !important;padding:0 !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom{padding:.5rem 0 !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom .tools{margin-top:0 !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom .tools ul:not(.drop-down) li{margin-bottom:0 !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom .tools ul:not(.drop-down) li a{box-shadow:none !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom nav.primary{display:none !important}
+body.scrolling_performance_hack #page.theme1 header.primary.headroom--top .header-bottom .in .logo img{max-height:32px !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top #notification-center{margin-left:-2rem !important;opacity:0 !important;pointer-events:none !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-top{height:0 !important;padding:0 !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom{padding:.5rem 0 !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom .tools{margin-top:0 !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom .tools ul:not(.drop-down) li{margin-bottom:0 !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom .tools ul:not(.drop-down) li a{box-shadow:none !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom nav.primary{display:none !important}
+body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom .in .logo img{max-height:32px !important}
+body.scrolling_performance_hack #page.theme2 header.primary .header-bottom { transition: unset !important; }
