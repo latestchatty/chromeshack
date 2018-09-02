@@ -21,6 +21,7 @@
     "content_scripts": [
     {
         "js": [
+            "ext/papaparse/papaparse.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",

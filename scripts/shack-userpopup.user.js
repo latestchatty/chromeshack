@@ -287,23 +287,39 @@
 	
 	function getPostCount(username)
 	{
-		// Display working... message		
-		displayWorkingBar('Retrieving post count for ' + username + '...'); 
-	
-		// 
-		var addr = 'http://shackapi.stonedonkey.com/postcount/' + encodeURIComponent(username) + '.json'
-        console.log(addr);
-		
-		// use xmlhttpRequest to post the data
-        getUrl(addr, function(response) {
-				
+		displayWorkingBar('Retrieving post counts...');
+
+		const usernameLowercase = username.toLowerCase();
+
+		getUrl('https://shackstats.com/data/users_info.csv',
+			function success(response) {
+				// papa parse is too slow to parse this whole csv file so filter it down to likely lines using a fast
+				// method and then use papa parse to parse that vastly shortened csv file
+				const csvLines = response.responseText.split('\n');
+				const filteredCsvLines = [];
+				for (const csvLine of csvLines) {
+					if (filteredCsvLines.length === 0 || csvLine.toLowerCase().includes(usernameLowercase)) {
+						filteredCsvLines.push(csvLine);
+					}
+				}
+
+				const csv = Papa.parse(filteredCsvLines.join('\n'), { header: true });
+
 				hideWorkingBar();
-				
-				var postCount = JSON.parse(response.responseText);
-				
-				alert(postCount['user'] + ' has ' + addCommas(postCount['count']) + ' posts');
-			}
-	  	);
+
+				var count = 0;
+				for (const row of csv.data) {
+					if (row.username.toLowerCase() === usernameLowercase) {
+						count = row.post_count;
+					}
+				}
+
+				// use setTimeout so that the loading bar disappears before we show the modal alert
+				setTimeout(() => alert(username + ' has ' + addCommas(count) + ' posts'), 0);
+			},
+			function error() {
+				alert('Unable to load the post counts.');
+			});
 	}
 
 	function createListItem(text, url, className, target)
@@ -382,7 +398,7 @@
 			// Create menu item for reading post count
 			var aPostCount = document.createElement('a');
 			aPostCount.appendChild(document.createTextNode('Get ' + your + ' Post Count'));
-			aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(username) }, false);  
+			aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(decodeURIComponent(username)) }, false);  
 			var liPostCount = document.createElement('li');
 			liPostCount.appendChild(aPostCount);
 			ulUser.appendChild(liPostCount); 

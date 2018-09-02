@@ -74,16 +74,19 @@ String.prototype.trim = function()
 }
 
 // utility function to make an XMLHttpRequest
-function getUrl(url, callback)
+function getUrl(url, callback, errorCallback)
 {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function()
     {
-        if (xhr.readyState == 4)
-        {
-            callback(xhr);
+        if (xhr.readyState == 4) {
+            if (xhr.status >= 200 && xhr.status <= 399) {
+                callback(xhr);
+            } else if (errorCallback) {
+                errorCallback();
+            }
         }
-    }
+    };
     xhr.open("GET", url, true);
     xhr.send();
 }
