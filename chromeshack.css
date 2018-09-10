@@ -385,3 +385,13 @@ span.postbox_rules_divider {
 p.rules {
     font-size: 12px !important;
 }
+
+button#previewButton {
+    background-color: #a5a59c;
+    border-color: #b5b5ac;
+}
+
+button#previewButton:hover {
+    background-color: #e9e9de;
+    border-color: #ffffff;
+}
