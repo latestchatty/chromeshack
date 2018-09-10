@@ -136,7 +136,7 @@ settingsLoadedEvent.addHandler(function()
                 
                 var url = LOL.URL + "report.php";
 
-                var data = 'who=' + user + '&what=' + id + '&tag=' + tag + '&version=' + LOL.VERSION;
+                var data = 'who=' + user + '&what=' + id + '&tag=' + encodeURIComponent(tag) + '&version=' + LOL.VERSION;
 
                 if (isloled) {
                     data += '&action=untag';
