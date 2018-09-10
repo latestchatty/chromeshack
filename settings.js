@@ -10,13 +10,19 @@ function getSetting(name)
     return DefaultSettings[name];
 }
 
-chrome.extension.sendMessage({name: "getSettings"}, function(response)
-{
-    settings = response;
-    settingsLoadedEvent.raise();
-});
+function reloadSettings(raiseEvent) {
+    chrome.extension.sendMessage({name: "getSettings"}, function(response)
+    {
+        settings = response;
+        if (raiseEvent) {
+            settingsLoadedEvent.raise();
+        }
+    });
+}
 
 function setSetting(name, value)
 {
     chrome.extension.sendMessage({name: "setSetting", key: name, value: value});
 }
+
+reloadSettings(true);

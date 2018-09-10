@@ -52,7 +52,8 @@
             "scripts/jquery.insert.js",
             "scripts/image_upload.js",
             "scripts/custom_user_filters.js",
-            "scripts/highlight_pending_new_posts.js"
+            "scripts/highlight_pending_new_posts.js",
+            "scripts/options_link.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [
@@ -110,6 +111,9 @@
         "images/lol.png",
         "images/loading-pinned.gif",
         "images/banners/pinned.png",
-        "shack.png"
+        "shack.png",
+        "options.html",
+        "options.css",
+        "options.js"
     ]
 }

@@ -369,3 +369,19 @@ body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .heade
 body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom nav.primary{display:none !important}
 body.scrolling_performance_hack #page.theme2 header.primary.headroom--top .header-bottom .in .logo img{max-height:32px !important}
 body.scrolling_performance_hack #page.theme2 header.primary .header-bottom { transition: unset !important; }
+
+a.chromeshack_options_link {
+    position: absolute;
+    top: 4px;
+    left: 12px;
+}
+
+span.postbox_rules_divider {
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #41a9a9;
+}
+
+p.rules {
+    font-size: 12px !important;
+}
