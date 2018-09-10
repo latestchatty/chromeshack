@@ -24,7 +24,12 @@ settingsLoadedEvent.addHandler(function()
                 {
                     var link = document.createElement("a");
                     link.id = "lollink";
-                    link.href = LOL.URL + "?user=" + encodeURIComponent(LOL.getUsername());
+                    let url = LOL.URL;
+                    const username = LOL.getUsername();
+                    if (username) {
+                        url += "?user=" + encodeURIComponent(username);
+                    }
+                    link.href = url;
                     link.title = "Check out what got the [lol]s";
                     link.innerHTML = "* L O L ' d *";
                     comments_tools.appendChild(link);
@@ -120,6 +125,7 @@ settingsLoadedEvent.addHandler(function()
                 if (!user)
                 {
                     alert("You must be logged in to lol!");
+                    e.preventDefault();
                     return;
                 }
 
@@ -169,7 +175,12 @@ settingsLoadedEvent.addHandler(function()
 
             getUsername: function()
             {
-                return document.getElementById('user_posts').innerHTML;
+                const userPostsElement = document.getElementById('user_posts');
+                if (userPostsElement) {
+                    return userPostsElement.innerHTML;
+                } else {
+                    return null;
+                }
             },
 
             getModeration: function(id)
