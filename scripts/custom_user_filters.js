@@ -51,29 +51,20 @@
         }
         // The CSS class for a user's posts includes an ID, so we need to map from usernames to IDs.
         // We'll save this map into a setting so we only have to do this once per username added to the filter list.
-        var usernameIdMap = getSetting('username_id_map');
-        if (usernameIdMap === null || typeof usernameIdMap !== 'object') {
-            usernameIdMap = {};
-        }
+        var usernameIdMap = {};
         // Make sure each filtered username has a corresponding id in usernameIdMap.  Then hide posts from that user
         // by setting the CSS for their posts.
-        var changed = false;
         for (var i = 0; i < filteredUsernames.length; i++) {
             var username = filteredUsernames[i];
             if (!has(usernameIdMap, username)) {
                 var id = getUserId(username);
                 if (id >= 0) {
                     usernameIdMap[username] = id;
-                    changed = true;
                 }
             }
             if (has(usernameIdMap, username)) {
                 removePostsFromUserId(usernameIdMap[username]);
             }
-        }
-        // Save the map for next time, if it changed.
-        if (changed) {
-            setSetting('username_id_map', usernameIdMap);
         }
     }
 
