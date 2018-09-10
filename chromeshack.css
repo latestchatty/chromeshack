@@ -395,3 +395,8 @@ button#previewButton:hover {
     background-color: #e9e9de;
     border-color: #ffffff;
 }
+
+div.post_length_counter_text {
+    font-size: 10px;
+    color: #C0C0C0;
+}

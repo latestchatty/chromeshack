@@ -21,6 +21,7 @@
     "content_scripts": [
     {
         "js": [
+            "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
             "common.js",
             "sentence_parser.js",
@@ -53,7 +54,8 @@
             "scripts/image_upload.js",
             "scripts/custom_user_filters.js",
             "scripts/highlight_pending_new_posts.js",
-            "scripts/options_link.js"
+            "scripts/options_link.js",
+            "scripts/post_length_counter.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [

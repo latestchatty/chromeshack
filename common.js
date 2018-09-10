@@ -159,3 +159,75 @@ function getCookieValue(name, defaultValue)
     }
     return ret;
 }
+
+function removeUtf16SurrogatePairs(str) {
+    // shacknews doesn't support these and will remove them without counting them towards the post preview limit
+    // https://stackoverflow.com/a/22664154
+    return str.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])/g, '');
+}
+
+function generatePreview(text) {
+    var preview = removeUtf16SurrogatePairs(text);
+
+    // simple replacements
+    preview = preview.replace(/&/g, "&amp;");
+    preview = preview.replace(/</g, "&lt;");
+    preview = preview.replace(/>/g, "&gt;");
+    preview = preview.replace(/\r\n/g, "<br>");
+    preview = preview.replace(/\n/g, "<br>");
+    preview = preview.replace(/\r/g, "<br>");
+
+    var complexReplacements = {
+        'red': {'from': ['r{','}r'], 'to': ['<span class="jt_red">','</span>']},
+        'green': {'from': ['g{','}g'], 'to': ['<span class="jt_green">','</span>']},
+        'blue': {'from': ['b{','}b'], 'to': ['<span class="jt_blue">','</span>']},
+        'yellow': {'from': ['y{','}y'], 'to': ['<span class="jt_yellow">','</span>']},
+        'olive': {'from': ['e\\[','\\]e'], 'to': ['<span class="jt_olive">','</span>']},
+        'lime': {'from': ['l\\[','\\]l'], 'to': ['<span class="jt_lime">','</span>']},
+        'orange': {'from': ['n\\[','\\]n'], 'to': ['<span class="jt_orange">','</span>']},
+        'pink': {'from': ['p\\[','\\]p'], 'to': ['<span class="jt_pink">','</span>']},
+        'quote': {'from': ['q\\[','\\]q'], 'to': ['<span class="jt_quote">','</span>']},
+        'sample': {'from': ['s\\[','\\]s'], 'to': ['<span class="jt_sample">','</span>']},
+        'strike': {'from': ['-\\[','\\]-'], 'to': ['<span class="jt_strike">','</span>']},
+        'italic1': {'from': ['i\\[','\\]i'], 'to': ['<i>','</i>']},
+        'italic2': {'from': ['\\/\\[','\\]\\/'], 'to': ['<i>','</i>']},
+        'bold1': {'from': ['b\\[','\\]b'], 'to': ['<b>','</b>']},
+        'bold2': {'from': ['\\*\\[','\\]\\*'], 'to': ['<b>','</b>']},
+        'underline': {'from': ['_\\[','\\]_'], 'to': ['<u>','</u>']},
+        'spoiler': {'from': ['o\\[','\\]o'], 'to': ['<span class="jt_spoiler" onclick="return doSpoiler(event);">','</span>']},
+        'code': {'from': ['\\/{{','}}\\/'], 'to': ['<pre class="jt_code">','</pre>']}
+    };
+
+    // replace matching pairs first
+    for(var ix in complexReplacements) {
+        if(complexReplacements.hasOwnProperty(ix)) {
+            var rgx = new RegExp(complexReplacements[ix].from[0] + '(.*?)' + complexReplacements[ix].from[1], 'g');
+            while(preview.match(rgx) !== null) {
+                preview = preview.replace(rgx, complexReplacements[ix].to[0] + '$1' + complexReplacements[ix].to[1]);
+            }
+        }
+    }
+
+    // replace orphaned opening shacktags, close them at the end of the post.
+    // this still has (at least) one bug, the shack code does care about nested tag order:
+    // b[g{bold and green}g]b <-- correct
+    // b[g{bold and green]b}g <-- }g is not parsed by the shack code
+    for(var ix in complexReplacements) {
+        if(complexReplacements.hasOwnProperty(ix)) {
+            var rgx = new RegExp(complexReplacements[ix].from[0], 'g');
+            while(preview.match(rgx) !== null) {
+                preview = preview.replace(rgx, complexReplacements[ix].to[0]);
+                preview = preview + complexReplacements[ix].to[1];
+            }
+        }
+    }
+
+    preview = convertUrlToLink(preview);
+
+    return preview;
+}
+
+function convertUrlToLink(text)
+{
+    return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
+}
