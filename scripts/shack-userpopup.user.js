@@ -496,8 +496,8 @@
 
 	settingsLoadedEvent.addHandler(function() {
 		if (getSetting("enabled_scripts").contains("use_winchatty_search")) {
-			var searchForm = document.getElementById('top-search').getElementsByTagName('form')[0];
-			searchForm.action = 'https://winchatty.com/nusearch';
+			$('.tog-search').prop('href', 'https://winchatty.com').prop('target', '_blank');
+			$(".modal.search").remove();
 		}
 	});
 
