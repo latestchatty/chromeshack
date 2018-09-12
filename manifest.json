@@ -72,8 +72,7 @@
             "init_events.js",
             "default_settings.js",
             "settings.js",
-            "scripts/shack-userpopup.user.js",
-            "scripts/search.js"
+            "scripts/shack-userpopup.user.js"
         ],
         "matches": [ "*://www.shacknews.com/*" ],
         "exclude_matches": [
