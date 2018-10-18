@@ -22,7 +22,7 @@
     },
     "applications": {
         "gecko": {
-          "id": "ext@chromeshack.github.com"
+          "id": "chromeshack@arhughes.github.com"
         }
     },
     "content_scripts": [
@@ -92,15 +92,16 @@
     }
     ],
     "permissions": [
-        "contextMenus"
-        , "notifications"
-        , "tabs"
-        , "https://api.imgur.com/*"
-        , "http://chattypics.com/*"
-        , "https://lol.lmnopc.com/*"
-        , "http://shackapi.stonedonkey.com/*"
-        , "*://*.shacknews.com/*"
-        , "*://*.bit-shift.com/*"
+        "contextMenus",
+        "notifications",
+        "tabs",
+        "https://api.imgur.com/*",
+        "http://chattypics.com/*",
+        "https://lol.lmnopc.com/*",
+        "https://winchatty.com/v2/*",
+        "http://shackapi.stonedonkey.com/*",
+        "*://*.shacknews.com/*",
+        "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
         "scripts/video_loader_helper.js",

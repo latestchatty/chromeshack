@@ -59,7 +59,7 @@
 
     function loop() {
         ajaxGet(
-            window.location.protocol + '//winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
+            'https://winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
             function(data) {
                 g_lastEventId = parseInt(data.lastEventId);
                 processEvents(data.events);
@@ -222,7 +222,7 @@
 
         // We need to get an initial event ID to start with.
         ajaxGet(
-            window.location.protocol + '//winchatty.com/v2/getNewestEventId',
+            'https://winchatty.com/v2/getNewestEventId',
             function(data) {
                 g_lastEventId = parseInt(data.eventId);
                 loop();
