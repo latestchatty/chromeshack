@@ -75,7 +75,10 @@ function migrateSettings(version)
         }
     }
 
-    var current_version = browser.app.getDetails().version;
+    // for Chrome
+    //var current_version = browser.app.getDetails().version;
+    // for Firefox Quantum
+    var current_version = browser.runtime.getManifest().version;
     if (version != current_version)
     {
         browser.tabs.create({url: "release_notes.html"});
