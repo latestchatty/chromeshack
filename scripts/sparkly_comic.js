@@ -32,7 +32,7 @@ settingsLoadedEvent.addHandler(function()
                     {
                         var panel = document.createElement("div");
                         panel.className = "panel";
-                        panel.style.backgroundImage = "url(" + chrome.extension.getURL("../images/sparkly/" + SparklyComic.getImage(lines[i], i, max)) + ")";
+                        panel.style.backgroundImage = "url(" + browser.runtime.getURL("../images/sparkly/" + SparklyComic.getImage(lines[i], i, max)) + ")";
 
                         var s1 = document.createElement("span");
                         s1.className = "shadow";

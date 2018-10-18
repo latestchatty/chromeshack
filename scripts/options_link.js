@@ -3,7 +3,7 @@ settingsLoadedEvent.addHandler(() => {
     $('div#commenttools').append(
         $('<a>', {
             text: 'Chrome Shack Options',
-            href: chrome.runtime.getURL('options.html'),
+            href: browser.runtime.getURL('options.html'),
             class: 'chromeshack_options_link',
             target: '_blank'
         })
@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(() => {
     rules.append(
         $('<a>', {
             text: 'Chrome Shack Options',
-            href: chrome.runtime.getURL('options.html'),
+            href: browser.runtime.getURL('options.html'),
             target: '_blank'
         })
     );

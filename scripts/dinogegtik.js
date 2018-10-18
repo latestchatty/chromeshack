@@ -32,7 +32,7 @@ settingsLoadedEvent.addHandler(function()
                     var comic_div = document.createElement("div");
                     comic_div.id = comic_id;
                     comic_div.className = "dinogegtik";
-                    comic_div.style.backgroundImage = "url(" + chrome.extension.getURL("../images/dinogegtik.png") + ")";
+                    comic_div.style.backgroundImage = "url(" + browser.runtime.getURL("../images/dinogegtik.png") + ")";
                     comic_div.style.height = (lines.length <= 3) ? "244px" : "487px";
 
                     postBody.appendChild(comic_div);

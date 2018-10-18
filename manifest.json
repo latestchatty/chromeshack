@@ -1,10 +1,20 @@
 {
     "name": "Chrome Shack",
-    "version": "1.49",
+    "version": "1.60",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
-    "options_page": "options.html",
+    "options_ui": {
+        "page": "options.html"
+    },
+    "browser_action": {
+        "browser_style": true,
+        "default_popup": "options.html",
+        "default_icon": {
+          "16": "shack.png",
+          "32": "icon.png"
+        }
+    },
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "background": {
         "scripts": [ "background.js" ]
@@ -17,6 +27,11 @@
     "icons": {
         "16": "shack.png",
         "128": "icon.png"
+    },
+    "applications": {
+        "gecko": {
+          "id": "ext@chromeshack.github.com"
+        }
     },
     "content_scripts": [
     {

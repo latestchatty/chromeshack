@@ -72,7 +72,8 @@ ElderScroll =
 
     reachedBottom: function()
     {
-        console.log('reachedBottom');
+        // don't spam our console
+        //console.log('reachedBottom');
         if (!ElderScroll.isLoadingNew)
         {
             var divThreads = ElderScroll.getDivThreads();
