@@ -7,72 +7,49 @@ ChromeShack =
             mutationsList.forEach(function(mutation) {
                 if (mutation.type == "childList") {
                     mutation.addedNodes.forEach(function (node) {
-                        var elem = node.parentNode;
-                        var source_id = elem.id;
-                        var scrollOpts = {behavior: "instant", block: "center", inline: "nearest"};
+                        // wrap in a try/catch in case our node element throws
+                        try {
+                            var elem = node.parentNode;
+                            var source_id = elem.id;
+                            var scrollOpts = {behavior: "instant", block: "center", inline: "nearest"};
+                            
+                            // starts with "root", they probably refreshed the thread
+                            if (node && node.id.indexOf("root_") == 0)
+                            {
+                                ChromeShack.processFullPosts(elem);
+                                if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                    // scroll our post into the view window
+                                    elem.scrollIntoView(scrollOpts);
+                                }
+                            }
+                            else if (source_id == "postbox")
+                            {
+                                console.log(elem);
+                                ChromeShack.processPostBox(elem);
+                                if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                    // scroll our post into the view window
+                                    elem.scrollIntoView(scrollOpts);
+                                }
+                            }
 
-                        // starts with "root", they probably refreshed the thread
-                        if (node && node.id.indexOf("root_") == 0)
-                        {
-                            ChromeShack.processFullPosts(elem);
-                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                                // scroll our post into the view window
-                                elem.scrollIntoView(scrollOpts);
+                            // starts with "item_", they probably clicked on a reply
+                            if (source_id.indexOf("item_") == 0)
+                            {
+                                // grab the id from the old node, since the new node doesn't contain the id
+                                var id = source_id.substr(5);
+                                ChromeShack.processPost(elem, id);
+                                if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                    // scroll our post into the view window
+                                    elem.scrollIntoView(scrollOpts);
+                                }
                             }
                         }
-                        else if (source_id == "postbox")
-                        {
-                            console.log(elem);
-                            ChromeShack.processPostBox(elem);
-                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                                // scroll our post into the view window
-                                elem.scrollIntoView(scrollOpts);
-                            }
-                        }
-
-                        // starts with "item_", they probably clicked on a reply
-                        if (source_id.indexOf("item_") == 0)
-                        {
-                            // grab the id from the old node, since the new node doesn't contain the id
-                            var id = source_id.substr(5);
-                            ChromeShack.processPost(elem, id);
-                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                                // scroll our post into the view window
-                                elem.scrollIntoView(scrollOpts);
-                            }
-                        }
+                        catch (e) {}
                     })
                 }
             })
         });
         observer.observe(document, { characterData: true, subtree: true, childList: true });
-
-        // DEPRECATED: start listening for new nodes (replies) being inserted
-        // document.addEventListener('DOMNodeInserted', function(e) {
-        //     var source_id = e.srcElement.id;
-
-        //     // starts with "root", they probably refreshed the thread
-        //     if (source_id && source_id.indexOf("root_") == 0)
-        //     {
-        //         console.log(e.srcElement);
-        //         ChromeShack.processFullPosts(e.srcElement);
-        //     }
-        //     else if (source_id == "postbox")
-        //     {
-        //         console.log(e.srcElement);
-        //         ChromeShack.processPostBox(e.srcElement);
-        //     }
-
-        //     // starts with "item_", they probably clicked on a reply
-        //     console.log(e.relatedNode);
-        //     if (e.relatedNode.id.indexOf("item_") == 0)
-        //     {
-        //         // grab the id from the old node, since the new node doesn't contain the id
-        //         var id = e.relatedNode.id.substr(5);
-        //         console.log(e.relatedNode.id, id);
-        //         ChromeShack.processPost(e.relatedNode, id);
-        //     }
-        // });
     },
 
     processFullPosts: function(element)

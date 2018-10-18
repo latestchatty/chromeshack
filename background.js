@@ -240,11 +240,12 @@ function showCommentHistoryClick(info, tab)
 }
 
 
-var allowedIncognito = false;
+var allowedIncognito = browser.extension.isAllowedIncognitoAccess();
+//var allowedIncognito = false;
 //Cache this because it has to be run in the context of the extension.
-browser.extension.isAllowedIncognitoAccess(function (allowed){
-    allowedIncognito = allowed;
-});
+// browser.extension.isAllowedIncognitoAccess(function (allowed){
+//     allowedIncognito = allowed;
+// });
 
 var lastOpenedIncognito = -1;
 
@@ -286,14 +287,14 @@ function openIncognito(newUrl)
     });
 }
 
-browser.runtime.onMessage.addListener(function(request, sender, sendResponse)
+browser.runtime.onMessage.addListener(function(request, sender)
 {
     if (request.name == "getSettings")
     {
         var tab = sender.tab;
         if (tab)
             showPageAction(tab.id, tab.url);
-        sendResponse(getSettings());
+        return Promise.resolve(getSettings());
     }
     else if (request.name == "setSetting")
         setSetting(request.key, request.value);
@@ -304,12 +305,14 @@ browser.runtime.onMessage.addListener(function(request, sender, sendResponse)
     else if (request.name === "launchIncognito")
     {
         openIncognito(request.value);
-        sendResponse();
+        return Promise.resolve();
     }
-    else if (request.name === 'allowedIncognitoAccess')
-        sendResponse(allowedIncognito);
-    else
-        sendResponse();
+    else if (request.name === 'allowedIncognitoAccess') {
+        return Promise.resolve(allowedIncognito);
+    }
+    else {
+        return Promise.resolve();
+    }
 });
 
 addContextMenus();

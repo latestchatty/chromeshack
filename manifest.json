@@ -9,7 +9,10 @@
     },
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "background": {
-        "scripts": [ "background.js" ]
+        "scripts": [
+            "browser-polyfill.min.js",
+            "background.js" 
+        ]
     },
     "page_action": {
         "default_icon": "shack.png",
@@ -20,16 +23,12 @@
         "16": "shack.png",
         "128": "icon.png"
     },
-    "applications": {
-        "gecko": {
-          "id": "chromeshack@arhughes.github.com"
-        }
-    },
     "content_scripts": [
     {
         "js": [
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
+            "browser-polyfill.min.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -55,7 +54,7 @@
             "default_settings.js",
             "settings.js",
             "scripts/shack-userpopup.user.js",
-            "scripts/jquery-1.8.3.min.js",
+            "scripts/jquery-3.3.1.slim.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
             "scripts/image_upload.js",

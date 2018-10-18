@@ -11,7 +11,7 @@ function getSetting(name)
 }
 
 function reloadSettings(raiseEvent) {
-    browser.runtime.sendMessage(null, {name: "getSettings"}, null, function(response)
+    browser.runtime.sendMessage({name: "getSettings"}).then(function(response)
     {
         settings = response;
         if (raiseEvent) {
@@ -22,7 +22,7 @@ function reloadSettings(raiseEvent) {
 
 function setSetting(name, value)
 {
-    browser.runtime.sendMessage(null, {name: "setSetting", key: name, value: value});
+    browser.runtime.sendMessage({name: "setSetting", key: name, value: value});
 }
 
 reloadSettings(true);

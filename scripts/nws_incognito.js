@@ -19,7 +19,7 @@ settingsLoadedEvent.addHandler(function() {
                         //Add href to collection for open all.
                         allLinks.push(cloned.href);
                         $(cloned).click(function(e) {
-                            browser.runtime.sendMessage(null, {name: "launchIncognito", value: e.target.href});
+                            browser.runtime.sendMessage({name: "launchIncognito", value: e.target.href});
                             return false;
                         });
 
@@ -28,14 +28,14 @@ settingsLoadedEvent.addHandler(function() {
                     }
 
                     //If we're allowed incognito access, we can open all links.  Otherwise it's a shitstorm since it will open a new window for each link.
-                    browser.runtime.sendMessage(null, {name: 'allowedIncognitoAccess'}, null, function (allowed) {
+                    browser.runtime.sendMessage({name: 'allowedIncognitoAccess'}).then(function (allowed) {
                         if(allowed)
                         {
                             if(links.length > 1)
                             {
                                 $(postBody).prepend($('<a>').attr('href', '#').html('Open All (Incognito)').click(function(){
                                     //Run the first link and use a callback on message completion to ensure the window is created and all subsequent calls will open in that window.
-                                    browser.runtime.sendMessage(null, {name: "launchIncognito", value: allLinks[0]}, null, function (response) {
+                                    browser.runtime.sendMessage({name: "launchIncognito", value: allLinks[0]}).then(function (response) {
                                         if(allLinks.length <= 1) return;
                                         for(var i=1; i<allLinks.length; i++)
                                         {
