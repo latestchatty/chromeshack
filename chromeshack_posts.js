@@ -7,16 +7,17 @@ ChromeShack =
             mutationsList.forEach(function(mutation) {
                 if (mutation.type == "childList") {
                     mutation.addedNodes.forEach(function (node) {
-                        var elem = node.parentElement;
+                        var elem = node.parentNode;
                         var source_id = elem.id;
 
                         // starts with "root", they probably refreshed the thread
-                        if (source_id && source_id.indexOf("root_") == 0)
+                        if (node && node.id.indexOf("root_") == 0)
                         {
                             ChromeShack.processFullPosts(elem);
                         }
                         else if (source_id == "postbox")
                         {
+                            console.log(elem);
                             ChromeShack.processPostBox(elem);
                         }
 
@@ -31,7 +32,7 @@ ChromeShack =
                 }
             })
         });
-        observer.observe(document, { attributes: true, subtree: true, childList: true });
+        observer.observe(document, { characterData: true, subtree: true, childList: true });
 
         // DEPRECATED: start listening for new nodes (replies) being inserted
         // document.addEventListener('DOMNodeInserted', function(e) {
