@@ -535,33 +535,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
 
     // Generate the menu on the left
-    var menu_list = document.getElementById('menu_list');
-    var headers = document.getElementById('content').getElementsByTagName('h2');
-    for (var i = 0; i < headers.length; i++) {
-        var header = headers[i];
-        var labels = header.getElementsByTagName('label');
-        if (labels.length == 0) {
-            // Add section header to the menu
-            var li = document.createElement('li');
-            li.innerHTML = '<div class="group_header">' + header.innerHTML + '</div>';
-            menu_list.appendChild(li);
-        } else if (labels.length == 1) {
-            var label = labels[0];
-            var scriptName = label.innerHTML.trim();
-            var anchor = 'header' + i;
+    // var menu_list = document.getElementById('menu_list');
+    // var headers = document.getElementById('content').getElementsByTagName('h2');
+    // for (var i = 0; i < headers.length; i++) {
+    //     var header = headers[i];
+    //     var labels = header.getElementsByTagName('label');
+    //     if (labels.length == 0) {
+    //         // Add section header to the menu
+    //         var li = document.createElement('li');
+    //         li.innerHTML = '<div class="group_header">' + header.innerHTML + '</div>';
+    //         menu_list.appendChild(li);
+    //     } else if (labels.length == 1) {
+    //         var label = labels[0];
+    //         var scriptName = label.innerHTML.trim();
+    //         var anchor = 'header' + i;
 
-            // Add anchor to the content section
-            var a = document.createElement('a');
-            a.name = anchor;
-            a.innerHTML = '<br>';
-            content.insertBefore(a, header);
+    //         // Add anchor to the content section
+    //         var a = document.createElement('a');
+    //         a.name = anchor;
+    //         a.innerHTML = '<br>';
+    //         content.insertBefore(a, header);
 
-            // Add list item to the menu
-            var li = document.createElement('li');
-            li.innerHTML = '<a href="#' + anchor + '">' + scriptName + '</a>';
-            menu_list.appendChild(li);
-        }
-    }
+    //         // Add list item to the menu
+    //         var li = document.createElement('li');
+    //         li.innerHTML = '<a href="#' + anchor + '">' + scriptName + '</a>';
+    //         menu_list.appendChild(li);
+    //     }
+    // }
 });
 
 

@@ -170,6 +170,11 @@ settingsLoadedEvent.addHandler(function()
                     }
                 });
 
+                setTimeout(function() {
+                    // refresh our LOLs on the current post after 3s
+                    LOL.showThreadCounts(id);
+                }, 3000)
+
                 e.preventDefault();
             },
 

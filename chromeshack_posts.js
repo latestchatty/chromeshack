@@ -9,16 +9,25 @@ ChromeShack =
                     mutation.addedNodes.forEach(function (node) {
                         var elem = node.parentNode;
                         var source_id = elem.id;
+                        var scrollOpts = {behavior: "instant", block: "center", inline: "nearest"};
 
                         // starts with "root", they probably refreshed the thread
                         if (node && node.id.indexOf("root_") == 0)
                         {
                             ChromeShack.processFullPosts(elem);
+                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                // scroll our post into the view window
+                                elem.scrollIntoView(scrollOpts);
+                            }
                         }
                         else if (source_id == "postbox")
                         {
                             console.log(elem);
                             ChromeShack.processPostBox(elem);
+                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                // scroll our post into the view window
+                                elem.scrollIntoView(scrollOpts);
+                            }
                         }
 
                         // starts with "item_", they probably clicked on a reply
@@ -27,6 +36,10 @@ ChromeShack =
                             // grab the id from the old node, since the new node doesn't contain the id
                             var id = source_id.substr(5);
                             ChromeShack.processPost(elem, id);
+                            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                                // scroll our post into the view window
+                                elem.scrollIntoView(scrollOpts);
+                            }
                         }
                     })
                 }
