@@ -42,8 +42,10 @@ ElderScroll =
                         
         if (addLoadingAnimation)
         {
+            var _url = `url("${browser.runtime.getURL("../images/shack.png")}")`;
             var shackLogo = document.createElement('div');
             shackLogo.id = 'shackLogo';
+            shackLogo.style.backgroundImage = _url;
             divLoadingInfo.appendChild(shackLogo);
         }
         
@@ -72,8 +74,6 @@ ElderScroll =
 
     reachedBottom: function()
     {
-        // don't spam our console
-        //console.log('reachedBottom');
         if (!ElderScroll.isLoadingNew)
         {
             var divThreads = ElderScroll.getDivThreads();

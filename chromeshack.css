@@ -13,7 +13,6 @@ a.lol_button { padding: 0 0.25em !important; text-decoration: underline !importa
     top: 18px;
     text-indent: -9999px;
     color: #f00;
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/lol.png);
 }
 
 .oneline_tags { display: inline; overflow: hidden; white-space: nowrap; }
@@ -100,28 +99,24 @@ div.sparklycomic div.panel span.shadow .jt_spoiler,
 div.sparklycomic div.panel span.shadow a { visibility: hidden }
 
 body.show_banners div.fpmod_offtopic {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/offtopic.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #7D7D7D !important;
 }
 
 body.show_banners div.fpmod_political {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/political.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #F8A500 !important;
 }
 
 body.show_banners div.fpmod_stupid {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/stupid.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
 }
 
 body.show_banners div.fpmod_informative {
-    background-image: url(chrome-extension://__MSG_@@extension_id__/images/banners/interesting.png);
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #00bff3 !important;
@@ -187,8 +182,7 @@ span.newcommenthighlighter {
 	width: 30px; 
 	position: absolute; 
 	bottom: 6px; 
-	right: 5px; 
-	background-image: url(chrome-extension://__MSG_@@extension_id__/images/doom_health.png);
+	right: 5px;
 }
 
 
@@ -225,7 +219,6 @@ div.getPost span.user a {text-decoration: none;}
     height: 18px;
     margin-left: 10px;
     display: inline-block !important;
-    background-image: url(chrome-extension://__MSG_@@extension_id__/shack.png);
     -webkit-animation-name: elderscroll-rotate;
     -webkit-animation-timing-function: ease-in-out;
     -webkit-animation-iteration-count: infinite;

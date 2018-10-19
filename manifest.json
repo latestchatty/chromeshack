@@ -11,7 +11,7 @@
     "background": {
         "scripts": [
             "browser-polyfill.min.js",
-            "background.js" 
+            "background.js"
         ]
     },
     "page_action": {
@@ -54,7 +54,7 @@
             "default_settings.js",
             "settings.js",
             "scripts/shack-userpopup.user.js",
-            "scripts/jquery-3.3.1.slim.min.js",
+            "scripts/jquery-3.3.1.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
             "scripts/image_upload.js",

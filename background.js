@@ -75,9 +75,6 @@ function migrateSettings(version)
         }
     }
 
-    // for Chrome
-    //var current_version = browser.app.getDetails().version;
-    // for Firefox Quantum
     var current_version = browser.runtime.getManifest().version;
     if (version != current_version)
     {
@@ -241,12 +238,6 @@ function showCommentHistoryClick(info, tab)
 
 
 var allowedIncognito = browser.extension.isAllowedIncognitoAccess();
-//var allowedIncognito = false;
-//Cache this because it has to be run in the context of the extension.
-// browser.extension.isAllowedIncognitoAccess(function (allowed){
-//     allowedIncognito = allowed;
-// });
-
 var lastOpenedIncognito = -1;
 
 function openIncognito(newUrl)

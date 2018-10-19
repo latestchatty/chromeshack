@@ -243,11 +243,7 @@ settingsLoadedEvent.addHandler(function()
             
                 // If there aren't any tagged threads in this root there's no need to proceed 
                 if (!LOL.counts[rootId])
-                {
-                    // don't spam our console
-                    //console.log('No lols for ' + rootId);
-                    return; 
-                }
+                    return;
 
                 // Store the tag names in an array for easy comparisons in the loop
                 var tag_names = [];
