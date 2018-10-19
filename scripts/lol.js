@@ -32,6 +32,7 @@ settingsLoadedEvent.addHandler(function()
                     link.href = url;
                     link.title = "Check out what got the [lol]s";
                     link.innerHTML = "* L O L ' d *";
+                    link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
                     comments_tools.appendChild(link);
                 }
 
