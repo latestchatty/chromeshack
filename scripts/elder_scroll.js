@@ -6,46 +6,23 @@ ElderScroll =
 {
     pxToLoadNew: 500,
     isLoadingNew: false,
-    perfHack: false,
-    scrollHandler: false,
     divLoadingInfo: null,
     rootThreads: [],
 
     install: function()
     {
-        // the following abstraction for handlers is pretty messy but should work okay
-        if (getSetting("enabled_scripts").contains("scrolling_performance_hack")) {
-            ElderScroll.perfHack = true;
-            // force the top bar to be collapsed to keep common styling
-            document.body.className += ' scrolling_performance_hack';
-            $('header').removeClass('notpinned').addClass('pinned');
-        }
-
-        if (getSetting("enabled_scripts").contains("elder_scroll")) {
-            ElderScroll.scrollHandler = true;
-        }
-
-        if (ElderScroll.scrollHandler && ElderScroll.getDivNavigation() != 0)
+        if (ElderScroll.getDivNavigation() != 0)
         {
             ElderScroll.updateRootThreads();
+            ElderScroll.installScrollEventHandler();
             window.addEventListener('resize', ElderScroll.reachedBottom, true);
         }
-
-        // let our other handler method apply itself if necessary
-        ElderScroll.installScrollEventHandler();
     },
 
     installScrollEventHandler: function()
     {
-        if (ElderScroll.perfHack || ElderScroll.scrollHandler) {
-            // attach our handler using useCapture to prevent bubbling from other listeners
-            window.addEventListener('scroll', function (event) {
-                // test if we need to use this scroll event for ElderScroll to work
-                if (ElderScroll.scrollHandler && ElderScroll.getDivNavigation() != 0) { ElderScroll.reachedBottom() }
-                // kill any other 'window' level scroll event listeners besides our own (performance hack)
-                if (ElderScroll.perfHack) { event.stopImmediatePropagation(); }
-            }, true);
-        }
+        if (ElderScroll.getDivNavigation() != 0)
+            window.addEventListener('scroll', ElderScroll.reachedBottom, true);
     },
     
     updateRootThreads: function()
@@ -95,7 +72,7 @@ ElderScroll =
         return getDescendentsByTagAndClassName(ElderScroll.getDivThreadContainer(), 'div', 'pagenavigation');
     },
 
-    reachedBottom: function(event)
+    reachedBottom: function()
     {
         if (!ElderScroll.isLoadingNew)
         {
@@ -160,8 +137,7 @@ ElderScroll =
             {
                 // a _bad_ way of doing this...
                 var divResponse = document.createElement('div');
-                // don't use replaceHTML here - there be dragons!
-                divResponse.innerHTML = response.responseText;
+                replaceHTML(divResponse, response.responseText);
 
                 var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
                 var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
@@ -209,11 +185,16 @@ ElderScroll =
 
 settingsLoadedEvent.addHandler(function()
 {
-    // conditionally apply our handlers inside the actual listener methods
-    ElderScroll.install();
+    if (getSetting("enabled_scripts").contains("elder_scroll"))
+    {       
+        ElderScroll.install();
+    }
 });
 
-// scrollHackAppliedEvent.addHandler(function()
-// {
-//     ElderScroll.installScrollEventHandler();
-// });
+scrollHackAppliedEvent.addHandler(function()
+{
+    if (getSetting("enabled_scripts").contains("elder_scroll"))
+    {       
+        ElderScroll.installScrollEventHandler();
+    }
+});
