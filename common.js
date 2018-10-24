@@ -227,11 +227,6 @@ function generatePreview(text) {
     return preview;
 }
 
-function convertUrlToLink(text)
-{
-    return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
-}
-
 function debounce(cb, timeout, override)
 {
     // pretty bog standard debounce to prevent trailing execution (ex: Underscore)
@@ -256,4 +251,9 @@ function debounce(cb, timeout, override)
             cb.apply(_ctx, _arg)
         };
     }
+}
+
+function convertUrlToLink(text)
+{
+    return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
 }
