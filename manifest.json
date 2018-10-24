@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.60",
+    "version": "1.50",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -21,7 +21,7 @@
     },
     "icons": {
         "16": "shack.png",
-        "128": "icon.png"
+        "144": "icon.png"
     },
     "content_scripts": [
     {

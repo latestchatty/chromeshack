@@ -477,7 +477,8 @@
 		else {
 
 			var parentDropdown = e.target;
-			while (Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
+			while (parentDropdown != null 
+				&& Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
 				if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
 					parentDropdown.className += ' hidden';
 					break;

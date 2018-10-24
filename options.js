@@ -374,22 +374,23 @@ function logInForNotifications(notificationuid)
             //console.log("Response from register client " + res.responseText);
             var result = JSON.parse(res.responseText);
             if(result.result === "success") {
-                browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
-                   function(tabs){
-                       if(tabs.length === 0) {
-                           browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
-                       } else {
-                           //Since they requested, we'll open the tab and make sure they're at the correct url.
-                           browser.tabs.update(
-                              tabs[0].tabId,
-                              {
-                                  active: true,
-                                  highlighted: true,
-                                  url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
-                              }
-                           );
-                       }
-                   });
+                browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'}).then(function(tabs) {
+                    console.log(tabs);
+
+                    if(tabs.length === 0) {
+                        browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                    } else {
+                        //Since they requested, we'll open the tab and make sure they're at the correct url.
+                        browser.tabs.update(
+                            tabs[0].tabId,
+                            {
+                                active: true,
+                                highlighted: true,
+                                url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
+                            }
+                        );
+                    }
+                })
             }
         }
     );

@@ -231,3 +231,33 @@ function convertUrlToLink(text)
 {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
 }
+
+function scrollToElement(elem)
+{
+    // scroll our element to the center of the screen
+    $(elem).animate(
+        { scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top },
+        { duration: 200, easing: 'swing'}
+    );
+    $('html,body').animate(
+        { scrollTop: $(elem).offset().top - ($(window).height()/3) }, 
+        { duration: 200, easing: 'swing'}
+    );
+}
+
+function elementIsVisible(elem)
+{
+    // https://stackoverflow.com/a/51001117
+    let x = elem.getBoundingClientRect().left;
+    let y = elem.getBoundingClientRect().top;
+    let ww = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    let hw = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    let w = elem.clientWidth;
+    let h = elem.clientHeight;
+    return (
+        (y < hw &&
+            y + h > 0) &&
+        (x < ww &&
+            x + w > 0)
+    );
+}
