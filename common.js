@@ -238,16 +238,16 @@ function debounce(cb, timeout, override)
         var execImp = override && !_timeout;
 
         // recursive trailing until 'override' or timeout
-		var later = function() {
+        var later = function() {
             _timeout = null;
-			if (!override) {
+            if (!override) {
                 cb.apply(_ctx, _arg);
             }
         };
         clearTimeout(_timeout);
         _timeout = setTimeout(later, timeout);
         // 'override' will cancel our recursive trail
-		if (execImp) {
+        if (execImp) {
             cb.apply(_ctx, _arg)
         };
     }
