@@ -263,8 +263,9 @@ function elementIsVisible(elem)
 }
 
 function replaceHTML(oldElem, html) {
-    // swap element in-place for massive performance increase
+    // swap element in-place (without children) for massive performance increase
     var newElem = oldElem.cloneNode(false);
     newElem.innerHTML = html;
+    // use cautiously as this can trigger weirdness in some cases
     oldElem.parentNode.replaceChild(newElem, oldElem);
 }

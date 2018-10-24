@@ -162,7 +162,7 @@ settingsLoadedEvent.addHandler(function()
                             new_tag += " ' D *";
                         }
 
-                        replaceHTML(element, document.createTextNode(new_tag));
+                        replaceHTML(element, new_tag);
                         element.dataset.isloled = !isloled;
                     }
                     else
@@ -291,13 +291,14 @@ settingsLoadedEvent.addHandler(function()
 
                         if (tgt)
                         {
+                            // do not use replaceHTML here - there be dragons!
                             if (LOL.showCounts == 'short')
                             {
-                                replaceHTML(tgt, LOL.counts[rootId][id][tag]);
+                                tgt.innerHTML = LOL.counts[rootId][id][tag];
                             }
                             else
                             {
-                                replaceHTML(tgt, `${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
+                                tgt.innerHTML = `${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`;
                             }
                         }
                     
