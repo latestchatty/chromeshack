@@ -134,7 +134,7 @@
         var star = document.createElement('a');
         star.id = 'jump_to_new_post';
         star.style.display = 'none';
-        $(star).html('1');
+        star.innerHTML = '1';
         star.addEventListener('click', jumpToNewPost);
 
         body.appendChild(star);

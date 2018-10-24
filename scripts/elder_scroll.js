@@ -137,7 +137,7 @@ ElderScroll =
             {
                 // a _bad_ way of doing this...
                 var divResponse = document.createElement('div');
-                replaceHTML(divResponse, response.responseText);
+                divResponse.innerHTML = response.responseText;
 
                 var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
                 var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
