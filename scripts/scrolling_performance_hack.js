@@ -2,7 +2,7 @@ settingsLoadedEvent.addHandler(function() {
     if (getSetting("enabled_scripts").contains("scrolling_performance_hack")) {
         // kill any scroll event listeners.
         // passing true for `useCapture` will let us stop propagation before any other listeners see it
-        document.addEventListener('scroll', function(event) {
+        window.addEventListener('scroll', function(event) {
             event.stopImmediatePropagation();
         }, true);
 
@@ -11,7 +11,7 @@ settingsLoadedEvent.addHandler(function() {
         // later when we don't want it to), we will enable some CSS rules that make .headroom--top look the same as
         // .headroom--not-top
         document.body.className += ' scrolling_performance_hack';
-        $('header').removeClass('headroom--top').addClass('headroom--not-top');
+        $('header').removeClass('notpinned').addClass('pinned');
 
         // allow our other scripts to re-apply their own scroll handlers
         scrollHackAppliedEvent.raise();
