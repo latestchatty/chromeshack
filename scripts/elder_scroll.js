@@ -42,7 +42,7 @@ ElderScroll =
                         
         if (addLoadingAnimation)
         {
-            var _url = `url("${browser.runtime.getURL("../images/shack.png")}")`;
+            var _url = `url("${browser.runtime.getURL("../shack.png")}")`;
             var shackLogo = document.createElement('div');
             shackLogo.id = 'shackLogo';
             shackLogo.style.backgroundImage = _url;
