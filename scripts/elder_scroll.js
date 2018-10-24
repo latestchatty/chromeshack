@@ -23,7 +23,7 @@ ElderScroll =
 
         if (perfHack || enableHandler) {
             // wait half a second between callbacks
-            var debounced = debounce(function() { console.log("reachedBottom called"); ElderScroll.reachedBottom() }, 500);
+            var debounced = debounce(function() { ElderScroll.reachedBottom() }, 500);
 
             if (enableHandler && ElderScroll.getDivNavigation() != 0) {
                 ElderScroll.updateRootThreads();
