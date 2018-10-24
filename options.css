@@ -25,7 +25,7 @@ input.color { width: 100px; }
 select#filtered_users { height: 90px; }
 div#custom_user_filters_settings p button { float: right; width: 75px; }
 
-div#content { justify-items: start; margin: 0em 1em 10em 1em; }
+div#content { justify-items: start; margin: 0em 1em 0.5em 1em; }
 div#lol_tag_countbox {
     display: flex;
     align-items: center;

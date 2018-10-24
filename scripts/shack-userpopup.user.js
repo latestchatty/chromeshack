@@ -420,71 +420,74 @@
 	// Add catch-all event handlers for creating user dropdown menus 
 	document.addEventListener('click', function(e)
 	{
-		var t = e.target; 
-		var p = t.parentNode;
-		var pp = p.parentNode;
-		var ppp = pp.parentNode;
-		
-		// Post author clicked 
-		if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
-		{
-			e.preventDefault();
-			e.stopPropagation();
+		// try to eat exceptions that are typically harmless
+		try {
+			var t = e.target; 
+			var p = t.parentNode;
+			var pp = p.parentNode;
+			var ppp = pp.parentNode;
+			
+			// Post author clicked 
+			if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
+			{
+				e.preventDefault();
+				e.stopPropagation();
 
-			/*			
-			if (navigator.userAgent.indexOf('Firefox') !== -1)
-			{
-				displayProfile(t.innerHTML);
-			}
-			else
-			{
+				/*			
+				if (navigator.userAgent.indexOf('Firefox') !== -1)
+				{
+					displayProfile(t.innerHTML);
+				}
+				else
+				{
+					displayUserMenu(t, t.innerHTML, t.innerHTML);
+				}
+				*/
 				displayUserMenu(t, t.innerHTML, t.innerHTML);
 			}
-			*/
-			displayUserMenu(t, t.innerHTML, t.innerHTML);
-		}
-		
-		// User name clicked (at the top of the banner?)
-		else if (t.id == 'userDropdownTrigger')
-		{
-			e.preventDefault();
-			e.stopPropagation();
-
-			displayUserMenu(t, getShackUsername(), 'You');
-		}
-		
-		// OWN user name clicked as post author
-		else if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user this-user'))
-		{
-			e.preventDefault();
-			e.stopPropagation();
-
-			/*
-			if (navigator.userAgent.indexOf('Firefox') !== -1)
+			
+			// User name clicked (at the top of the banner?)
+			else if (t.id == 'userDropdownTrigger')
 			{
-				displayProfile(t.innerHTML);
+				e.preventDefault();
+				e.stopPropagation();
+
+				displayUserMenu(t, getShackUsername(), 'You');
 			}
-			else
-			{ 
+			
+			// OWN user name clicked as post author
+			else if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user this-user'))
+			{
+				e.preventDefault();
+				e.stopPropagation();
+
+				/*
+				if (navigator.userAgent.indexOf('Firefox') !== -1)
+				{
+					displayProfile(t.innerHTML);
+				}
+				else
+				{ 
+					displayUserMenu(t, t.innerHTML, 'You');
+				}
+				*/
 				displayUserMenu(t, t.innerHTML, 'You');
 			}
-			*/
-			displayUserMenu(t, t.innerHTML, 'You');
-		}
-		else {
+			else {
 
-			var parentDropdown = e.target;
-			while (parentDropdown != null 
-				&& Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
-				if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
-					parentDropdown.className += ' hidden';
-					break;
+				var parentDropdown = e.target;
+				while (parentDropdown != null 
+					&& Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
+					if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
+						parentDropdown.className += ' hidden';
+						break;
+					}
+					parentDropdown = parentDropdown.parentNode;
 				}
-				parentDropdown = parentDropdown.parentNode;
 			}
 		}
-
-	}, false); 
+		catch (e) { tw_log(e) };
+	}, false);
 
 	if (isLoggedIn()) {
 		// Add custom dropdown stuff to the Account button

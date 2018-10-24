@@ -375,8 +375,6 @@ function logInForNotifications(notificationuid)
             var result = JSON.parse(res.responseText);
             if(result.result === "success") {
                 browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'}).then(function(tabs) {
-                    console.log(tabs);
-
                     if(tabs.length === 0) {
                         browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
                     } else {
