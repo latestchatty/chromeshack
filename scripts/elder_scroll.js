@@ -6,44 +6,35 @@ ElderScroll =
 {
     pxToLoadNew: 500,
     isLoadingNew: false,
-    perfHack: false,
-    scrollHandler: false,
     divLoadingInfo: null,
     rootThreads: [],
 
-    install: function()
+    installHandlers: function()
     {
+        var perfHack = false, enableHandler = false;
         // the following abstraction for handlers is pretty messy but should work okay
         if (getSetting("enabled_scripts").contains("scrolling_performance_hack")) {
-            ElderScroll.perfHack = true;
+            perfHack = true;
             // force the top bar to be collapsed to keep common styling
             document.body.className += ' scrolling_performance_hack';
             $('header').removeClass('notpinned').addClass('pinned');
         }
+        if (getSetting("enabled_scripts").contains("elder_scroll")) { enableHandler = true; }
 
-        if (getSetting("enabled_scripts").contains("elder_scroll")) {
-            ElderScroll.scrollHandler = true;
-        }
+        if (perfHack || enableHandler) {
+            // wait half a second between callbacks
+            var debounced = debounce(function() { console.log("reachedBottom called"); ElderScroll.reachedBottom() }, 500);
 
-        if (ElderScroll.scrollHandler && ElderScroll.getDivNavigation() != 0)
-        {
-            ElderScroll.updateRootThreads();
-            window.addEventListener('resize', ElderScroll.reachedBottom, true);
-        }
+            if (enableHandler && ElderScroll.getDivNavigation() != 0) {
+                ElderScroll.updateRootThreads();
+                window.addEventListener('resize', debounced, true);
+            }
 
-        // let our other handler method apply itself if necessary
-        ElderScroll.installScrollEventHandler();
-    },
-
-    installScrollEventHandler: function()
-    {
-        if (ElderScroll.perfHack || ElderScroll.scrollHandler) {
-            // attach our handler using useCapture to prevent bubbling from other listeners
             window.addEventListener('scroll', function (event) {
                 // test if we need to use this scroll event for ElderScroll to work
-                if (ElderScroll.scrollHandler && ElderScroll.getDivNavigation() != 0) { ElderScroll.reachedBottom() }
-                // kill any other 'window' level scroll event listeners besides our own (performance hack)
-                if (ElderScroll.perfHack) { event.stopImmediatePropagation(); }
+                if (enableHandler && ElderScroll.getDivNavigation() != 0) { debounced() }
+                // kill any other 'window' level scroll event listeners besides our own
+                if (perfHack) { event.stopImmediatePropagation(); }
             }, true);
         }
     },
@@ -207,10 +198,5 @@ ElderScroll =
 settingsLoadedEvent.addHandler(function()
 {
     // conditionally apply our handlers inside the actual listener methods
-    ElderScroll.install();
+    ElderScroll.installHandlers();
 });
-
-// scrollHackAppliedEvent.addHandler(function()
-// {
-//     ElderScroll.installScrollEventHandler();
-// });
