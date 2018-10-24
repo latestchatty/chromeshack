@@ -74,6 +74,7 @@
     },
     {
         "js": [ 
+            "browser-polyfill.min.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
@@ -98,7 +99,14 @@
         "http://chattypics.com/*",
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
+        "https://winchatty.com/nusearch?*",
         "http://shackapi.stonedonkey.com/*",
+        "https://shackstats.com/data/users_info.csv",
+        "http://gamewith.us/_widgets/shack-profile-popup.php?user=*",
+        "https://platform.vine.co/static/scripts/embed.js",
+        "http://www.twitch.tv/swflibs/TwitchPlayer.swf",
+        "http://vimeo.com/moogaloop.swf?clip_id=*",
+        "*://*.youtube.com/embed/*",
         "*://*.shacknews.com/*",
         "*://*.bit-shift.com/*"
     ],

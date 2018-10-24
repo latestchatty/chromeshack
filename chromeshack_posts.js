@@ -6,7 +6,6 @@ ChromeShack =
         var observer = new MutationObserver(function(mutationsList) {
             mutationsList.forEach(function(mutation) {
                 if (mutation.type == "childList") {
-                    console.log(mutation);
                     mutation.addedNodes.forEach(function (node) {
                         // wrap in a try/catch in case our element node is null
                         try {
@@ -74,7 +73,6 @@ ChromeShack =
 
     processPostBox: function(postbox)
     {
-        console.log(postbox);
         processPostBoxEvent.raise(postbox);
     },
 

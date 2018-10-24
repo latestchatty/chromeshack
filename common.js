@@ -261,3 +261,10 @@ function elementIsVisible(elem)
             x + w > 0)
     );
 }
+
+function replaceHTML(oldElem, html) {
+    // swap element in-place for massive performance increase
+    var newElem = oldElem.cloneNode(false);
+    newElem.innerHTML = html;
+    oldElem.parentNode.replaceChild(newElem, oldElem);
+}

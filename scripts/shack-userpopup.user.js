@@ -17,9 +17,6 @@
 		
 	This is the user menu stuff stripped out of the [lol] Greasemonkey script
 	
-	DO *NOT* RUN ALONG WITH THE CURRENT REVISION OF THE [LOL] SCRIPT UNLESS
-	YOU LIKE YOUR SHIT FUCKED UP ALL OVER THE PLACE.
-	
 	2011-04-26
 		* First stab at profiles   
 
@@ -91,11 +88,11 @@
 		
 		if (text == null) 
 		{
-			ret.innerHTML = '&nbsp;'; 
+			replaceHTML(ret, '&nbsp;');
 		}
 		else if (text.length == 0)
 		{
-			ret.innerHTML = '&nbsp;'; 
+			replaceHTML(ret, '&nbsp;');
 		}
 		else
 		{
@@ -388,11 +385,11 @@
 			// Include reference to person actually sitting behind the keyboard in all links to lol page
 			var actualUser = '&user=' + encodeURIComponent(getShackUsername());
 
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [lol]\'d', 'https://lol.lmnopc.com/user.php?loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [inf]\'d', 'https://lol.lmnopc.com/user.php?tag=inf&loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [tag]\'d', 'https://lol.lmnopc.com/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
-			ulUser.appendChild(createListItem('[lol] : Shit ' + friendlyName + ' [unf]\'d', 'https://lol.lmnopc.com/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [lol]\'d', 'https://lol.lmnopc.com/user.php?loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [inf]\'d', 'https://lol.lmnopc.com/user.php?tag=inf&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [tag]\'d', 'https://lol.lmnopc.com/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
+			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [unf]\'d', 'https://lol.lmnopc.com/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
 			ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://lol.lmnopc.com/user.php?fanclub=' + username + actualUser, 'userDropdown-lol userDropdown-separator'));
 			
 			// Create menu item for reading post count

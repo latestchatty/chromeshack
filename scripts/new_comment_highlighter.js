@@ -44,7 +44,8 @@ settingsLoadedEvent.addHandler(function()
             {
 					var query = '//div[@id="chatty_settings"]';
 					var cs = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-					cs.innerHTML = cs.innerHTML.replace(' Comments', ' Comments (' + count + ' New)');
+                    cs.innerHTML = cs.innerHTML.replace(' Comments', ' Comments (' + count + ' New)');
+                    console.log(`displayed comment count ${count}`);
             },
 
             getPostsAfter: function(last_id)

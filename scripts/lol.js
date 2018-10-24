@@ -162,7 +162,7 @@ settingsLoadedEvent.addHandler(function()
                             new_tag += " ' D *";
                         }
 
-                        element.innerHTML = new_tag;
+                        replaceHTML(element, document.createTextNode(new_tag));
                         element.dataset.isloled = !isloled;
                     }
                     else
@@ -293,11 +293,11 @@ settingsLoadedEvent.addHandler(function()
                         {
                             if (LOL.showCounts == 'short')
                             {
-                                tgt.innerHTML = LOL.counts[rootId][id][tag];
+                                replaceHTML(tgt, LOL.counts[rootId][id][tag]);
                             }
                             else
                             {
-                                tgt.innerHTML = tag + ' &times; ' + LOL.counts[rootId][id][tag];
+                                replaceHTML(tgt, `${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
                             }
                         }
                     
@@ -325,7 +325,7 @@ settingsLoadedEvent.addHandler(function()
                                     }
                                     else
                                     {
-                                        spanOnelineTag.appendChild(document.createTextNode(tag + ' × ' + LOL.counts[rootId][id][tag]));
+                                        spanOnelineTag.appendChild(document.createTextNode(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`));
                                     }
                                     divOnelineTags.appendChild(spanOnelineTag); 
                                 }
