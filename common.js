@@ -227,6 +227,32 @@ function generatePreview(text) {
     return preview;
 }
 
+function debounce(cb, timeout, override)
+{
+    // pretty bog standard debounce to prevent trailing execution (ex: Underscore)
+    var _timeout;
+    return function() {
+        var _ctx = this
+        var _arg = arguments;
+        // semaphore we use for trail cancelling
+        var execImp = override && !_timeout;
+
+        // recursive trailing until 'override' or timeout
+        var later = function() {
+            _timeout = null;
+            if (!override) {
+                cb.apply(_ctx, _arg);
+            }
+        };
+        clearTimeout(_timeout);
+        _timeout = setTimeout(later, timeout);
+        // 'override' will cancel our recursive trail
+        if (execImp) {
+            cb.apply(_ctx, _arg)
+        };
+    }
+}
+
 function convertUrlToLink(text)
 {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
