@@ -10,7 +10,7 @@ ChromeShack =
             if (getSetting("enabled_scripts").contains("scroll_to_post")) {
                 scrollToElement(node);
             }
-        }, 500);
+        }, 100);
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         var observer = new MutationObserver(function(mutationsList) {
