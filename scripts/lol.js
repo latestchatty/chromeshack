@@ -162,7 +162,8 @@ settingsLoadedEvent.addHandler(function()
                             new_tag += " ' D *";
                         }
 
-                        replaceHTML(element, new_tag);
+                        // don't use replaceHTML here - there be dragons!
+                        element.innerHTML = new_tag;
                         element.dataset.isloled = !isloled;
                     }
                     else
