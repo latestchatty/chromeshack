@@ -169,7 +169,7 @@ settingsLoadedEvent.addHandler(function()
                 formdata.append("key", ImageUpload.imgurApiKey);
                 var apiurl = ImageUpload.imgurApiBaseUrl + ImageUpload.imgurApiImageEndpoint;
                 ImageUpload.addUploadMessage("silver", "Uploading to Imgur...");
-                $.ajax( {
+                $.ajax({
                     type: "POST",
                     url : apiurl,
                     cache: false,
@@ -179,22 +179,18 @@ settingsLoadedEvent.addHandler(function()
                     dataType: 'json',
                     beforeSend : ImageUpload.setImgurHeader,
                     data : formdata
+                }).done(function(data) {
+                    ImageUpload.handleUploadSuccess(data);
                 })
-                    .success(function(data) {
-                        ImageUpload.handleUploadSuccess(data);
-                    })
-                    .error(function(data) {
-                        ImageUpload.handleUploadFailure(data);
-                    })
-                    .complete(function(data) {
-                        return false;
-                    });
+                .fail(function(data) {
+                    ImageUpload.handleUploadFailure(data);
+                })
             },
 
             doChattyPicsUpload: function (formdata) {
                 ImageUpload.removeUploadMessage();
                 ImageUpload.addUploadMessage("silver", "Uploading to ChattyPics...");
-                $.ajax( {
+                $.ajax({
                     type: "POST",
                     url : ImageUpload.chattyPicsUrl,
                     cache: false,
@@ -202,16 +198,12 @@ settingsLoadedEvent.addHandler(function()
                     contentType: false,
                     enctype : 'multipart/form-data',
                     data : formdata
+                }).done(function(data) {
+                    ImageUpload.handleChattyUploadSuccess(data);
                 })
-                    .success(function(data) {
-                        ImageUpload.handleChattyUploadSuccess(data);
-                    })
-                    .error(function(data) {
-                        ImageUpload.handleUploadFailure(data);
-                    })
-                    .complete(function(data) {
-                        return false;
-                    });
+                .fail(function(data) {
+                    ImageUpload.handleUploadFailure(data);
+                })
             },
 
             handleUploadSuccess: function(respdata) {

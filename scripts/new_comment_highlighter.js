@@ -4,7 +4,7 @@ settingsLoadedEvent.addHandler(function()
     if (getSetting("enabled_scripts").contains("new_comment_highlighter"))
     {
         NewCommentHighlighter =
-        {   
+        {
             highlight: function()
             {
                 var last_id = getSetting("new_comment_highlighter_last_id");
@@ -42,9 +42,11 @@ settingsLoadedEvent.addHandler(function()
 
             displayNewCommentCount: function(count)
             {
-					var query = '//div[@id="chatty_settings"]';
-					var cs = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-					cs.innerHTML = cs.innerHTML.replace(' Comments', ' Comments (' + count + ' New)');
+                // https://stackoverflow.com/a/11526052
+                $('#chatty_settings').children().each(function () {
+                    var that = $(this);
+                    that.text(that.text().replace(' Comments', ` Comments (${count} New)`));
+                });
             },
 
             getPostsAfter: function(last_id)

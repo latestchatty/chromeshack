@@ -41,7 +41,9 @@ settingsLoadedEvent.addHandler(function()
                 else if (style === "Doom")
                 {
                     var value = document.createElement("div");
+                    var _url = `url("${browser.runtime.getURL("../images/doom_health.png")}")`;
                     value.className = "countdown-doom";
+                    value.style.backgroundImage = _url;
 
                     // Calculate amount of time left and shift background image to display correct cel
                     var hours_left = time_left / 3600000;

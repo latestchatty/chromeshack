@@ -10,9 +10,10 @@ DefaultSettings = {
         "winchatty_comments_search",
         "expiration_watcher",
         "nws_incognito",
-        "scrolling_performance_hack",
         "category_banners",
-        "new_comment_highlighter"
+        "new_comment_highlighter",
+        "scrolling_performance_hack",
+        "scroll_to_post"
     ],
 
     lol_tags: [

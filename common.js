@@ -1,9 +1,9 @@
-function getDescendentByTagAndClassName(parent, tag, class_name) 
+function getDescendentByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             return descendents[i];
     }
 }
@@ -18,13 +18,13 @@ function getDescendentByTagAndAnyClassName(parent, tag, class_name)
     }
 }
 
-function getDescendentsByTagAndClassName(parent, tag, class_name) 
+function getDescendentsByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
     var descArray = new Array();
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             descArray.push(descendents[i]);
     }
 
@@ -256,4 +256,56 @@ function debounce(cb, timeout, override)
 function convertUrlToLink(text)
 {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
+}
+
+function scrollToElement(elem)
+{
+    // scroll our element to the center of the screen
+    $(elem).animate(
+        { scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top },
+        { duration: 200, easing: 'swing'}
+    );
+    $('html,body').animate(
+        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
+        { duration: 200, easing: 'swing'}
+    );
+}
+
+function elementIsVisible(elem)
+{
+    // https://stackoverflow.com/a/51001117
+    let x = elem.getBoundingClientRect().left;
+    let y = elem.getBoundingClientRect().top;
+    let ww = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    let hw = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    let w = elem.clientWidth;
+    let h = elem.clientHeight;
+    return (
+        (y < hw &&
+            y + h > 0) &&
+        (x < ww &&
+            x + w > 0)
+    );
+}
+
+HTMLElement.prototype.appendHTML = function(html)
+{
+    // https://stackoverflow.com/a/42658543
+    var dom = new DOMParser().parseFromString(html, 'text/html').body;
+    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
+}
+
+HTMLElement.prototype.replaceHTML = function(html)
+{
+    // ex: https://stackoverflow.com/a/42658543
+    // a slower but somewhat safer alternative to innerHTML
+    while (this.hasChildNodes()) this.removeChild(this.lastChild);
+    var dom = new DOMParser().parseFromString(html, 'text/html').body;
+    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
+}
+
+HTMLElement.prototype.removeChildren = function()
+{
+    // https://stackoverflow.com/a/42658543
+    while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }

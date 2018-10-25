@@ -32,16 +32,16 @@ settingsLoadedEvent.addHandler(function()
                     {
                         var panel = document.createElement("div");
                         panel.className = "panel";
-                        panel.style.backgroundImage = "url(" + chrome.extension.getURL("../images/sparkly/" + SparklyComic.getImage(lines[i], i, max)) + ")";
+                        panel.style.backgroundImage = `url("${browser.runtime.getURL("../images/sparkly/" + SparklyComic.getImage(lines[i], i, max))}")`;
 
                         var s1 = document.createElement("span");
                         s1.className = "shadow";
-                        s1.innerHTML = lines[i];
+                        s1.replaceHTML(lines[i]);
                         panel.appendChild(s1);
 
                         var s2 = document.createElement("span");
                         s2.className = "front";
-                        s2.innerHTML = lines[i];
+                        s2.replaceHTML(lines[i]);
                         panel.appendChild(s2);
 
                         comic_div.appendChild(panel);
@@ -51,15 +51,15 @@ settingsLoadedEvent.addHandler(function()
 
             getImage: function(line, i, count)
             {
-                // Let me show you my O face 
+                // Let me show you my O face
                 if (line.indexOf('!') >= 0 || line.indexOf(":o") >= 0)
                     return "sparkly2.jpg";
 
-                // Sparkly gets mad.  You wouldn't like him when he's mad.   
+                // Sparkly gets mad.  You wouldn't like him when he's mad.
                 if (line.indexOf('&gt;:[') >= 0)
                     return "sparkly5.jpg";
 
-                // Sparkly gets sad.  You wouldn't like him when he's sad.   
+                // Sparkly gets sad.  You wouldn't like him when he's sad.
                 if (line.indexOf(':(') >= 0 || line.indexOf(':[') >= 0)
                     return "sparkly6.jpg";
 

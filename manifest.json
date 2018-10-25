@@ -1,13 +1,18 @@
 {
     "name": "Chrome Shack",
-    "version": "1.49",
+    "version": "1.50",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
-    "options_page": "options.html",
+    "options_ui": {
+        "page": "options.html"
+    },
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "background": {
-        "scripts": [ "background.js" ]
+        "scripts": [
+            "browser-polyfill.min.js",
+            "background.js"
+        ]
     },
     "page_action": {
         "default_icon": "shack.png",
@@ -16,13 +21,14 @@
     },
     "icons": {
         "16": "shack.png",
-        "128": "icon.png"
+        "144": "icon.png"
     },
     "content_scripts": [
     {
         "js": [
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
+            "browser-polyfill.min.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -47,7 +53,7 @@
             "default_settings.js",
             "settings.js",
             "scripts/shack-userpopup.user.js",
-            "scripts/jquery-1.8.3.min.js",
+            "scripts/jquery-3.3.1.min.js",
             "scripts/jquery.drop.js",
             "scripts/jquery.insert.js",
             "scripts/image_upload.js",
@@ -67,6 +73,7 @@
     },
     {
         "js": [ 
+            "browser-polyfill.min.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
@@ -84,15 +91,22 @@
     }
     ],
     "permissions": [
-        "contextMenus"
-        , "notifications"
-        , "tabs"
-        , "https://api.imgur.com/*"
-        , "http://chattypics.com/*"
-        , "https://lol.lmnopc.com/*"
-        , "http://shackapi.stonedonkey.com/*"
-        , "*://*.shacknews.com/*"
-        , "*://*.bit-shift.com/*"
+        "contextMenus",
+        "notifications",
+        "tabs",
+        "https://api.imgur.com/*",
+        "http://chattypics.com/*",
+        "https://lol.lmnopc.com/*",
+        "https://winchatty.com/v2/*",
+        "https://winchatty.com/nusearch?*",
+        "https://shackstats.com/data/users_info.csv",
+        "http://gamewith.us/_widgets/shack-profile-popup.php?user=*",
+        "https://platform.vine.co/static/scripts/embed.js",
+        "http://www.twitch.tv/swflibs/TwitchPlayer.swf",
+        "http://vimeo.com/moogaloop.swf?clip_id=*",
+        "*://*.youtube.com/embed/*",
+        "*://*.shacknews.com/*",
+        "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
         "scripts/video_loader_helper.js",

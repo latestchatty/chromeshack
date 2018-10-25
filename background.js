@@ -75,10 +75,10 @@ function migrateSettings(version)
         }
     }
 
-    var current_version = chrome.app.getDetails().version;
+    var current_version = browser.runtime.getManifest().version;
     if (version != current_version)
     {
-        chrome.tabs.create({url: "release_notes.html"});
+        browser.tabs.create({url: "release_notes.html"});
     }
 
     setSetting("version", current_version);
@@ -91,8 +91,8 @@ function setSetting(name, value)
 
 function showPageAction(tabId, url)
 {
-    chrome.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
-    chrome.pageAction.show(tabId);
+    browser.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
+    browser.pageAction.show(tabId);
 }
 
 
@@ -128,22 +128,22 @@ function unCollapseThread(id)
 function addContextMenus()
 {
     // get rid of any old and busted context menus
-    chrome.contextMenus.removeAll();
+    browser.contextMenus.removeAll();
 
     // add some basic context menus
-    chrome.contextMenus.create(
+    browser.contextMenus.create(
     {
         title: "Show comment history",
         contexts: [ 'link' ],
         onclick: showCommentHistoryClick,
-        documentUrlPatterns: [ "http://*.shacknews.com/*" ],
-        targetUrlPatterns: [ "http://*.shacknews.com/profile/*" ]
+        documentUrlPatterns: [ "https://*.shacknews.com/*" ],
+        targetUrlPatterns: [ "https://*.shacknews.com/profile/*" ]
     });
 }
 
 function startNotifications()
 {
-    chrome.notifications.onClicked.addListener(notificationClicked);
+    browser.notifications.onClicked.addListener(notificationClicked);
     pollNotifications();
 }
 
@@ -154,7 +154,7 @@ function pollNotifications()
         //console.log("Notification UID is " + notificationuid);
         if (notificationuid != "" && notificationuid != undefined) {
             //http://notifications.winchatty.com/v2/notifications/waitForNotification
-            postFormUrl("http://notifications.winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
+            postFormUrl("https://winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
                 function (res) {
                     try {
                         if(res && res.responseText.length > 0 && res.status === 200) {
@@ -164,15 +164,12 @@ function pollNotifications()
                                 if (notifications.messages) {
                                     for (var i = 0; i < notifications.messages.length; i++) {
                                         var n = notifications.messages[i];
-                                        chrome.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                               type: "basic",
-                                               title: n.subject,
-                                               message: n.body,
-                                               iconUrl: "icon.png"
-                                           },
-                                           function (nId) {
-                                               //console.log("Created notification id " + nId);
-                                           });
+                                        browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                                            type: "basic",
+                                            title: n.subject,
+                                            message: n.body,
+                                            iconUrl: "icon.png"
+                                        })
                                     }
                                 }
                                 //If everything was successful, poll again in 15 seconds.
@@ -180,22 +177,21 @@ function pollNotifications()
                                 return;
                             } else {
                                 if(notifications.code === 'ERR_UNKNOWN_CLIENT_ID') {
-                                    chrome.notifications.create("ErrorChromeshackNotification" , {
+                                    browser.notifications.create("ErrorChromeshackNotification" , {
                                         type: "basic",
                                         title: "ChromeShack Error",
                                         message: "Notifications are no longer enabled for this client, please try enabling them again.",
                                         iconUrl: "icon.png"
-                                    },
-                                    function (nId) {});
+                                    });
                                     setSetting('notificationuid', '');
                                     setSetting('notifications', false);
                                     return;
                                 } else if (notifications.code == 'ERR_CLIENT_NOT_ASSOCIATED') {
-                                    chrome.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
+                                    browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
                                        function(tabs){
                                           // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
                                           if(tabs.length === 0) {
-                                              chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                                            browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
                                           }
                                        });
                                 }
@@ -221,8 +217,8 @@ function notificationClicked(notificationId) {
     if(notificationId.indexOf("ChromeshackNotification") > -1) {
         var postId = notificationId.replace("ChromeshackNotification", "");
         var url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
-        chrome.tabs.create({url: url});
-        chrome.notifications.clear(notificationId, function () {});
+        browser.tabs.create({url: url});
+        browser.notifications.clear(notificationId);
     }
 }
 
@@ -231,23 +227,18 @@ function showCommentHistoryClick(info, tab)
     var match = /\/profile\/(.+)$/.exec(info.linkUrl);
     if (match)
     {
-        var search_url = "http://winchatty.com/search?author=" + escape(match[1]);
-        chrome.tabs.create({windowId: tab.windowId, index: tab.index + 1, url: search_url});
+        var search_url = "https://winchatty.com/search?author=" + escape(match[1]);
+        browser.tabs.create({windowId: tab.windowId, index: tab.index + 1, url: search_url});
     }
 }
 
 
-var allowedIncognito = false;
-//Cache this because it has to be run in the context of the extension.
-chrome.extension.isAllowedIncognitoAccess(function (allowed){
-    allowedIncognito = allowed;
-});
-
+var allowedIncognito = browser.extension.isAllowedIncognitoAccess();
 var lastOpenedIncognito = -1;
 
 function openIncognito(newUrl)
 {
-    chrome.windows.getAll({}, function(windowInfo) {
+    browser.windows.getAll({}, function(windowInfo) {
         var incognitoId = -1;
         if(windowInfo != null)
         {
@@ -269,13 +260,13 @@ function openIncognito(newUrl)
 
         if(incognitoId >= 0)
         {
-            chrome.tabs.create({url:newUrl, windowId: incognitoId, active: false});
+            browser.tabs.create({url:newUrl, windowId: incognitoId, active: false});
             lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
         }
         else
         {
     //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-            chrome.windows.create({url:newUrl, incognito:true, type: 'normal'}, function(windowInfo){
+            browser.windows.create({url:newUrl, incognito:true, type: 'normal'}, function(windowInfo){
                 console.log('Window Id: ' + windowInfo.id);
                 lastOpenedIncognito = windowInfo.id;
             });
@@ -283,14 +274,14 @@ function openIncognito(newUrl)
     });
 }
 
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
+browser.runtime.onMessage.addListener(function(request, sender)
 {
     if (request.name == "getSettings")
     {
         var tab = sender.tab;
         if (tab)
             showPageAction(tab.id, tab.url);
-        sendResponse(getSettings());
+        return Promise.resolve(getSettings());
     }
     else if (request.name == "setSetting")
         setSetting(request.key, request.value);
@@ -301,12 +292,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse)
     else if (request.name === "launchIncognito")
     {
         openIncognito(request.value);
-        sendResponse();
+        return Promise.resolve();
     }
-    else if (request.name === 'allowedIncognitoAccess')
-        sendResponse(allowedIncognito);
-    else
-        sendResponse();
+    else if (request.name === 'allowedIncognitoAccess') {
+        return Promise.resolve(allowedIncognito);
+    }
+    else {
+        return Promise.resolve();
+    }
 });
 
 addContextMenus();

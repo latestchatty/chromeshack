@@ -5,12 +5,12 @@ settingsLoadedEvent.addHandler(function()
     if (getSetting("enabled_scripts").contains("getpost"))
     {
         GetPost =
-        {   
+        {
             getLinks: function(item, id)
             {
                 var postBody = getDescendentByTagAndClassName(item, "div", "postbody");
                 var links = postBody.getElementsByTagName("a");
-              
+
                 for (var i = 0; i < links.length; i++)
                 {
                     if (GetPost.isChattyLink(links[i].href))
@@ -19,7 +19,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                 }
             },
-            
+
             isChattyLink: function(href)
             {
                 if (/shacknews.com\/chatty\?id=\d+/.test(href)
@@ -28,13 +28,13 @@ settingsLoadedEvent.addHandler(function()
                     return true;
                 }
             },
-            
+
             getPost: function(e)
             {
                 if (e.button == 0)
                 {
                     var link = this;
-                    
+
                     if (link.nextSibling != null && link.nextSibling.className == "getPost")
                     {
                         link.parentNode.removeChild(link.nextSibling);
@@ -42,13 +42,13 @@ settingsLoadedEvent.addHandler(function()
                     else
                     {
                         var postId = link.href.match(/[?&]id=([^&#]*)/);
-                        
+
                         var singlePost = 'http';
                         if (window.location.protocol == "https:") {
                             singlePost += 's';
                         }
                         singlePost += "://www.shacknews.com/frame_chatty.x?root=&id=" + postId[1];
-                        
+
                         var request = new XMLHttpRequest();
                         request.onreadystatechange = function()
                         {
@@ -56,16 +56,16 @@ settingsLoadedEvent.addHandler(function()
                             {
                                 var postDiv = document.createElement("div");
                                 // hack-ish way of "parsing" string to DOM
-                                postDiv.innerHTML = request.responseText;
+                                postDiv.replaceHTML(request.responseText);
                                 postDiv = postDiv.childNodes[5];
 
                                 // nuke fullpost class as we don't want
-                                // chatview.js to interact with posts it's 
+                                // chatview.js to interact with posts it's
                                 // not meant to handle
                                 postDiv.setAttribute("class", "getPost");
 
                                 link.parentNode.insertBefore(postDiv, link.nextSibling);
-                                
+
                                 // yo dawg...
                                 GetPost.getLinks(link.nextSibling, null);
                             }

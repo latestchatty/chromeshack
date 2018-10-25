@@ -79,7 +79,7 @@ function showNotifications(enabled)
 function showHighlightUsers(groups)
 {
     var highlightGroups = document.getElementById("highlight_groups");
-    highlightGroups.innerHTML = "";
+    highlightGroups.removeChildren();
 
     for (var i = 0; i < groups.length; i++)
     {
@@ -207,7 +207,7 @@ function showExpirationWatcherStyle(style)
 
 function getExpirationWatcherStyle()
 {
-	var bar = document.getElementById('expiration_watcher_bar'); 
+	var bar = document.getElementById('expiration_watcher_bar');
 	if (bar.checked)
 	{
 		return 'Bar';
@@ -242,7 +242,7 @@ function showLolTags(tags, show_counts, ugh_threshold)
     }
 
     var lol_div = document.getElementById("lol_tags");
-    lol_div.innerHTML = ""; // clear child nodes
+    lol_div.removeChildren();
 
     for (var i = 0; i < tags.length; i++)
     {
@@ -267,7 +267,7 @@ function addTag(event, tag)
     var lol_div = document.getElementById("lol_tags");
 
     var tag_row = document.createElement("div");
-    tag_row.innerHTML = "Tag: <input class='name' value='" + tag.name + "'/> Color: <input class='color' value='" + tag.color + "'/>";
+    tag_row.replaceHTML(`Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`);
 
     var remove_link = document.createElement("a");
     remove_link.href = "#";
@@ -349,7 +349,7 @@ function getEnabledScripts()
         {
             if (inputs[i].checked)
             {
-                enabled.push(inputs[i].id); 
+                enabled.push(inputs[i].id);
             }
         }
     }
@@ -374,22 +374,21 @@ function logInForNotifications(notificationuid)
             //console.log("Response from register client " + res.responseText);
             var result = JSON.parse(res.responseText);
             if(result.result === "success") {
-                chrome.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
-                   function(tabs){
-                       if(tabs.length === 0) {
-                           chrome.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
-                       } else {
-                           //Since they requested, we'll open the tab and make sure they're at the correct url.
-                           chrome.tabs.update(
-                              tabs[0].tabId,
-                              {
-                                  active: true,
-                                  highlighted: true,
-                                  url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
-                              }
-                           );
-                       }
-                   });
+                browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'}).then(function(tabs) {
+                    if(tabs.length === 0) {
+                        browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                    } else {
+                        //Since they requested, we'll open the tab and make sure they're at the correct url.
+                        browser.tabs.update(
+                            tabs[0].tabId,
+                            {
+                                active: true,
+                                highlighted: true,
+                                url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
+                            }
+                        );
+                    }
+                })
             }
         }
     );
@@ -418,12 +417,12 @@ function updateNotificationOptions() {
     }
 }
 
-function getDescendentByTagAndClassName(parent, tag, class_name) 
+function getDescendentByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             return descendents[i];
     }
 }
@@ -516,13 +515,13 @@ function saveOptions()
     catch (err)
     {
         //alert("There was an error while saving your settings:\n" + err);
-        status.innerHTML = "Error: " + err;
+        status.replaceHTML(`Error: ${err}`);
         return;
     }
-    
-    status.innerHTML = "Options Saved.";
+
+    status.replaceHTML("Options Saved.");
     setTimeout(function() {
-        status.innerHTML = "";
+        status.replaceHTML("");
     }, 2000);
 }
 
@@ -533,38 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
     document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
     document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
-
-    // Generate the menu on the left
-    var menu_list = document.getElementById('menu_list');
-    var headers = document.getElementById('content').getElementsByTagName('h2');
-    for (var i = 0; i < headers.length; i++) {
-        var header = headers[i];
-        var labels = header.getElementsByTagName('label');
-        if (labels.length == 0) {
-            // Add section header to the menu
-            var li = document.createElement('li');
-            li.innerHTML = '<div class="group_header">' + header.innerHTML + '</div>';
-            menu_list.appendChild(li);
-        } else if (labels.length == 1) {
-            var label = labels[0];
-            var scriptName = label.innerHTML.trim();
-            var anchor = 'header' + i;
-
-            // Add anchor to the content section
-            var a = document.createElement('a');
-            a.name = anchor;
-            a.innerHTML = '<br>';
-            content.insertBefore(a, header);
-
-            // Add list item to the menu
-            var li = document.createElement('li');
-            li.innerHTML = '<a href="#' + anchor + '">' + scriptName + '</a>';
-            menu_list.appendChild(li);
-        }
-    }
 });
-
-
 
 function trackChanges() {
     var links = document.getElementById('content').getElementsByTagName('a');

@@ -59,7 +59,7 @@
 
     function loop() {
         ajaxGet(
-            window.location.protocol + '//winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
+            'https://winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
             function(data) {
                 g_lastEventId = parseInt(data.lastEventId);
                 processEvents(data.events);
@@ -106,41 +106,35 @@
         return filtered;
     }
 
-    function getPostOffset(aRefresh) {
-        var divRefresh = aRefresh.parentNode;
-        var divFullpost = divRefresh.parentNode;
-        var li = divFullpost.parentNode;
-        if (!startsWith(li.id, 'item_')) {
-            return 0;
-        }
-        return $(li).offset().top - 50;
-    }
-
     function jumpToNewPost() {
         var aRefreshes = getNonCollapsedPendings();
-        if (aRefreshes.length > 1) {
+        if (aRefreshes.length > 0) {
             var scroll = $(window).scrollTop();
+            var divFirstFullPost = aRefreshes[0].parentNode.parentNode.parentNode;
+
             for (var i = 0; i < aRefreshes.length; i++) {
                 var aRefresh = aRefreshes[i];
-                var offset = getPostOffset(aRefresh);
-                if (offset > scroll) {
-                    $('html, body').animate({ scrollTop: offset + 'px' }, 'fast');
+                var divPostItem = aRefresh.parentNode.parentNode.parentNode;
+                var offset = $(divPostItem).offset().top;
+
+                // if the element would be elsewhere on the page - scroll to it
+                if (!elementIsVisible(divPostItem) && offset > scroll) {
+                    scrollToElement(divPostItem);
                     return;
                 }
             }
-        }
 
-        var firstOffset = getPostOffset(aRefreshes[0]);;
-        $('html, body').animate({ scrollTop: firstOffset + 'px' }, 'fast');
+            // default to the first pending post
+            scrollToElement(divFirstFullPost);
+        }
     }
 
     function installJumpToNewPostButton() {
         var body = document.getElementsByTagName('body')[0];
-
         var star = document.createElement('a');
         star.id = 'jump_to_new_post';
         star.style.display = 'none';
-        star.innerHTML = '1';
+        star.replaceHTML("1");
         star.addEventListener('click', jumpToNewPost);
 
         body.appendChild(star);
@@ -160,7 +154,7 @@
                 document.title = indicator + document.title;
             }
 
-            document.getElementById('jump_to_new_post').innerHTML = indicator + pending.length.toString();
+            $(document.getElementById('jump_to_new_post')).html(indicator + pending.length.toString());
         } else {
             if (button !== null) {
                 button.style.display = 'none';
@@ -199,7 +193,7 @@
             + '@media (max-width: 767px) {'
             + '    a#jump_to_new_post { left: 10px; }'
             + '}'
-            
+
             // The thread refresh button when highlighted
             + 'a.refresh_pending { background: skyblue; border-radius: 10px; width: 14px !important; '
             + '    height: 15px !important; }'
@@ -222,13 +216,13 @@
 
         // We need to get an initial event ID to start with.
         ajaxGet(
-            window.location.protocol + '//winchatty.com/v2/getNewestEventId',
+            'https://winchatty.com/v2/getNewestEventId',
             function(data) {
                 g_lastEventId = parseInt(data.eventId);
                 loop();
             },
             function(error) {
-                // This is a non-essential feature so we will simply disable the feature if this fails.                
+                // This is a non-essential feature so we will simply disable the feature if this fails.
             });
     }
 
