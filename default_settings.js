@@ -12,6 +12,7 @@ DefaultSettings = {
         "nws_incognito",
         "category_banners",
         "new_comment_highlighter",
+        "scrolling_performance_hack",
         "scroll_to_post"
     ],
 

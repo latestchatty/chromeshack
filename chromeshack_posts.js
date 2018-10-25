@@ -7,7 +7,9 @@ ChromeShack =
         var debouncedScroll = debounce(function(cb, node, arg) {
             if (arg) { cb(node, arg); }
             else { cb(node); }
-            scrollToElement(node);
+            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
+                scrollToElement(node);
+            }
         }, 500);
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
