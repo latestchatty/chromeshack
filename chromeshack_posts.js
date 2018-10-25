@@ -2,6 +2,14 @@ ChromeShack =
 {
     install: function()
     {
+        // use some cached debounce helpers to prevent odd event behavior when bubbling
+        var debounced = debounce(function(cb, node) { cb(node); }, 500);
+        var debouncedScroll = debounce(function(cb, node, arg) {
+            if (arg) { cb(node, arg); }
+            else { cb(node); }
+            scrollToElement(node);
+        }, 500);
+
         // use MutationObserver instead of Mutation Events for a massive performance boost
         var observer = new MutationObserver(function(mutationsList) {
             mutationsList.forEach(function(mutation) {
@@ -16,7 +24,7 @@ ChromeShack =
                             if (node && node.id.indexOf("root_") == 0)
                             {
                                 // don't scroll - can't tell between fullpost and rootpost!
-                                ChromeShack.processFullPosts(elem);
+                                debounced(ChromeShack.processFullPosts, elem);
                             }
 
                             // starts with "item_", they probably clicked on a reply
@@ -24,8 +32,7 @@ ChromeShack =
                             {
                                 // grab the id from the old node, since the new node doesn't contain the id
                                 var id = source_id.substr(5);
-                                ChromeShack.processPost(elem, id);
-                                scrollToElement(elem);
+                                debouncedScroll(ChromeShack.processPost, elem, id);
                             }
                         }
                         catch (e) {}
@@ -38,8 +45,7 @@ ChromeShack =
                             // check specifically for the postbox being added
                             if (changed_id == "postbox")
                             {
-                                ChromeShack.processPostBox(changedNode);
-                                scrollToElement(changedNode);
+                                debouncedScroll(ChromeShack.processPostBox, changedNode);
                             }
                         }
                         catch (e) {}
