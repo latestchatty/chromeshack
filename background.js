@@ -154,7 +154,7 @@ function pollNotifications()
         //console.log("Notification UID is " + notificationuid);
         if (notificationuid != "" && notificationuid != undefined) {
             //http://notifications.winchatty.com/v2/notifications/waitForNotification
-            postFormUrl("http://notifications.winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
+            postFormUrl("https://winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
                 function (res) {
                     try {
                         if(res && res.responseText.length > 0 && res.status === 200) {
