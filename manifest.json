@@ -99,6 +99,7 @@
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
         "https://winchatty.com/nusearch?*",
+        "http://notifications.winchatty.com/v2/notifications/*",
         "http://shackapi.stonedonkey.com/*",
         "https://shackstats.com/data/users_info.csv",
         "http://gamewith.us/_widgets/shack-profile-popup.php?user=*",

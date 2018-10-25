@@ -136,8 +136,8 @@ function addContextMenus()
         title: "Show comment history",
         contexts: [ 'link' ],
         onclick: showCommentHistoryClick,
-        documentUrlPatterns: [ "http://*.shacknews.com/*" ],
-        targetUrlPatterns: [ "http://*.shacknews.com/profile/*" ]
+        documentUrlPatterns: [ "https://*.shacknews.com/*" ],
+        targetUrlPatterns: [ "https://*.shacknews.com/profile/*" ]
     });
 }
 
@@ -165,14 +165,11 @@ function pollNotifications()
                                     for (var i = 0; i < notifications.messages.length; i++) {
                                         var n = notifications.messages[i];
                                         browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                               type: "basic",
-                                               title: n.subject,
-                                               message: n.body,
-                                               iconUrl: "icon.png"
-                                           },
-                                           function (nId) {
-                                               //console.log("Created notification id " + nId);
-                                           });
+                                            type: "basic",
+                                            title: n.subject,
+                                            message: n.body,
+                                            iconUrl: "icon.png"
+                                        })
                                     }
                                 }
                                 //If everything was successful, poll again in 15 seconds.
@@ -185,8 +182,7 @@ function pollNotifications()
                                         title: "ChromeShack Error",
                                         message: "Notifications are no longer enabled for this client, please try enabling them again.",
                                         iconUrl: "icon.png"
-                                    },
-                                    function (nId) {});
+                                    });
                                     setSetting('notificationuid', '');
                                     setSetting('notifications', false);
                                     return;
@@ -222,7 +218,7 @@ function notificationClicked(notificationId) {
         var postId = notificationId.replace("ChromeshackNotification", "");
         var url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
         browser.tabs.create({url: url});
-        browser.notifications.clear(notificationId, function () {});
+        browser.notifications.clear(notificationId);
     }
 }
 
@@ -231,7 +227,7 @@ function showCommentHistoryClick(info, tab)
     var match = /\/profile\/(.+)$/.exec(info.linkUrl);
     if (match)
     {
-        var search_url = "http://winchatty.com/search?author=" + escape(match[1]);
+        var search_url = "https://winchatty.com/search?author=" + escape(match[1]);
         browser.tabs.create({windowId: tab.windowId, index: tab.index + 1, url: search_url});
     }
 }
