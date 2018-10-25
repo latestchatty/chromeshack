@@ -79,7 +79,7 @@ function showNotifications(enabled)
 function showHighlightUsers(groups)
 {
     var highlightGroups = document.getElementById("highlight_groups");
-    highlightGroups.innerHTML = "";
+    highlightGroups.removeChildren();
 
     for (var i = 0; i < groups.length; i++)
     {
@@ -207,7 +207,7 @@ function showExpirationWatcherStyle(style)
 
 function getExpirationWatcherStyle()
 {
-	var bar = document.getElementById('expiration_watcher_bar'); 
+	var bar = document.getElementById('expiration_watcher_bar');
 	if (bar.checked)
 	{
 		return 'Bar';
@@ -242,7 +242,7 @@ function showLolTags(tags, show_counts, ugh_threshold)
     }
 
     var lol_div = document.getElementById("lol_tags");
-    lol_div.innerHTML = ""; // clear child nodes
+    lol_div.removeChildren();
 
     for (var i = 0; i < tags.length; i++)
     {
@@ -267,7 +267,7 @@ function addTag(event, tag)
     var lol_div = document.getElementById("lol_tags");
 
     var tag_row = document.createElement("div");
-    tag_row.innerHTML = "Tag: <input class='name' value='" + tag.name + "'/> Color: <input class='color' value='" + tag.color + "'/>";
+    tag_row.replaceHTML(`Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`);
 
     var remove_link = document.createElement("a");
     remove_link.href = "#";
@@ -349,7 +349,7 @@ function getEnabledScripts()
         {
             if (inputs[i].checked)
             {
-                enabled.push(inputs[i].id); 
+                enabled.push(inputs[i].id);
             }
         }
     }
@@ -417,12 +417,12 @@ function updateNotificationOptions() {
     }
 }
 
-function getDescendentByTagAndClassName(parent, tag, class_name) 
+function getDescendentByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             return descendents[i];
     }
 }
@@ -515,13 +515,13 @@ function saveOptions()
     catch (err)
     {
         //alert("There was an error while saving your settings:\n" + err);
-        status.innerHTML = "Error: " + err;
+        status.replaceHTML(`Error: ${err}`);
         return;
     }
-    
-    status.innerHTML = "Options Saved.";
+
+    status.replaceHTML("Options Saved.");
     setTimeout(function() {
-        status.innerHTML = "";
+        status.replaceHTML("");
     }, 2000);
 }
 

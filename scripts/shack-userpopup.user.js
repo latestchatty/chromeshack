@@ -14,11 +14,11 @@
 /*
 	Shack: User Popup
 	(ↄ)2011 Thom Wetzel
-		
+
 	This is the user menu stuff stripped out of the [lol] Greasemonkey script
-	
+
 	2011-04-26
-		* First stab at profiles   
+		* First stab at profiles
 
 */
 (function() {
@@ -30,7 +30,7 @@
 	function tw_log(str) { GM_log(str); }
 	function getTime() { benchmarkTimer = new Date(); return benchmarkTimer.getTime(); }
 
-	// Library functions 
+	// Library functions
 	if (typeof(GM_log) == 'undefined') { GM_log = function(message) { console.log(message); } }
 	if (typeof(GM_addStyle) == 'undefined') { GM_addStyle = function(css) { var style = document.createElement('style'); style.textContent = css; document.getElementsByTagName('head')[0].appendChild(style); } }
 	function getElementByClassName(oElm, strTagName, strClassName) { try { var arrElements = oElm.getElementsByTagName(strTagName); for(var i=0; i < arrElements.length; i++) { if (arrElements[i].className.indexOf(strClassName) == 0) { return arrElements[i]; } } } catch (ex) { return null; } }
@@ -81,18 +81,14 @@
 		+ '}'
 
 	);
-	
+
 	function createTextWrapper(tag, text, url)
-	{	
+	{
 		var ret = document.createElement(tag);
-		
-		if (text == null) 
+
+		if (text == null || text.length == 0)
 		{
-			replaceHTML(ret, '&nbsp;');
-		}
-		else if (text.length == 0)
-		{
-			replaceHTML(ret, '&nbsp;');
+			ret.replaceHTML('&nbsp;');
 		}
 		else
 		{
@@ -100,188 +96,188 @@
 			{
 				if (url.length)
 				{
-					var a = document.createElement('a'); 
+					var a = document.createElement('a');
 					a.href = url;
-					a.target = '_blank'; 
-					
-					a.appendChild(document.createTextNode(text)); 
-					
-					ret.appendChild(a); 
-				}			
+					a.target = '_blank';
+
+					a.appendChild(document.createTextNode(text));
+
+					ret.appendChild(a);
+				}
 			}
 			else
 			{
 				ret.appendChild(document.createTextNode(text));
 			}
-		} 
-		return ret;  
+		}
+		return ret;
 	}
-	
+
 	function drawProfile(data)
 	{
-		username = data['data']['username']; 
-	
-		pDiv = document.createElement('div'); 
+		username = data['data']['username'];
+
+		pDiv = document.createElement('div');
 		pDiv.className = 'tw-profile';
-		
+
 		pDiv.appendChild(createTextWrapper('h2', username));
 
-		// Create General panel		
+		// Create General panel
 		pnl = document.createElement('div');
-		pnl.className = 'tw-panel'; 
-		
+		pnl.className = 'tw-panel';
+
 		pnl.appendChild(createTextWrapper('h3', 'General'));
-		
+
 		dl = document.createElement('dl');
-		
-		dl.appendChild(createTextWrapper('dt', 'Age'));  
-		dl.appendChild(createTextWrapper('dd', data['data']['age'])); 
-		
-		dl.appendChild(createTextWrapper('dt', 'Location'));  
+
+		dl.appendChild(createTextWrapper('dt', 'Age'));
+		dl.appendChild(createTextWrapper('dd', data['data']['age']));
+
+		dl.appendChild(createTextWrapper('dt', 'Location'));
 		dl.appendChild(createTextWrapper('dd', data['data']['location']));
-		
-		dl.appendChild(createTextWrapper('dt', 'Gender'));  
+
+		dl.appendChild(createTextWrapper('dt', 'Gender'));
 		dl.appendChild(createTextWrapper('dd', data['data']['gender']));
-		
+
 		dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'https://www.shacknews.com/user/' + username + '/posts'));
 
 		var actualUser = '&user=' + encodeURIComponent(getShackUsername());
 		dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser));
-		
+
 		// Create menu item for reading post count
 		var aPostCount = document.createElement('a');
 		aPostCount.appendChild(document.createTextNode('Get Post Count'));
-		aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(username) }, false);  
+		aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(username) }, false);
 		dt = document.createElement('dt');
-		dt.appendChild(aPostCount); 
-		dl.appendChild(dt); 
-				
-		pnl.appendChild(dl); 
-		
-		pDiv.appendChild(pnl); 
-		
+		dt.appendChild(aPostCount);
+		dl.appendChild(dt);
+
+		pnl.appendChild(dl);
+
+		pDiv.appendChild(pnl);
+
 		// Create Accounts panel
 		pnl = document.createElement('div');
-		pnl.className = 'tw-panel'; 
-		
+		pnl.className = 'tw-panel';
+
 		pnl.appendChild(createTextWrapper('h3', 'Accounts'));
-		
+
 		dl = document.createElement('dl');
-		
+
 		accounts = data['data']['services'];
 		if (accounts != null)
-		{ 
+		{
 			for (i = 0, ii = accounts.length; i < ii; i++)
 			{
-				dl.appendChild(createTextWrapper('dt', accounts[i]['service']));  
-				dl.appendChild(createTextWrapper('dd', accounts[i]['user'])); 
+				dl.appendChild(createTextWrapper('dt', accounts[i]['service']));
+				dl.appendChild(createTextWrapper('dd', accounts[i]['user']));
 			}
 		}
-		
+
 		pnl.appendChild(dl);
-		
+
 		pDiv.appendChild(pnl);
-		
+
 		// Create About panel
 		pnl = document.createElement('div');
-		pnl.className = 'tw-panel'; 
-		
+		pnl.className = 'tw-panel';
+
 		pnl.appendChild(createTextWrapper('h3', 'About'));
 		pnl.appendChild(createTextWrapper('div', data['data']['about']));
-		
+
 		pDiv.appendChild(pnl);
-		
+
 		// Add close button
-		btn = document.createElement('div'); 
+		btn = document.createElement('div');
 		btn.className = 'tw-close';
 		btn.appendChild(document.createTextNode('CLOSE'));
-		btn.setAttribute('title', 'Close Profile'); 
+		btn.setAttribute('title', 'Close Profile');
 		btn.addEventListener('click', function(e) { e.target.parentNode.style.display = 'none'; }, false);
-		
-		pDiv.appendChild(btn);  
-		
+
+		pDiv.appendChild(btn);
+
 		// Add profile to page
-		document.getElementsByTagName('body')[0].appendChild(pDiv); 
+		document.getElementsByTagName('body')[0].appendChild(pDiv);
 	}
-	
+
 	function displayProfile(username)
 	{
 		// Scrub username
 		username = trim(stripHtml(username));
-	
-		// Display working... message		
-		displayWorkingBar('Retrieving profile data for ' + username + '...'); 
-	
-		// 
-		var addr = 'http://gamewith.us/_widgets/shack-profile-popup.php?user=' + encodeURIComponent(username); 
+
+		// Display working... message
+		displayWorkingBar('Retrieving profile data for ' + username + '...');
+
+		//
+		var addr = 'http://gamewith.us/_widgets/shack-profile-popup.php?user=' + encodeURIComponent(username);
         console.log(addr);
-		
+
 		// use xmlhttpRequest to post the data
         getUrl(addr, function(response) {
-				
+
 				hideWorkingBar();
-				
-				var data = null; 
-				
-				try 
+
+				var data = null;
+
+				try
 				{
-					data = JSON.parse(response.responseText);  
+					data = JSON.parse(response.responseText);
 				}
 				catch (ex)
 				{
 					alert('Profile retrieval failed: ' + ex.message);
-					return;  
+					return;
 				}
-				
+
 				if (data['status'] == '0')
 				{
-					alert(data['message']); 
+					alert(data['message']);
 					return;
-				} 
-				
-				drawProfile(data); 
+				}
+
+				drawProfile(data);
 			}
 	  	);
 	}
-	
+
 	function displayWorkingBar(message)
 	{
 		var workingBar = document.getElementById('lolWorkingBar');
-		
-		// Create #lolWorkingBar if it doesn't already exist  	
+
+		// Create #lolWorkingBar if it doesn't already exist
 		if (workingBar == null)
 		{
 			workingBar = document.createElement('div');
-			workingBar.id = 'lolWorkingBar'; 
-			
+			workingBar.id = 'lolWorkingBar';
+
 			document.getElementsByTagName('body')[0].appendChild(workingBar);
-			
+
 		}
 		else
 		{
-			// Remove child nodes (presumably prior messages) 
-			while (workingBar.firstChild != null) 
-			{ 
-				workingBar.removeChild(workingBar.firstChild); 
+			// Remove child nodes (presumably prior messages)
+			while (workingBar.firstChild != null)
+			{
+				workingBar.removeChild(workingBar.firstChild);
 			}
 		}
-		
-		// Create message (using createTextNode for proper escaping) 
-		workingBar.appendChild(document.createTextNode(message)); 
-		
-		// Make it visible 
-		workingBar.style.display = 'block';   
+
+		// Create message (using createTextNode for proper escaping)
+		workingBar.appendChild(document.createTextNode(message));
+
+		// Make it visible
+		workingBar.style.display = 'block';
 	}
-	
+
 	function hideWorkingBar()
 	{
 		var workingBar = document.getElementById('lolWorkingBar');
 		if (workingBar)
 		{
-			workingBar.style.display = 'none'; 
+			workingBar.style.display = 'none';
 		}
 	}
-	
+
 	function getPostCount(username)
 	{
 		displayWorkingBar('Retrieving post counts...');
@@ -322,34 +318,34 @@
 	function createListItem(text, url, className, target)
 	{
 		var a = document.createElement('a');
-		a.href = url; 
+		a.href = url;
 		if (typeof(target) != 'undefined') { a.target = target; }
-		a.appendChild(document.createTextNode(text)); 
-	
-		var li = document.createElement('li');
-		if (typeof(className) != 'undefined') { li.className = className; } 
+		a.appendChild(document.createTextNode(text));
 
-		// Prevent menu clicks from bubbling up 
+		var li = document.createElement('li');
+		if (typeof(className) != 'undefined') { li.className = className; }
+
+		// Prevent menu clicks from bubbling up
 		a.addEventListener('click', function(e) { e.stopPropagation(); }, false);
-		
-		li.appendChild(a); 
-		
-		return li; 
+
+		li.appendChild(a);
+
+		return li;
 	}
 
 	function displayUserMenu(parentObj, username, friendlyName)
 	{
-		// Create the dropdown menu if it doesn't already exist 
-		ulUserDD = getElementByClassName(parentObj, 'ul', 'userDropdown'); 
+		// Create the dropdown menu if it doesn't already exist
+		ulUserDD = getElementByClassName(parentObj, 'ul', 'userDropdown');
 		if (ulUserDD == null)
 		{
-			// Create UL that will house the dropdown menu 
-			var ulUser = document.createElement('ul'); 
+			// Create UL that will house the dropdown menu
+			var ulUser = document.createElement('ul');
 			ulUser.className = 'userDropdown';
-	
+
 			// Scrub username
 			username = encodeURIComponent(trim(stripHtml(username)));
-			
+
 			if (friendlyName == 'You')
 			{
 				your = 'Your';
@@ -361,23 +357,23 @@
 			}
 			else
 			{
-				your = friendlyName + '\'s'; 
-				vanitySearch = 'Search for "' + friendlyName + '"'; 
-				parentAuthor = friendlyName + ': Parent Author Search'; 
+				your = friendlyName + '\'s';
+				vanitySearch = 'Search for "' + friendlyName + '"';
+				parentAuthor = friendlyName + ': Parent Author Search';
 			}
-		
+
 			// Create menu items and add them to ulUser
-			var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+			var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
 				? 'https://winchatty.com/nusearch?a=' + username
 				: 'https://www.shacknews.com/user/' + username + '/posts';
 			ulUser.appendChild(createListItem(your + ' Posts', postsUrl));
 
-			var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+			var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
 				? 'https://winchatty.com/nusearch?q=' + username
 				: 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
 			ulUser.appendChild(createListItem(vanitySearch, vanityUrl));
 
-			var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search") 
+			var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
 				? 'https://winchatty.com/nusearch?pa=' + username
 				: 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
 			ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
@@ -391,49 +387,49 @@
 			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [tag]\'d', 'https://lol.lmnopc.com/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
 			ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [unf]\'d', 'https://lol.lmnopc.com/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
 			ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://lol.lmnopc.com/user.php?fanclub=' + username + actualUser, 'userDropdown-lol userDropdown-separator'));
-			
+
 			// Create menu item for reading post count
 			var aPostCount = document.createElement('a');
 			aPostCount.appendChild(document.createTextNode('Get ' + your + ' Post Count'));
-			aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(decodeURIComponent(username)) }, false);  
+			aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(decodeURIComponent(username)) }, false);
 			var liPostCount = document.createElement('li');
 			liPostCount.appendChild(aPostCount);
-			ulUser.appendChild(liPostCount); 
-			
+			ulUser.appendChild(liPostCount);
+
 			// Add ulUser to the page
 			parentObj.appendChild(ulUser);
 		}
-		else // ulUserDD already exists -- this just handles the toggling of its display 
+		else // ulUserDD already exists -- this just handles the toggling of its display
 		{
 			// Toggle ulUser's classname
 			if (ulUserDD.className.split(' ').indexOf('hidden') == -1)
 			{
-				ulUserDD.className += ' hidden'; 
+				ulUserDD.className += ' hidden';
 			}
 			else
 			{
-				removeClassName(ulUserDD, 'hidden'); 
+				removeClassName(ulUserDD, 'hidden');
 			}
-		} 
+		}
 	}
 
-	// Add catch-all event handlers for creating user dropdown menus 
+	// Add catch-all event handlers for creating user dropdown menus
 	document.addEventListener('click', function(e)
 	{
 		// try to eat exceptions that are typically harmless
 		try {
-			var t = e.target; 
+			var t = e.target;
 			var p = t.parentNode;
 			var pp = p.parentNode;
 			var ppp = pp.parentNode;
-			
-			// Post author clicked 
+
+			// Post author clicked
 			if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
 			{
 				e.preventDefault();
 				e.stopPropagation();
 
-				/*			
+				/*
 				if (navigator.userAgent.indexOf('Firefox') !== -1)
 				{
 					displayProfile(t.innerHTML);
@@ -445,7 +441,7 @@
 				*/
 				displayUserMenu(t, t.innerHTML, t.innerHTML);
 			}
-			
+
 			// User name clicked (at the top of the banner?)
 			else if (t.id == 'userDropdownTrigger')
 			{
@@ -454,7 +450,7 @@
 
 				displayUserMenu(t, getShackUsername(), 'You');
 			}
-			
+
 			// OWN user name clicked as post author
 			else if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user this-user'))
 			{
@@ -467,7 +463,7 @@
 					displayProfile(t.innerHTML);
 				}
 				else
-				{ 
+				{
 					displayUserMenu(t, t.innerHTML, 'You');
 				}
 				*/
@@ -476,7 +472,7 @@
 			else {
 
 				var parentDropdown = e.target;
-				while (parentDropdown != null 
+				while (parentDropdown != null
 					&& Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
 					if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
 						parentDropdown.className += ' hidden';
@@ -504,5 +500,5 @@
 
 	// log execution time
 	tw_log(location.href + ' / ' + (getTime() - scriptStartTime) + 'ms');
-	
+
 })();

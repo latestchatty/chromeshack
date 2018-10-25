@@ -16,7 +16,7 @@ settingsLoadedEvent.addHandler(function()
                     var previewButton = document.createElement("button");
                     previewButton.id = "previewButton";
                     previewButton.setAttribute("type", "button");
-                    previewButton.innerHTML = "Preview";
+                    previewButton.replaceHTML("Preview");
                     if (getSetting("post_preview_location") == "Left")
                         postButton.parentNode.insertBefore(previewButton, postButton);
                     else
@@ -50,8 +50,8 @@ settingsLoadedEvent.addHandler(function()
             {
                 var previewArea = document.getElementById("previewArea");
                 var form_body = document.getElementById("frm_body");
-                previewArea.innerHTML = generatePreview(form_body.value);
-                previewArea.style.display = "block"; 
+                previewArea.replaceHTML(generatePreview(form_body.value));
+                previewArea.style.display = "block";
                 if(getSetting("post_preview_live") === false) {
                     form_body.style.display = "none";
                 } else {
@@ -66,14 +66,14 @@ settingsLoadedEvent.addHandler(function()
                 if(getSetting("post_preview_live") === true) {
                     form_body.removeEventListener("input", PostPreview.updatePreview, true)
                 }
-                form_body.style.display = "block"; 
-                document.getElementById("previewArea").style.display = "none"; 
+                form_body.style.display = "block";
+                document.getElementById("previewArea").style.display = "none";
                 PostPreview.state = 0;
             },
 
             updatePreview: function()
             {
-                document.getElementById("previewArea").innerHTML = generatePreview(document.getElementById("frm_body").value);
+                document.getElementById("previewArea").replaceHTML(generatePreview(document.getElementById("frm_body").value));
             }
         }
 

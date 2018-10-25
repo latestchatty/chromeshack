@@ -1,9 +1,9 @@
-function getDescendentByTagAndClassName(parent, tag, class_name) 
+function getDescendentByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             return descendents[i];
     }
 }
@@ -18,13 +18,13 @@ function getDescendentByTagAndAnyClassName(parent, tag, class_name)
     }
 }
 
-function getDescendentsByTagAndClassName(parent, tag, class_name) 
+function getDescendentsByTagAndClassName(parent, tag, class_name)
 {
     var descendents = parent.getElementsByTagName(tag);
     var descArray = new Array();
-    for (var i = 0; i < descendents.length; i++) 
+    for (var i = 0; i < descendents.length; i++)
     {
-        if (descendents[i].className.indexOf(class_name) == 0) 
+        if (descendents[i].className.indexOf(class_name) == 0)
             descArray.push(descendents[i]);
     }
 
@@ -266,7 +266,7 @@ function scrollToElement(elem)
         { duration: 200, easing: 'swing'}
     );
     $('html,body').animate(
-        { scrollTop: $(elem).offset().top - ($(window).height()/3) }, 
+        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
         { duration: 200, easing: 'swing'}
     );
 }
@@ -288,10 +288,24 @@ function elementIsVisible(elem)
     );
 }
 
-function replaceHTML(oldElem, html) {
-    // swap element in-place (without children) for massive performance increase
-    var newElem = oldElem.cloneNode(false);
-    newElem.innerHTML = html;
-    // use cautiously as this can trigger weirdness in some cases
-    oldElem.parentNode.replaceChild(newElem, oldElem);
+HTMLElement.prototype.appendHTML = function(html)
+{
+    // https://stackoverflow.com/a/42658543
+    var dom = new DOMParser().parseFromString(html, 'text/html').body;
+    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
+}
+
+HTMLElement.prototype.replaceHTML = function(html)
+{
+    // ex: https://stackoverflow.com/a/42658543
+    // a slower but somewhat safer alternative to innerHTML
+    while (this.hasChildNodes()) this.removeChild(this.lastChild);
+    var dom = new DOMParser().parseFromString(html, 'text/html').body;
+    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
+}
+
+HTMLElement.prototype.removeChildren = function()
+{
+    // https://stackoverflow.com/a/42658543
+    while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }

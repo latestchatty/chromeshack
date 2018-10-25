@@ -134,7 +134,7 @@
         var star = document.createElement('a');
         star.id = 'jump_to_new_post';
         star.style.display = 'none';
-        star.innerHTML = '1';
+        star.replaceHTML("1");
         star.addEventListener('click', jumpToNewPost);
 
         body.appendChild(star);
@@ -193,7 +193,7 @@
             + '@media (max-width: 767px) {'
             + '    a#jump_to_new_post { left: 10px; }'
             + '}'
-            
+
             // The thread refresh button when highlighted
             + 'a.refresh_pending { background: skyblue; border-radius: 10px; width: 14px !important; '
             + '    height: 15px !important; }'
@@ -222,7 +222,7 @@
                 loop();
             },
             function(error) {
-                // This is a non-essential feature so we will simply disable the feature if this fails.                
+                // This is a non-essential feature so we will simply disable the feature if this fails.
             });
     }
 

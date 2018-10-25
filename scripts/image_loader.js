@@ -141,7 +141,7 @@ settingsLoadedEvent.addHandler(function()
                     if (link.childNodes[0].nodeName == "IMG" || link.childNodes[0].nodeName == "VIDEO")
                     {
                         // already showing image, collapse it
-                        link.innerHTML = link.href;
+                        link.replaceHTML(link.href);
                     }
                     else
                     {
@@ -180,7 +180,7 @@ settingsLoadedEvent.addHandler(function()
             createGifv: function(href)
             {
                 var video_id;
-                
+
                 if ((video_id = href.match(/imgur\.com\/(\w+)/i)))
                     video_id = video_id[1];
                 else

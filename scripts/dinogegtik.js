@@ -46,7 +46,7 @@ settingsLoadedEvent.addHandler(function()
                         panel.style.top = DinoGegtik.panels[i].y + "px";
                         panel.style.width = DinoGegtik.panels[i].width + "px";
                         panel.style.height = DinoGegtik.panels[i].height + "px";
-                        panel.innerHTML = lines[i];
+                        panel.replaceHTML(lines[i]);
 
                         comic_div.appendChild(panel);
 

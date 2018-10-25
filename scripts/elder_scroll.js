@@ -2,7 +2,7 @@
 *   Originally authored by indosaurus, re-written for chromeshack.
 */
 
-ElderScroll = 
+ElderScroll =
 {
     pxToLoadNew: 500,
     isLoadingNew: false,
@@ -38,7 +38,7 @@ ElderScroll =
             }, true);
         }
     },
-    
+
     updateRootThreads: function()
     {
         var items = document.evaluate(".//div[contains(@class, 'fullpost')]/..", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -53,7 +53,7 @@ ElderScroll =
         var divLoadingInfo = document.createElement('div');
         divLoadingInfo.id = 'elderscroll-message';
         divLoadingInfo.appendChild(document.createTextNode(text));
-                        
+
         if (addLoadingAnimation)
         {
             var _url = `url("${browser.runtime.getURL("../shack.png")}")`;
@@ -62,10 +62,10 @@ ElderScroll =
             shackLogo.style.backgroundImage = _url;
             divLoadingInfo.appendChild(shackLogo);
         }
-        
+
         return divLoadingInfo;
     },
-    
+
     getDivMessage: function(parentNode)
     {
         return document.getElementById('elderscroll-message');
@@ -78,7 +78,7 @@ ElderScroll =
 
     getDivThreads: function()
     {
-        return getDescendentByTagAndClassName(ElderScroll.getDivThreadContainer(), 'div', 'threads');  
+        return getDescendentByTagAndClassName(ElderScroll.getDivThreadContainer(), 'div', 'threads');
     },
 
     getDivNavigation: function()
@@ -94,7 +94,7 @@ ElderScroll =
 
             // top of div + its height
             var divBottomPos = divThreads.offsetTop + divThreads.offsetHeight;
-            
+
             // top of viewport + viewport height
             var viewPortBottomPos = window.pageYOffset + window.innerHeight;
 
@@ -136,29 +136,29 @@ ElderScroll =
 
         var divThreads = ElderScroll.getDivThreads();
         divThreads.appendChild(ElderScroll.createDivMessage('Loading new posts...', true));
-        
+
         var nextPageURL = 'http';
         if (window.location.protocol == "https:") {
             nextPageURL += 's';
         }
         nextPageURL += '://www.shacknews.com/chatty?page=' + ElderScroll.getNextPage();
-      
+
         getUrl(nextPageURL, function(response)
         {
             divThreads.removeChild(ElderScroll.getDivMessage());
-            
+
             if (response.status == 200)
             {
                 // a _bad_ way of doing this...
                 var divResponse = document.createElement('div');
-                divResponse.innerHTML = response.responseText;
+                divResponse.replaceHTML(response.responseText);
 
                 var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
                 var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
                 var newDivThreads = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'threads');
 
                 var fragment = document.createDocumentFragment();
-                
+
                 /* To try to preserve the DOM of the original page,
                 we'll include text nodes even if they're just
                 linebreaks. Some other script might rely on those being
@@ -186,14 +186,14 @@ ElderScroll =
                 var divThreadContainer = ElderScroll.getDivThreadContainer();
                 var divNavigation = ElderScroll.getDivNavigation();
                 divNavigation[0].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[0]);
-                divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);         
+                divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);
 
                 ElderScroll.isLoadingNew = false;
             } else {
                 console.log(response);
                 divThreads.appendChild(ElderScroll.createDivMessage('Something broke.', false));
             }
-        });   
+        });
     }
 }
 

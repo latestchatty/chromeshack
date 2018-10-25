@@ -31,7 +31,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                     link.href = url;
                     link.title = "Check out what got the [lol]s";
-                    link.innerHTML = "* L O L ' d *";
+                    link.replaceHTML("* L O L ' d *");
                     link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
                     comments_tools.appendChild(link);
                 }
@@ -66,7 +66,7 @@ settingsLoadedEvent.addHandler(function()
             installButtons: function(item, id)
             {
                 var lol_div_id = 'lol_' + id;
-                
+
                 // buttons already installed here
                 if (document.getElementById(lol_div_id) != null)
                     return;
@@ -81,7 +81,7 @@ settingsLoadedEvent.addHandler(function()
                 var lol_div = document.createElement("div");
                 lol_div.id = lol_div_id;
                 lol_div.className = "lol";
-                
+
                 // generate all the buttons from settings
                 for (var i = 0; i < LOL.tags.length; i++)
                 {
@@ -134,7 +134,7 @@ settingsLoadedEvent.addHandler(function()
                 var tag = element.dataset.loltag;
                 var id = element.dataset.threadid;
                 var isloled = element.dataset.isloled == 'true';
-                
+
                 var url = LOL.URL + "report.php";
 
                 var data = 'who=' + user + '&what=' + id + '&tag=' + encodeURIComponent(tag) + '&version=' + LOL.VERSION;
@@ -154,7 +154,7 @@ settingsLoadedEvent.addHandler(function()
                         // looks like it worked
                         var new_tag;
                         if (isloled) {
-                           new_tag = tag; 
+                           new_tag = tag;
                         } else {
                             new_tag = "*";
                             for (var i = 0; i < tag.length; i++)
@@ -162,8 +162,7 @@ settingsLoadedEvent.addHandler(function()
                             new_tag += " ' D *";
                         }
 
-                        // don't use replaceHTML here - there be dragons!
-                        element.innerHTML = new_tag;
+                        element.replaceHTML(new_tag);
                         element.dataset.isloled = !isloled;
                     }
                     else
@@ -210,9 +209,9 @@ settingsLoadedEvent.addHandler(function()
 
             showThreadCounts: function(threadId)
             {
-                var rootId = -1; 
-            
-                // Make sure this is a rootId 
+                var rootId = -1;
+
+                // Make sure this is a rootId
                 if (document.getElementById('root_' + threadId))
                 {
                     rootId = threadId;
@@ -220,13 +219,13 @@ settingsLoadedEvent.addHandler(function()
                 else
                 {
                     // If this is a subthread, the root needs to be found
-                    var liItem = document.getElementById('item_' + threadId); 
+                    var liItem = document.getElementById('item_' + threadId);
                     if (liItem)
                     {
-                        do 
+                        do
                         {
-                            liItem = liItem.parentNode; 
-                            
+                            liItem = liItem.parentNode;
+
                             if (liItem.className == 'root')
                             {
                                 rootId = liItem.id.split('_')[1];
@@ -236,14 +235,14 @@ settingsLoadedEvent.addHandler(function()
                         while (liItem.parentNode != null)
                     }
                 }
-                
+
                 if (rootId == -1)
                 {
-                    console.log('Could not find root for ' + threadId); 
-                    return; 
+                    console.log('Could not find root for ' + threadId);
+                    return;
                 }
-            
-                // If there aren't any tagged threads in this root there's no need to proceed 
+
+                // If there aren't any tagged threads in this root there's no need to proceed
                 if (!LOL.counts[rootId])
                     return;
 
@@ -252,9 +251,9 @@ settingsLoadedEvent.addHandler(function()
                 for (var i = 0; i < LOL.tags.length; i++)
                     tag_names.push(LOL.tags[i].name);
 
-                // Update all the ids under the rootId we're in 
+                // Update all the ids under the rootId we're in
                 for (id in LOL.counts[rootId])
-                {	
+                {
                     for (tag in LOL.counts[rootId][id])
                     {
                         // Evaluate [ugh]s
@@ -277,8 +276,8 @@ settingsLoadedEvent.addHandler(function()
                         if (((LOL.showCounts == 'limited') || (LOL.showCounts == 'short')) && (tag_names.indexOf(tag) == -1))
                             continue;
 
-                        // Add * x indicators in the fullpost 
-                        var tgt = document.getElementById(tag + id); 
+                        // Add * x indicators in the fullpost
+                        var tgt = document.getElementById(tag + id);
                         if (!tgt && id == rootId)
                         {
                             // create the button if it doesn't exist
@@ -287,7 +286,7 @@ settingsLoadedEvent.addHandler(function()
                             lol_div.appendChild(lol_button);
 
                             // get the link
-                            tgt = document.getElementById(tag + id); 
+                            tgt = document.getElementById(tag + id);
                         }
 
                         if (tgt)
@@ -295,14 +294,14 @@ settingsLoadedEvent.addHandler(function()
                             // do not use replaceHTML here - there be dragons!
                             if (LOL.showCounts == 'short')
                             {
-                                tgt.innerHTML = LOL.counts[rootId][id][tag];
+                                tgt.replaceHTML(LOL.counts[rootId][id][tag]);
                             }
                             else
                             {
-                                tgt.innerHTML = `${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`;
+                                tgt.replaceHTML(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
                             }
                         }
-                    
+
                         // Add (lol * 3) indicators to the onelines
                         if (!document.getElementById('oneline_' + tag + 's_' + id))
                         {
@@ -310,17 +309,17 @@ settingsLoadedEvent.addHandler(function()
                             if (tgt)
                             {
                                 tgt = getDescendentByTagAndClassName(tgt, 'div', 'oneline');
-                                if (tgt) 
+                                if (tgt)
                                 {
-                                    divOnelineTags = document.createElement('div'); 
+                                    divOnelineTags = document.createElement('div');
                                     divOnelineTags.id = 'oneline_' + tag + 's_' + id;
-                                    divOnelineTags.className = 'oneline_tags'; 
+                                    divOnelineTags.className = 'oneline_tags';
                                     tgt.appendChild(divOnelineTags);
-                                    
-                                     // add the button 
-                                    spanOnelineTag = document.createElement('span'); 
+
+                                     // add the button
+                                    spanOnelineTag = document.createElement('span');
                                     spanOnelineTag.id = 'oneline_' + tag + '_' + id;
-                                    spanOnelineTag.className = 'oneline_' + tag;  
+                                    spanOnelineTag.className = 'oneline_' + tag;
                                     if (LOL.showCounts == 'short')
                                     {
                                         spanOnelineTag.appendChild(document.createTextNode(LOL.counts[rootId][id][tag]));
@@ -329,7 +328,7 @@ settingsLoadedEvent.addHandler(function()
                                     {
                                         spanOnelineTag.appendChild(document.createTextNode(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`));
                                     }
-                                    divOnelineTags.appendChild(spanOnelineTag); 
+                                    divOnelineTags.appendChild(spanOnelineTag);
                                 }
                             }
                         }

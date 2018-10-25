@@ -35,14 +35,14 @@ settingsLoadedEvent.addHandler(function () {
                         var span = getDescendentByTagAndClassName(post, "span", "oneline_user");
                         if(span) //For single line comments.
                         {
-                            replaceHTML(span, newName);
+                            span.replaceHTML(newName);
                         }
                         else //For fully shown comments.
                         {
                             span = getDescendentByTagAndClassName(post, "span", "user");
                             if(span)
                             {
-                                replaceHTML(span.firstChild, newName);
+                                span.firstChild.replaceHTML(newName);
                             }
                         }
 
