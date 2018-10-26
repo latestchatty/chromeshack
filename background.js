@@ -238,40 +238,42 @@ var lastOpenedIncognito = -1;
 
 function openIncognito(newUrl)
 {
-    browser.windows.getAll({}, function(windowInfo) {
-        var incognitoId = -1;
-        if(windowInfo != null)
-        {
-            for(var i = 0; i<windowInfo.length; i++)
-            {
-                var w = windowInfo[i];
-                if(w.incognito)
-                {
+    var windowInfo = browser.windows.getAll();
 
-                    incognitoId = w.id;
-                    if(incognitoId === lastOpenedIncognito)
-                    {
-                        //If we found the last id we opened with, use that.
-                        break;
-                    }
+    var incognitoId = -1;
+    if(windowInfo != null)
+    {
+        for(var i = 0; i<windowInfo.length; i++)
+        {
+            var w = windowInfo[i];
+            if(w.incognito)
+            {
+
+                incognitoId = w.id;
+                if(incognitoId === lastOpenedIncognito)
+                {
+                    //If we found the last id we opened with, use that.
+                    break;
                 }
             }
         }
+    }
 
-        if(incognitoId >= 0)
-        {
-            browser.tabs.create({url:newUrl, windowId: incognitoId, active: false});
-            lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
-        }
-        else
-        {
-    //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-            browser.windows.create({url:newUrl, incognito:true, type: 'normal'}, function(windowInfo){
-                console.log('Window Id: ' + windowInfo.id);
-                lastOpenedIncognito = windowInfo.id;
-            });
-        }
-    });
+    if(incognitoId >= 0)
+    {
+        browser.tabs.create({url:newUrl, windowId: incognitoId, active: false});
+        lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
+    }
+    else
+    {
+        //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
+        browser.windows.create(
+            {url:newUrl, incognito:true, type: 'normal'}
+        ).then(function(windowInfo){
+            console.log('Window Id: ' + windowInfo.id);
+            lastOpenedIncognito = windowInfo.id;
+        });
+    }
 }
 
 browser.runtime.onMessage.addListener(function(request, sender)
