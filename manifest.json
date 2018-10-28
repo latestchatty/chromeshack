@@ -10,7 +10,7 @@
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "background": {
         "scripts": [
-            "browser-polyfill.min.js",
+            "ext/webextension-polyfill/browser-polyfill.min.js",
             "background.js"
         ]
     },
@@ -28,7 +28,7 @@
         "js": [
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
-            "browser-polyfill.min.js",
+            "ext/webextension-polyfill/browser-polyfill.min.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -73,7 +73,7 @@
     },
     {
         "js": [ 
-            "browser-polyfill.min.js",
+            "ext/webextension-polyfill/browser-polyfill.min.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
