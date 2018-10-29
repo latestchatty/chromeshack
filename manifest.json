@@ -72,8 +72,9 @@
         "run_at": "document_idle"
     },
     {
-        "js": [ 
+        "js": [
             "ext/webextension-polyfill/browser-polyfill.min.js",
+            "scripts/jquery-3.3.1.min.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
