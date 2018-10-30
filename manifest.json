@@ -96,7 +96,7 @@
         "notifications",
         "tabs",
         "https://api.imgur.com/*",
-        "http://chattypics.com/*",
+        "https://chattypics.com/*",
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
         "https://winchatty.com/nusearch?*",

@@ -15,7 +15,7 @@ settingsLoadedEvent.addHandler(function()
 
             imgurClientId: "Client-ID c045579f61fc802",
 
-            chattyPicsUrl : "http://chattypics.com/upload.php",
+            chattyPicsUrl : "https://chattypics.com/upload.php",
 
             uploadShown: false,
 
