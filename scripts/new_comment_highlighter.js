@@ -43,10 +43,12 @@ settingsLoadedEvent.addHandler(function()
             displayNewCommentCount: function(count)
             {
                 // https://stackoverflow.com/a/11526052
-                $('#chatty_settings').children().each(function () {
-                    var that = $(this);
-                    that.text(that.text().replace(' Comments', ` Comments (${count} New)`));
-                });
+                if (count > 0) {
+                    $('#chatty_settings').children().each(function () {
+                        var that = $(this);
+                        that.text(that.text().replace(/ Comments| Comments \(\d+ New\)/g, ` Comments (${count} New)`));
+                    });
+                }
             },
 
             getPostsAfter: function(last_id)
