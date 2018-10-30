@@ -8,9 +8,10 @@ settingsLoadedEvent.addHandler(function()
 
             install: function()
             {
+                var previewButton = document.getElementById("previewButton");
                 var postButton = document.getElementById("frm_submit");
                 var form_body = document.getElementById("frm_body");
-                if (postButton && form_body)
+                if (!previewButton && postButton && form_body)
                 {
                     // don't add click handlers here, because these elements get cloned into the page later
                     var previewButton = document.createElement("button");
