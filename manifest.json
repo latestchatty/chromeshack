@@ -33,7 +33,6 @@
             "sentence_parser.js",
             "init_events.js",
             "scripts/lol.js",
-            "scripts/comment_tags.js",
             "scripts/post_preview.js",
             "scripts/dinogegtik.js",
             "scripts/category_banners.js",
