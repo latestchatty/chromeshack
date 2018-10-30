@@ -20,21 +20,22 @@ settingsLoadedEvent.addHandler(function()
             installLink: function()
             {
                 var comments_tools = document.getElementById('commenttools');
-                if (comments_tools)
-                {
-                    var link = document.createElement("a");
-                    link.id = "lollink";
-                    let url = LOL.URL;
-                    const username = LOL.getUsername();
-                    if (username) {
-                        url += "?user=" + encodeURIComponent(username);
-                    }
-                    link.href = url;
-                    link.title = "Check out what got the [lol]s";
-                    link.replaceHTML("* L O L ' d *");
-                    link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
-                    comments_tools.appendChild(link);
+                // script is already injected
+                if (document.getElementById('lollink') != null)
+                    return;
+
+                var link = document.createElement("a");
+                link.id = "lollink";
+                let url = LOL.URL;
+                const username = LOL.getUsername();
+                if (username) {
+                    url += "?user=" + encodeURIComponent(username);
                 }
+                link.href = url;
+                link.title = "Check out what got the [lol]s";
+                link.replaceHTML("* L O L ' d *");
+                link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
+                comments_tools.appendChild(link);
 
                 if (LOL.showCounts != 'none')
                 {
