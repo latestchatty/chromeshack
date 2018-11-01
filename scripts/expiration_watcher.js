@@ -11,13 +11,15 @@ settingsLoadedEvent.addHandler(function()
 
 			install: function()
 			{
-                // prevent reapplying
-                if ($(".expiration-watcher-bar").length)
-				    document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
+                document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
 			},
 
             showExpiration: function(item, id, is_root_post)
             {
+                // prevent reapplying
+                if (document.querySelector(".fullpost .countdown-wrap") != null)
+                    return;
+
                 var style = getSetting("expiration_watcher_style");
 
                 if (!is_root_post) return;
@@ -121,7 +123,7 @@ settingsLoadedEvent.addHandler(function()
                 var post_time = Date.parse(raw_time_string);
                 return post_time + ExpirationWatcher.post_ttl;
             }
-        }
+        };
 
         ExpirationWatcher.install();
         processPostEvent.addHandler(ExpirationWatcher.showExpiration);
