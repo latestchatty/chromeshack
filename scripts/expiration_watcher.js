@@ -11,9 +11,11 @@ settingsLoadedEvent.addHandler(function()
 
 			install: function()
 			{
-				document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
-			}, 
-            
+                // prevent reapplying
+                if ($(".expiration-watcher-bar").length)
+				    document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
+			},
+
             showExpiration: function(item, id, is_root_post)
             {
                 var style = getSetting("expiration_watcher_style");
@@ -69,13 +71,13 @@ settingsLoadedEvent.addHandler(function()
             {
                 var percent = 100;
                 var color = ExpirationWatcher.bar_colors[17];
-            
+
 			    var desc = ExpirationWatcher.getExpirationTimeDescription(time_left);
-			    
+
                 if (time_left > 0)
                 {
                     percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
-                    
+
                     var total_hours = Math.floor(time_left / 3600000 );
                     color = ExpirationWatcher.bar_colors[17 - total_hours];
                 }
@@ -84,7 +86,7 @@ settingsLoadedEvent.addHandler(function()
                 value.style.backgroundColor = color;
                 value.style.width = percent + "%";
             },
-            
+
             getExpirationTimeDescription: function(time_left)
             {
                 if (time_left > 0)
@@ -111,7 +113,7 @@ settingsLoadedEvent.addHandler(function()
                 var pos = raw_time_string.indexOf("AM") + raw_time_string.indexOf("PM")+1;
                 raw_time_string = raw_time_string.substring(0,pos) + " " + raw_time_string.substr(pos);
 
-                 // timezone needs to be in parentheses 
+                 // timezone needs to be in parentheses
                 var zone = raw_time_string.substring(pos+4).trim();
                 raw_time_string = raw_time_string.substring(0,pos+4) + "(" + zone + ")";
 

@@ -16,7 +16,7 @@ ElderScroll =
         if (getSetting("enabled_scripts").contains("scrolling_performance_hack")) {
             perfHack = true;
             // force the top bar to be collapsed to keep common styling
-            document.body.className += ' scrolling_performance_hack';
+            $('body').removeClass('scrolling_performance_hack').addClass('scrolling_performance_hack');
             $('header').removeClass('notpinned').addClass('pinned');
         }
         if (getSetting("enabled_scripts").contains("elder_scroll")) { enableHandler = true; }
