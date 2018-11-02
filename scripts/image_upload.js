@@ -2,7 +2,6 @@ settingsLoadedEvent.addHandler(function()
 {
     if (getSetting("enabled_scripts").contains("image_upload"))
     {
-
         ImageUpload =
         {
             imgurApiKey :  "48a14aa108f519f249aacc12d08caac3",
@@ -17,151 +16,277 @@ settingsLoadedEvent.addHandler(function()
 
             chattyPicsUrl : "https://chattypics.com/upload.php",
 
+            gfycatApiUrl: "https://api.gfycat.com/v1/gfycats",
+
+            gfycatDropUrl: "https://filedrop.gfycat.com",
+
+            gfycatStatusUrl: "https://api.gfycat.com/v1/gfycats/fetch/status",
+
             uploadShown: false,
 
-            insertForm: function() {
-                // var imgurl = chrome.extension.getURL( "../images/image_upload.png");
-                // var image = $("<img/>", { src : imgurl });
-                /**
-                var table = $('#shacktags_legend_table').find('tbody:last');
+            formFiles: null,
 
-                var row = $("<tr/>");
-                var cell = $("<td/>", { colspan : "4"});
-                var udiv = $('<div/>', { id : "imageUploader", align : "center"});
-                var sdiv = $('<div/>', { id : "sidebar-list", align : "center"});
-                var uploadBtn = $("<button />", { id : "imageUploadButton"});
-                uploadBtn.text("Upload / Add Image");
-                uploadBtn.click( function() {
-                    ImageUpload.showImageUploadForm(this);
-                    return false;
-                });
-                var cancelBtn = $("<button />", { id : "cancelUploadButton"});
-                cancelBtn.css("display", "none");
-                cancelBtn.text("Cancel");
-                cancelBtn.click( function() {
-                    ImageUpload.hideImageUploadForm(this);
-                    return false;
-                });
-                udiv.append(cancelBtn);
-                udiv.append(uploadBtn);
-                cell.append(udiv);
-                row.append(cell);
-                table.append(row);
-                 **/
+            formFileUrl: "",
+
+            insertForm: function() {
                 ImageUpload.showImageUploadForm(this);
             },
 
             showImageUploadForm: function(obj) {
                 $("#imageUploadButton").toggle();
                 $("#cancelUploadButton").toggle();
-                //$(".newcommentform").css("height", "390px");
-                //$(".inlinereply").css("height", "390px");
-                //var legendtable = $('#shacktags_legend_table')
-                var uploadtable = $("<table border='1' cellpadding='5px'><tr><td id='uploadCell1' nowrap='nowrap'/><td id='uploadCell2'/><td id='uploadCell3'/><td id='uploadCell4'/></tr></table>");
-                var uploadDiv = $("<div />", { id : "uploadDiv"}).hide();
-                var showUpload = $('<a href="#">').html('Show Image Upload').addClass('showImageUploadLink').click(function () {
-                    uploadDiv.toggle();
-                    ImageUpload.uploadShown = !ImageUpload.uploadShown;
-                    var text = ImageUpload.uploadShown ? 'Hide Image Upload' : 'Show Image Upload';
-                    showUpload.html(text);
-                    return false;
-                });
-                $('#postform').append(showUpload);
-                $("#postform").append(uploadDiv);
-                uploadDiv.append(uploadtable);
-                var chattyUploadLabel = $("<label>", { class : 'imageUploadLabel'});
-                var chattyUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadChatty'});
-                chattyUpload.click(function() {
-                    $("#uploadCell4").css('visibility', 'hidden');
-                })
-                chattyUploadLabel.append(chattyUpload);
-                chattyUploadLabel.append($("<span>ChattyPics</span>"));
-                var imgurUploadLabel = $("<label>", { class : 'imageUploadLabel'});
-                var imgurUpload= $("<input>", {type: 'radio', name: 'imgUploadSite', id : 'uploadImgur', checked : 'true'});
-                imgurUpload.click(function() {
-                    $("#uploadCell4").css('visibility', 'visible');
-                });
-                imgurUploadLabel.append(imgurUpload);
-                imgurUploadLabel.append($("<span>Imgur</span>"));
-                var urlUploadInput = $("<input>", { type : "text", id : "urlUploadInput", defaultValue : 'Image URL'});
-                var urlUploadButton = $("<button></button>", { id : 'urlUploadButton'});
-                urlUploadButton.text("Upload URL");
-                urlUploadButton.click(function() {
-                    ImageUpload.doUrlUpload(this);
-                    return false;
-                });
-                var uploadCell1 = $("#uploadCell1");
-                var uploadCell2 = $("#uploadCell2");
-                var uploadCell3 = $("#uploadCell3");
-                var uploadCell4 = $("#uploadCell4");
-                uploadCell1.append(imgurUploadLabel);
-                uploadCell1.append(chattyUploadLabel);
-                var filedroparea = $("<div id='filedroparea'>Drag An Image</div>")
-                uploadCell2.append(filedroparea);
-                filedroparea.dropArea();
 
-                filedroparea.on('drop', function(e){
+                var template = $(/* html */`
+                    <div class="post_sub_container">
+                        <div class="uploadContainer">
+                            <a class="showImageUploadLink">Show Image Upload</a>
+                            <div id="uploadFields">
+                                <div class="uploadFilters">
+                                    <input type="radio" name="imgUploadSite" id="uploadChatty" checked="checked">
+                                    <input type="radio" name="imgUploadSite" id="uploadGfycat">
+                                    <input type="radio" name="imgUploadSite" id="uploadImgur">
+
+                                    <div class="uploadRadioLabels">
+                                        <label class="chatty" for="uploadChatty">Chattypics</label>
+                                        <label class="gfycat" for="uploadGfycat">Gfycat</label>
+                                        <label class="imgur" for="uploadImgur">Imgur</label>
+                                    </div>
+                                </div>
+                                <div id="uploadDropArea">
+                                    <input type="file" id="fileUploadInput" accept="image/*" multiple="multiple">
+
+                                    <span class="uploadDropLabel">
+                                        <a href="#" id="fileChooserLink">Choose some files</a>
+                                        or drop them here...
+                                    </span>
+
+                                    <div class="uploadInputs">
+                                        <div class="urlBox">
+                                            <input type="text" id="urlUploadInput" class="urlBox hidden" placeholder="Or use an image URL...">
+                                        </div>
+                                        <div class="uploadButton">
+                                            <button id="urlUploadButton" class="disabled">Upload</button>
+                                            <button id="cancelUploadButton">X</button>
+                                        </div>
+                                        <div id="uploadStatus">
+                                            <span id="uploadStatusLabel"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                $("#postform").append(template);
+                // move our shacktags legend into our template container for alignment
+                $("#shacktags_legend").appendTo(".post_sub_container");
+
+                // bind some actions to our template elements
+                $(".showImageUploadLink").click(function() {
+                    ImageUpload.uploadShown = !ImageUpload.uploadShown;
+                    $("#uploadFields").toggleClass("visible", ImageUpload.uploadShown);
+                    var text = ImageUpload.uploadShown ? "Hide Image Upload" : "Show Image Upload";
+                    $(".showImageUploadLink").html(text);
+
+                    // scroll to our elements contextually
+                    if ($("#uploadFields").hasClass("visible"))
+                        scrollToElement($(this)[0]);
+                    else
+                        scrollToElement($("#frm_body")[0]);
+
+                    return false;
+                });
+
+                $("#fileChooserLink").click(function() {
+                    $("#fileUploadInput").click();
+                    scrollToElement($("#uploadDropArea")[0]);
+                });
+
+                // debounce on keyup (2s) for url text input
+                var debouncedKeyup = debounce(function(val) {
+                    ImageUpload.loadFileUrl(val);
+                }, 2000);
+                $("#urlUploadInput").keyup(function() {
+                    debouncedKeyup(this.value);
+                });
+
+                // toggle url entry field based on hoster
+                $("#uploadChatty").click(function() {
+                    $("#urlUploadInput").addClass('hidden');
+                    // urls are not supported on Chattypics
+                    ImageUpload.clearFileData();
+                });
+                $("#uploadGfycat, #uploadImgur").click(function() {
+                    $("#urlUploadInput").removeClass('hidden');
+                });
+
+                // attach events for dropping images
+                $("#uploadDropArea").dropArea();
+                $("#uploadDropArea").on('drop', function(e){
                     e.preventDefault();
                     e = e.originalEvent;
                     var files = e.dataTransfer.files;
-                    for(var i=0; i<files.length; i++) {
-                        if (/image/.test(files[i].type)) {
-                            ImageUpload.doFileUpload(files[i]);
-                        }
+                    if (ImageUpload.inputIsImage(files)) {
+                        ImageUpload.loadFileData(files);
+                    }
+                });
+                $("#fileUploadInput").change(function (e) {
+                    var files = e.target.files;
+                    if (ImageUpload.inputIsImage(files)) {
+                        ImageUpload.loadFileData(files);
                     }
                 });
 
-                var fileinput = $("<input>", { type : 'file', id : 'fileUploadInput', accept: 'image/*', multiple : 'multiple' });
-                fileinput.change(function (e) {
-                    var files = e.target.files;
-                    for (var i=0; i < files.length; i++) {
-                        ImageUpload.doFileUpload(files[i]);
-                    }
-                })
-                uploadCell3.append(" or ");
-                uploadCell3.append(fileinput);
-                uploadCell4.append(" or ");
-                uploadCell4.append(urlUploadInput);
-                uploadCell4.append(urlUploadButton);
+                $("#cancelUploadButton").click(function(e) {
+                    e.preventDefault();
+                    // hard reset our input form elements
+                    ImageUpload.clearFileData(true);
+                });
 
+                // attach event for upload button
+                $("#urlUploadButton").click(function(e) {
+                    e.preventDefault();
+                    if (ImageUpload.formFileUrl.length > 5)
+                        ImageUpload.doUrlUpload(ImageUpload.formFileUrl);
+                    else if (ImageUpload.formFiles != null) {
+                        ImageUpload.doFileUpload(ImageUpload.formFiles);
+                    }
+                    // focus our url target
+                    scrollToElement($("#frm_body")[0]);
+                    $("#frm_body").focus();
+
+                    return false;
+                });
             },
 
-            hideImageUploadForm: function (obj) {
-                $("#imageUploadButton").toggle();
-                $("#cancelUploadButton").toggle();
-                $("#uploadDiv").remove();
-                $(".newcommentform").removeClass("newcommentformexpand");
-                $(".newcommentform").addClass("newcommentformfix");
+            inputIsImage: function(files) {
+                if (files.length > 0) {
+                    for (var i=0; i < files.length; i++) {
+                        if (!/image/.test(files[i].type)) {
+                            return false;
+                        }
+                    }
+                }
 
+                return true;
+            },
+
+            loadFileData: function(files) {
+                // move our file data into an abstracted variable
+                ImageUpload.formFiles = new FormData();
+                if (files.length > 0) {
+                    for (var i=0; i < files.length; i++) {
+                        console.log(`Loading file data: ${files[i].name}: ${files[i]}`);
+                        ImageUpload.formFiles.append("image", files[i]);
+                    }
+
+                    ImageUpload.updateStatusLabel(files);
+                    $("#urlUploadButton").removeClass("disabled");
+                    $("#cancelUploadButton").css("visibility", "visible");
+                    return true;
+                }
+                return false;
+            },
+
+            loadFileUrl: function(string) {
+                if (string.length > 5 && string.length < 2048 && ImageUpload.isValidUrl(string)) {
+                    ImageUpload.formFileUrl = string;
+                    $("#urlUploadButton").removeClass("disabled");
+                    $("#cancelUploadButton").css("visibility", "visible");
+                    return true;
+                } else if (string.length < 5 && ImageUpload.formFiles == null) {
+                    ImageUpload.clearFileData();
+                    return true;
+                }
+                return false;
+            },
+
+            clearFileData: function(hard) {
+                if (hard) {
+                    ImageUpload.formFiles = null;
+                    ImageUpload.updateStatusLabel();
+                    $("#uploadDropArea").removeClass("dragOver");
+                }
+
+                if (ImageUpload.formFiles == null) {
+                    $("#urlUploadButton").addClass("disabled");
+                    $("#cancelUploadButton").css("visibility", "hidden");
+                }
+
+                ImageUpload.formFileUrl = "";
+                $("#urlUploadInput").val("");
+            },
+
+            updateStatusLabel: function(files) {
+                // update our status label
+                if (files != null && files.length > 0 && files.length < 2) {
+                    $("#uploadStatusLabel")[0].replaceHTML(`${files[0].name}`);
+                    return true;
+                } else if (files != null && files.length > 1) {
+                    $("#uploadStatusLabel")[0].replaceHTML(`${files.length} items for upload`);
+                    return true;
+                }
+
+                $("#uploadStatusLabel")[0].replaceHTML("");
+                return false;
+            },
+
+            isValidUrl: function(string) {
+                var ip_pattern = /^(?:http:\/\/|https:\/\/)*?(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
+                var url_pattern = /^(?:http:\/\/|https:\/\/)*?([\d\w\-\.]+){1,}\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
+
+                if(ip_pattern.test(string) || url_pattern.test(string)) { return true; }
+                return false;
             },
 
             doUrlUpload: function (obj) {
-                var url = $("#urlUploadInput").val();
-                if(url.length == 0) {
-                    ImageUpload.removeUploadMessage();
-                    alert("You must input a url to upload!");
-                    return;
-                }
+                var isImgur = $("#uploadImgur").is(":checked");
+                var isGfycat = $("#uploadGfycat").is(":checked");
+                var url = ImageUpload.formFileUrl;
 
                 var fd = new FormData();
                 fd.append("type", "url");
                 fd.append("image", url);
-                ImageUpload.doImgurUpload(fd);
+
+                if (isImgur) {
+                    ImageUpload.doImgurUpload(fd);
+                } else if (isGfycat) {
+                    ImageUpload.doGfycatUpload(fd);
+                }
             },
 
-            doFileUpload: function (file) {
-                var isChattyPics  = $("#uploadChatty").is(':checked');
+            doFileUpload: function (filesList) {
+                var isChattyPics  = $("#uploadChatty").is(":checked");
+                var isImgur = $("#uploadImgur").is(":checked");
+                var isGfycat = $("#uploadGfycat").is(":checked");
 
-                var fd = new FormData();
-                fd.append("type", "file");
-
-                if(isChattyPics) {
-                    fd.append("userfile[]", file);
+                if (isChattyPics) {
+                    var fd = new FormData();
+                    for (var file of filesList.entries()) {
+                        // Chattypics prefers a particular format
+                        fd.append("userfile[]", file[1]);
+                    }
                     ImageUpload.doChattyPicsUpload(fd);
-                } else {
-                    fd.append("image", file);
-                    ImageUpload.doImgurUpload(fd);
+                } else if (isImgur) {
+                    ImageUpload.doImgurUpload(filesList);
+                } else if (isGfycat) {
+                    ImageUpload.doGfycatUpload(filesList);
                 }
+
+                // var fd = new FormData();
+                // fd.append("type", "file");
+
+                // if(isChattyPics) {
+                //     fd.append("userfile[]", file);
+                //     ImageUpload.doChattyPicsUpload(fd);
+                // } else if (isImgur) {
+                //     fd.append("image", file);
+                //     ImageUpload.doImgurUpload(fd);
+                // } else if (isGfycat) {
+                //     fd.append("image", file);
+                //     ImageUpload.doGfycatUpload(fd);
+                // }
             },
 
             doImgurUpload: function (formdata) {
@@ -184,7 +309,7 @@ settingsLoadedEvent.addHandler(function()
                 })
                 .fail(function(data) {
                     ImageUpload.handleUploadFailure(data);
-                })
+                });
             },
 
             doChattyPicsUpload: function (formdata) {
@@ -203,7 +328,7 @@ settingsLoadedEvent.addHandler(function()
                 })
                 .fail(function(data) {
                     ImageUpload.handleUploadFailure(data);
-                })
+                });
             },
 
             handleUploadSuccess: function(respdata) {
@@ -240,11 +365,11 @@ settingsLoadedEvent.addHandler(function()
             addUploadMessage: function(color, text, detailMsg) {
                 var msg = $("<h3></h3>", { id : "uploadMsg", style: "color: "+color});
                 msg.text(text);
-                $("#uploadDiv").append(msg);
+                $(".uploadStatusLabel").append(msg);
                 if(detailMsg != undefined && detailMsg.length > 0) {
                     var uploadMsgDetail = $("<span>", { id : "uploadMsgDetail"});
                     uploadMsgDetail.text(detailMsg);
-                    $("#uploadDiv").append(uploadMsgDetail);
+                    $(".uploadStatusLabel").append(uploadMsgDetail);
                 }
             },
 
@@ -255,10 +380,87 @@ settingsLoadedEvent.addHandler(function()
 
             setImgurHeader: function (xhr) {
                 xhr.setRequestHeader(ImageUpload.imgurClientIdHeader, ImageUpload.imgurClientId);
-            }
+            },
 
-        }
+            // START WIP
+            doGfycatKey: function (url) {
+                var urlBody = url.length > 0 && { "fetchUrl": `${url}` };
+
+                // return a gfycat key for use in uploading a file/url
+                $.ajax({
+                    type: "POST",
+                    url : gfycatApiUrl,
+                    cache: false,
+                    processData: false,
+                    contentType: "application/json",
+                    data: !!urlBody ? urlBody : null
+                }).done(function(data) {
+                    ImageUpload.handleGfycatUploadStatus(data);
+                }).fail(function(data) {
+                    ImageUpload.handleGfycatUploadStatus(data);
+                });
+
+                return false;
+            },
+
+            doGfycatUpload: function (formdata) {
+                ImageUpload.removeUploadMessage();
+                // get gfycat key -> use key as upload filename
+                var gfycatKey = doGfycatKey();
+                formdata.append("filename", gfycatKey);
+                ImageUpload.addUploadMessage("silver", "Uploading to Gfycat...");
+
+                $.ajax({
+                    type: "POST",
+                    url : gfycatDropUrl,
+                    cache: false,
+                    processData: false,
+                    contentType: "application/json",
+                    enctype : "multipart/form-data",
+                    data : formdata
+                }).done(function(data) {
+                    ImageUpload.handleGfycatUploadStatus(data);
+                }).fail(function(data) {
+                    ImageUpload.handleGfycatUploadStatus(data);
+                });
+            },
+
+            handleGfycatUploadStatus: function (respdata) {
+                try {
+                    // check for gfycat key
+                    if (respdata.data.task === "NotFoundo" ||
+                        !respdata.data.gfyName) {
+                        ImageUpload.addUploadMessage("red", "Failure :(");
+                        console.log();
+                    } else if (respdata.data.gfyName) {
+                        var url = `https://gfycat.com/${respdata.data.gfyName}`;
+                        console.log(url);
+
+                        $("#frm_body").insertAtCaret(url + "\n");
+                        ImageUpload.addUploadMessage("green", "Success!");
+                    } else {
+                        // probably an error
+                        console.log(respdata.data);
+                    }
+                } catch (err) { console.log(err); }
+            },
+
+            checkGfycatStatus: function (gfycatKey) {
+                // use our gfycatKey to get details on the upload
+                var requestUrl = `${gfycatStatusUrl}/${gfycatKey}`;
+                $.ajax({
+                    type: "GET",
+                    url: requestUrl
+                }).done(function(data) {
+                    // do our status handling elsewhere
+                    ImageUpload.handleGfycatUploadStatus(data);
+                }).fail(function(data) {
+                    ImageUpload.handleGfycatUploadStatus(data);
+                });
+            }
+            // END WIP
+        };
+
         processPostBoxEvent.addHandler(ImageUpload.insertForm);
     }
-
 });
