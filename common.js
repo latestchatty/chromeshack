@@ -227,30 +227,18 @@ function generatePreview(text) {
     return preview;
 }
 
-function debounce(cb, timeout, override)
+function debounce(cb, delay)
 {
-    // pretty bog standard debounce to prevent trailing execution (ex: Underscore)
-    var _timeout;
+    // even simpler debounce to prevent bugginess
+    var _debounce;
     return function() {
-        var _ctx = this
-        var _arg = arguments;
-        // semaphore we use for trail cancelling
-        var execImp = override && !_timeout;
-
-        // recursive trailing until 'override' or timeout
-        var later = function() {
-            _timeout = null;
-            if (!override) {
-                cb.apply(_ctx, _arg);
-            }
-        };
-        clearTimeout(_timeout);
-        _timeout = setTimeout(later, timeout);
-        // 'override' will cancel our recursive trail
-        if (execImp) {
-            cb.apply(_ctx, _arg)
-        };
-    }
+        const _cxt = this;
+        const _args = arguments;
+        clearTimeout(_debounce);
+        _debounce = setTimeout(function() {
+            cb.apply(_cxt, _args);
+        }, delay);
+    };
 }
 
 function convertUrlToLink(text)
