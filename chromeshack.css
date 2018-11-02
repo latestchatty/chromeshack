@@ -311,11 +311,11 @@ button:focus {
 
 .post_sub_container {
     display: grid;
-    grid-template-columns: 1fr minmax(10px, 1fr) 1fr;
-    grid-auto-flow: column;
+    grid-template-columns: 1fr minmax(1px, 1fr) 1fr;
+    grid-template-rows: 1fr;
 }
 
-/* only apply tags legend rules when injected */
+/* only apply tags legend overrides when injected */
 
 .post_sub_container #shacktags_legend {
     grid-column: 1 / 2;
@@ -346,6 +346,11 @@ button:focus {
     grid-row: 1 / 1;
     display: flex;
     flex-direction: column;
+    justify-self: right;
+    width: 99%;
+    max-width: 400px;
+    max-height: 220px;
+    margin-right: 1px;
 }
 .showImageUploadLink {
     display: flex;
@@ -355,32 +360,41 @@ button:focus {
 }
 
 #uploadFields {
-    display: none;
-}
-#uploadFields.visible {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
+}
+#uploadFields.hidden {
+    display: none !important;
 }
 
 .uploadInputs {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
+    width: 98%;
 }
 #fileUploadInput {
     display: none;
+}
+.uploadInputs #uploadButtons {
+    grid-column: 1 / 2;
+    grid-row: 2 / 2;
+    display: flex;
+    align-self: center;
 }
 .uploadInputs .urlBox {
     grid-column: 1 / 3;
     grid-row: 1 / 1;
     min-height: 28px;
 }
-.urlBox.hidden {
+.uploadInputs .urlBox .urlInputBox.hidden {
     visibility: hidden;
 }
-input[type="text"].urlBox {
-    min-width: 100% !important;
+
+input[type="text"]#urlUploadInput.urlInputBox {
+    /* necessary to override stylesheet */
+    min-width: 98% !important;
     border: 1px dashed #7c7c7c !important;
     box-shadow: none !important;
     background: transparent !important;
@@ -388,23 +402,17 @@ input[type="text"].urlBox {
     padding: 0.5em !important;
     margin: 1em 0 0 0 !important;
 }
-.uploadInputs .uploadButton {
-    grid-column: 1 / 2;
-    grid-row: 2 / 2;
-    display: flex;
-    align-self: center;
-    justify-content: flex-start;
-}
 
 #uploadDropArea {
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     border-style: dashed;
     border-color: #666666;
     border-radius: 10px;
     border-width: 2px;
-    height: 150px;
-    width: 95%;
-    padding: 5px;
+    padding: 10px;
 }
 .dragOver {
     background-color: #222;
@@ -432,7 +440,7 @@ input[type="text"].urlBox {
     border-width: 1px;
     border-style: solid;
     border-color: #555 !important;
-    color: #e9e9de;
+    color: #777 !important;
     font-weight: bold;
     width: 100px;
     height: 28px;
@@ -440,39 +448,71 @@ input[type="text"].urlBox {
     font-weight: bold;
     font-style: italic;
 }
-#cancelUploadButton {
-    font-weight: normal;
-    font-style: normal !important;
-    width: 15px !important;
-    visibility: hidden;
-}
-#urlUploadButton.disabled,
-#cancelUploadButton.disabled {
-    border-color: #222 !important;
-    color: #333 !important;
-}
-
-#uploadStatus {
-    grid-column: 2 / 3;
-    grid-row: 2 / 2;
-    display: flex;
-    flex-direction: column;
+button#cancelUploadButton.small {
+    display: flex !important;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    font-style: normal !important;
+    width: 17px !important;
+    outline: 0;
+}
+#uploadButtons.hidden {
+    display: none;
+}
+
+/* file and upload status labels */
+
+#uploadStatusLabel {
+    grid-column: 2 / 3;
+    grid-row: 2 / 2;
+    display: inline-block;
+    align-self: center;
+    justify-self: left;
     font-size: 12px;
     font-weight: bold;
     font-style: italic;
     color: #777;
-    flex: 1 auto;
-}
-#uploadStatus #uploadStatusLabel {
-    max-width: 96%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 96%;
 }
-#uploadStatusLabel.error {
-    color: yellow;
+#uploadStatusLabel.muted {
+    color: #333;
+}
+
+.errorLabels {
+    display: flex;
+    flex-direction: row nowrap;
+    align-items: center;
+    justify-content: center;
+    width: 96%;
+}
+#errorStatusLabel {
+    flex: 1 0 auto;
+    word-wrap:break-word;
+    flex-direction: row nowrap;
+    color: #777;
+    font-weight: bold;
+    padding: 2px;
+}
+#errorStatusLabelDetail {
+    flex: 1 0 auto;
+    word-wrap:break-word;
+    display: inline-block;
+    align-self: left;
+    color: #666;
+    font-style: italic;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 2px;
+}
+#errorStatusLabel.hidden,
+#errorStatusLabelDetail.hidden {
+    display: none;
 }
 
 /* styled radio filters */
@@ -481,12 +521,12 @@ input[type="text"].urlBox {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    width: 98%;
     grid-gap: 4em;
 }
 .uploadRadioLabels label {
     display: flex !important;
-    visibility: visible !important;
     text-transform: none !important;
     align-items: center;
     justify-content: center;
@@ -496,7 +536,6 @@ input[type="text"].urlBox {
 #uploadGfycat,
 #uploadImgur {
     display: none;
-    visibility: hidden;
 }
 .uploadRadioLabels .gfycat,
 .uploadRadioLabels .imgur,
@@ -510,27 +549,6 @@ input[type="text"].urlBox {
     font-weight: bold;
     background: #333;
     border-radius: 4px;
-}
-
-/* stock keyframe spinner */
-
-@keyframes flickerAnimation {
-    0% {opacity: 1;}
-    50% {opacity: 0;}
-    100% {opacity: 1;}
-}
-.animatedSpinner {
-    display: none;
-    animation: flickerAnimation 1s infinite;
-    /* start hidden */
-    visibility: hidden;
-    width: 0;
-    height: 0;
-}
-.animatedSpinner.visible {
-    visibility: visible;
-    width: auto !important;
-    height: auto !important;
 }
 
 /* end of image uploader stuff */

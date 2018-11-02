@@ -40,7 +40,7 @@ settingsLoadedEvent.addHandler(function()
                     <div class="post_sub_container">
                         <div class="uploadContainer">
                             <a class="showImageUploadLink">Show Image Upload</a>
-                            <div id="uploadFields">
+                            <div id="uploadFields" class="hidden">
                                 <div class="uploadFilters">
                                     <input type="radio" name="imgUploadSite" id="uploadChatty" checked="checked">
                                     <input type="radio" name="imgUploadSite" id="uploadGfycat">
@@ -62,15 +62,21 @@ settingsLoadedEvent.addHandler(function()
 
                                     <div class="uploadInputs">
                                         <div class="urlBox">
-                                            <input type="text" id="urlUploadInput" class="urlBox hidden" placeholder="Or use an image URL...">
+                                            <input type="text" id="urlUploadInput"
+                                                spellcheck="false"
+                                                class="urlInputBox hidden"
+                                                placeholder="Or use an image URL..."
+                                            >
                                         </div>
-                                        <div class="uploadButton">
-                                            <button id="urlUploadButton" class="disabled">Upload</button>
-                                            <button id="cancelUploadButton">X</button>
+                                        <div id="uploadButtons" class="hidden">
+                                            <button id="urlUploadButton">Upload</button>
+                                            <button id="cancelUploadButton" class="small">X</button>
                                         </div>
-                                        <div id="uploadStatus">
-                                            <span id="uploadStatusLabel"></span>
-                                        </div>
+                                        <div id="uploadStatusLabel"></div>
+                                    </div>
+                                    <div class="errorLabels">
+                                        <span id="errorStatusLabel" class="hidden"></span>
+                                        <span id="errorStatusLabelDetail" class="hidden"></span>
                                     </div>
                                 </div>
                             </div>
@@ -85,12 +91,12 @@ settingsLoadedEvent.addHandler(function()
                 // bind some actions to our template elements
                 $(".showImageUploadLink").click(function() {
                     ImageUpload.uploadShown = !ImageUpload.uploadShown;
-                    $("#uploadFields").toggleClass("visible", ImageUpload.uploadShown);
+                    $("#uploadFields").toggleClass("hidden", !ImageUpload.uploadShown);
                     var text = ImageUpload.uploadShown ? "Hide Image Upload" : "Show Image Upload";
                     $(".showImageUploadLink").html(text);
 
                     // scroll to our elements contextually
-                    if ($("#uploadFields").hasClass("visible"))
+                    if (!$("#uploadFields").hasClass("hidden"))
                         scrollToElement($(this)[0]);
                     else
                         scrollToElement($("#frm_body")[0]);
@@ -103,22 +109,26 @@ settingsLoadedEvent.addHandler(function()
                     scrollToElement($("#uploadDropArea")[0]);
                 });
 
-                // debounce on keyup (2s) for url text input
+                // debounce on keyup (1.5s) for url text input
                 var debouncedKeyup = debounce(function(val) {
                     ImageUpload.loadFileUrl(val);
-                }, 2000);
+                }, 1500);
                 $("#urlUploadInput").keyup(function() {
                     debouncedKeyup(this.value);
                 });
 
                 // toggle url entry field based on hoster
                 $("#uploadChatty").click(function() {
-                    $("#urlUploadInput").addClass('hidden');
-                    // urls are not supported on Chattypics
-                    ImageUpload.clearFileData();
+                    $("#urlUploadInput").toggleClass('hidden', $("#uploadChatty").is(":checked"));
+                    ImageUpload.clearFileData(true);
                 });
                 $("#uploadGfycat, #uploadImgur").click(function() {
-                    $("#urlUploadInput").removeClass('hidden');
+                    $("#urlUploadInput").toggleClass('hidden', $("#uploadChatty").is(":checked"));
+                    if (ImageUpload.formFileUrl.length > 7) {
+                        // contextually unhide if we have content
+                        $("#uploadDropArea").addClass("dragOver");
+                        $("#uploadButtons").removeClass("hidden");
+                    }
                 });
 
                 // attach events for dropping images
@@ -140,22 +150,27 @@ settingsLoadedEvent.addHandler(function()
 
                 $("#cancelUploadButton").click(function(e) {
                     e.preventDefault();
-                    // hard reset our input form elements
-                    ImageUpload.clearFileData(true);
+                    // contextually reset our input form
+                    ImageUpload.clearFileData();
                 });
 
                 // attach event for upload button
                 $("#urlUploadButton").click(function(e) {
                     e.preventDefault();
-                    if (ImageUpload.formFileUrl.length > 5)
-                        ImageUpload.doUrlUpload(ImageUpload.formFileUrl);
-                    else if (ImageUpload.formFiles != null) {
+
+                    if ($("#uploadChatty").is(":checked")) {
+                        // forcefully ignore url input on chattypics
                         ImageUpload.doFileUpload(ImageUpload.formFiles);
+                    } else {
+                        // if both inputs are populated do url first
+                        if (ImageUpload.formFileUrl.length > 7)
+                            ImageUpload.doUrlUpload(ImageUpload.formFileUrl);
+                        else if (ImageUpload.formFiles != null)
+                            ImageUpload.doFileUpload(ImageUpload.formFiles);
                     }
-                    // focus our url target
+
                     scrollToElement($("#frm_body")[0]);
                     $("#frm_body").focus();
-
                     return false;
                 });
             },
@@ -173,49 +188,72 @@ settingsLoadedEvent.addHandler(function()
             },
 
             loadFileData: function(files) {
-                // move our file data into an abstracted variable
                 ImageUpload.formFiles = new FormData();
                 if (files.length > 0) {
                     for (var i=0; i < files.length; i++) {
-                        console.log(`Loading file data: ${files[i].name}: ${files[i]}`);
                         ImageUpload.formFiles.append("image", files[i]);
                     }
 
                     ImageUpload.updateStatusLabel(files);
-                    $("#urlUploadButton").removeClass("disabled");
-                    $("#cancelUploadButton").css("visibility", "visible");
+                    // styling to indicate to the user that the files will be uploaded
+                    $("#uploadStatusLabel").toggleClass("muted", !ImageUpload.formFileUrl.length > 7);
+                    $("#uploadButtons").removeClass("hidden");
                     return true;
                 }
                 return false;
             },
 
             loadFileUrl: function(string) {
-                if (string.length > 5 && string.length < 2048 && ImageUpload.isValidUrl(string)) {
+                // sanitized http?:// minimum for validation
+                if (ImageUpload.isValidUrl(string)) {
                     ImageUpload.formFileUrl = string;
-                    $("#urlUploadButton").removeClass("disabled");
-                    $("#cancelUploadButton").css("visibility", "visible");
+                    $("#uploadButtons").removeClass("hidden");
+                    // styling to indicate to the user that the url takes priority over files
+                    $("#uploadStatusLabel").toggleClass("muted", ImageUpload.formFiles != null);
                     return true;
-                } else if (string.length < 5 && ImageUpload.formFiles == null) {
+                } else if (ImageUpload.formFiles == null) {
                     ImageUpload.clearFileData();
                     return true;
                 }
+
+                // remove file status styling because we have no url content
+                $("#uploadStatusLabel").toggleClass("muted", ImageUpload.isValidUrl(string));
                 return false;
             },
 
-            clearFileData: function(hard) {
-                if (hard) {
+            clearFileData: function(soft) {
+                var _isUrl = ImageUpload.formFileUrl.length > 0;
+                var _isFiles = ImageUpload.formFiles != null;
+
+                // override for checking chattypics filter
+                if (soft) {
+                    if (!_isFiles) {
+                        $("#uploadDropArea").removeClass("dragOver");
+                        $("#uploadButtons").addClass("hidden");
+                    }
+                    return true;
+                }
+
+                if (_isFiles && _isUrl) {
                     ImageUpload.formFiles = null;
                     ImageUpload.updateStatusLabel();
-                    $("#uploadDropArea").removeClass("dragOver");
+                } else if (_isUrl) {
+                    ImageUpload.formFileUrl = "";
+                    $("#urlUploadInput").val("");
+                    $("#uploadButtons").addClass("hidden");
+                } else if (_isFiles) {
+                    ImageUpload.formFiles = null;
+                    ImageUpload.updateStatusLabel();
+                    $("#uploadButtons").addClass("hidden");
                 }
 
-                if (ImageUpload.formFiles == null) {
-                    $("#urlUploadButton").addClass("disabled");
-                    $("#cancelUploadButton").css("visibility", "hidden");
-                }
+                if (ImageUpload.formFileUrl.length == 0 &&
+                    ImageUpload.formFiles == null) {
+                        $("#uploadDropArea").removeClass("dragOver");
+                        $("#uploadStatusLabel").toggleClass("muted", ImageUpload.formFiles != null);
+                    }
 
-                ImageUpload.formFileUrl = "";
-                $("#urlUploadInput").val("");
+                return false;
             },
 
             updateStatusLabel: function(files) {
@@ -234,9 +272,10 @@ settingsLoadedEvent.addHandler(function()
 
             isValidUrl: function(string) {
                 var ip_pattern = /^(?:http:\/\/|https:\/\/)*?(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
-                var url_pattern = /^(?:http:\/\/|https:\/\/)*?([\d\w\-\.]+){1,}\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
-
-                if(ip_pattern.test(string) || url_pattern.test(string)) { return true; }
+                var url_pattern = /^(?:http:\/\/|https:\/\/)*?([\d\w\-\.]+){1,}\/[\w\d\-\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
+                if (string.length > 7 && string.length < 2048) {
+                    if(ip_pattern.test(string) || url_pattern.test(string)) { return true; }
+                }
                 return false;
             },
 
@@ -264,7 +303,7 @@ settingsLoadedEvent.addHandler(function()
                 if (isChattyPics) {
                     var fd = new FormData();
                     for (var file of filesList.entries()) {
-                        // Chattypics prefers a particular format
+                        // Chattypics prefers php array format
                         fd.append("userfile[]", file[1]);
                     }
                     ImageUpload.doChattyPicsUpload(fd);
@@ -273,20 +312,6 @@ settingsLoadedEvent.addHandler(function()
                 } else if (isGfycat) {
                     ImageUpload.doGfycatUpload(filesList);
                 }
-
-                // var fd = new FormData();
-                // fd.append("type", "file");
-
-                // if(isChattyPics) {
-                //     fd.append("userfile[]", file);
-                //     ImageUpload.doChattyPicsUpload(fd);
-                // } else if (isImgur) {
-                //     fd.append("image", file);
-                //     ImageUpload.doImgurUpload(fd);
-                // } else if (isGfycat) {
-                //     fd.append("image", file);
-                //     ImageUpload.doGfycatUpload(fd);
-                // }
             },
 
             doImgurUpload: function (formdata) {
@@ -362,12 +387,9 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
-            addUploadMessage: function(color, text, detailMsg) {
-                var msg = $("<h3></h3>", { id : "uploadMsg", style: "color: "+color});
-                msg.text(text);
-                $(".uploadStatusLabel").append(msg);
-                if(detailMsg != undefined && detailMsg.length > 0) {
-                    var uploadMsgDetail = $("<span>", { id : "uploadMsgDetail"});
+            addUploadMessage: function(message) {
+                var statusLabel = $("#uploadStatusLabel");
+                if (message != null && message.length > 0) {
                     uploadMsgDetail.text(detailMsg);
                     $(".uploadStatusLabel").append(uploadMsgDetail);
                 }
