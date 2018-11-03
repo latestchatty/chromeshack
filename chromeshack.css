@@ -307,19 +307,77 @@ button:focus {
     color: #000000 !important;
 }
 
-/* our alignment container for image uploader */
+/* start of image uploader stuff */
 
+/* formatting containers for image uploader */
 .post_sub_container {
+    /* postbox alignment container */
     display: grid;
-    grid-template-columns: 1fr minmax(1px, 1fr) 1fr;
+    grid-template-areas: "c1 s1 c2 c2";
+}
+.uploadContainer {
+    /* image uploader alignment container */
+    grid-area: c2;
+    display: flex;
+    flex-direction: column;
+    justify-self: right;
+    min-width: 300px;
+    max-width: 400px;
+}
+.uploadRadioLabels {
+    /* container for clickable radio filters */
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: 1fr;
 }
+#uploadDropArea {
+    /* main image uploader content container */
+    border-style: dashed;
+    border-color: #666;
+    border-width: 2px;
+    border-radius: 4px;
+    max-width: 98%;
+    min-width: 0;
+    padding: 8px;
+}
+.uploadDropLabel {
+    /* top field in content area */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5em;
+    font-size: 14px;
+    color: #7c7c7c;
+    min-height: 62px;
+}
+.uploadInputs .urlBox {
+    /* url file bar */
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+}
+.contextLine {
+    /* buttons and file status */
+    display: grid;
+    grid-template-areas: "clc1 clc2";
+    align-self: center;
+    min-width: 0;
+    max-width: 98%;
+}
+.errorLabels {
+    /* error status footer */
+    display: flex;
+    flex-direction: row nowrap;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.5em;
+}
 
-/* only apply tags legend overrides when injected */
-
+/* only apply shacktags legend overrides when injected */
 .post_sub_container #shacktags_legend {
-    grid-column: 1 / 2;
-    grid-row: 1 / 1;
+    grid-area: c1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -339,198 +397,34 @@ button:focus {
     margin-top: 0.33em !important;
 }
 
-/* image uploader styling */
-
-.uploadContainer {
-    grid-column: 3 / 4;
-    grid-row: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    justify-self: right;
-    width: 99%;
-    max-width: 400px;
-    max-height: 220px;
-    margin-right: 1px;
-}
 .showImageUploadLink {
+    /* image uploader toggle */
     display: flex;
     background: black;
     padding: 8px;
     justify-content: center;
 }
 
-#uploadFields {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#uploadFields.hidden {
-    display: none !important;
-}
-
-.uploadInputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    width: 98%;
-}
-#fileUploadInput {
-    display: none;
-}
-.uploadInputs #uploadButtons {
-    grid-column: 1 / 2;
-    grid-row: 2 / 2;
-    display: flex;
-    align-self: center;
-}
-.uploadInputs .urlBox {
-    grid-column: 1 / 3;
-    grid-row: 1 / 1;
-    min-height: 28px;
-}
-.uploadInputs .urlBox .urlInputBox.hidden {
-    visibility: hidden;
-}
-
-input[type="text"]#urlUploadInput.urlInputBox {
-    /* necessary to override stylesheet */
-    min-width: 98% !important;
-    border: 1px dashed #7c7c7c !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    padding: 0.5em !important;
-    margin: 1em 0 0 0 !important;
-}
-
-#uploadDropArea {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-style: dashed;
-    border-color: #666666;
-    border-radius: 10px;
-    border-width: 2px;
-    padding: 10px;
-}
-.dragOver {
-    background-color: #222;
-}
-.uploadDropLabel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0.5em;
-    font-size: 14px;
-    color: #7c7c7c;
-}
-#fileChooserLink {
-    padding-right: 0.25em;
-}
-
-#urlUploadButton,
-#cancelUploadButton {
-    grid-column: 1 / 2;
-    grid-row: 2 / 2;
-    align-self: end;
-    display: inline-block !important;
-    background-color: #222;
-    border-radius: 4px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #555 !important;
-    color: #777 !important;
-    font-weight: bold;
-    width: 100px;
-    height: 28px;
-    font-size: 12px;
-    font-weight: bold;
-    font-style: italic;
-}
-button#cancelUploadButton.small {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-style: normal !important;
-    width: 17px !important;
-    outline: 0;
-}
-#uploadButtons.hidden {
-    display: none;
-}
-
-/* file and upload status labels */
-
-#uploadStatusLabel {
-    grid-column: 2 / 3;
-    grid-row: 2 / 2;
-    display: inline-block;
-    align-self: center;
-    justify-self: left;
-    font-size: 12px;
-    font-weight: bold;
-    font-style: italic;
-    color: #777;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 96%;
-}
-#uploadStatusLabel.muted {
-    color: #333;
-}
-
-.errorLabels {
-    display: flex;
-    flex-direction: row nowrap;
-    align-items: center;
-    justify-content: center;
-    width: 96%;
-}
-#errorStatusLabel {
-    flex: 1 0 auto;
-    word-wrap:break-word;
-    flex-direction: row nowrap;
-    color: #777;
-    font-weight: bold;
-    padding: 2px;
-}
-#errorStatusLabelDetail {
-    flex: 1 0 auto;
-    word-wrap:break-word;
-    display: inline-block;
-    align-self: left;
-    color: #666;
-    font-style: italic;
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 2px;
-}
-#errorStatusLabel.hidden,
-#errorStatusLabelDetail.hidden {
-    display: none;
-}
-
 /* styled radio filters */
-
-.uploadRadioLabels {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: center;
-    justify-content: center;
-    width: 98%;
-    grid-gap: 4em;
-}
 .uploadRadioLabels label {
     display: flex !important;
     text-transform: none !important;
+    font-size: 14px;
     align-items: center;
     justify-content: center;
     padding: 0.5em 0.75em 0.5em 0.75em !important;
+    margin: 0 -1px 0 -1px;
+    margin-bottom: 1px;
+    border-style: solid none;
+    border-width: 2px;
+    border-color: #222;
+    border-radius: 4px;
+}
+.uploadRadioLabels label:first-child{
+    border-style: solid none solid solid;
+}
+.uploadRadioLabels label:last-child{
+    border-style: solid solid solid none;
 }
 #uploadChatty,
 #uploadGfycat,
@@ -549,6 +443,115 @@ button#cancelUploadButton.small {
     font-weight: bold;
     background: #333;
     border-radius: 4px;
+}
+/* end styled radio filters */
+
+/* image uploader content area */
+.dragOver {
+    background-color: #222;
+}
+
+#fileChooserLink {
+    padding-right: 0.25em;
+}
+
+#uploadFields.hidden,
+#fileUploadInput {
+    display: none !important;
+}
+.urlInputBox.hidden,
+.contextLine.hidden {
+    visibility: hidden;
+}
+
+input[type="text"]#urlUploadInput.urlInputBox {
+    /* necessary to override stylesheet */
+    max-width: 98% !important;
+    border: 1px dashed #7c7c7c !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0.5em !important;
+    margin: 0 0 0.75em 0.25em !important;
+}
+
+/* image uploader context line (buttons/file) */
+#uploadButtons {
+    grid-area: clc1;
+}
+#uploadButtons.hidden {
+    display: none;
+}
+#urlUploadButton,
+#cancelUploadButton {
+    grid-area: clc1;
+    background-color: #222;
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #555 !important;
+    color: #777 !important;
+    font-weight: bold;
+    width: 100px;
+    height: 28px;
+    font-size: 12px;
+    font-weight: bold;
+    font-style: italic;
+}
+#cancelUploadButton.small {
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-style: normal !important;
+    width: 17px !important;
+    outline: 0;
+}
+
+#uploadStatusLabel {
+    align-self: center;
+    align-items: center;
+    justify-content: right;
+    font-size: 13px;
+    font-weight: bold;
+    font-style: italic;
+    color: #777;
+    word-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0 0 0 0.25em;
+}
+#uploadStatusLabel.muted {
+    color: #333;
+}
+
+/* upload error status labels */
+#errorStatusLabel {
+    flex: 1 0 auto;
+    flex-direction: row nowrap;
+    word-wrap: break-word;
+    font-weight: bold;
+    color: #777;
+    padding: 2px;
+    min-width: 0;
+}
+#errorStatusLabelDetail {
+    flex-basis: 100%;
+    display: inline-block;
+    align-self: left;
+    font-style: italic;
+    font-size: 11px;
+    color: #666;
+    word-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    min-width: 0;
+    padding: 2px;
+}
+#errorStatusLabel.hidden,
+#errorStatusLabelDetail.hidden {
+    display: none;
 }
 
 /* end of image uploader stuff */

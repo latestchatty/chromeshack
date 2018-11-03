@@ -60,15 +60,15 @@ settingsLoadedEvent.addHandler(function()
                                         or drop them here...
                                     </span>
 
-                                    <div class="uploadInputs">
-                                        <div class="urlBox">
-                                            <input type="text" id="urlUploadInput"
-                                                spellcheck="false"
-                                                class="urlInputBox hidden"
-                                                placeholder="Or use an image URL..."
-                                            >
-                                        </div>
-                                        <div id="uploadButtons" class="hidden">
+                                    <div class="urlBox">
+                                        <input type="text" id="urlUploadInput"
+                                            spellcheck="false"
+                                            class="urlInputBox hidden"
+                                            placeholder="Or use an image URL..."
+                                        >
+                                    </div>
+                                    <div class="contextLine hidden">
+                                        <div id="uploadButtons">
                                             <button id="urlUploadButton">Upload</button>
                                             <button id="cancelUploadButton" class="small">X</button>
                                         </div>
@@ -127,7 +127,7 @@ settingsLoadedEvent.addHandler(function()
                     if (ImageUpload.formFileUrl.length > 7) {
                         // contextually unhide if we have content
                         $("#uploadDropArea").addClass("dragOver");
-                        $("#uploadButtons").removeClass("hidden");
+                        $(".contextLine").removeClass("hidden");
                     }
                 });
 
@@ -195,9 +195,10 @@ settingsLoadedEvent.addHandler(function()
                     }
 
                     ImageUpload.updateStatusLabel(files);
+                    $(".contextLine").removeClass("hidden");
+                    $("#uploadDropArea").toggleClass("dragOver", ImageUpload.formFiles != null);
                     // styling to indicate to the user that the files will be uploaded
                     $("#uploadStatusLabel").toggleClass("muted", !ImageUpload.formFileUrl.length > 7);
-                    $("#uploadButtons").removeClass("hidden");
                     return true;
                 }
                 return false;
@@ -207,7 +208,7 @@ settingsLoadedEvent.addHandler(function()
                 // sanitized http?:// minimum for validation
                 if (ImageUpload.isValidUrl(string)) {
                     ImageUpload.formFileUrl = string;
-                    $("#uploadButtons").removeClass("hidden");
+                    $(".contextLine").removeClass("hidden");
                     // styling to indicate to the user that the url takes priority over files
                     $("#uploadStatusLabel").toggleClass("muted", ImageUpload.formFiles != null);
                     return true;
@@ -229,7 +230,7 @@ settingsLoadedEvent.addHandler(function()
                 if (soft) {
                     if (!_isFiles) {
                         $("#uploadDropArea").removeClass("dragOver");
-                        $("#uploadButtons").addClass("hidden");
+                        $(".contextLine").addClass("hidden");
                     }
                     return true;
                 }
@@ -240,11 +241,11 @@ settingsLoadedEvent.addHandler(function()
                 } else if (_isUrl) {
                     ImageUpload.formFileUrl = "";
                     $("#urlUploadInput").val("");
-                    $("#uploadButtons").addClass("hidden");
+                    $(".contextLine").addClass("hidden");
                 } else if (_isFiles) {
                     ImageUpload.formFiles = null;
                     ImageUpload.updateStatusLabel();
-                    $("#uploadButtons").addClass("hidden");
+                    $(".contextLine").addClass("hidden");
                 }
 
                 if (ImageUpload.formFileUrl.length == 0 &&
