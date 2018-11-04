@@ -289,8 +289,13 @@ settingsLoadedEvent.addHandler(function()
             isValidUrl: function(string) {
                 var ip_pattern = /^(?:http:\/\/|https:\/\/)*?(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
                 var url_pattern = /^(?:http:\/\/|https:\/\/)*?([\d\w\-\.]+){1,}\/[\w\d\-\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
+                var youtube_pattern = /^(?:http:\/\/|https:\/\/)(?:.*\.|)youtube\.[A-Za-z]{2,}\/watch\?v=[\w\d\-]+$/i;
                 if (string.length > 7 && string.length < 2048) {
-                    if(ip_pattern.test(string) || url_pattern.test(string)) { return true; }
+                    if(ip_pattern.test(string) ||
+                        url_pattern.test(string) ||
+                        youtube_pattern.test(string)) {
+                        return true;
+                    }
                 }
                 return false;
             },
@@ -309,7 +314,7 @@ settingsLoadedEvent.addHandler(function()
                     ImageUpload.doImgurUpload(fd);
                 } else if (isGfycat) {
                     // could be video or image
-                    ImageUpload.doGfycatUpload({ "fetchUrl": url });
+                    ImageUpload.doGfycatUpload({ fetchUrl: url });
                 }
             },
 
@@ -431,17 +436,23 @@ settingsLoadedEvent.addHandler(function()
 
             // START WIP
             handleGfycatUploadStatus: function (respdata) {
-                if (respdata.task === "NotFoundo" ||
-                    !respdata.gfyname) {
+                if (respdata.errorMessage ||
+                    respdata.task === "NotFoundo" || !respdata.gfyname) {
+                    console.log(`Fail: ${JSON.stringify(respdata)}`);
                     ImageUpload.addUploadMessage("red", null, "Failure :(");
-                    // bail!
-                    ImageUpload.checkGfycatStatus(null, true);
+                    return false;
+                }
+                else if (respdata.task === "encoding") {
+                    ImageUpload.addUploadMessage("silver", null, "Encoding...");
+                    console.log(`Endpoint reports encoding: ${JSON.stringify(respdata)}`);
+                    // endpoint is busy so try again in a few seconds
                     return false;
                 }
                 else if (respdata.gfyname) {
                     var url = `https://gfycat.com/${respdata.gfyname}`;
                     $("#frm_body").insertAtCaret(url + "\n");
                     ImageUpload.addUploadMessage("green", null, "Success!");
+                    console.log(`Endpoint reports success: ${JSON.stringify(respdata)}`);
 
                     ImageUpload.clearFileData();
                     ImageUpload.updateStatusLabel();
@@ -450,6 +461,8 @@ settingsLoadedEvent.addHandler(function()
                         ImageUpload.removeUploadMessage();
                     }, 3000);
                     return true;
+                } else {
+                    console.log(`Some uncaught endpoint error occurred: ${respdata}`);
                 }
                 return false;
             },
@@ -458,10 +471,6 @@ settingsLoadedEvent.addHandler(function()
                 ImageUpload.removeUploadMessage();
                 // if we use 'fetchUrl' the server will report back a key
                 // if we use 'file' then grab a key and push it with our file
-                console.log(JSON.stringify(fileObj));
-                var dataBody = fileObj.fetchUrl != null ? 
-                    { "fetchUrl": fileObj.fetchUrl } :
-                    { "title": fileObj.file.name };
 
                 $.ajax({
                     type: "POST",
@@ -469,19 +478,19 @@ settingsLoadedEvent.addHandler(function()
                     cache: false,
                     processData: false,
                     contentType: "application/json",
-                    data: dataBody
+                    data: fileObj.fetchUrl ? JSON.stringify(fileObj) : JSON.stringify({ title: fileObj.file.name })
                 }).done(function(data) {
                     var key = data.gfyname;
-                    if (dataBody.fetchUrl) {
-                        console.log(`Checking URL: ${JSON.stringify(data)}`);
+                    if (fileObj.fetchUrl) {
+                        console.log(`Posting URL fetch: ${JSON.stringify(data)}`);
                         ImageUpload.checkGfycatStatus(key);
                     }
-                    else if (dataBody.title) {
-                        console.log(data);
-                        // var blob = fileObj.file.slice(0, fileObj.file, fileObj.file.type);
+                    else if (fileObj.file) {
+                        console.log(`Posting new file: ${key} = ${fileObj.file.name}`);
                         var fd = new FormData();
                         fd.append("key", key);
                         fd.append("file", fileObj.file);
+
                         $.ajax({
                             type: "POST",
                             url: ImageUpload.gfycatDropUrl,
@@ -490,8 +499,9 @@ settingsLoadedEvent.addHandler(function()
                             contentType: false,
                             data: fd
                         })
-                        .done(function(data) {
-                            ImageUpload.checkGfycatStatus(key, data);
+                        .done(function() {
+                            console.log(fd);
+                            ImageUpload.checkGfycatStatus(key);
                         })
                         .fail(function(err) {
                             ImageUpload.handleGfycatUploadStatus(err);
@@ -500,34 +510,21 @@ settingsLoadedEvent.addHandler(function()
                 });
             },
 
-            checkGfycatStatus: function (gfycatKey) {
-                console.log(`Checking Gfycat status: ${gfycatKey}`);
+            checkGfycatStatus: function (gfycatKey, override) {
                 var requestUrl = `${ImageUpload.gfycatStatusUrl}/${gfycatKey}`;
-                console.log(requestUrl);
-                $.ajax({ type: "GET", url: requestUrl }).done(function(data) {
-                    if (ImageUpload.handleGfycatUploadStatus(data)) {
-                        console.log(`Gfycat success!`);
-                    }
-                });
                 
-                // if (override) { return clearInterval(repeat); };
+                var repeat = setInterval(function() {
+                    // verify the upload/fetch - every 3s for 30s
+                    $.ajax({ type: "GET", url: requestUrl }).done(function(data) {
+                        // stop early if we're successful
+                        if(ImageUpload.handleGfycatUploadStatus(data))
+                            clearInterval(repeat);
+                    });
+                }, 3000);
 
-                // var repeat = setInterval(function() {
-                //     // verify the upload/fetch - every 3s for 30s
-                //     console.log(`Checking Gfycat status: ${gfycatKey}`);
-                //     var requestUrl = `${ImageUpload.gfycatStatusUrl}/${gfycatKey}`;
-                //     console.log(requestUrl);
-                //     $.ajax({ type: "GET", url: requestUrl }).done(function(data) {
-                //         if (ImageUpload.handleGfycatUploadStatus(data)) {
-                //             console.log(`Gfycat success!`);
-                //             clearInterval(repeat);
-                //         }
-                //     });
-                // }, 3000);
-
-                // setTimeout(function() {
-                //     clearInterval(repeat);
-                // }, 30000);
+                setTimeout(function() {
+                    clearInterval(repeat);
+                }, 30000);
             }
             // END WIP
         };
