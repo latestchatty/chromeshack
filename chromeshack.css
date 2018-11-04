@@ -321,8 +321,8 @@ button:focus {
     display: flex;
     flex-direction: column;
     justify-self: right;
-    min-width: 300px;
-    max-width: 400px;
+    min-width: 350px;
+    max-width: 350px;
 }
 .uploadRadioLabels {
     /* container for clickable radio filters */
@@ -362,17 +362,19 @@ button:focus {
     /* buttons and file status */
     display: grid;
     grid-template-areas: "clc1 clc2";
-    align-self: center;
-    min-width: 0;
-    max-width: 98%;
-}
-.errorLabels {
-    /* error status footer */
-    display: flex;
-    flex-direction: row nowrap;
     align-items: center;
-    justify-content: center;
+    min-width: 1;
+    width: 100%;
+}
+#errorLabels {
+    /* error status footer */
+    display: grid;
+    grid-template-areas: "el1 el2";
+    grid-gap: 6px;
+    align-self: center;
+    align-items: center;
     margin-top: 0.5em;
+    min-width: 1;
 }
 
 /* only apply shacktags legend overrides when injected */
@@ -509,8 +511,7 @@ input[type="text"]#urlUploadInput.urlInputBox {
 
 #uploadStatusLabel {
     align-self: center;
-    align-items: center;
-    justify-content: right;
+    text-align: center;
     font-size: 13px;
     font-weight: bold;
     font-style: italic;
@@ -519,7 +520,6 @@ input[type="text"]#urlUploadInput.urlInputBox {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    margin: 0 0 0 0.25em;
 }
 #uploadStatusLabel.muted {
     color: #333;
@@ -527,30 +527,24 @@ input[type="text"]#urlUploadInput.urlInputBox {
 
 /* upload error status labels */
 #errorStatusLabel {
-    flex: 1 0 auto;
-    flex-direction: row nowrap;
+    justify-content: left;
     word-wrap: break-word;
     font-weight: bold;
     color: #777;
-    padding: 2px;
-    min-width: 0;
+    min-width: 1;
 }
 #errorStatusLabelDetail {
-    flex-basis: 100%;
-    display: inline-block;
-    align-self: left;
+    justify-content: center;
     font-style: italic;
-    font-size: 11px;
+    font-size: 12px;
     color: #666;
     word-wrap: break-word;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    min-width: 0;
-    padding: 2px;
+    min-width: 1;
 }
-#errorStatusLabel.hidden,
-#errorStatusLabelDetail.hidden {
+#errorLabels.hidden {
     display: none;
 }
 
