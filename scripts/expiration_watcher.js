@@ -16,10 +16,6 @@ settingsLoadedEvent.addHandler(function()
 
             showExpiration: function(item, id, is_root_post)
             {
-                // prevent reapplying
-                if (document.querySelector(".fullpost .countdown-wrap") != null)
-                    return;
-
                 var style = getSetting("expiration_watcher_style");
 
                 if (!is_root_post) return;
