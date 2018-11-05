@@ -23,7 +23,10 @@ settingsLoadedEvent.addHandler(function() {
                             return false;
                         });
 
-                        cloned.innerHTML += ' (Incognito)';
+                        // prevent reapplying
+                        if (cloned.innerHTML.indexOf(" (Incognito)") == -1 ) {
+                            cloned.innerHTML += ' (Incognito)'
+                        };
                         $(links[iLink]).replaceWith(cloned);
                     }
 
