@@ -74,7 +74,7 @@ settingsLoadedEvent.addHandler(function()
                                         <div id="uploadStatusLabel"></div>
                                     </div>
                                     <div id="errorLabels" class="hidden">
-                                        <span id="errorStatusLabel"></span>
+                                        <span id="errorStatusLabel">Uploading to Gifycat...</span>
                                         <span id="errorStatusLabelDetail"></span>
                                     </div>
                                 </div>
@@ -408,10 +408,7 @@ settingsLoadedEvent.addHandler(function()
             handleUploadSuccess: function(respdata) {
                 var link = respdata.data.link;
                 $("#frm_body").insertAtCaret(link + "\n");
-                ImageUpload.addUploadMessage("green", null, "Success!");
-                setTimeout(function() {
-                    ImageUpload.removeUploadMessage();
-                }, 3000);
+                ImageUpload.delayedRemoveUploadMessage("green", "Success!", "", 3000);
             },
 
             handleChattyUploadSuccess : function(data) {
@@ -420,10 +417,7 @@ settingsLoadedEvent.addHandler(function()
                 var link = link11[0];
                 var url = $(link).val();
                 $("#frm_body").insertAtCaret(url + "\n");
-                ImageUpload.addUploadMessage("green", null, "Success!");
-                setTimeout(function() {
-                    ImageUpload.removeUploadMessage();
-                }, 3000);
+                ImageUpload.delayedRemoveUploadMessage("green", "Success!", "", 3000);
             },
 
             handleUploadFailure: function(respdata) {
@@ -434,9 +428,9 @@ settingsLoadedEvent.addHandler(function()
                     error = responseText.data.error;
                 } catch (e) {}
                 if(error.length > 0) {
-                    ImageUpload.addUploadMessage("red", "Failure:", error);
+                    ImageUpload.delayedRemoveUploadMessage("red", "Failure:", error, 5000);
                 } else {
-                    ImageUpload.addUploadMessage("red", "Failure:");
+                    ImageUpload.delayedRemoveUploadMessage("red", "Failure!", "", 5000);
                 }
             },
 
@@ -454,42 +448,49 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
-            removeUploadMessage: function() {
+            removeUploadMessage: function(value) {
                 $("#errorStatusLabel").text("");
                 $("#errorStatusLabelDetail").text("");
                 $("#errorLabels").addClass("hidden");
+                return value;
             },
 
             setImgurHeader: function (xhr) {
                 xhr.setRequestHeader(ImageUpload.imgurClientIdHeader, ImageUpload.imgurClientId);
             },
 
+            delayedRemoveUploadMessage: function(color, mainMessage, detailMessage, delay, value) {
+                // helper function that returns a promised value to the caller after the UploadMessage
+                ImageUpload.addUploadMessage(color, mainMessage, detailMessage);
+                var ret = new Promise(function(resolve) {
+                    setTimeout(function() {
+                        ImageUpload.removeUploadMessage();
+                        resolve(value);
+                    }, delay);
+                });
+                return ret;
+            },
+
             // START WIP
             handleGfycatUploadStatus: function (respdata) {
-                if (respdata.errorMessage ||
-                    respdata.task === "NotFoundo" || !respdata.gfyname) {
-                    ImageUpload.addUploadMessage("red", null, "Failure :(");
-                    return false;
+                if (respdata.task === "NotFoundo") {
+                    // signal a fatal error
+                    return true;
                 }
                 else if (respdata.task === "encoding") {
-                    ImageUpload.addUploadMessage("silver", null, "Encoding...");
-                    // endpoint is busy so try again in a few seconds
+                    ImageUpload.addUploadMessage("silver", "Encoding...");
+                    // endpoint is busy loop until we timeout or hit paydirt
                     return false;
                 }
                 else if (respdata.gfyname) {
                     var url = `https://gfycat.com/${respdata.gfyname}`;
                     $("#frm_body").insertAtCaret(url + "\n");
-                    ImageUpload.addUploadMessage("green", null, "Success!");
-
                     ImageUpload.clearFileData();
                     ImageUpload.updateStatusLabel();
-                    setTimeout(function() {
-                        // clear our upload status message after a bit
-                        ImageUpload.removeUploadMessage();
-                    }, 3000);
-                    return true;
+                    return ImageUpload.delayedRemoveUploadMessage("green", "Success!", "", 3000, true);
+                } else if (respdata.errorMessage) {
+                    ImageUpload.delayedRemoveUploadMessage("red", "Failure:", respdata.errorMessage, 5000);
                 }
-
                 console.log(`Gfycat endpoint error: ${JSON.stringify(respdata)}`);
                 return false;
             },
@@ -511,9 +512,11 @@ settingsLoadedEvent.addHandler(function()
                 }).done(function(data) {
                     var key = data.gfyname;
                     if (fileObj.fetchUrl) {
+                        ImageUpload.addUploadMessage("silver", "Fetching to Gifycat...");
                         ImageUpload.checkGfycatStatus(key);
                     }
                     else if (fileObj.file) {
+                        ImageUpload.addUploadMessage("silver", "Uploading to Gifycat...");
                         var fd = new FormData();
                         fd.append("key", key);
                         fd.append("file", fileObj.file);
@@ -536,19 +539,22 @@ settingsLoadedEvent.addHandler(function()
                 });
             },
 
-            checkGfycatStatus: function (gfycatKey, override) {
+            checkGfycatStatus: function (gfycatKey) {
                 var requestUrl = `${ImageUpload.gfycatStatusUrl}/${gfycatKey}`;
-                
+                // verify the upload/fetch - every 3s for 30s
                 var repeat = setInterval(function() {
-                    // verify the upload/fetch - every 3s for 30s
                     $.ajax({ type: "GET", url: requestUrl }).done(function(data) {
-                        // stop early if we're successful
-                        if (ImageUpload.handleGfycatUploadStatus(data))
+                        // stop early if we're successful or hit a fatal error
+                        if (ImageUpload.handleGfycatUploadStatus(data)) {
                             clearInterval(repeat);
+                            clearTimeout(timeout);
+                            return;
+                        }
                     });
                 }, 3000);
-
-                setTimeout(function() {
+                var timeout = setTimeout(function() {
+                    // our fetch/upload timed out
+                    ImageUpload.delayedRemoveUploadMessage("yellow", `Timed out with: ${gfycatKey}`, "", 3000);
                     clearInterval(repeat);
                 }, 30000);
             }

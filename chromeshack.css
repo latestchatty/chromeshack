@@ -533,7 +533,7 @@ input[type="text"]#urlUploadInput.urlInputBox.valid {
 
 /* upload error status labels */
 #errorStatusLabel {
-    justify-content: left;
+    justify-content: center;
     word-wrap: break-word;
     font-weight: bold;
     color: #777;
