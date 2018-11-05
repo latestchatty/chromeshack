@@ -94,6 +94,8 @@
         "contextMenus",
         "notifications",
         "tabs",
+        "https://api.gfycat.com/v1/*",
+        "https://filedrop.gfycat.com/*",
         "https://api.imgur.com/*",
         "https://chattypics.com/*",
         "https://lol.lmnopc.com/*",

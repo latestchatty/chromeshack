@@ -469,6 +469,7 @@ settingsLoadedEvent.addHandler(function()
                 if (respdata.errorMessage ||
                     respdata.task === "NotFoundo" || !respdata.gfyname) {
                     ImageUpload.addUploadMessage("red", null, "Failure :(");
+                    return false;
                 }
                 else if (respdata.task === "encoding") {
                     ImageUpload.addUploadMessage("silver", null, "Encoding...");
@@ -489,7 +490,7 @@ settingsLoadedEvent.addHandler(function()
                     return true;
                 }
 
-                console.log(`Gfycat endpoint error: ${respdata}`);
+                console.log(`Gfycat endpoint error: ${JSON.stringify(respdata)}`);
                 return false;
             },
 
@@ -497,6 +498,8 @@ settingsLoadedEvent.addHandler(function()
                 ImageUpload.removeUploadMessage();
                 // if we use 'fetchUrl' the server will report back a key
                 // if we use 'file' then grab a key and push it with our file
+                var dataBody = fileObj.fetchUrl ? 
+                    JSON.stringify(fileObj) : JSON.stringify({ title: fileObj.file.name });
 
                 $.ajax({
                     type: "POST",
@@ -504,7 +507,7 @@ settingsLoadedEvent.addHandler(function()
                     cache: false,
                     processData: false,
                     contentType: "application/json",
-                    data: fileObj.fetchUrl ? JSON.stringify(fileObj) : JSON.stringify({ title: fileObj.file.name })
+                    data: dataBody
                 }).done(function(data) {
                     var key = data.gfyname;
                     if (fileObj.fetchUrl) {
@@ -540,7 +543,7 @@ settingsLoadedEvent.addHandler(function()
                     // verify the upload/fetch - every 3s for 30s
                     $.ajax({ type: "GET", url: requestUrl }).done(function(data) {
                         // stop early if we're successful
-                        if(ImageUpload.handleGfycatUploadStatus(data))
+                        if (ImageUpload.handleGfycatUploadStatus(data))
                             clearInterval(repeat);
                     });
                 }, 3000);
