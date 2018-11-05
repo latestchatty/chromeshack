@@ -340,7 +340,7 @@ button:focus {
     min-width: 0;
     padding: 8px;
 }
-.uploadDropLabel {
+.uploadDropLabelArea {
     /* top field in content area */
     display: flex;
     align-items: center;
@@ -469,12 +469,18 @@ button:focus {
 input[type="text"]#urlUploadInput.urlInputBox {
     /* necessary to override stylesheet */
     max-width: 98% !important;
-    border: 1px dashed #7c7c7c !important;
+    border: 1px dashed #444 !important;
+    color: #888 !important;
     box-shadow: none !important;
     background: transparent !important;
     border-radius: 0 !important;
     padding: 0.5em !important;
     margin: 0 0 0.75em 0.25em !important;
+}
+input[type="text"]#urlUploadInput.urlInputBox.valid {
+    /* try to bring attention to valid url */
+    border: 1px dashed #666 !important;
+    color: silver !important;
 }
 
 /* image uploader context line (buttons/file) */
@@ -515,14 +521,14 @@ input[type="text"]#urlUploadInput.urlInputBox {
     font-size: 13px;
     font-weight: bold;
     font-style: italic;
-    color: #777;
+    color: #888;
     word-wrap: break-word;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 #uploadStatusLabel.muted {
-    color: #333;
+    color: #555;
 }
 
 /* upload error status labels */
