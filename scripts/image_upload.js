@@ -468,13 +468,10 @@ settingsLoadedEvent.addHandler(function()
             handleGfycatUploadStatus: function (respdata) {
                 if (respdata.errorMessage ||
                     respdata.task === "NotFoundo" || !respdata.gfyname) {
-                    console.log(`Fail: ${JSON.stringify(respdata)}`);
                     ImageUpload.addUploadMessage("red", null, "Failure :(");
-                    return false;
                 }
                 else if (respdata.task === "encoding") {
                     ImageUpload.addUploadMessage("silver", null, "Encoding...");
-                    console.log(`Endpoint reports encoding: ${JSON.stringify(respdata)}`);
                     // endpoint is busy so try again in a few seconds
                     return false;
                 }
@@ -482,7 +479,6 @@ settingsLoadedEvent.addHandler(function()
                     var url = `https://gfycat.com/${respdata.gfyname}`;
                     $("#frm_body").insertAtCaret(url + "\n");
                     ImageUpload.addUploadMessage("green", null, "Success!");
-                    console.log(`Endpoint reports success: ${JSON.stringify(respdata)}`);
 
                     ImageUpload.clearFileData();
                     ImageUpload.updateStatusLabel();
@@ -491,9 +487,9 @@ settingsLoadedEvent.addHandler(function()
                         ImageUpload.removeUploadMessage();
                     }, 3000);
                     return true;
-                } else {
-                    console.log(`Some uncaught endpoint error occurred: ${respdata}`);
                 }
+
+                console.log(`Gfycat endpoint error: ${respdata}`);
                 return false;
             },
 
@@ -512,11 +508,9 @@ settingsLoadedEvent.addHandler(function()
                 }).done(function(data) {
                     var key = data.gfyname;
                     if (fileObj.fetchUrl) {
-                        console.log(`Posting URL fetch: ${JSON.stringify(data)}`);
                         ImageUpload.checkGfycatStatus(key);
                     }
                     else if (fileObj.file) {
-                        console.log(`Posting new file: ${key} = ${fileObj.file.name}`);
                         var fd = new FormData();
                         fd.append("key", key);
                         fd.append("file", fileObj.file);
@@ -530,7 +524,6 @@ settingsLoadedEvent.addHandler(function()
                             data: fd
                         })
                         .done(function() {
-                            console.log(fd);
                             ImageUpload.checkGfycatStatus(key);
                         })
                         .fail(function(err) {
