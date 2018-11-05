@@ -368,13 +368,13 @@ button:focus {
 }
 #errorLabels {
     /* error status footer */
-    display: grid;
-    grid-template-areas: "el1 el2";
-    grid-gap: 6px;
+    display: flex;
     align-self: center;
     align-items: center;
+    justify-content: center;
     margin-top: 0.5em;
     min-width: 1;
+    flex-basis: 98%;
 }
 
 /* only apply shacktags legend overrides when injected */
@@ -533,14 +533,15 @@ input[type="text"]#urlUploadInput.urlInputBox.valid {
 
 /* upload error status labels */
 #errorStatusLabel {
-    justify-content: center;
-    word-wrap: break-word;
     font-weight: bold;
+    word-wrap: break-word;
     color: #777;
     min-width: 1;
+    flex: 0 0 auto;
 }
 #errorStatusLabelDetail {
-    justify-content: center;
+    margin-left: 6px;
+    text-align: left;
     font-style: italic;
     font-size: 12px;
     color: #666;

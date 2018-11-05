@@ -74,7 +74,7 @@ settingsLoadedEvent.addHandler(function()
                                         <div id="uploadStatusLabel"></div>
                                     </div>
                                     <div id="errorLabels" class="hidden">
-                                        <span id="errorStatusLabel">Uploading to Gifycat...</span>
+                                        <span id="errorStatusLabel"></span>
                                         <span id="errorStatusLabelDetail"></span>
                                     </div>
                                 </div>
