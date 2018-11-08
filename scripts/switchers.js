@@ -31,7 +31,7 @@ settingsLoadedEvent.addHandler(function () {
                     {
                         var post = offenderPosts[iPost];
 
-                        var newName = offender.original + " - (" + offender.new_name + ")";
+                        var newName = `${offender.original} - (${offender.new_name})`;
                         var span = getDescendentByTagAndClassName(post, "span", "oneline_user");
                         if(span) //For single line comments.
                         {

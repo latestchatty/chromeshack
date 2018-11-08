@@ -33,7 +33,6 @@
             "sentence_parser.js",
             "init_events.js",
             "scripts/lol.js",
-            "scripts/comment_tags.js",
             "scripts/post_preview.js",
             "scripts/dinogegtik.js",
             "scripts/category_banners.js",
@@ -72,8 +71,9 @@
         "run_at": "document_idle"
     },
     {
-        "js": [ 
+        "js": [
             "ext/webextension-polyfill/browser-polyfill.min.js",
+            "scripts/jquery-3.3.1.min.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
@@ -94,8 +94,10 @@
         "contextMenus",
         "notifications",
         "tabs",
+        "https://api.gfycat.com/v1/*",
+        "https://filedrop.gfycat.com/*",
         "https://api.imgur.com/*",
-        "http://chattypics.com/*",
+        "https://chattypics.com/*",
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
         "https://winchatty.com/nusearch?*",

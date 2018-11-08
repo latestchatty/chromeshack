@@ -2,7 +2,6 @@ DefaultSettings = {
 
     enabled_scripts: [
         "lol",
-        "comment_tags",
         "post_preview",
         "collapse_threads",
         "dinogegtik",
@@ -27,9 +26,9 @@ DefaultSettings = {
     lol_show_counts: 'limited',
 
     lol_ugh_threshold: '0',
-    
+
     post_preview_location: "Right",
-    
+
     post_preview_live: false,
 
     mod_marker_css: "color: red !important",
@@ -47,7 +46,7 @@ DefaultSettings = {
     ],
 
     video_loader_hd: true,
-    
+
     expiration_watcher_style: "Bar"
 
 }

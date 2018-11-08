@@ -3,6 +3,10 @@ settingsLoadedEvent.addHandler(() => {
     let updateTimer = null;
 
     if (getSetting("enabled_scripts").contains("post_length_counter")) {
+        // script is already injected
+        if ($(".post_length_counter_text").length)
+            return;
+
         // install a div at the top of the post box
         $('form#postform').prepend($('<div>', {
             class: 'post_length_counter_text'

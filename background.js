@@ -267,12 +267,9 @@ function openIncognito(newUrl)
     else
     {
         //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-        browser.windows.create(
-            {url:newUrl, incognito:true, type: 'normal'}
-        ).then(function(windowInfo){
-            console.log('Window Id: ' + windowInfo.id);
-            lastOpenedIncognito = windowInfo.id;
-        });
+        try {
+            browser.windows.create({url:newUrl, incognito:true, type: 'normal'});
+        } catch (err) { console.log(err); }
     }
 }
 

@@ -8,6 +8,10 @@ settingsLoadedEvent.addHandler(function()
 
             install: function()
             {
+                // script is already injected
+                if (document.getElementById("previewButton") != null)
+                    return;
+
                 var postButton = document.getElementById("frm_submit");
                 var form_body = document.getElementById("frm_body");
                 if (postButton && form_body)

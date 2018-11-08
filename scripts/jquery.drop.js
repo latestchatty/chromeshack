@@ -1,6 +1,5 @@
 (function($){
   function dragEnter(e) {
-    $(e.target).addClass("dragOver");
     e.stopPropagation();
     e.preventDefault();
     return false;
@@ -8,13 +7,16 @@
 
   function dragOver(e) {
     e.originalEvent.dataTransfer.dropEffect = "copy";
+    if (!$(this).hasClass("dragOver"))
+      $(this).addClass("dragOver");
     e.stopPropagation();
     e.preventDefault();
     return false;
   };
 
   function dragLeave(e) {
-    $(e.target).removeClass("dragOver");
+    if ($(this).hasClass("dragOver"))
+      $(this).removeClass("dragOver");
     e.stopPropagation();
     e.preventDefault();
     return false;
