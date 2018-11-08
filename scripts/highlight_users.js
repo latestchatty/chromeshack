@@ -104,8 +104,8 @@ settingsLoadedEvent.addHandler(function()
                     "10187323", // steven wong
                     "10187419", // squid wizard
                     "10187781", // beardedaxe
-                    "209604"    // Crabs Jarrard
-                    "173110"    // David Craddock
+                    "209604"  , // Crabs Jarrard
+                    "173110"  , // David Craddock
                     "10194943"  // Charles Singletary Jr
                 ],
 
