@@ -9,7 +9,10 @@ settingsLoadedEvent.addHandler(function () {
                 {original: "MagicWishMonkey", new_name: "MaximDiscord", original_id: 160547},
                 {original: "thaperfectdrug", new_name: "Dave-A", original_id: 2650},
                 {original: "timaste", new_name: "timmytaste", original_id: 172749},
-                {original: "The Grolar Bear", new_name: "The Gorilla Bear", original_id: 209153}
+                {original: "The Grolar Bear", new_name: "The Gorilla Bear", original_id: 209153},
+                {original: "jingletard", new_name: "Oh Well", original_id: 194581},
+                {original: "jingletard", new_name: "Jingletardigrade", original_id: 194581},
+                {original: "ArB", new_name: "jingleArB", original_id: 159879}
             ],
 
             loadSwitchers: function (item) {
