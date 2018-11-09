@@ -19,7 +19,7 @@ settingsLoadedEvent.addHandler(function()
 
             installLink: function()
             {
-                var comments_tools = document.getElementById('commenttools');
+                var refNode = document.querySelector("#commenttools .newcomment");
                 // script is already injected
                 if (document.getElementById('lollink') != null)
                     return;
@@ -35,7 +35,8 @@ settingsLoadedEvent.addHandler(function()
                 link.title = "Check out what got the [lol]s";
                 link.replaceHTML("* L O L ' d *");
                 link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
-                comments_tools.appendChild(link);
+                // insert our link after the new comments button to preserve flex spacing
+                refNode.parentNode.insertBefore(link, refNode.nextSibling);
 
                 if (LOL.showCounts != 'none')
                 {

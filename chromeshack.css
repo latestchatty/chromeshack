@@ -31,11 +31,12 @@ a.lol_button {
     display: block;
     width: 152px;
     height: 44px;
-    position: absolute;
-    left: 180px;
-    top: 18px;
     text-indent: -9999px;
     color: #f00;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
 }
 
 .oneline_tags {
