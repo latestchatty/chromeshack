@@ -770,6 +770,7 @@ div.post_length_counter_text {
     font-family: 'Shack Sans', sans-serif;
     -webkit-user-select: none;
     padding: 0 0.33em 0 0.33em;
+    cursor: pointer;
 }
 #post_highlighter_container a#jump_to_new_post:hover {
     background-color: #5c5070;
