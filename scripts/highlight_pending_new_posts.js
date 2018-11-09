@@ -133,6 +133,7 @@
         var starContainer = document.createElement("div");
         var star = document.createElement('a');
         starContainer.setAttribute("id", "post_highlighter_container");
+        starContainer.classList.add("hidden");
         star.setAttribute("id" ,"jump_to_new_post");
         star.addEventListener('click', jumpToNewPost);
 
