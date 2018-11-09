@@ -710,8 +710,13 @@ video.imageloader { width: auto !important }
 
 a.chromeshack_options_link {
     position: absolute;
-    top: 4px;
-    left: 12px;
+    top: 6px;
+    left: 14px;
+}
+a.chromeshack_options_link.singlepost {
+    position: relative;
+    top: 0 !important;
+    left: 0 !important;
 }
 
 span.postbox_rules_divider {
