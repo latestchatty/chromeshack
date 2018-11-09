@@ -250,6 +250,9 @@ div.getPost {
     border: 1px #2f8484 solid;
     background-color: #1d1d1d;
 }
+div.getPost div.postbody {
+    margin: 0.25em 0.25em 1em 1.5em;
+}
 
 div.getPost div.refresh,
 div.getPost div.reply,
