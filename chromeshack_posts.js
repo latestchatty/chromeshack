@@ -21,7 +21,7 @@ ChromeShack =
                         try {
                             var elem = node.parentNode;
                             var source_id = elem.id;
-                            
+
                             // starts with "root", they probably refreshed the thread
                             if (node && node.id.indexOf("root_") == 0)
                             {
@@ -67,7 +67,7 @@ ChromeShack =
             ChromeShack.processPost(item, item.id.substr(5));
         }
         ChromeShack.processPostStyle(element);
-        fullPostsCompletedEvent.raise();   
+        fullPostsCompletedEvent.raise();
     },
 
     processPost: function(item, root_id)
@@ -86,26 +86,29 @@ ChromeShack =
 
     processPostStyle: function(elem)
     {
-        // cross-browser support for ChromeShack post banners via style injection
-        var _isOfftopic = elem.getElementsByClassName("fpmod_offtopic").length > 0;
-        var _isStupid = elem.getElementsByClassName("fpmod_stupid").length > 0;
-        var _isPolitical = elem.getElementsByClassName("fpmod_political").length > 0;
-        var _isInformative = elem.getElementsByClassName("fpmod_informative").length > 0;
-        var _url;
+        // avoid applying banners if not enabled
+        if (document.querySelector(".show_banners") != null) {
+            // cross-browser support for ChromeShack post banners via style injection
+            var _isOfftopic = elem.getElementsByClassName("fpmod_offtopic").length > 0;
+            var _isStupid = elem.getElementsByClassName("fpmod_stupid").length > 0;
+            var _isPolitical = elem.getElementsByClassName("fpmod_political").length > 0;
+            var _isInformative = elem.getElementsByClassName("fpmod_informative").length > 0;
+            var _url;
 
-        // rely on polyfills for relative extension paths
-        if (_isOfftopic) {
-            _url = `url("${browser.runtime.getURL("images/banners/offtopic.png")}")`;
-            elem.getElementsByClassName("fpmod_offtopic")[0].style.backgroundImage = _url;
-        } else if (_isPolitical) {
-            _url = `url("${browser.runtime.getURL("images/banners/political.png")}")`;
-            elem.getElementsByClassName("fpmod_political")[0].style.backgroundImage = _url;
-        } else if (_isStupid) {
-            _url = `url("${browser.runtime.getURL("images/banners/stupid.png")}")`;
-            elem.getElementsByClassName("fpmod_stupid")[0].style.backgroundImage = _url;
-        } else if (_isInformative) {
-            _url = `url("${browser.runtime.getURL("images/banners/interesting.png")}")`;
-            elem.getElementsByClassName("fpmod_informative")[0].style.backgroundImage = _url;
+            // rely on polyfills for relative extension paths
+            if (_isOfftopic) {
+                _url = `url("${browser.runtime.getURL("images/banners/offtopic.png")}")`;
+                elem.getElementsByClassName("fpmod_offtopic")[0].style.backgroundImage = _url;
+            } else if (_isPolitical) {
+                _url = `url("${browser.runtime.getURL("images/banners/political.png")}")`;
+                elem.getElementsByClassName("fpmod_political")[0].style.backgroundImage = _url;
+            } else if (_isStupid) {
+                _url = `url("${browser.runtime.getURL("images/banners/stupid.png")}")`;
+                elem.getElementsByClassName("fpmod_stupid")[0].style.backgroundImage = _url;
+            } else if (_isInformative) {
+                _url = `url("${browser.runtime.getURL("images/banners/interesting.png")}")`;
+                elem.getElementsByClassName("fpmod_informative")[0].style.backgroundImage = _url;
+            }
         }
     }
 }

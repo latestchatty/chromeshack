@@ -19,7 +19,8 @@ settingsLoadedEvent.addHandler(function()
 
             installLink: function()
             {
-                var comments_tools = document.getElementById('commenttools');
+                var newComment = document.querySelector("#commenttools .newcomment");
+                var commentTools = document.querySelector("#commenttools");
                 // script is already injected
                 if (document.getElementById('lollink') != null)
                     return;
@@ -35,7 +36,11 @@ settingsLoadedEvent.addHandler(function()
                 link.title = "Check out what got the [lol]s";
                 link.replaceHTML("* L O L ' d *");
                 link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
-                comments_tools.appendChild(link);
+                // insert our link intelligently to preserve formatting
+                if (newComment != null)
+                    newComment.parentNode.insertBefore(link, newComment.nextSibling);
+                else
+                    commentTools.insertBefore(link, commentTools.firstChild);
 
                 if (LOL.showCounts != 'none')
                 {

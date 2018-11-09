@@ -1,14 +1,21 @@
 settingsLoadedEvent.addHandler(() => {
     if (!$(".chromeshack_options_link").length) {
-        // add a link to the top of the page next to the "New Comment" button
-        $('div#commenttools').append(
-            $('<a>', {
-                text: 'Chrome Shack Options',
-                href: browser.runtime.getURL('options.html'),
-                class: 'chromeshack_options_link',
-                target: '_blank'
-            })
-        );
+        var newComment = document.querySelector("#commenttools .newcomment");
+        var optionsLink = $('<a>', {
+            text: 'Chrome Shack Options',
+            href: browser.runtime.getURL('options.html'),
+            class: 'chromeshack_options_link',
+            target: '_blank'
+        });
+
+        // adjust link position for both single and multi-thread mode
+        var rootPostCount = document.querySelectorAll("div[id^='root_']").length;
+        if (rootPostCount == 1) {
+            optionsLink.addClass("singlepost");
+            $("#commenttools").append(optionsLink);
+        } else if (rootPostCount > 1) {
+            newComment.parentNode.insertBefore(optionsLink[0], newComment.nextSibling);
+        }
 
         // add a link next to the "Read the Rules" link in the post box
         const rules = $('p.rules');

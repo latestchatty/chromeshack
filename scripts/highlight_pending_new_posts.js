@@ -17,8 +17,8 @@
             dataType: 'json',
         }).done(function(data, textStatus, jqXHR) {
             if (has(data, 'error')) {
-                var message = data.code + ' - ' + data.message;
-                console.log('Request failed: ' + url + ' - ' + message);
+                var message = `${data.code} - ${data.message}`;
+                console.log(`Request failed: ${url} - ${message}`);
                 failFunc(message);
             } else {
                 doneFunc(data);
@@ -31,9 +31,9 @@
                 message += 'unknown error';
             }
             if ($.type(errorThrown) === 'string') {
-                message += ' - ' + errorThrown;
+                message += ` - ${errorThrown}`;
             }
-            console.log('Request failed: ' + url + ' - ' + message);
+            console.log(`Request failed: ${url} - ${message}`);
             failFunc(message);
         });
     }
@@ -41,18 +41,17 @@
     function processEvents(events) {
         for (var i = 0; i < events.length; i++) {
             var evt = events[i];
-            if (evt.eventType !== 'newPost') {
+            if (evt.eventType !== 'newPost')
                 continue;
-            }
+
             var postId = parseInt(evt.eventData.postId);
-            if (document.getElementById('item_' + postId) !== null) {
+            if (document.getElementById(`item_${postId}`) !== null)
                 continue; // Received an event for a post we already have.
-            }
+
             var threadId = parseInt(evt.eventData.post.threadId);
-            var a = document.querySelector('li#item_' + threadId + ' div.fullpost div.refresh a');
-            if (a !== null) {
-                a.className = a.className + ' refresh_pending';
-            }
+            var a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
+            if (a !== null)
+                a.classList.add("refresh_pending");
         }
         showOrHideJumpToNewPostButton();
     }
@@ -131,24 +130,25 @@
 
     function installJumpToNewPostButton() {
         var body = document.getElementsByTagName('body')[0];
+        var starContainer = document.createElement("div");
         var star = document.createElement('a');
-        star.id = 'jump_to_new_post';
-        star.style.display = 'none';
-        star.replaceHTML("1");
+        starContainer.setAttribute("id", "post_highlighter_container");
+        star.setAttribute("id" ,"jump_to_new_post");
         star.addEventListener('click', jumpToNewPost);
 
-        body.appendChild(star);
+        starContainer.appendChild(star);
+        body.appendChild(starContainer);
     }
 
     function showOrHideJumpToNewPostButton() {
         var pending = getNonCollapsedPendings();
-        var button = document.getElementById('jump_to_new_post');
+        var button = document.getElementById('post_highlighter_container');
         var indicator = '★ ';
         var titleHasIndicator = startsWith(document.title, indicator);
 
         if (pending.length > 0) {
             if (button !== null) {
-                button.style.display = 'inline-block';
+                button.classList.remove("hidden");
             }
             if (!titleHasIndicator) {
                 document.title = indicator + document.title;
@@ -157,7 +157,7 @@
             $(document.getElementById('jump_to_new_post')).html(indicator + pending.length.toString());
         } else {
             if (button !== null) {
-                button.style.display = 'none';
+                button.classList.add("hidden");
             }
             if (titleHasIndicator) {
                 document.title = document.title.substring(indicator.length);
@@ -176,28 +176,6 @@
         if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== '1') {
             return;
         }
-
-        GM_addStyle(''
-            // The button at the top of the page indicating new posts are available
-            + 'a#jump_to_new_post { border: 1px solid #a19aaf; background: #908a9d; position: fixed; '
-            + '    width: 50px; top: 0px; right: 0px; z-index: 9999; '
-            + "    font-size: 18px; color: white; text-align: center; font-family: 'Shack Sans', sans-serif; "
-            + '    -webkit-user-select: none; }'
-            + 'a#jump_to_new_post:hover { background-color: #5c5070; border-color: #6f6088; }'
-            + '@media (max-width: 1240px) {'
-            + '    a#jump_to_new_post { left: 650px; }'
-            + '}'
-            + '@media (max-width: 1023px) {'
-            + '    a#jump_to_new_post { left: 560px; top: 5px; }'
-            + '}'
-            + '@media (max-width: 767px) {'
-            + '    a#jump_to_new_post { left: 10px; }'
-            + '}'
-
-            // The thread refresh button when highlighted
-            + 'a.refresh_pending { background: skyblue; border-radius: 10px; width: 14px !important; '
-            + '    height: 15px !important; }'
-        );
 
         installJumpToNewPostButton();
 
