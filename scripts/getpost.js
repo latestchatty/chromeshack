@@ -34,7 +34,6 @@ settingsLoadedEvent.addHandler(function() {
                                 var postDiv = document.createElement("div");
                                 // hack-ish way of "parsing" string to DOM
                                 postDiv.replaceHTML(request.responseText);
-                                console.log(postDiv);
                                 postDiv = postDiv.childNodes[1];
 
                                 // nuke fullpost class as we don't want
