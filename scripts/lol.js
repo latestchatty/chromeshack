@@ -94,6 +94,7 @@ settingsLoadedEvent.addHandler(function()
                     lol_div.appendChild(LOL.createButton(LOL.tags[i].name, id, LOL.tags[i].color));
                 }
 
+
                 // add them in
                 author.appendChild(lol_div);
 
@@ -102,7 +103,26 @@ settingsLoadedEvent.addHandler(function()
 
                 LOL.posts.push(id);
             },
+            createGetUsers: function(tag, id)
+            {
+                var button = document.createElement("a");
+                button.href = "#";
+                button.className = "hidden";
+                button.innerText = " ";
+                button.id = "get_lol_users_" + tag + "_" + id;
+                button.dataset.threadid = id;
+                button.dataset.loltag = tag;
+                button.addEventListener("click", (e) => { LOL.getUsers(tag, id); e.preventDefault(); });
 
+                var icon = document.createElement("span");
+                //stole from account icon in new redesign.
+                icon.innerText = "";
+                icon.style.fontSize = "12px";
+                icon.style.fontFamily = "Icon";
+                icon.style.fontWeight = "100";
+                button.appendChild(icon);
+                return button;
+            },
             createButton: function(tag, id, color)
             {
                 var button = document.createElement("a");
@@ -121,11 +141,46 @@ settingsLoadedEvent.addHandler(function()
                 var span = document.createElement("span");
                 span.appendChild(document.createTextNode("["));
                 span.appendChild(button);
+                span.appendChild(LOL.createGetUsers(tag, id));
                 span.appendChild(document.createTextNode("]"));
 
                 return span;
             },
+            getUsers: function(tag, id)
+            {
+                var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
 
+                getUrl(url, function(response)
+                {
+                    if (response.status == 200) {
+                        var response = JSON.parse(response.responseText);
+                        var post = document.getElementById("item_" + id);
+                        var body = post.getElementsByClassName("postbody")[0];
+                        var container = document.getElementById("taggers_" + id);
+                        if(!container) {
+                            container = document.createElement("div");
+                            container.id = "taggers_" + id;
+                        } else {
+                            container.innerHTML = "";
+                        }
+                        var tagSection = document.createElement("div");
+                        tagSection.className = "oneline_tags";
+                        tagSection.style.whiteSpace = "normal";
+                        tagSection.style["overflow-wrap"] = "break-word";
+                        tagSection.style.overflow = "unset";
+                        response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                            var taggerNode = document.createElement("span");
+                            taggerNode.className = 'oneline_' + tag;
+                            taggerNode.innerText = tagger;
+                            tagSection.appendChild(taggerNode);
+                        });
+                        container.appendChild(tagSection);
+                        body.appendChild(container);
+                    } else {
+                        alert("Problem getting taggers. Try again.");
+                    }
+                });
+            },
             lolThread: function(e)
             {
                 var user = LOL.getUsername();
@@ -282,6 +337,11 @@ settingsLoadedEvent.addHandler(function()
                         if (((LOL.showCounts == 'limited') || (LOL.showCounts == 'short')) && (tag_names.indexOf(tag) == -1))
                             continue;
 
+                        var get_users_element = document.getElementById("get_lol_users_" + tag + "_" + id);
+                        if(get_users_element) {
+                            get_users_element.className = ""; //Unhide since there are taggers.
+                        }
+                        
                         // Add * x indicators in the fullpost
                         var tgt = document.getElementById(tag + id);
                         if (!tgt && id == rootId)
