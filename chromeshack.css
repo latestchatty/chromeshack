@@ -243,11 +243,16 @@ span.newcommenthighlighter {
 /* get post */
 
 div.getPost {
-    padding: 3px 0 25px 0;
-    margin-bottom: 3px;
-    border: 1px #94FFB9 solid;
-    height: 1%;
     position: relative;
+    padding: 0.25em 0.5em 0.25em 0;
+    margin: 0.25em 0 0 0;
+    min-height: 1;
+    max-width: 97%;
+    border: 1px #2f8484 solid;
+    background-color: #1d1d1d;
+}
+div.getPost div.postbody {
+    margin: 0.25em 0.25em 1em 1.5em;
 }
 
 div.getPost div.refresh,
