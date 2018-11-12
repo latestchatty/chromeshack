@@ -24,7 +24,7 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
-                else if (/https?\:\/\/(\w+\.)?gfycat\.com\/\w+(\.gif)?$/.test(href))
+                else if (/https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href))
                 {
                     return true;
                 }
@@ -198,30 +198,28 @@ settingsLoadedEvent.addHandler(function()
             createGfycat: function(href)
             {
                 var video_id;
-                if ((m = /https?\:\/\/(\w+\.)?gfycat.com\/(\w+)(\.gif)?$/.exec(href)) != null)
-                    video_id = m[2];
+                if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(href)) != null)
+                    video_id = m[1];
 
-                // have to make a request to find out if the webm/mp4 is zippy/fat/giant
+                // ask the gfycat api for the embed url (double as verification of content)
                 var xhr = new XMLHttpRequest();
-                xhr.open("GET", "//gfycat.com/cajax/get/" + video_id, false);
+                xhr.open("GET", `https://api.gfycat.com/v1/gfycats/${video_id}`, false);
                 xhr.send();
 
-                var info = JSON.parse(xhr.responseText).gfyItem;
-
-                // use webm or mp4, whichever is smaller
-                var video_src = info.mp4Url;
-                if (info.mp4Size > info.webmSize)
-                    video_src = info.webmUrl;
-
-                var v = document.createElement("video");
-                v.className = "imageloader";
-                v.setAttribute("src", video_src);
-                v.setAttribute("autoplay", "");
-                v.setAttribute("loop", "");
-                v.setAttribute("muted", "");
-                v.setAttribute("width", info.width);
-                v.setAttribute("height", info.height);
-                return v;
+                // use the mobile mp4 embed url (usually smallest)
+                var video_src = JSON.parse(xhr.responseText).gfyItem.content_urls.mobile || false;
+                if (video_src) {
+                    var v = document.createElement("video");
+                    v.className = "imageloader";
+                    v.setAttribute("autoplay", "");
+                    v.setAttribute("loop", "");
+                    v.setAttribute("muted", "");
+                    v.setAttribute("src", video_src.url);
+                    v.setAttribute("width", video_src.width);
+                    v.setAttribute("height", video_src.height);
+                    return v;
+                }
+                return false;
             },
 
             createGiphy: function(href)
