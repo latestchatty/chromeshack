@@ -103,6 +103,7 @@ settingsLoadedEvent.addHandler(function()
 
                 LOL.posts.push(id);
             },
+
             createGetUsers: function(tag, id)
             {
                 var button = document.createElement("a");
@@ -124,6 +125,7 @@ settingsLoadedEvent.addHandler(function()
                 button.appendChild(icon);
                 return button;
             },
+
             createButton: function(tag, id, color)
             {
                 var button = document.createElement("a");
@@ -147,6 +149,7 @@ settingsLoadedEvent.addHandler(function()
 
                 return span;
             },
+
             getUsers: function(tag, id)
             {
                 var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
@@ -157,15 +160,16 @@ settingsLoadedEvent.addHandler(function()
                         var response = JSON.parse(response.responseText);
                         var post = document.getElementById("item_" + id);
                         var body = post.getElementsByClassName("postbody")[0];
-                        var container = document.getElementById("taggers_" + id);
-                        if(!container) {
+                        var container = document.getElementById(`taggers_${id}`);
+                        var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
+
+                        if (!container) {
                             container = document.createElement("div");
                             container.id = "taggers_" + id;
-                        } else {
-                            container.innerHTML = "";
-                        }
+                        } else if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
+
                         var tagSection = document.createElement("div");
-                        tagSection.className = "oneline_tags";
+                        tagSection.className = `oneline_${tag}s`;
                         response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
                             var taggerNode = document.createElement("span");
                             taggerNode.className = 'oneline_' + tag;
@@ -179,6 +183,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                 });
             },
+
             lolThread: function(e)
             {
                 var user = LOL.getUsername();
@@ -245,7 +250,6 @@ settingsLoadedEvent.addHandler(function()
 
             getModeration: function(id)
             {
-                console.log("getting moderation for id: " + id);
                 var tags = ["fpmod_offtopic", "fpmod_nws", "fpmod_stupid", "fpmod_informative", "fpmod_political"];
                 var item = document.getElementById("item_" + id);
                 var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
