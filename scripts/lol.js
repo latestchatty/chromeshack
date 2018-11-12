@@ -116,10 +116,11 @@ settingsLoadedEvent.addHandler(function()
 
                 var icon = document.createElement("span");
                 //stole from account icon in new redesign.
-                icon.innerText = "";
-                icon.style.fontSize = "12px";
                 icon.style.fontFamily = "Icon";
+                icon.style.fontSize = "10px";
                 icon.style.fontWeight = "100";
+                icon.innerText = "\uea08";
+                icon.title = `Show who ${tag.toUpperCase()}'d this`;
                 button.appendChild(icon);
                 return button;
             },
@@ -165,9 +166,6 @@ settingsLoadedEvent.addHandler(function()
                         }
                         var tagSection = document.createElement("div");
                         tagSection.className = "oneline_tags";
-                        tagSection.style.whiteSpace = "normal";
-                        tagSection.style["overflow-wrap"] = "break-word";
-                        tagSection.style.overflow = "unset";
                         response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
                             var taggerNode = document.createElement("span");
                             taggerNode.className = 'oneline_' + tag;
@@ -341,7 +339,7 @@ settingsLoadedEvent.addHandler(function()
                         if(get_users_element) {
                             get_users_element.className = ""; //Unhide since there are taggers.
                         }
-                        
+
                         // Add * x indicators in the fullpost
                         var tgt = document.getElementById(tag + id);
                         if (!tgt && id == rootId)

@@ -788,3 +788,21 @@ a.refresh_pending {
     width: 14px !important;
     height: 15px !important;
 }
+
+/* lol tagger styling */
+.postmeta a[id^="get_lol_users_"] {
+    padding: 0;
+    margin: 0 -3px 0 -9px;
+}
+
+.postbody .oneline_tags {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    min-width: 1;
+    line-height: 13px;
+}
+.oneline_tags > span[class^="oneline_"] {
+    margin: 2px;
+    padding: 0 2px;
+}
