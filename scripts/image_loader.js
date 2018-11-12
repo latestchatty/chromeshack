@@ -4,6 +4,10 @@ settingsLoadedEvent.addHandler(function()
     {
         ImageLoader =
         {
+            imgurApiBaseUrl: "https://api.imgur.com/3/image",
+
+            imgurClientId: "Client-ID c045579f61fc802",
+
             loadImages: function(item, id)
             {
                 var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
@@ -20,7 +24,7 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if ( (/https?\:\/\/(i\.)?imgur.com\/\w+\.gifv?$/.test(href)) || (/https?\:\/\/(i\.)?imgur.com\/\w+\.mp4?$/.test(href)) )
+                if (/https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.test(href))
                 {
                     return true;
                 }
@@ -36,43 +40,22 @@ settingsLoadedEvent.addHandler(function()
                 return false;
             },
 
-            isImgurGifWithWrongExtension : function(href)
-            {
-                // detect imgur links that are actually gifs but are posted with the wrong extension (usually jpg)
-                if (/https?\:\/\/(i\.)?imgur.com\/\w+\.\w+$/.test(href))
-                {
-                    // fix when viewing shacknews as https
-                    if (window.location.protocol == "https:")
-                        href = href.replace("http:", "https:");
-
-                    // have to make a request to find out if the webm/mp4 is zippy/fat/giant
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("HEAD", href, false);
-                    xhr.send();
-
-                    if (xhr.getResponseHeader("Content-Type") == "image/gif")
-                        return true;
-                }
-
-                return false;
-            },
-
             isImage: function(href)
             {
                 // some urls don't end in jpeg/png/etc so the normal test won't work
-                if (/http\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href))
+                if (/https?\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href))
                 {
                     return true;
                 }
-                else if (/http\:\/\/yfrog.com\/\w+$/.test(href))
+                else if (/https?\:\/\/yfrog.com\/\w+$/.test(href))
                 {
                     return true;
                 }
-                else if (/http\:\/\/twitpic.com\/\w+$/.test(href))
+                else if (/https?\:\/\/twitpic.com\/\w+$/.test(href))
                 {
                     return true;
                 }
-                else if (/http\:\/\/pichars.org\/\w+$/.test(href))
+                else if (/https?\:\/\/pichars.org\/\w+$/.test(href))
                 {
                     return true;
                 }
@@ -103,25 +86,22 @@ settingsLoadedEvent.addHandler(function()
                     return href.replace(/viewer\.php\?file=/, 'files/');
 
                 // change fukung image page into image
-                if (/http\:\/\/(www\.)?fukung\.net\/v\/\d+\//.test(href))
+                if (/https?\:\/\/(www\.)?fukung\.net\/v\/\d+\//.test(href))
                     return href.replace(/(www\.)?fukung\.net\/v\/\d+\//, 'media.fukung.net/imgs/');
 
-                if (/http\:\/\/imgur.com\/\w+$/.test(href))
-                    return href.replace(/imgur/, 'i.imgur') + ".jpg";
-
-                if (/http\:\/\/yfrog.com\/\w+$/.test(href))
+                if (/https?\:\/\/yfrog.com\/\w+$/.test(href))
                     return href + ":iphone";
 
                 // no way to get the full image for twitpic, just how a thumbnail
-                if ((m = /http\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
-                    return "http://twitpic.com/show/thumb/" + m[1];
+                if ((m = /https?\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
+                    return "https://twitpic.com/show/thumb/" + m[1];
 
                 // grab the username and the photo id
-                if ((m = /http\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
-                    return "http://picasaweb.google.com/data/media/api/user/" + m[1] + "/photoid/" + m[2];
+                if ((m = /https?\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
+                    return "https://picasaweb.google.com/data/media/api/user/" + m[1] + "/photoid/" + m[2];
 
                 // pichars images are in the in the /store/ directory with the same name
-                if (/http\:\/\/pichars.org\/\w+$/.test(href) && !/http\:\/\/pichars.org\/store\/\w+$/.test(href))
+                if (/https?\:\/\/pichars.org\/\w+$/.test(href) && !/https\:\/\/pichars.org\/store\/\w+$/.test(href))
                     return href.replace(/org/, 'org/store');
 
                 // new dropbox sharing links can be viewed directly by setting the "dl" flag
@@ -130,6 +110,29 @@ settingsLoadedEvent.addHandler(function()
 
                 // not a special case, just use the link's href
                 return href;
+            },
+
+            getImgurDetails: function(imgurName) {
+                try {
+                    // ask the imgur api for endpoint embed data
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", `${ImageLoader.imgurApiBaseUrl}/${imgurName}`, false);
+                    xhr.setRequestHeader("Authorization", ImageLoader.imgurClientId);
+                    xhr.send();
+
+                    var response = JSON.parse(xhr.responseText).data;
+                    if (response.id) {
+                        return {
+                            // return an object with our details if we're successful
+                            animated: response.animated,
+                            height: response.height,
+                            width: response.width,
+                            link: response.mp4 || response.link,
+                            id: response.id
+                        };
+                    }
+                    return false;
+                } catch (err) { console.log(err); }
             },
 
             toggleImage: function(e)
@@ -145,7 +148,7 @@ settingsLoadedEvent.addHandler(function()
                     }
                     else
                     {
-                        if (ImageLoader.isVideo(link.href) || ImageLoader.isImgurGifWithWrongExtension(link.href))
+                        if (ImageLoader.isVideo(link.href))
                         {
                             var video = ImageLoader.createVideo(link.href);
                             link.removeChild(link.firstChild);
@@ -169,7 +172,7 @@ settingsLoadedEvent.addHandler(function()
             createVideo: function(href)
             {
                 if (href.match(/imgur/))
-                    return ImageLoader.createGifv(href);
+                    return ImageLoader.createImgur(href);
                 else if (href.match(/gfycat/))
                     return ImageLoader.createGfycat(href);
                 else if (href.match(/giphy/))
@@ -177,22 +180,29 @@ settingsLoadedEvent.addHandler(function()
                 return null;
             },
 
-            createGifv: function(href)
+            createImgur: function(href)
             {
-                var video_id;
-
-                if ((video_id = href.match(/imgur\.com\/(\w+)/i)))
-                    video_id = video_id[1];
-                else
-                    return null;
-
-                var v = document.createElement("video");
-                v.className = "imageloader";
-                v.setAttribute("src", "//i.imgur.com/" + video_id + ".mp4");
-                v.setAttribute("autoplay", "");
-                v.setAttribute("loop", "");
-                v.setAttribute("muted", "");
-                return v;
+                // we exclude galleries explicitly
+                var imgurName = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(href);
+                var respObj = ImageLoader.getImgurDetails(imgurName[1]);
+                if (respObj.animated) {
+                    var v = document.createElement("video");
+                    v.className = "imageloader";
+                    v.setAttribute("autoplay", "");
+                    v.setAttribute("loop", "");
+                    v.setAttribute("muted", "");
+                    v.setAttribute("src", respObj.link);
+                    v.setAttribute("height", respObj.height);
+                    v.setAttribute("width", respObj.width);
+                    return v;
+                } else {
+                    var i = document.createElement("img");
+                    i.className = "imageloader";
+                    i.setAttribute("src", respObj.link);
+                    i.setAttribute("height", respObj.height);
+                    i.setAttribute("width", respObj.width);
+                    return i;
+                }
             },
 
             createGfycat: function(href)
@@ -201,25 +211,27 @@ settingsLoadedEvent.addHandler(function()
                 if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(href)) != null)
                     video_id = m[1];
 
-                // ask the gfycat api for the embed url (double as verification of content)
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", `https://api.gfycat.com/v1/gfycats/${video_id}`, false);
-                xhr.send();
+                try {
+                    // ask the gfycat api for the embed url (doubles as verification of content)
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", `https://api.gfycat.com/v1/gfycats/${video_id}`, false);
+                    xhr.send();
 
-                // use the mobile mp4 embed url (usually smallest)
-                var video_src = JSON.parse(xhr.responseText).gfyItem.content_urls.mobile || false;
-                if (video_src) {
-                    var v = document.createElement("video");
-                    v.className = "imageloader";
-                    v.setAttribute("autoplay", "");
-                    v.setAttribute("loop", "");
-                    v.setAttribute("muted", "");
-                    v.setAttribute("src", video_src.url);
-                    v.setAttribute("width", video_src.width);
-                    v.setAttribute("height", video_src.height);
-                    return v;
-                }
-                return false;
+                    // use the mobile mp4 embed url (usually smallest)
+                    var video_src = JSON.parse(xhr.responseText).gfyItem.content_urls.mobile || false;
+                    if (video_src) {
+                        var v = document.createElement("video");
+                        v.className = "imageloader";
+                        v.setAttribute("autoplay", "");
+                        v.setAttribute("loop", "");
+                        v.setAttribute("muted", "");
+                        v.setAttribute("src", video_src.url);
+                        v.setAttribute("width", video_src.width);
+                        v.setAttribute("height", video_src.height);
+                        return v;
+                    }
+                    return false;
+                } catch (err) { console.log(err); }
             },
 
             createGiphy: function(href)
@@ -228,7 +240,7 @@ settingsLoadedEvent.addHandler(function()
                 if ((m = /https?\:\/\/giphy\.com\/gifs\/(\w+)$/.exec(href)) != null)
                     video_id = m[1];
 
-                var video_src = "//media.giphy.com/media/" + video_id + "/giphy.mp4";
+                var video_src = "https://media.giphy.com/media/" + video_id + "/giphy.mp4";
 
                 var v = document.createElement("video");
                 v.className = "imageloader";
