@@ -32,8 +32,9 @@
                 url: `https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`
             }).then(data => {
                 if (!data.error) {
-                    g_lastEventId = parseInt(data.lastEventId);
-                    processEvents(data.events);
+                    var _data = JSON.parse(data);
+                    g_lastEventId = parseInt(_data.lastEventId);
+                    processEvents(_data.events);
                 }
                 // Short delay in between loop iterations.
                 setTimeout(loop, 5000);
@@ -168,7 +169,7 @@
             type: "GET",
             url: "https://winchatty.com/v2/getNewestEventId"
         }).then(data => {
-            g_lastEventId = parseInt(data.eventId);
+            g_lastEventId = parseInt(JSON.parse(data).eventId);
             loop();
         });
     }
