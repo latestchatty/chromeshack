@@ -30,12 +30,30 @@ ElderScroll =
                 window.addEventListener('resize', debounced, true);
             }
 
-            window.addEventListener('scroll', function (event) {
+            window.addEventListener('scroll', function(e) {
                 // test if we need to use this scroll event for ElderScroll to work
                 if (enableHandler && ElderScroll.getDivNavigation() != 0) { debounced() }
                 // kill any other 'window' level scroll event listeners besides our own
-                if (perfHack) { event.stopImmediatePropagation(); }
+                if (perfHack) { e.stopImmediatePropagation(); }
             }, true);
+
+            // apply some additional aggressive performance enhancements for Webkit
+            if (perfHack) {
+                var eventArr = [
+                    'mousemove',
+                    'animationend',
+                    'transitionend',
+                    'oAnimationEnd',
+                    'oTransitionEnd',
+                    'webkitAnimationEnd',
+                    'webkitTransitionEnd'
+                ];
+                for (var i=0; i < eventArr.length; i++) {
+                    window.addEventListener(eventArr[i], function(e) {
+                        e.stopImmediatePropagation();
+                    }, true);
+                }
+            }
         }
     },
 
