@@ -832,12 +832,13 @@ div.post_length_counter_text {
 /* pending post highlighter */
 #post_highlighter_container {
     display: inline-block;
-    position: absolute;
+    position: relative;
     z-index: 9999;
     padding: 0;
     margin: 0;
-    top: 14px;
-    left: 230px;
+    top: -26px;
+    left: 185px;
+    line-height: 16px;
 }
 #post_highlighter_container.hidden {
     display: none !important;

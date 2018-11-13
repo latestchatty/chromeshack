@@ -76,7 +76,8 @@
         return filtered;
     }
 
-    function jumpToNewPost() {
+    function jumpToNewPost(e) {
+        e.preventDefault();
         var aRefreshes = getNonCollapsedPendings();
         if (aRefreshes.length > 0) {
             var scroll = $(window).scrollTop();
@@ -100,7 +101,7 @@
     }
 
     function installJumpToNewPostButton() {
-        var header = document.getElementsByTagName('header')[0];
+        var position = document.querySelector(".header-bottom .logo.alt > a");
         var starContainer = document.createElement("div");
         var star = document.createElement('a');
         starContainer.setAttribute("id", "post_highlighter_container");
@@ -109,7 +110,7 @@
         star.addEventListener('click', jumpToNewPost);
 
         starContainer.appendChild(star);
-        header.appendChild(starContainer);
+        position.appendChild(starContainer);
     }
 
     function showOrHideJumpToNewPostButton() {
