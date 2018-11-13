@@ -59,7 +59,8 @@
             "scripts/custom_user_filters.js",
             "scripts/highlight_pending_new_posts.js",
             "scripts/options_link.js",
-            "scripts/post_length_counter.js"
+            "scripts/post_length_counter.js",
+            "scripts/thread_pane.js"
         ],
         "css": [ "chromeshack.css" ],
         "matches": [

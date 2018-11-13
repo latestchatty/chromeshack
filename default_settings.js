@@ -47,6 +47,8 @@ DefaultSettings = {
 
     video_loader_hd: true,
 
-    expiration_watcher_style: "Bar"
+    expiration_watcher_style: "Bar",
+
+    scroll_to_post_smooth: true
 
 }

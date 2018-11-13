@@ -246,16 +246,19 @@ function convertUrlToLink(text)
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
 }
 
-function scrollToElement(elem)
+function scrollToElement(elem, duration)
 {
-    // scroll our element to the center of the screen
+    if (typeof duration === 'undefined') {
+        duration = 200;
+    }
+
     $(elem).animate(
         { scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top },
-        { duration: 200, easing: 'swing'}
+        { duration: duration, easing: 'swing'}
     );
     $('html,body').animate(
-        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
-        { duration: 200, easing: 'swing'}
+        { scrollTop: $(elem).offset().top - ($(window).height()/5) },
+        { duration: duration, easing: 'swing'}
     );
 }
 

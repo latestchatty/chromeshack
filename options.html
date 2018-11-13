@@ -4,6 +4,7 @@
         <title>Chrome Shack Options</title>
         <link rel="stylesheet" type="text/css" href="options.css" />
         <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="default_settings.js"></script>
         <script type="text/javascript" src="common.js"></script>
         <script type="text/javascript" src="options.js"></script>
@@ -124,8 +125,8 @@
                 </p>
                 <p class="indent info">Work around slow scrolling performance</p>
                 <p>
-                    <input type="checkbox" class="script_check" id="scroll_to_post" />
-                    <label for="scroll_to_post">Auto post focusing</label>
+                    <label><input type="checkbox" class="script_check" id="scroll_to_post" /> Auto post focusing</label>
+                    (with <label><input type="checkbox" id="scroll_to_post_smooth">smooth scrolling</label>)
                 </p>
                 <p class="indent info">Auto center and scroll to selected posts</p>
             </div>
@@ -145,6 +146,12 @@
 
 
             <h2 class="group">Viewing Threads</h2>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="thread_pane" />
+                <label for="thread_pane">Two-Pane Layout</label>
+            </h2>
+            <p class="info">Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet modes in the mobile clients.</p>
 
             <h2>
                 <label>Highlighting</label>
