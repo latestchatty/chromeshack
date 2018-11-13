@@ -8,7 +8,8 @@ ChromeShack =
             if (arg) { cb(node, arg); }
             else { cb(node); }
             if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                scrollToElement(node);
+                const smooth = getSetting('scroll_to_post_smooth', true);
+                scrollToElement(node, smooth ? 200 : 0);
             }
         }, 100);
 

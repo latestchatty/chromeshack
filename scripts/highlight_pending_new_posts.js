@@ -99,7 +99,7 @@
     }
 
     function installJumpToNewPostButton() {
-        var body = document.getElementsByTagName('body')[0];
+        var header = document.getElementsByTagName('header')[0];
         var starContainer = document.createElement("div");
         var star = document.createElement('a');
         starContainer.setAttribute("id", "post_highlighter_container");
@@ -108,7 +108,7 @@
         star.addEventListener('click', jumpToNewPost);
 
         starContainer.appendChild(star);
-        body.appendChild(starContainer);
+        header.appendChild(starContainer);
     }
 
     function showOrHideJumpToNewPostButton() {
