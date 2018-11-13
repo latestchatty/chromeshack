@@ -399,7 +399,10 @@ function updateNotificationOptions() {
     if (getNotifications()) {
         var uid = getOption("notificationuid");
         if (uid === "" || uid === undefined) {
-            getUrl("https://winchatty.com/v2/notifications/generateId", function (res) {
+            xhrRequest({
+                type: "GET",
+                url: "https://winchatty.com/v2/notifications/generateId"
+            }).then(res => {
                 var data = JSON.parse(res.responseText);
                 var notificationUID = data.id;
                 //console.log("Got notification id of " + notificationUID);

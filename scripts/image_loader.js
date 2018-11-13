@@ -112,35 +112,13 @@ settingsLoadedEvent.addHandler(function()
                 return href;
             },
 
-            getImgurDetails: function(imgurName) {
-                try {
-                    // ask the imgur api for endpoint embed data
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", `${ImageLoader.imgurApiBaseUrl}/${imgurName}`, false);
-                    xhr.setRequestHeader("Authorization", ImageLoader.imgurClientId);
-                    xhr.send();
-
-                    var response = JSON.parse(xhr.responseText).data;
-                    if (response.id) {
-                        return {
-                            // return an object with our details if we're successful
-                            animated: response.animated,
-                            height: response.height,
-                            width: response.width,
-                            link: response.mp4 || response.link,
-                            id: response.id
-                        };
-                    }
-                    return false;
-                } catch (err) { console.log(err); }
-            },
-
             toggleImage: function(e)
             {
                 // left click only
                 if (e.button == 0)
                 {
                     var link = this;
+                    e.preventDefault();
                     if (link.childNodes[0].nodeName == "IMG" || link.childNodes[0].nodeName == "VIDEO")
                     {
                         // already showing image, collapse it
@@ -150,9 +128,12 @@ settingsLoadedEvent.addHandler(function()
                     {
                         if (ImageLoader.isVideo(link.href))
                         {
-                            var video = ImageLoader.createVideo(link.href);
-                            link.removeChild(link.firstChild);
-                            link.appendChild(video);
+                            if (link.href.match(/imgur/))
+                                ImageLoader.createImgur(link.href, link);
+                            else if (link.href.match(/gfycat/))
+                                ImageLoader.createGfycat(link.href, link);
+                            else if (link.href.match(/giphy/))
+                                ImageLoader.createGiphy(link.href, link);
                         }
                         else
                         {
@@ -163,62 +144,60 @@ settingsLoadedEvent.addHandler(function()
                             link.removeChild(link.firstChild);
                             link.appendChild(image);
                         }
-
                     }
-                    e.preventDefault();
                 }
             },
 
-            createVideo: function(href)
-            {
-                if (href.match(/imgur/))
-                    return ImageLoader.createImgur(href);
-                else if (href.match(/gfycat/))
-                    return ImageLoader.createGfycat(href);
-                else if (href.match(/giphy/))
-                    return ImageLoader.createGiphy(href);
-                return null;
-            },
-
-            createImgur: function(href)
+            createImgur: function(href, elem)
             {
                 // we exclude galleries explicitly
-                var imgurName = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(href);
-                var respObj = ImageLoader.getImgurDetails(imgurName[1]);
-                if (respObj.animated) {
-                    var v = document.createElement("video");
-                    v.className = "imageloader";
-                    v.setAttribute("autoplay", "");
-                    v.setAttribute("loop", "");
-                    v.setAttribute("muted", "");
-                    v.setAttribute("src", respObj.link);
-                    v.setAttribute("height", respObj.height);
-                    v.setAttribute("width", respObj.width);
-                    return v;
-                } else {
-                    var i = document.createElement("img");
-                    i.className = "imageloader";
-                    i.setAttribute("src", respObj.link);
-                    i.setAttribute("height", respObj.height);
-                    i.setAttribute("width", respObj.width);
-                    return i;
-                }
+                var imgurName;
+                if ((m = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(href)) != null)
+                    imgurName = m[1];
+
+                xhrRequest({
+                    type: "GET",
+                    url: `${ImageLoader.imgurApiBaseUrl}/${imgurName}`,
+                    headers: Map(["Authorization", ImageLoader.imgurClientId]),
+                }).then(xhr => {
+                    var response = JSON.parse(xhr).data;
+                    if (response.id && response.animated) {
+                        var v = document.createElement("video");
+                        v.className = "imageloader";
+                        v.setAttribute("autoplay", "");
+                        v.setAttribute("loop", "");
+                        v.setAttribute("muted", "");
+                        v.setAttribute("src", response.link);
+                        v.setAttribute("height", response.height);
+                        v.setAttribute("width", response.width);
+                        elem.removeChild(elem.firstChild);
+                        elem.appendChild(i);
+                    } else if (response.id) {
+                        var i = document.createElement("img");
+                        i.className = "imageloader";
+                        i.setAttribute("src", response.link);
+                        i.setAttribute("height", response.height);
+                        i.setAttribute("width", response.width);
+                        elem.removeChild(elem.firstChild);
+                        elem.appendChild(i);
+                    }
+                });
             },
 
-            createGfycat: function(href)
+            createGfycat: function(href, elem)
             {
                 var video_id;
                 if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(href)) != null)
                     video_id = m[1];
 
-                try {
-                    // ask the gfycat api for the embed url (doubles as verification of content)
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", `https://api.gfycat.com/v1/gfycats/${video_id}`, false);
-                    xhr.send();
-
+                // ask the gfycat api for the embed url (doubles as verification of content)
+                xhrRequest({
+                    type: "GET",
+                    url: `https://api.gfycat.com/v1/gfycats/${video_id}`,
+                    headers: new Map().set("Authorization", ImageLoader.imgurClientId),
+                }).then(xhr => {
                     // use the mobile mp4 embed url (usually smallest)
-                    var video_src = JSON.parse(xhr.responseText).gfyItem.content_urls.mobile || false;
+                    var video_src = JSON.parse(xhr).gfyItem.content_urls.mobile || false;
                     if (video_src) {
                         var v = document.createElement("video");
                         v.className = "imageloader";
@@ -228,13 +207,13 @@ settingsLoadedEvent.addHandler(function()
                         v.setAttribute("src", video_src.url);
                         v.setAttribute("width", video_src.width);
                         v.setAttribute("height", video_src.height);
-                        return v;
+                        elem.removeChild(elem.firstChild);
+                        elem.appendChild(v);
                     }
-                    return false;
-                } catch (err) { console.log(err); }
+                });
             },
 
-            createGiphy: function(href)
+            createGiphy: function(href, elem)
             {
                 var video_id;
                 if ((m = /https?\:\/\/giphy\.com\/gifs\/(\w+)$/.exec(href)) != null)
@@ -248,7 +227,8 @@ settingsLoadedEvent.addHandler(function()
                 v.setAttribute("autoplay", "");
                 v.setAttribute("loop", "");
                 v.setAttribute("muted", "");
-                return v;
+                elem.removeChild(elem.firstChild);
+                elem.appendChild(v);
             }
         }
 

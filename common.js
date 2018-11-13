@@ -73,56 +73,26 @@ String.prototype.trim = function()
     return this.replace(/^\s+|\s+$/g,"");
 }
 
-// utility function to make an XMLHttpRequest
-function getUrl(url, callback, errorCallback)
-{
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState == 4) {
-            if (xhr.status >= 200 && xhr.status <= 399) {
-                callback(xhr);
-            } else if (errorCallback) {
-                errorCallback();
-            }
+// more flexible promisified XHR helper
+function xhrRequest({ type, url, headers, body }) {
+    return new Promise((resolve, reject) => {
+        // headers is a Map()
+        var xhr = new XMLHttpRequest();
+        xhr.open(type, url, true);
+        if (headers) {
+            Object.keys(headers).forEach(key => {
+                xhr.setRequestHeader(key, headers[key]);
+            });
         }
-    };
-    xhr.open("GET", url, true);
-    xhr.send();
-}
-
-function putUrl(url, data, callback)
-{
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function()
-	{
-		if(xhr.readyState == 4)
-		{
-			if(xhr != undefined && xhr != null)
-			{
-				callback(xhr);
-			}
-		}
-	}
-	xhr.open("PUT", url, true);
-	xhr.send(data);
-}
-
-function postUrl(url, data, callback)
-{
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function()
-	{
-		if(xhr.readyState == 4)
-		{
-			if(xhr != undefined && xhr != null)
-			{
-				callback(xhr);
-			}
-		}
-	}
-	xhr.open("POST", url, true);
-	xhr.send(data);
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300)
+                resolve(xhr.response);
+            else
+                reject(xhr.statusText);
+        };
+        xhr.onerror = () => reject(xhr.statusText);
+        xhr.send(body);
+    })
 }
 
 function postFormUrl(url, data, callback)

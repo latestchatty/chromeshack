@@ -1,74 +1,44 @@
 (function() {
     var g_lastEventId = 0;
 
-    function has(obj, key) {
-        return Object.prototype.hasOwnProperty.call(obj, key);
-    }
-
     function startsWith(haystack, needle) {
         return haystack.indexOf(needle) == 0;
     }
 
-    function ajaxGet(url, doneFunc, failFunc) {
-        $.ajax({
-            type: "GET",
-            url: url,
-            cache: false,
-            dataType: 'json',
-        }).done(function(data, textStatus, jqXHR) {
-            if (has(data, 'error')) {
-                var message = `${data.code} - ${data.message}`;
-                console.log(`Request failed: ${url} - ${message}`);
-                failFunc(message);
-            } else {
-                doneFunc(data);
-            }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            var message = '';
-            if ($.type(textStatus) === 'string') {
-                message += textStatus;
-            } else {
-                message += 'unknown error';
-            }
-            if ($.type(errorThrown) === 'string') {
-                message += ` - ${errorThrown}`;
-            }
-            console.log(`Request failed: ${url} - ${message}`);
-            failFunc(message);
-        });
-    }
-
     function processEvents(events) {
-        for (var i = 0; i < events.length; i++) {
-            var evt = events[i];
-            if (evt.eventType !== 'newPost')
-                continue;
+        if (events != null) {
+            for (var i = 0; i < events.length; i++) {
+                var evt = events[i];
+                if (evt.eventType !== 'newPost')
+                    continue;
 
-            var postId = parseInt(evt.eventData.postId);
-            if (document.getElementById(`item_${postId}`) !== null)
-                continue; // Received an event for a post we already have.
+                var postId = parseInt(evt.eventData.postId);
+                if (document.getElementById(`item_${postId}`) !== null)
+                    continue; // Received an event for a post we already have.
 
-            var threadId = parseInt(evt.eventData.post.threadId);
-            var a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
-            if (a !== null)
-                a.classList.add("refresh_pending");
+                var threadId = parseInt(evt.eventData.post.threadId);
+                var a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
+                if (a !== null)
+                    a.classList.add("refresh_pending");
+            }
+            showOrHideJumpToNewPostButton();
         }
-        showOrHideJumpToNewPostButton();
     }
 
     function loop() {
-        ajaxGet(
-            'https://winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
-            function(data) {
-                g_lastEventId = parseInt(data.lastEventId);
-                processEvents(data.events);
-
+        try {
+            xhrRequest({
+                type: "GET",
+                url: `https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`
+            }).then(data => {
+                if (!data.error) {
+                    g_lastEventId = parseInt(data.lastEventId);
+                    processEvents(data.events);
+                }
                 // Short delay in between loop iterations.
-                setTimeout(loop, 2000);
-            },
-            function(error) {
-                // This is a non-essential feature so we will simply stop looping if this fails.
+                setTimeout(loop, 5000);
             });
+        } catch (e) { };
     }
 
     function isCollapsed(aRefresh) {
@@ -194,15 +164,13 @@
         });
 
         // We need to get an initial event ID to start with.
-        ajaxGet(
-            'https://winchatty.com/v2/getNewestEventId',
-            function(data) {
-                g_lastEventId = parseInt(data.eventId);
-                loop();
-            },
-            function(error) {
-                // This is a non-essential feature so we will simply disable the feature if this fails.
-            });
+        xhrRequest({
+            type: "GET",
+            url: "https://winchatty.com/v2/getNewestEventId"
+        }).then(data => {
+            g_lastEventId = parseInt(data.eventId);
+            loop();
+        });
     }
 
     settingsLoadedEvent.addHandler(function() {

@@ -143,56 +143,54 @@ ElderScroll =
         }
         nextPageURL += '://www.shacknews.com/chatty?page=' + ElderScroll.getNextPage();
 
-        getUrl(nextPageURL, function(response)
-        {
+        xhrRequest({
+            type: "GET",
+            url: nextPageURL
+        }).then(response => {
             divThreads.removeChild(ElderScroll.getDivMessage());
+            // a _bad_ way of doing this...
+            var divResponse = document.createElement('div');
+            divResponse.replaceHTML(response);
 
-            if (response.status == 200)
+            var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
+            var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
+            var newDivThreads = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'threads');
+
+            var fragment = document.createDocumentFragment();
+
+            /* To try to preserve the DOM of the original page,
+            we'll include text nodes even if they're just
+            linebreaks. Some other script might rely on those being
+            there. */
+            fragment.appendChild(newDivThreads.childNodes[0].cloneNode(true));
+
+            // Every 4th node is a new thread.
+            for (var i = 1; i < newDivThreads.childNodes.length; i = i + 4)
             {
-                // a _bad_ way of doing this...
-                var divResponse = document.createElement('div');
-                divResponse.replaceHTML(response.responseText);
-
-                var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
-                var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
-                var newDivThreads = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'threads');
-
-                var fragment = document.createDocumentFragment();
-
-                /* To try to preserve the DOM of the original page,
-                we'll include text nodes even if they're just
-                linebreaks. Some other script might rely on those being
-                there. */
-                fragment.appendChild(newDivThreads.childNodes[0].cloneNode(true));
-
-                // Every 4th node is a new thread.
-                for (var i = 1; i < newDivThreads.childNodes.length; i = i + 4)
-                {
-                    if (newDivThreads.childNodes[i].tagName == 'DIV' && ElderScroll.rootThreads.indexOf(newDivThreads.childNodes[i].id.substr(5)) == -1 ) {
-                        ElderScroll.rootThreads.push(newDivThreads.childNodes[i].id.substr(5));
-                        fragment.appendChild(newDivThreads.childNodes[i].cloneNode(true));      // <div id="root...
-                        fragment.appendChild(newDivThreads.childNodes[i+1].cloneNode(true));    // text node
-                        fragment.appendChild(newDivThreads.childNodes[i+2].cloneNode(true));    // <hr class="ielarynxhack">
-                        fragment.appendChild(newDivThreads.childNodes[i+3].cloneNode(true));    // text node
-                    } else {
-                        if (newDivThreads.childNodes[i].tagName == 'DIV')
-                            console.log("ElderScroll: Skipping dupe thread " + newDivThreads.childNodes[i].id);
-                    }
+                if (newDivThreads.childNodes[i].tagName == 'DIV' && ElderScroll.rootThreads.indexOf(newDivThreads.childNodes[i].id.substr(5)) == -1 ) {
+                    ElderScroll.rootThreads.push(newDivThreads.childNodes[i].id.substr(5));
+                    fragment.appendChild(newDivThreads.childNodes[i].cloneNode(true));      // <div id="root...
+                    fragment.appendChild(newDivThreads.childNodes[i+1].cloneNode(true));    // text node
+                    fragment.appendChild(newDivThreads.childNodes[i+2].cloneNode(true));    // <hr class="ielarynxhack">
+                    fragment.appendChild(newDivThreads.childNodes[i+3].cloneNode(true));    // text node
+                } else {
+                    if (newDivThreads.childNodes[i].tagName == 'DIV')
+                        console.log("ElderScroll: Skipping dupe thread " + newDivThreads.childNodes[i].id);
                 }
-
-                divThreads.appendChild(fragment.cloneNode(true));
-
-                // update pageNavigation divs
-                var divThreadContainer = ElderScroll.getDivThreadContainer();
-                var divNavigation = ElderScroll.getDivNavigation();
-                divNavigation[0].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[0]);
-                divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);
-
-                ElderScroll.isLoadingNew = false;
-            } else {
-                console.log(response);
-                divThreads.appendChild(ElderScroll.createDivMessage('Something broke.', false));
             }
+
+            divThreads.appendChild(fragment.cloneNode(true));
+
+            // update pageNavigation divs
+            var divThreadContainer = ElderScroll.getDivThreadContainer();
+            var divNavigation = ElderScroll.getDivNavigation();
+            divNavigation[0].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[0]);
+            divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);
+
+            ElderScroll.isLoadingNew = false;
+        }).catch(err => {
+            console.log(err);
+            divThreads.appendChild(ElderScroll.createDivMessage('Something broke.', false));
         });
     }
 }

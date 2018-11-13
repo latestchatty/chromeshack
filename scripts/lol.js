@@ -153,34 +153,33 @@ settingsLoadedEvent.addHandler(function()
             getUsers: function(tag, id)
             {
                 var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
+                xhrRequest({
+                    type: "GET",
+                    url
+                }).then(res => {
+                    var response = JSON.parse(res);
+                    var post = document.getElementById("item_" + id);
+                    var body = post.getElementsByClassName("postbody")[0];
+                    var container = document.getElementById(`taggers_${id}`);
+                    var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
 
-                getUrl(url, function(response)
-                {
-                    if (response.status == 200) {
-                        var response = JSON.parse(response.responseText);
-                        var post = document.getElementById("item_" + id);
-                        var body = post.getElementsByClassName("postbody")[0];
-                        var container = document.getElementById(`taggers_${id}`);
-                        var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
+                    if (!container) {
+                        container = document.createElement("div");
+                        container.id = "taggers_" + id;
+                    } else if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
 
-                        if (!container) {
-                            container = document.createElement("div");
-                            container.id = "taggers_" + id;
-                        } else if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
-
-                        var tagSection = document.createElement("div");
-                        tagSection.className = `oneline_${tag}s`;
-                        response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
-                            var taggerNode = document.createElement("span");
-                            taggerNode.className = 'oneline_' + tag;
-                            taggerNode.innerText = tagger;
-                            tagSection.appendChild(taggerNode);
-                        });
-                        container.appendChild(tagSection);
-                        body.appendChild(container);
-                    } else {
-                        alert("Problem getting taggers. Try again.");
-                    }
+                    var tagSection = document.createElement("div");
+                    tagSection.className = `oneline_${tag}s`;
+                    response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                        var taggerNode = document.createElement("span");
+                        taggerNode.className = 'oneline_' + tag;
+                        taggerNode.innerText = tagger;
+                        tagSection.appendChild(taggerNode);
+                    });
+                    container.appendChild(tagSection);
+                    body.appendChild(container);
+                }).catch(err => {
+                    alert("Problem getting taggers. Try again.");
                 });
             },
 
@@ -421,14 +420,16 @@ settingsLoadedEvent.addHandler(function()
 
             getCounts: function()
             {
-                getUrl(LOL.COUNT_URL, function(response)
-                {
+                xhrRequest({
+                    type: "GET",
+                    url: LOL.COUNT_URL
+                }).then(response => {
                     if (response.status == 200)
                     {
                         // Store original LOL.counts
                         var oldLolCounts = LOL.counts;
 
-                        LOL.counts = JSON.parse(response.responseText);
+                        LOL.counts = JSON.parse(response);
 
                         setSetting("lol-counts", LOL.counts);
                         setSetting("lol-counts-time", new Date().getTime());

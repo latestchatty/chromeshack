@@ -265,6 +265,86 @@ div.getPost span.user a {
     text-decoration: none;
 }
 
+/* shack userpopup */
+
+body .in, .base-level { overflow: visible !important; }
+.userDropdown.hidden { display: none; }
+span.author { position: relative !important; }
+div.threads ul ul span.author ul {
+    margin-left: 0;
+    background-image: none;
+    bottom: auto;
+}
+div.threads ul ul li span.author li {
+    padding-left: 0;
+    background-image: none;
+}
+.userDropdown {
+    position: absolute !important;
+    top: 28px;
+    left: 0;
+    width: auto !important;
+    background: #222 !important;
+    z-index: 9999;
+    text-align: left;
+    border: 1px solid #333;
+    box-shadow: 3px 3px 4px #000;
+    font-weight: normal;
+    font-size: 12px;
+    padding: 0 !important;
+}
+.user a .userDropdown {
+    top: 1.5em;
+    left: 0;
+}
+.userDropdown li {
+    overflow: hidden;
+    background-color: inherit;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-image: none !important;
+    display: block !important;
+    width: 100% !important;
+    line-height: 2.5em;
+    border-bottom: 1px solid #333 !important;
+    z-index: 9999;
+}
+.userDropdown li.userDropdown-separator {
+    border-bottom: 1px solid #666 !important;
+}
+.userDropdown li a {
+    display: block;
+    width: 100% !important;
+    white-space: nowrap;
+    padding: 4px 12px !important;
+    margin: 0 !important;
+    color: #ddd !important;
+    font-weight: normal !important;
+    font-size: 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    text-align: left !important;
+}
+.userDropdown li a:hover {
+    color: #fff;
+    background-color: #524A60 !important;
+}
+#lolWorkingBar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 2.5em;
+    width: 100%;
+    line-height: 2.5em;
+    background-color: #000;
+    color: #fff;
+    font-size: 150%;
+    font-weight: bold;
+    display: none;
+    text-align: center;
+}
+
 /* elder scroll */
 
 #elderscroll-message {
@@ -822,3 +902,15 @@ div[id^="taggers_"] div[class^="oneline_"] > span {
 .oneline_unfs > span { background: #ff0000; }
 .oneline_tags > span { background: #77bb22; }
 .oneline_wtfs > span { background: #c000c0; }
+
+.postbody div[id^="tweet-container_"] {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 98%;
+    padding: 0.25em 0.5em 0.25em 0;
+    margin: 0.25em 0 0 0;
+    min-height: 1;
+    max-width: 97%;
+    border: 1px #2f8484 solid;
+    background-color: #1d1d1d;
+}
