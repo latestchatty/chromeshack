@@ -14,7 +14,10 @@
 
     // regenerate the thread pane when the user refreshes a thread.
     document.getElementById('dom_iframe').addEventListener('load', function() {
-        setTimeout(() => install(), 0);
+        if (getSetting('enabled_scripts').contains('thread_pane')) {
+            // only if two-pane is enabled!
+            setTimeout(() => install(), 0);
+        }
     });
 
     function install() {
