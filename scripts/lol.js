@@ -424,21 +424,18 @@ settingsLoadedEvent.addHandler(function()
                     type: "GET",
                     url: LOL.COUNT_URL
                 }).then(response => {
-                    if (response.status == 200)
+                    // Store original LOL.counts
+                    var oldLolCounts = LOL.counts;
+
+                    LOL.counts = JSON.parse(response);
+
+                    setSetting("lol-counts", LOL.counts);
+                    setSetting("lol-counts-time", new Date().getTime());
+
+                    // Call displayCounts again only if the counts have actually changed
+                    if (LOL.counts != oldLolCounts)
                     {
-                        // Store original LOL.counts
-                        var oldLolCounts = LOL.counts;
-
-                        LOL.counts = JSON.parse(response);
-
-                        setSetting("lol-counts", LOL.counts);
-                        setSetting("lol-counts-time", new Date().getTime());
-
-                        // Call displayCounts again only if the counts have actually changed
-                        if (LOL.counts != oldLolCounts)
-                        {
-                            LOL.displayCounts();
-                        }
+                        LOL.displayCounts();
                     }
                 });
             },

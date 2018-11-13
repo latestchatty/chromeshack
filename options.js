@@ -404,7 +404,7 @@ function updateNotificationOptions() {
                 type: "GET",
                 url: "https://winchatty.com/v2/notifications/generateId"
             }).then(res => {
-                var data = JSON.parse(res.responseText);
+                var data = JSON.parse(res);
                 var notificationUID = data.id;
                 //console.log("Got notification id of " + notificationUID);
                 saveOption("notificationuid", notificationUID);
