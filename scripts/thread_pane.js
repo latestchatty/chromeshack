@@ -123,7 +123,7 @@ let refreshThreadPane;
                 $cardDiv.removeClass('cs_dim_animation');
 
                 setTimeout(() => {
-                    window.scrollTo(0, $li.offset().top - ($(window).height()/2));
+                    window.scrollTo(0, $li.offset().top - ($(window).height()/3));
 
                     $opDiv.addClass('cs_flash_animation');
                     $li.addClass('cs_flash_animation');

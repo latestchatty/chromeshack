@@ -257,7 +257,7 @@ function scrollToElement(elem, duration)
         { duration: duration, easing: 'swing'}
     );
     $('html,body').animate(
-        { scrollTop: $(elem).offset().top - ($(window).height()/2) },
+        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
         { duration: duration, easing: 'swing'}
     );
 }
