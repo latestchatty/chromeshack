@@ -747,6 +747,7 @@ button#previewButton:hover {
 div.post_length_counter_text {
     font-size: 10px;
     color: #C0C0C0;
+    margin-top: -10px;
 }
 
 /* pending post highlighter */

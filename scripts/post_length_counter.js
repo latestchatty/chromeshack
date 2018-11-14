@@ -8,7 +8,7 @@ settingsLoadedEvent.addHandler(() => {
             return;
 
         // install a div at the top of the post box
-        $('form#postform').prepend($('<div>', {
+        $('div.ctextarea').after($('<div>', {
             class: 'post_length_counter_text'
         }));
 
