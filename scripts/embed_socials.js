@@ -85,7 +85,7 @@ settingsLoadedEvent.addHandler(function() {
 
             createInstagram: function(postId, parentElem) {
                 var postUrl = `https://www.instagram.com/p/${postId}/`;
-                var apiUrl = "https://api.instagram.com/oembed?omitscript=true&maxwidth=500&url=";
+                var apiUrl = "https://www.instagram.com/publicapi/oembed/?omitscript=true&maxwidth=500&url=";
                 var instgrmContainer = document.createElement("div");
                 var _target = `instgrm-container_${postId}`;
                 instgrmContainer.id = _target;
