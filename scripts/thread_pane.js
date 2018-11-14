@@ -18,7 +18,7 @@ let refreshThreadPane;
 
     // regenerate the thread pane when the user refreshes a thread.
     document.getElementById('dom_iframe').addEventListener('load', function() {
-        setTimeout(() => install(), 0);
+        setTimeout(refreshThreadPane, 0);
     });
 
     function install() {
