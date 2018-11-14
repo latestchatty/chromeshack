@@ -54,6 +54,11 @@
                 a.classList.add("refresh_pending");
         }
         showOrHideJumpToNewPostButton();
+
+        // if the Thread Pane script is loaded, then refresh the thread pane
+        if (typeof refreshThreadPane !== 'undefined') {
+            refreshThreadPane();
+        }
     }
 
     function loop() {

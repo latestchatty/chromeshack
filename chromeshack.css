@@ -857,6 +857,10 @@ div.cs_thread_pane_card_ontopic {
     border-left: 1px solid #444;
 }
 
+div.cs_thread_pane_card_refresh_pending {
+    border-left: 1px dotted #87ceeb;
+}
+
 div.cs_thread_pane_root_author {
     font-family: sans-serif;
     font-size: 13px;
