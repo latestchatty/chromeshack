@@ -32,7 +32,7 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
-                else if (/https?\:\/\/giphy\.com\/gifs\/\w+$/.test(href))
+                else if (/https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/.test(href))
                 {
                     return true;
                 }
@@ -215,20 +215,23 @@ settingsLoadedEvent.addHandler(function()
 
             createGiphy: function(href, elem)
             {
-                var video_id;
-                if ((m = /https?\:\/\/giphy\.com\/gifs\/(\w+)$/.exec(href)) != null)
-                    video_id = m[1];
+                var _isGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i;
+                var _matchGiphy = _isGiphy.exec(href);
+                var _giphyId;
+                if (_matchGiphy != null && _matchGiphy.length > 0)
+                    _giphyId = _matchGiphy[1] || _matchGiphy[2];
 
-                var video_src = "https://media.giphy.com/media/" + video_id + "/giphy.mp4";
-
-                var v = document.createElement("video");
-                v.className = "imageloader";
-                v.setAttribute("src", video_src);
-                v.setAttribute("autoplay", "");
-                v.setAttribute("loop", "");
-                v.setAttribute("muted", "");
-                elem.removeChild(elem.firstChild);
-                elem.appendChild(v);
+                if (_giphyId) {
+                    var video_src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
+                    var v = document.createElement("video");
+                    v.className = "imageloader";
+                    v.setAttribute("src", video_src);
+                    v.setAttribute("autoplay", "");
+                    v.setAttribute("loop", "");
+                    v.setAttribute("muted", "");
+                    elem.removeChild(elem.firstChild);
+                    elem.appendChild(v);
+                } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
             }
         }
 
