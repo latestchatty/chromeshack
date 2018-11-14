@@ -153,7 +153,6 @@ function pollNotifications()
         var notificationuid = getSetting("notificationuid");
         //console.log("Notification UID is " + notificationuid);
         if (notificationuid != "" && notificationuid != undefined) {
-            //http://notifications.winchatty.com/v2/notifications/waitForNotification
             postFormUrl("https://winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
                 function (res) {
                     try {
@@ -282,23 +281,18 @@ browser.runtime.onMessage.addListener(function(request, sender)
             showPageAction(tab.id, tab.url);
         return Promise.resolve(getSettings());
     }
-    else if (request.name == "setSetting")
-        setSetting(request.key, request.value);
-    else if (request.name == "collapseThread")
-        collapseThread(request.id);
-    else if (request.name == "unCollapseThread")
-        unCollapseThread(request.id);
+    else if (request.name === "setSetting")
+        return Promise.resolve(setSetting(request.key, request.value));
+    else if (request.name === "collapseThread")
+        return Promise.resolve(collapseThread(request.id));
+    else if (request.name === "unCollapseThread")
+        return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
-    {
-        openIncognito(request.value);
-        return Promise.resolve();
-    }
-    else if (request.name === 'allowedIncognitoAccess') {
+        return Promise.resolve(openIncognito(request.value));
+    else if (request.name === "allowedIncognitoAccess")
         return Promise.resolve(allowedIncognito);
-    }
-    else {
-        return Promise.resolve();
-    }
+
+    return Promise.resolve();
 });
 
 addContextMenus();

@@ -902,16 +902,19 @@ div[id^="taggers_"] div[class^="oneline_"] > span {
 .oneline_tags > span { background: #77bb22; }
 .oneline_wtfs > span { background: #c000c0; }
 
-.postbody div[id^="tweet-container_"] {
-    display: flex;
-    flex-direction: column;
-    flex-basis: 98%;
-    padding: 0.25em 0.5em 0.25em 0;
-    margin: 0.25em 0 0 0;
+/* social embedding styling containers */
+.postbody div[id^="tweet-container_"],
+.postbody div[id^="instgrm-container_"] {
+    display: block;
     min-height: 1;
-    max-width: 97%;
-    border: 1px #2f8484 solid;
-    background-color: #1d1d1d;
+    min-width: 1;
+    padding: 0;
+    margin: 1em 0 0 0;
+    background-color: transparent;
+}
+.postbody div[id^="tweet-container_"] .hidden,
+.postbody div[id^="instgrm-container_"] .hidden {
+    display: none !important;
 }
 
 /* two-pane layout ***************************************************************************************************/

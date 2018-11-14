@@ -218,17 +218,13 @@ function convertUrlToLink(text)
 
 function scrollToElement(elem, duration)
 {
-    if (typeof duration === 'undefined') {
-        duration = 200;
-    }
-
     $(elem).animate(
         { scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top },
-        { duration: duration, easing: 'swing'}
+        { duration: duration ? 150 : duration, easing: 'swing'}
     );
     $('html,body').animate(
-        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
-        { duration: duration, easing: 'swing'}
+        { scrollTop: $(elem).offset().top - ($(window).height()/4) },
+        { duration: duration ? 150 : duration, easing: 'swing'}
     );
 }
 
