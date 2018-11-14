@@ -869,13 +869,17 @@ a.refresh_pending {
     height: 15px !important;
 }
 
-.postmeta a[id^="get_lol_users_"] {
+/* LOL and Who-LOL'd script */
+.postmeta a.get_lol_users {
     /* styling for LOL'er button */
     padding: 0;
     margin: 0 -2px 0 -8px;
 }
-.postbody div[id^="taggers_"] { margin: 1em 0 0.25em 0; }
-.postbody div[id^="taggers_"] > div[class^="oneline_"] {
+.postbody .tagger_container { margin: 1em 0 0.25em 0; }
+.postbody .oneline_lols,
+.postbody .oneline_infs,
+.postbody .oneline_unfs,
+.postbody .oneline_tags {
     /* styling for tagger container */
     display: flex;
     flex-wrap: wrap;
@@ -885,8 +889,16 @@ a.refresh_pending {
     word-break: break-word;
     white-space: nowrap;
 }
-div[id^="taggers_"] div[class^="oneline_"].hidden { display: none !important; }
-div[id^="taggers_"] div[class^="oneline_"] > span {
+.postbody .oneline_lols.hidden,
+.postbody .oneline_infs.hidden,
+.postbody .oneline_unfs.hidden,
+.postbody .oneline_tags.hidden {
+    display: none !important;
+}
+.oneline_lols .oneline_lol,
+.oneline_infs .oneline_inf,
+.oneline_unfs .oneline_unf,
+.oneline_tags .oneline_tag {
     /* set some general tag button rules */
     border-radius: 2px;
     color: #000;
@@ -901,10 +913,11 @@ div[id^="taggers_"] div[class^="oneline_"] > span {
 .oneline_unfs > span { background: #ff0000; }
 .oneline_tags > span { background: #77bb22; }
 .oneline_wtfs > span { background: #c000c0; }
+/* end LOL stuff */
 
 /* social embedding styling containers */
-.postbody div[id^="tweet-container_"],
-.postbody div[id^="instgrm-container_"] {
+.postbody .tweet-container,
+.postbody .instgrm-container {
     display: block;
     min-height: 1;
     min-width: 1;
@@ -912,8 +925,8 @@ div[id^="taggers_"] div[class^="oneline_"] > span {
     margin: 1em 0 0 0;
     background-color: transparent;
 }
-.postbody div[id^="tweet-container_"] .hidden,
-.postbody div[id^="instgrm-container_"] .hidden {
+.postbody .tweet-container.hidden,
+.postbody .instgrm-container.hidden {
     display: none !important;
 }
 

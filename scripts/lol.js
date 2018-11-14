@@ -108,11 +108,11 @@ settingsLoadedEvent.addHandler(function()
             {
                 var button = document.createElement("a");
                 button.href = "#";
-                button.className = "hidden";
                 button.innerText = " ";
                 button.id = "get_lol_users_" + tag + "_" + id;
                 button.dataset.threadid = id;
                 button.dataset.loltag = tag;
+                button.setAttribute("class", "get_lol_users hidden");
                 button.addEventListener("click", (e) => { LOL.getUsers(tag, id); e.preventDefault(); });
 
                 var icon = document.createElement("span");
@@ -166,6 +166,7 @@ settingsLoadedEvent.addHandler(function()
                     if (!container) {
                         container = document.createElement("div");
                         container.id = "taggers_" + id;
+                        container.setAttribute("class", "tagger_container");
                     } else if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
 
                     var tagSection = document.createElement("div");
@@ -340,7 +341,7 @@ settingsLoadedEvent.addHandler(function()
 
                         var get_users_element = document.getElementById("get_lol_users_" + tag + "_" + id);
                         if(get_users_element) {
-                            get_users_element.className = ""; //Unhide since there are taggers.
+                            get_users_element.classList.remove("hidden"); //Unhide since there are taggers.
                         }
 
                         // Add * x indicators in the fullpost

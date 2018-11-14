@@ -64,6 +64,7 @@ settingsLoadedEvent.addHandler(function() {
             createTwitter: function(postUrl, postId, parentElem) {
                 var twttrContainer = document.createElement("div");
                 twttrContainer.id = `tweet-container_${postId}`;
+                twttrContainer.setAttribute("class", "tweet-container");
                 parentElem.appendChild(twttrContainer);
                 var _target = `tweet-container_${postId}`;
 
@@ -87,6 +88,7 @@ settingsLoadedEvent.addHandler(function() {
                 var postUrl = `https://www.instagram.com/p/${postId}/`;
                 var apiUrl = "https://www.instagram.com/publicapi/oembed/?omitscript=true&maxwidth=500&url=";
                 var instgrmContainer = document.createElement("div");
+                instgrmContainer.setAttribute("class", "instgrm-container");
                 var _target = `instgrm-container_${postId}`;
                 instgrmContainer.id = _target;
 
