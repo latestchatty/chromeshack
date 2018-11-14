@@ -1,5 +1,7 @@
+let refreshThreadPane;
+
 (() => {
-    settingsLoadedEvent.addHandler(function() {
+    refreshThreadPane = () => {
         if (getSetting('enabled_scripts').contains('thread_pane')) {
             try {
                 install();
@@ -10,7 +12,9 @@
                 $('body').removeClass('cs_thread_pane_enable');
             }
         }
-    });
+    };
+
+    settingsLoadedEvent.addHandler(refreshThreadPane);
 
     // regenerate the thread pane when the user refreshes a thread.
     document.getElementById('dom_iframe').addEventListener('load', function() {
@@ -57,13 +61,16 @@
             const rootBodyHtml = getHtmlWithTrimmedLineBreaks($rootBodyDiv);
             const postCount = parseThreadPostCount($threadDiv, threadId);
             const { parentIsRoot, mostRecentSubtree } = parseMostRecentPosts($threadDiv, threadId);
+            const isRefreshPending = $opDiv.find('.refresh_pending').length > 0;
 
             // begin constructing the thread summary card in the thread pane
             const $cardDiv = $('<div class="cs_thread_pane_card">');
             $cardDiv.append($('<div class="cs_thread_pane_post_count">').text(`${postCount} post${postCount === 1 ? '' : 's'}`));
             $cardDiv.append($('<div class="cs_thread_pane_root_author">').text(rootAuthor));
 
-            if ($opDiv.hasClass('fpmod_nws')) {
+            if (isRefreshPending) {
+                $cardDiv.addClass('cs_thread_pane_card_refresh_pending');
+            } else if ($opDiv.hasClass('fpmod_nws')) {
                 $cardDiv.addClass('cs_thread_pane_card_nws');
             } else if ($opDiv.hasClass('fpmod_informative')) {
                 $cardDiv.addClass('cs_thread_pane_card_informative');
@@ -103,14 +110,26 @@
                 $repliesDiv.addClass('cs_thread_pane_replies_not_at_root');
             }
 
+            let mostRecentPostId = threadId;
+            for (const { postId } of mostRecentSubtree) {
+                if (postId > mostRecentPostId) {
+                    mostRecentPostId = postId;
+                }
+            }
+
             $cardDiv.click(() => {
-                scrollToElement($opDiv[0], 0);
+                const $li = $(`li#item_${mostRecentPostId}`);
+                uncapThread(threadId);
 
                 $opDiv.removeClass('cs_flash_animation');
+                $li.removeClass('cs_flash_animation');
                 $cardDiv.removeClass('cs_dim_animation');
 
                 setTimeout(() => {
+                    window.scrollTo(0, $li.offset().top - ($(window).height()/3));
+
                     $opDiv.addClass('cs_flash_animation');
+                    $li.addClass('cs_flash_animation');
                     $cardDiv.addClass('cs_dim_animation');
                 }, 0);
             });
@@ -181,7 +200,7 @@
                 $oneline = $($post.find('div.oneline')[0]);
                 const postAuthor = $($oneline.find('span.oneline_user')[0]).text();
                 const postPreviewHtml = $($oneline.find('span.oneline_body')[0]).html();
-                mostRecentSubtree.push({ postAuthor, postPreviewHtml });
+                mostRecentSubtree.push({ postAuthor, postPreviewHtml, postId });
             }
             $post = $post.parent();
         }
@@ -191,4 +210,11 @@
         const parentIsRoot = mostRecentSubtree.length <= maxReplies;
         return { parentIsRoot, mostRecentSubtree: mostRecentSubtree.slice(0, maxReplies) };
     }
+
+    function uncapThread(threadId) {
+        const $a = $(`#root_${threadId}`);
+        if ($a.hasClass('capped')) {
+            $a.removeClass('capped');
+        }
+    }    
 })();

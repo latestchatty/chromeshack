@@ -827,6 +827,7 @@ button#previewButton:hover {
 div.post_length_counter_text {
     font-size: 10px;
     color: #C0C0C0;
+    margin-top: -10px;
 }
 
 /* pending post highlighter */
@@ -981,6 +982,10 @@ div.cs_thread_pane_card_political {
 
 div.cs_thread_pane_card_ontopic {
     border-left: 1px solid #444;
+}
+
+div.cs_thread_pane_card_refresh_pending {
+    border-left: 1px dotted #87ceeb;
 }
 
 div.cs_thread_pane_root_author {

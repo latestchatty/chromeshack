@@ -6,22 +6,25 @@
     }
 
     function processEvents(events) {
-        if (events != null) {
-            for (var i = 0; i < events.length; i++) {
-                var evt = events[i];
-                if (evt.eventType !== 'newPost')
-                    continue;
+        for (var i = 0; i < events.length; i++) {
+            var evt = events[i];
+            if (evt.eventType !== 'newPost')
+                continue;
 
-                var postId = parseInt(evt.eventData.postId);
-                if (document.getElementById(`item_${postId}`) !== null)
-                    continue; // Received an event for a post we already have.
+            var postId = parseInt(evt.eventData.postId);
+            if (document.getElementById(`item_${postId}`) !== null)
+                continue; // Received an event for a post we already have.
 
-                var threadId = parseInt(evt.eventData.post.threadId);
-                var a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
-                if (a !== null)
-                    a.classList.add("refresh_pending");
-            }
-            showOrHideJumpToNewPostButton();
+            var threadId = parseInt(evt.eventData.post.threadId);
+            var a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
+            if (a !== null)
+                a.classList.add("refresh_pending");
+        }
+        showOrHideJumpToNewPostButton();
+
+        // if the Thread Pane script is loaded, then refresh the thread pane
+        if (typeof refreshThreadPane !== 'undefined') {
+            refreshThreadPane();
         }
     }
 
