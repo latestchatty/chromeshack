@@ -3,7 +3,6 @@ DefaultSettings = {
     enabled_scripts: [
         "lol",
         "post_preview",
-        "collapse_threads",
         "dinogegtik",
         "sparkly_comic",
         "winchatty_comments_search",
