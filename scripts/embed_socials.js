@@ -73,7 +73,7 @@ settingsLoadedEvent.addHandler(function() {
                     twttr.widgets.createTweet(
                         "${postId}",
                         document.getElementById("${_target}"),
-                        { theme: "dark", width: "325" }
+                        { theme: "dark", width: "500" }
                     );
                 `);
 
