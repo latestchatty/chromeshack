@@ -80,9 +80,9 @@ function xhrRequest({ type, url, headers, body }) {
         var xhr = new XMLHttpRequest();
         xhr.open(type, url, true);
         if (headers) {
-            Object.keys(headers).forEach(key => {
-                xhr.setRequestHeader(key, headers[key]);
-            });
+            for (var [key, val] of headers.entries()) {
+                xhr.setRequestHeader(key, val);
+            }
         }
         xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300)

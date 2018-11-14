@@ -158,7 +158,7 @@ settingsLoadedEvent.addHandler(function()
                 xhrRequest({
                     type: "GET",
                     url: `${ImageLoader.imgurApiBaseUrl}/${imgurName}`,
-                    headers: Map(["Authorization", ImageLoader.imgurClientId]),
+                    headers: new Map().set("Authorization", ImageLoader.imgurClientId),
                 }).then(xhr => {
                     var response = JSON.parse(xhr).data;
                     if (response.id && response.animated) {
