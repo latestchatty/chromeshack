@@ -123,9 +123,6 @@ let refreshThreadPane;
                 $cardDiv.removeClass('cs_dim_animation');
 
                 setTimeout(() => {
-                    //scrollToElement($(`div#root_${threadId}`)[0], 0);
-                //$(`li#item_${mostRecentPostId}`)[0].scrollIntoView();
-                    //window.scrollBy(0, -100);
                     window.scrollTo(0, $li.offset().top - ($(window).height()/2));
 
                     $opDiv.addClass('cs_flash_animation');
