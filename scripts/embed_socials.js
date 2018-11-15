@@ -71,7 +71,7 @@ settingsLoadedEvent.addHandler(function() {
                 // twttr-wjs can just inject a tweet straight into the DOM
                 EmbedSocials.insertCommand(
                     parentElem, /*html*/`
-                    twttr.widgets.createTweet(
+                    window.twttr.widgets.createTweet(
                         "${postId}",
                         document.getElementById("${_target}"),
                         { theme: "dark", width: "500" }
@@ -98,7 +98,7 @@ settingsLoadedEvent.addHandler(function() {
                 }).then(data => {
                     var _data = JSON.parse(data).html;
                     instgrmContainer.replaceHTML(_data);
-                    EmbedSocials.insertCommand(instgrmContainer, "instgrm.Embeds.process();");
+                    EmbedSocials.insertCommand(instgrmContainer, "window.instgrm.Embeds.process();");
                     // instgrm-wjs processing happens synchronously upon insertion of child
                     parentElem.appendChild(instgrmContainer);
 
