@@ -877,7 +877,7 @@ a.refresh_pending {
 /* LOL and Who-LOL'd script */
 .lol a.who_tagged_this {
     /* styling for LOL'er button */
-    padding: 0;
+    padding: 0 !important;
     margin: 0;
     position: relative;
     top: 1px;
