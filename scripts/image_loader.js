@@ -167,15 +167,17 @@ settingsLoadedEvent.addHandler(function()
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
-                        v.setAttribute("src", response.link);
+                        v.setAttribute("src", response.mp4);
                         v.setAttribute("height", response.height);
                         v.setAttribute("width", response.width);
                         elem.removeChild(elem.firstChild);
-                        elem.appendChild(i);
+                        elem.appendChild(v);
                     } else if (response.id) {
+                        // force HTTPS for all static media to conform to CORS rules
+                        var _link = response.link.replace(/http\:/, "https\:");
                         var i = document.createElement("img");
                         i.className = "imageloader";
-                        i.setAttribute("src", response.link);
+                        i.setAttribute("src", _link);
                         i.setAttribute("height", response.height);
                         i.setAttribute("width", response.width);
                         elem.removeChild(elem.firstChild);
