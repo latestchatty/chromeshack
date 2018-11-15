@@ -832,14 +832,14 @@ div.post_length_counter_text {
 
 /* pending post highlighter */
 #post_highlighter_container {
-    display: inline-block;
+    display: flex;
     position: relative;
     z-index: 9999;
     /*  resets */
     padding: 0;
     margin: 0;
-    top: 0;
-    left: 0;
+    top: -26px;
+    left: 196px;
 }
 #post_highlighter_container.hidden {
     display: none !important;
@@ -859,8 +859,8 @@ div.post_length_counter_text {
     white-space: nowrap;
     cursor: pointer;
     line-height: 16px;
-    top: -10px;
-    left: 185px;
+    top: 0;
+    left: 0;
 }
 #post_highlighter_container a#jump_to_new_post:hover {
     background-color: #5c5070;

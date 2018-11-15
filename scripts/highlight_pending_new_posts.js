@@ -113,7 +113,8 @@
         star.addEventListener('click', jumpToNewPost);
 
         starContainer.appendChild(star);
-        position.parentNode.insertBefore(starContainer, position);
+        position.appendChild(starContainer);
+        // position.parentNode.insertBefore(starContainer, position);
     }
 
     function showOrHideJumpToNewPostButton() {
