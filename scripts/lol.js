@@ -94,6 +94,8 @@ settingsLoadedEvent.addHandler(function()
                     lol_div.appendChild(LOL.createButton(LOL.tags[i].name, id, LOL.tags[i].color));
                 }
 
+                // put our tagger-list button at the end of the lol button array
+                lol_div.appendChild(LOL.createGetUsers(id));
 
                 // add them in
                 author.appendChild(lol_div);
@@ -104,24 +106,22 @@ settingsLoadedEvent.addHandler(function()
                 LOL.posts.push(id);
             },
 
-            createGetUsers: function(tag, id)
+            createGetUsers: function(id)
             {
                 var button = document.createElement("a");
                 button.href = "#";
                 button.innerText = " ";
-                button.id = "get_lol_users_" + tag + "_" + id;
+                button.id = "get_lol_users_" + id;
                 button.dataset.threadid = id;
-                button.dataset.loltag = tag;
-                button.setAttribute("class", "get_lol_users hidden");
-                button.addEventListener("click", (e) => { LOL.getUsers(tag, id); e.preventDefault(); });
+                button.addEventListener("click", (e) => { LOL.getUsers(id); e.preventDefault(); });
 
                 var icon = document.createElement("span");
                 //stole from account icon in new redesign.
                 icon.style.fontFamily = "Icon";
-                icon.style.fontSize = "10px";
+                icon.style.fontSize = "12px";
                 icon.style.fontWeight = "100";
-                icon.innerText = "\uea08";
-                icon.title = `Show who ${tag.toUpperCase()}'d this`;
+                icon.innerText = "\uea04";
+                icon.title = `Show who tagged this post`;
                 button.appendChild(icon);
                 return button;
             },
@@ -144,16 +144,15 @@ settingsLoadedEvent.addHandler(function()
                 var span = document.createElement("span");
                 span.appendChild(document.createTextNode("["));
                 span.appendChild(button);
-                span.appendChild(LOL.createGetUsers(tag, id));
                 span.appendChild(document.createTextNode("]"));
 
                 return span;
             },
 
-            getUsers: function(tag, id)
+            getUsers: function(id)
             {
-                var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
-                var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
+                var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id);
+                var tagsExist = document.querySelector(`div[id^=taggers_${id}].tagger_container`);
                 if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
 
                 xhrRequest({
@@ -161,24 +160,28 @@ settingsLoadedEvent.addHandler(function()
                     url
                 }).then(res => {
                     var response = JSON.parse(res);
-                    var post = document.getElementById("item_" + id);
-                    var body = post.getElementsByClassName("postbody")[0];
-                    var container = document.getElementById(`taggers_${id}`);
-                    if (!container) {
-                        container = document.createElement("div");
-                        container.id = "taggers_" + id;
-                        container.setAttribute("class", "tagger_container");
+                    for (var _tag in response) {
+                        if (response.hasOwnProperty(_tag)) {
+                            var post = document.getElementById("item_" + id);
+                            var body = post.getElementsByClassName("postbody")[0];
+                            var container = document.getElementById(`taggers_${id}`);
+                            if (!container) {
+                                container = document.createElement("div");
+                                container.id = "taggers_" + id;
+                                container.setAttribute("class", "tagger_container");
+                            }
+                            var tagSection = document.createElement("div");
+                            tagSection.className = `oneline_${_tag}s`;
+                            response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                                var taggerNode = document.createElement("span");
+                                taggerNode.className = 'oneline_' + _tag;
+                                taggerNode.innerText = tagger;
+                                tagSection.appendChild(taggerNode);
+                            });
+                            container.appendChild(tagSection);
+                            body.appendChild(container);
+                        }
                     }
-                    var tagSection = document.createElement("div");
-                    tagSection.className = `oneline_${tag}s`;
-                    response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
-                        var taggerNode = document.createElement("span");
-                        taggerNode.className = 'oneline_' + tag;
-                        taggerNode.innerText = tagger;
-                        tagSection.appendChild(taggerNode);
-                    });
-                    container.appendChild(tagSection);
-                    body.appendChild(container);
                 }).catch(err => {
                     alert("Problem getting taggers. Try again.");
                 });
@@ -359,7 +362,6 @@ settingsLoadedEvent.addHandler(function()
 
                         if (tgt)
                         {
-                            // do not use replaceHTML here - there be dragons!
                             if (LOL.showCounts == 'short')
                             {
                                 tgt.replaceHTML(LOL.counts[rootId][id][tag]);
