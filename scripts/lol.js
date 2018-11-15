@@ -113,6 +113,7 @@ settingsLoadedEvent.addHandler(function()
                 button.innerText = " ";
                 button.id = "get_lol_users_" + id;
                 button.dataset.threadid = id;
+                button.setAttribute("class", "who_tagged_this hidden");
                 button.addEventListener("click", (e) => { LOL.getUsers(id); e.preventDefault(); });
 
                 var icon = document.createElement("span");
@@ -161,26 +162,24 @@ settingsLoadedEvent.addHandler(function()
                 }).then(res => {
                     var response = JSON.parse(res);
                     for (var _tag in response) {
-                        if (response.hasOwnProperty(_tag)) {
-                            var post = document.getElementById("item_" + id);
-                            var body = post.getElementsByClassName("postbody")[0];
-                            var container = document.getElementById(`taggers_${id}`);
-                            if (!container) {
-                                container = document.createElement("div");
-                                container.id = "taggers_" + id;
-                                container.setAttribute("class", "tagger_container");
-                            }
-                            var tagSection = document.createElement("div");
-                            tagSection.className = `oneline_${_tag}s`;
-                            response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
-                                var taggerNode = document.createElement("span");
-                                taggerNode.className = 'oneline_' + _tag;
-                                taggerNode.innerText = tagger;
-                                tagSection.appendChild(taggerNode);
-                            });
-                            container.appendChild(tagSection);
-                            body.appendChild(container);
+                        var post = document.getElementById("item_" + id);
+                        var body = post.getElementsByClassName("postbody")[0];
+                        var container = document.getElementById(`taggers_${id}`);
+                        if (!container) {
+                            container = document.createElement("div");
+                            container.id = "taggers_" + id;
+                            container.setAttribute("class", "tagger_container");
                         }
+                        var tagSection = document.createElement("div");
+                        tagSection.className = `oneline_${_tag}s`;
+                        response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                            var taggerNode = document.createElement("span");
+                            taggerNode.className = 'oneline_' + _tag;
+                            taggerNode.innerText = tagger;
+                            tagSection.appendChild(taggerNode);
+                        });
+                        container.appendChild(tagSection);
+                        body.appendChild(container);
                     }
                 }).catch(err => {
                     alert("Problem getting taggers. Try again.");
@@ -371,6 +370,11 @@ settingsLoadedEvent.addHandler(function()
                                 tgt.replaceHTML(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
                             }
                         }
+
+                        // toggle our LOL tagger button since we're updating
+                        var taggerButton = document.querySelector(`#get_lol_users_${id}.who_tagged_this`);
+                        if (taggerButton != null)
+                            taggerButton.classList.remove("hidden");
 
                         // Add (lol * 3) indicators to the onelines
                         if (!document.getElementById('oneline_' + tag + 's_' + id))

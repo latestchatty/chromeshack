@@ -875,7 +875,7 @@ a.refresh_pending {
 }
 
 /* LOL and Who-LOL'd script */
-.postmeta .lol a:not([data-loltag])[data-threadid] {
+.lol a.who_tagged_this {
     /* styling for LOL'er button */
     padding: 0;
     margin: 0;
@@ -883,6 +883,8 @@ a.refresh_pending {
     top: 1px;
     left: 4px;
 }
+.lol a.who_tagged_this.hidden { display: none !important }
+
 .postbody .tagger_container { margin: 1em 0 0.25em 0; }
 .postbody .oneline_lols,
 .postbody .oneline_infs,
