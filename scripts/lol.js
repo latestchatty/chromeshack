@@ -153,6 +153,9 @@ settingsLoadedEvent.addHandler(function()
             getUsers: function(tag, id)
             {
                 var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
+                var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
+                if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
+
                 xhrRequest({
                     type: "GET",
                     url
@@ -161,14 +164,11 @@ settingsLoadedEvent.addHandler(function()
                     var post = document.getElementById("item_" + id);
                     var body = post.getElementsByClassName("postbody")[0];
                     var container = document.getElementById(`taggers_${id}`);
-                    var tagsExist = document.querySelector(`div[id^=taggers_${id}] div[class^=oneline_${tag}s]`);
-
                     if (!container) {
                         container = document.createElement("div");
                         container.id = "taggers_" + id;
                         container.setAttribute("class", "tagger_container");
-                    } else if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
-
+                    }
                     var tagSection = document.createElement("div");
                     tagSection.className = `oneline_${tag}s`;
                     response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
