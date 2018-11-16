@@ -78,8 +78,8 @@ settingsLoadedEvent.addHandler(function() {
             taggifyCaption: function(caption, elem) {
                 var captionContainer = document.createElement("span");
                 captionContainer.id = "instgrm_post_caption";
-                var tagLink = "https://www.instagram.com/explore/tags/";
-                var userLink = "https://www.instagram.com/";
+                var tagLink = "https://instagr.am/explore/tags/";
+                var userLink = "https://instagr.am/";
                 // trim some potentially troublesome characters
                 var _trimmed = caption.replace(/\\u00a0|[\.]{2,}/gmui, "").trim();
                 var _sanitized = _trimmed.replace(/[\s]{1,}|[\n]/gm, " ").split(" ");
@@ -109,7 +109,7 @@ settingsLoadedEvent.addHandler(function() {
                 return captionContainer;
             },
 
-            insertInstagramTemplate: function(postId, parentElem) {
+            insertInstagramTemplate: function(postId) {
                 var container = document.createElement("div");
                 container.id = `instgrm-container_${postId}`;
                 container.setAttribute("class", "instgrm-container hidden");
@@ -133,7 +133,7 @@ settingsLoadedEvent.addHandler(function() {
                             </a>
                         </div>
                     </div>
-                    <div id="instgrm_media"></div>
+                    <div id="instgrm_embed"></div>
                     <div id="instgrm-caption"></div>
                     <div class="hr2"></div>
                     <div class="instgrm-footer">
@@ -146,18 +146,18 @@ settingsLoadedEvent.addHandler(function() {
                     </div>
                 `;
                 container.innerHTML = _template;
-                parentElem.appendChild(container);
+                var fragment = document.createDocumentFragment();
+                fragment.appendChild(container);
+                return fragment;
             },
 
             parseInstagram: function(postId, parentElem) {
                 var postUrl = `https://www.instagram.com/p/${postId}/`;
                 // if we have an instagram postId use it to toggle our element rather than query
                 var _target = document.querySelector(`#instgrm-container_${postId}`);
-                if (_target)
-                    return _target.classList.toggle("hidden");
+                if (_target) { return _target.classList.toggle("hidden"); }
 
-                EmbedSocials.insertInstagramTemplate(postId, parentElem);
-                _target = document.querySelector(`#instgrm-container_${postId}`);
+                var _target = EmbedSocials.insertInstagramTemplate(postId);
                 xhrRequest({ type: "GET", url: postUrl }) .then(resp => {
                     // save our likes from the header
                     var _likesMatch = /<meta content="(\d+ Likes, \d+ Comments|\d+ Likes,?|\d+ Comments)/i.exec(resp);
@@ -170,51 +170,68 @@ settingsLoadedEvent.addHandler(function() {
                     var _matchGQL = _configGQL[1] && JSON.parse(_configGQL[1]).shortcode_media;
                     // var _isPrivate = _matchGQL && _matchGQL.owner.is_private;
 
+                    // debugging!
+                    console.log({
+                        likes: _likesMatch && _likesMatch[1],
+                        videoUrl: _videoMatch && _videoMatch[1],
+                        parsedBody: _configGQL && _matchGQL
+                    });
+
                     if (_matchGQL) {
                         var _authorPic = _matchGQL.owner.profile_pic_url;
                         var _authorName = _matchGQL.owner.username;
                         var _authorFullName = _matchGQL.owner.full_name;
                         var _postTimestamp = EmbedSocials.getDate(_matchGQL.taken_at_timestamp);
                         var _postURL = `https://instagr.am/p/${_matchGQL.shortcode}/`;
-                        var _postCaption = "", _postMediaUrl;
-                        if (_matchGQL.edge_media_to_caption.edges[0]) {
+                        var _postCaption = _matchGQL.edge_media_to_caption;
+                        var _postMediaUrl = "";
+                        if (_postCaption && _postCaption.edges[0]) {
                             _postCaption = _matchGQL.edge_media_to_caption.edges[0].node.text;
-                            var caption = document.getElementById("instgrm-caption");
+                            var caption = _target.querySelector("#instgrm-caption");
                             caption.appendChild(EmbedSocials.taggifyCaption(_postCaption));
                         }
 
                         // use the first video link otherwise use the first image in the list
                         if (_videoMatch)
-                            _postMediaUrl = _videoMatch[1];
+                            _postMediaUrl = _videoMatch && _videoMatch[1];
                         else
                             _postMediaUrl = _matchGQL.display_resources[0].src;
 
+                        // more debugging!
+                        console.log({
+                            _authorPic,
+                            _authorName,
+                            _authorFullName,
+                            _postTimestamp,
+                            _postURL,
+                            _postCaption,
+                            _postMediaUrl
+                        });
+
                         // populate our html elements
-                        var postAuthorPic = document.getElementById("instgrm_author_pic");
-                        var postAuthor = document.getElementById("instgrm_post_author");
-                        var postPicAuthor = document.getElementById("instgrm_author_nick");
-                        var postPicDetails = document.getElementById("instgrm_post_details");
-                        var postLinkName = document.getElementById("instgrm_postlink_name");
-                        var postTimestamp = document.getElementById("instgrm_post_timestamp");
-                        var postParentUrl = document.getElementById("instgrm_post_url");
+                        var postAuthorPic = _target.querySelector("#instgrm_author_pic");
+                        var postAuthor = _target.querySelector("#instgrm_post_author");
+                        var postPicAuthor = _target.querySelector("#instgrm_author_nick");
+                        var postPicDetails = _target.querySelector("#instgrm_post_details");
+                        var postLinkName = _target.querySelector("#instgrm_postlink_name");
+                        var postTimestamp = _target.querySelector("#instgrm_post_timestamp");
+                        var postParentUrl = _target.querySelector("#instgrm_post_url");
 
                         var embed;
                         // choose video over images
                         if (_postMediaUrl.match(/.mp4$/i)) {
                             embed = document.createElement("video");
-                            embed.setAttribute("id", "instgrm_embed");
                             embed.setAttribute("src", _postMediaUrl);
                             embed.setAttribute("muted", "");
                             embed.setAttribute("controls", "");
                         } else {
                             embed = document.createElement("img");
-                            embed.setAttribute("id", "instgrm_embed");
                             embed.setAttribute("src", _postMediaUrl);
                         }
                         // set some relevant shortcuts in the header
-                        var _profileLinkA = document.getElementById("instgrm_profile_a");
-                        var _profileLinkB = document.getElementById("instgrm_profile_b");
-                        var _postLink = document.getElementById("instgrm_post_link");
+                        var _profileLinkA = _target.querySelector("#instgrm_profile_a");
+                        var _profileLinkB = _target.querySelector("#instgrm_profile_b");
+                        var _postLink = _target.querySelector("#instgrm_post_link");
                         _profileLinkA.setAttribute("href", `https://instagr.am/${_authorName}/`);
                         _profileLinkB.setAttribute("href", `https://instagr.am/${_authorName}/`);
                         _postLink.setAttribute("href", `https://instagr.am/p/${postId}/`);
@@ -224,14 +241,16 @@ settingsLoadedEvent.addHandler(function() {
                         postLinkName.innerText = _authorFullName;
                         postAuthor.innerText = `(@${_authorName})`;
                         postPicAuthor.innerText = _authorName;
-                        postPicDetails.innerText = _likesMatch ? _likesMatch[1] : "";
+                        postPicDetails.innerText = _likesMatch.length && _likesMatch[1];
                         postTimestamp.innerText = `on ${_postTimestamp}`;
                         postParentUrl.href = _postURL;
 
                         // compile everything into our container and inject at once
-                        var embedTarget = document.querySelector(`#instgrm-container_${postId} #instgrm_media`);
+                        var embedTarget = _target.querySelector(`#instgrm-container_${postId} #instgrm_embed`);
+                        var targetContainer = _target.querySelector(`.instgrm-container`);
                         embedTarget.appendChild(embed);
-                        _target.classList.remove("hidden");
+                        targetContainer.classList.remove("hidden");
+                        parentElem.appendChild(_target);
                     }
                 });
             },
@@ -244,9 +263,7 @@ settingsLoadedEvent.addHandler(function() {
 
                     var link = this;
                     var _matchTwitter = /https?\:\/\/twitter.com\/\w+\/status\/(\d+)/i.exec(link.href);
-                    // href = "https://www.instagram.com/p/BqO5F-gAyQw/";
-                    href = "https://www.instagram.com/p/BqPHo-9FiyO/";
-                    var _matchInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\//i.exec(href);
+                    var _matchInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\//i.exec(link.href);
                     var _twitterPostId = _matchTwitter && _matchTwitter[1];
                     var _instgrmPostId = _matchInstagram && _matchInstagram[1];
 
