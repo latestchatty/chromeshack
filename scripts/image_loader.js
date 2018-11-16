@@ -200,7 +200,7 @@ settingsLoadedEvent.addHandler(function()
                     headers: new Map().set("Authorization", ImageLoader.imgurClientId),
                 }).then(xhr => {
                     // use the mobile mp4 embed url (usually smallest)
-                    var video_src = JSON.parse(xhr).gfyItem.content_urls.mobile || false;
+                    var video_src = JSON.parse(xhr).gfyItem.mobileUrl || false;
                     if (video_src) {
                         var v = document.createElement("video");
                         v.className = "imageloader";
@@ -208,9 +208,7 @@ settingsLoadedEvent.addHandler(function()
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
                         v.setAttribute("controls", "");
-                        v.setAttribute("src", video_src.url);
-                        v.setAttribute("width", video_src.width);
-                        v.setAttribute("height", video_src.height);
+                        v.setAttribute("src", video_src);
                         elem.removeChild(elem.firstChild);
                         elem.appendChild(v);
                     }
