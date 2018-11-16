@@ -167,6 +167,7 @@ settingsLoadedEvent.addHandler(function()
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
+                        v.setAttribute("controls", "");
                         v.setAttribute("src", response.mp4);
                         v.setAttribute("height", response.height);
                         v.setAttribute("width", response.width);
@@ -206,6 +207,7 @@ settingsLoadedEvent.addHandler(function()
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
+                        v.setAttribute("controls", "");
                         v.setAttribute("src", video_src.url);
                         v.setAttribute("width", video_src.width);
                         v.setAttribute("height", video_src.height);
@@ -231,6 +233,7 @@ settingsLoadedEvent.addHandler(function()
                     v.setAttribute("autoplay", "");
                     v.setAttribute("loop", "");
                     v.setAttribute("muted", "");
+                    v.setAttribute("controls", "");
                     elem.removeChild(elem.firstChild);
                     elem.appendChild(v);
                 } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }

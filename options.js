@@ -11,6 +11,7 @@ function loadOptions()
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
     $('input#scroll_to_post_smooth').prop('checked', getOption('scroll_to_post_smooth'));
+    showEmbedSocials(getOption("embed_socials"));
     showEnabledScripts();
     trackChanges();
 }
@@ -33,6 +34,13 @@ function clearSettings()
     localStorage.clear();
     loadOptions();
     saveOptions();
+}
+
+function showEmbedSocials(enabled) {
+    var embeds = document.getElementById("embed_socials");
+    if (enabled)
+        embeds.checked = enabled;
+    return embeds.checked;
 }
 
 function showVideoLoaderHD(enabled)
@@ -516,6 +524,7 @@ function saveOptions()
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
         saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
+        saveOption("embed_socials", showEmbedSocials());
     }
     catch (err)
     {
