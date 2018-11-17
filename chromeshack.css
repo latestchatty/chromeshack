@@ -55,6 +55,9 @@ a.lol_button {
     font-weight: bold;
 }
 
+.postbody a.embedded {
+    color: #41AAAA !important;
+}
 .postbody .image-container {
     display: grid !important;
     grid-template-columns: repeat(2, fit-content(100%));

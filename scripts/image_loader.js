@@ -128,17 +128,25 @@ settingsLoadedEvent.addHandler(function()
                     // use our postId and index to find the link that was embedded
                     var _embedExists = _postBody.querySelector(`#image-loader_${_postId}-${index}`);
                     // toggle our embed if it's already open
-                    if (_embedExists)
+                    if (_embedExists) {
+                        link.classList.toggle("embedded");
                         return _embedExists.classList.toggle("hidden");
+                    }
 
                     if (ImageLoader.isVideo(link.href))
                     {
-                        if (link.href.match(/imgur/))
+                        if (link.href.match(/imgur/)) {
                             ImageLoader.createImgur(link.href, _postBody, _postId, index);
-                        else if (link.href.match(/gfycat/))
+                            link.classList.toggle("embedded");
+                        }
+                        else if (link.href.match(/gfycat/)) {
                             ImageLoader.createGfycat(link.href, _postBody, _postId, index);
-                        else if (link.href.match(/giphy/))
+                            link.classList.toggle("embedded");
+                        }
+                        else if (link.href.match(/giphy/)) {
                             ImageLoader.createGiphy(link.href, _postBody, _postId, index);
+                            link.classList.toggle("embedded");
+                        }
                     }
                     else
                     {
@@ -149,6 +157,7 @@ settingsLoadedEvent.addHandler(function()
                         image.setAttribute("src", ImageLoader.getImageUrl(link.href));
                         image.setAttribute("id", `image-loader_${_postId}-${index}`);
                         image.setAttribute("class", "imageloader");
+                        link.classList.toggle("embedded");
                         ImageLoader.doContainerInsert(image, _postBody);
                     }
                 }
