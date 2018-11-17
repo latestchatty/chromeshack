@@ -55,9 +55,26 @@ a.lol_button {
     font-weight: bold;
 }
 
+.postbody .image-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, fit-content(1fr));
+    grid-auto-rows: fit-content(720px);
+    grid-gap: 5px;
+    overflow: hidden !important;
+    padding: 0;
+    margin: 0.5em 0 0 0;
+}
+video.imageloader,
 img.imageloader {
-    max-width: 600px;
-    max-height: 600px;
+    object-fit: contain !important;
+    height: auto !important;
+    width: 100% !important;
+    /* try to maintain 16:9 */
+    max-height: 720px !important;
+}
+video.imageloader.hidden,
+img.imageloader.hidden {
+    display: none !important;
 }
 
 /* post preview */
@@ -791,8 +808,6 @@ img.pinnedLoading {
     margin-left: 5px;
 }
 
-video.imageloader { width: auto !important }
-
 a.chromeshack_options_link {
     position: absolute;
     top: 6px;
@@ -996,7 +1011,6 @@ a.refresh_pending {
     justify-content: center;
     overflow: hidden !important;
     padding: 0;
-    margin:
 }
 #instgrm_embed video {
     object-fit: contain !important;
@@ -1007,6 +1021,7 @@ a.refresh_pending {
 #instgrm_embed img {
     width: 100%;
     height: auto;
+    max-height: 540px !important;
     object-fit: contain !important;
     overflow: hidden;
     padding: 0;

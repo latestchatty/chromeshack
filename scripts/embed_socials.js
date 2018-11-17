@@ -241,7 +241,7 @@ settingsLoadedEvent.addHandler(function() {
                         postLinkName.innerText = _authorFullName;
                         postAuthor.innerText = `(@${_authorName})`;
                         postPicAuthor.innerText = _authorName;
-                        postPicDetails.innerText = _likesMatch.length && _likesMatch[1];
+                        postPicDetails.innerText = _likesMatch && _likesMatch[1];
                         postTimestamp.innerText = `on ${_postTimestamp}`;
                         postParentUrl.href = _postURL;
 

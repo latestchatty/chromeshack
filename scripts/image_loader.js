@@ -8,16 +8,20 @@ settingsLoadedEvent.addHandler(function()
 
             imgurClientId: "Client-ID c045579f61fc802",
 
-            loadImages: function(item, id)
+            loadImages: function(item)
             {
                 var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
                 var links = postbody.getElementsByTagName("a");
 
                 for (var i = 0; i < links.length; i++)
                 {
-                    if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href))
-                    {
-                        links[i].addEventListener("click", ImageLoader.toggleImage);
+                    if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
+                        // pass our loop position
+                        (function(i) {
+                            links[i].addEventListener("click", e => {
+                                ImageLoader.toggleImage(e, i);
+                            });
+                        })(i);
                     }
                 }
             },
@@ -112,43 +116,56 @@ settingsLoadedEvent.addHandler(function()
                 return href;
             },
 
-            toggleImage: function(e)
+            toggleImage: function(e, index)
             {
                 // left click only
                 if (e.button == 0)
                 {
-                    var link = this;
                     e.preventDefault();
-                    if (link.childNodes[0].nodeName == "IMG" || link.childNodes[0].nodeName == "VIDEO")
+                    var link = e.target;
+                    var _postBody = link.parentNode;
+                    var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    // use our postId and index to find the link that was embedded
+                    var _embedExists = _postBody.querySelector(`#image-loader_${_postId}-${index}`);
+                    // toggle our embed if it's already open
+                    if (_embedExists)
+                        return _embedExists.classList.toggle("hidden");
+
+                    if (ImageLoader.isVideo(link.href))
                     {
-                        // already showing image, collapse it
-                        link.replaceHTML(link.href);
+                        if (link.href.match(/imgur/))
+                            ImageLoader.createImgur(link.href, _postBody, _postId, index);
+                        else if (link.href.match(/gfycat/))
+                            ImageLoader.createGfycat(link.href, _postBody, _postId, index);
+                        else if (link.href.match(/giphy/))
+                            ImageLoader.createGiphy(link.href, _postBody, _postId, index);
                     }
                     else
                     {
-                        if (ImageLoader.isVideo(link.href))
-                        {
-                            if (link.href.match(/imgur/))
-                                ImageLoader.createImgur(link.href, link);
-                            else if (link.href.match(/gfycat/))
-                                ImageLoader.createGfycat(link.href, link);
-                            else if (link.href.match(/giphy/))
-                                ImageLoader.createGiphy(link.href, link);
-                        }
-                        else
-                        {
-                            // image not showing, show it
-                            var image = document.createElement("img");
-                            image.src = ImageLoader.getImageUrl(link.href);
-                            image.className = "imageloader";
-                            link.removeChild(link.firstChild);
-                            link.appendChild(image);
-                        }
+                        // use HTTPS to better conform to CORS rules
+                        // NOTE: ShackPics needs SSL fixes before uncommenting this!
+                        // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
+                        var image = document.createElement("img");
+                        image.setAttribute("src", ImageLoader.getImageUrl(link.href));
+                        image.setAttribute("id", `image-loader_${_postId}-${index}`);
+                        image.setAttribute("class", "imageloader");
+                        ImageLoader.doContainerInsert(image, _postBody);
                     }
                 }
             },
 
-            createImgur: function(href, elem)
+            doContainerInsert: function(elem, parentElem) {
+                // try to acquire our existing container
+                var container = parentElem.querySelector(".image-container");
+                if (!container) {
+                    container = document.createElement("div");
+                    container.setAttribute("class", "image-container");
+                }
+                container.appendChild(elem);
+                parentElem.appendChild(container);
+            },
+
+            createImgur: function(href, elem, postId, index)
             {
                 // we exclude galleries explicitly
                 var imgurName;
@@ -163,31 +180,27 @@ settingsLoadedEvent.addHandler(function()
                     var response = JSON.parse(xhr).data;
                     if (response.id && response.animated) {
                         var v = document.createElement("video");
-                        v.className = "imageloader";
+                        v.setAttribute("id", `image-loader_${postId}-${index}`);
+                        v.setAttribute("class", "imageloader");
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
                         v.setAttribute("controls", "");
                         v.setAttribute("src", response.mp4);
-                        v.setAttribute("height", response.height);
-                        v.setAttribute("width", response.width);
-                        elem.removeChild(elem.firstChild);
-                        elem.appendChild(v);
+                        ImageLoader.doContainerInsert(v, elem);
                     } else if (response.id) {
                         // force HTTPS for all static media to conform to CORS rules
                         var _link = response.link.replace(/http\:/, "https\:");
                         var i = document.createElement("img");
-                        i.className = "imageloader";
+                        i.setAttribute("id", `image-loader_${postId}-${index}`);
+                        i.setAttribute("class", "imageloader");
                         i.setAttribute("src", _link);
-                        i.setAttribute("height", response.height);
-                        i.setAttribute("width", response.width);
-                        elem.removeChild(elem.firstChild);
-                        elem.appendChild(i);
+                        ImageLoader.doContainerInsert(i, elem);
                     }
                 });
             },
 
-            createGfycat: function(href, elem)
+            createGfycat: function(href, elem, postId, index)
             {
                 var video_id;
                 if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(href)) != null)
@@ -203,19 +216,19 @@ settingsLoadedEvent.addHandler(function()
                     var video_src = JSON.parse(xhr).gfyItem.mobileUrl || false;
                     if (video_src) {
                         var v = document.createElement("video");
-                        v.className = "imageloader";
+                        v.setAttribute("id", `image-loader_${postId}-${index}`);
+                        v.setAttribute("class", "imageloader");
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
                         v.setAttribute("controls", "");
                         v.setAttribute("src", video_src);
-                        elem.removeChild(elem.firstChild);
-                        elem.appendChild(v);
+                        ImageLoader.doContainerInsert(v, elem);
                     }
                 });
             },
 
-            createGiphy: function(href, elem)
+            createGiphy: function(href, elem, postId, index)
             {
                 var _isGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i;
                 var _matchGiphy = _isGiphy.exec(href);
@@ -226,14 +239,14 @@ settingsLoadedEvent.addHandler(function()
                 if (_giphyId) {
                     var video_src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
                     var v = document.createElement("video");
-                    v.className = "imageloader";
+                    v.setAttribute("id", `image-loader_${postId}-${index}`);
+                    v.setAttribute("class", "imageloader");
                     v.setAttribute("src", video_src);
                     v.setAttribute("autoplay", "");
                     v.setAttribute("loop", "");
                     v.setAttribute("muted", "");
                     v.setAttribute("controls", "");
-                    elem.removeChild(elem.firstChild);
-                    elem.appendChild(v);
+                    ImageLoader.doContainerInsert(v, elem);
                 } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
             }
         }
