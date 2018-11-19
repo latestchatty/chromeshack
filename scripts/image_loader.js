@@ -125,9 +125,8 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
-                    var link = e.target;
-                    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-                    link = _expandoClicked ? link.parentNode : e.target;
+                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                     if (toggleMediaItem(link, _postBody, _postId, index)) { return; }

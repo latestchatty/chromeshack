@@ -20,24 +20,22 @@ settingsLoadedEvent.addHandler(function() {
         // end dependency injection
 
         EmbedSocials = {
-            parsedSocialPost: null,
-
             getLinks: function(item) {
                 // don't retrace our DOM nodes (use relative positions of event items)
                 var links = item.querySelectorAll(".sel .postbody a");
                 for (var i = 0; i < links.length; i++) {
-                    EmbedSocials.parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
-                    if (EmbedSocials.parsedSocialPost != null) {
-                        ((i) => {
+                    var parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
+                    if (parsedSocialPost != null) {
+                        ((i, parsedSocialPost) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", (e) => {
-                                EmbedSocials.processPost(e, i);
+                                EmbedSocials.processPost(e, parsedSocialPost, i);
                             });
 
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                             insertExpandoButton(links[i], _postId, i);
-                        })(i);
+                        })(i, parsedSocialPost);
                     }
                 }
             },
@@ -61,18 +59,17 @@ settingsLoadedEvent.addHandler(function() {
                 return null;
             },
 
-            processPost: function(e, index) {
+            processPost: function(e, parsedPost, index) {
                 if (e.button == 0) {
                     e.preventDefault();
-                    var link = e.target;
                     if (!document.getElementById("twttr-wjs"))
                         return console.log("Embed Socials dependency injection failed!");
 
-                    var socialType = EmbedSocials.parsedSocialPost.type;
-                    var socialId = EmbedSocials.parsedSocialPost.id;
+                    var socialType = parsedPost.type;
+                    var socialId = parsedPost.id;
                     // adjust relative node position based on expando state
-                    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-                    link = _expandoClicked ? link.parentNode : e.target;
+                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                     // cancel early if we're toggling

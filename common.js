@@ -268,14 +268,16 @@ HTMLElement.prototype.removeChildren = function()
 }
 
 function toggleVideoState(video) {
-    // abstracted helper for toggling html5 video embed play/pause state
+    // abstracted helper for toggling html5 video embed pause state
     try {
-        if (video && video.nodeName == "VIDEO" && !video.paused) {
-            video.pause();
-            video.currentTime = 0;
-        } else if (video && video.nodeName == "VIDEO" && video.paused) {
-            video.currentTime = 0;
-            video.play();
+        if (video && video.nodeName === "VIDEO") {
+            if (video.paused) {
+                video.currentTime = 0;
+                video.play();
+            } else {
+                video.pause();
+                video.currentTime = 0;
+            }
         }
     } catch (err) { console.log(err); }
 }
@@ -317,6 +319,7 @@ function insertCommand(elem, injectable) {
 function mediaContainerInsert(elem, link, id, index) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = link.parentNode.querySelector(".media-container");
+    var embed = link.querySelector(`#loader_${id}-${index}`);
     var expando = link.querySelector(`#expando_${id}-${index}`);
     if (!container) {
         // generate container if necessary
@@ -324,22 +327,22 @@ function mediaContainerInsert(elem, link, id, index) {
         container.setAttribute("class", "media-container");
     }
 
-    ((expando, elem, link, id, index) => {
+    ((expando, embed, elem, link) => {
         elem.addEventListener('click', e => {
             // toggle our embed state when image embed is left-clicked
             if (e.which === 1) {
-                var _embedExists = link.querySelector(`#loader_${id}-${index}`);
                 link.classList.toggle("embedded"); // toggle highlight
                 elem.classList.toggle("hidden");
                 toggleExpandoButton(expando);
-                toggleVideoState(_embedExists);
+                toggleVideoState(embed);
             }
         });
-    })(expando, elem, link, id, index);
+    })(expando, embed, elem, link);
 
     container.appendChild(elem);
     link.classList.add("embedded");
     toggleExpandoButton(expando);
+    toggleVideoState(embed);
     link.parentNode.appendChild(container);
 }
 
