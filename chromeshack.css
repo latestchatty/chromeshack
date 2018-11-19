@@ -939,7 +939,8 @@ a.refresh_pending {
 .oneline_lols .oneline_lol,
 .oneline_infs .oneline_inf,
 .oneline_unfs .oneline_unf,
-.oneline_tags .oneline_tag {
+.oneline_tags .oneline_tag,
+.oneline_wtfs .oneline_wtf {
     /* set some general tag button rules */
     border-radius: 2px;
     color: #000;
