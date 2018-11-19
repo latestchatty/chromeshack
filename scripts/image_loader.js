@@ -10,21 +10,20 @@ settingsLoadedEvent.addHandler(function()
 
             loadImages: function(item)
             {
-                var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
-                var links = postbody.getElementsByTagName("a");
-
-                for (var i = 0; i < links.length; i++)
-                {
+                // don't retrace our DOM nodes (use relative positions of event items)
+                var links = item.querySelectorAll(".sel .postbody a");
+                for (var i = 0; i < links.length; i++) {
                     if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
                         // pass our loop position and add an expando button for every hooked link
                         ((i) => {
+                            if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
                                 ImageLoader.toggleImage(e, i);
                             });
 
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
-                            ImageLoader.insertExpandoButton(null, links[i], _postId, i);
+                            insertExpandoButton(links[i], _postId, i);
                         })(i);
                     }
                 }
@@ -128,34 +127,19 @@ settingsLoadedEvent.addHandler(function()
                     e.preventDefault();
                     var link = e.target;
                     var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-                    var _postBody = _expandoClicked && link.parentNode.parentNode || link.parentNode;
+                    link = _expandoClicked ? link.parentNode : e.target;
+                    var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
-                    // use our postId and index to find the link that was embedded
-                    var _embedExists = _postBody.querySelector(`#image-loader_${_postId}-${index}`);
-                    // toggle our embed if it's already open
-                    if (_embedExists && _expandoClicked) {
-                        ImageLoader.insertExpandoButton(link);
-                        link.parentNode.classList.toggle("embedded");
-                        return _embedExists.classList.toggle("hidden");
-                    } else if (_embedExists) {
-                        link.classList.toggle("embedded");
-                        return _embedExists.classList.toggle("hidden");
-                    } else if (_expandoClicked) {
-                        // no embed yet, toggle our expando
-                        ImageLoader.insertExpandoButton(link);
-                        link = link.parentNode;
-                    }
+                    if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
 
                     if (ImageLoader.isVideo(link.href))
                     {
                         if (link.href.match(/imgur/))
-                            ImageLoader.createImgur(link.href, _postBody, link);
+                            ImageLoader.createImgur(link, _postId, index);
                         else if (link.href.match(/gfycat/))
-                            ImageLoader.createGfycat(link.href, _postBody, link);
+                            ImageLoader.createGfycat(link, _postId ,index);
                         else if (link.href.match(/giphy/))
-                            ImageLoader.createGiphy(link.href, _postBody, link);
-
-                        link.classList.toggle("embedded");
+                            ImageLoader.createGiphy(link, _postId, index);
                     }
                     else
                     {
@@ -164,63 +148,18 @@ settingsLoadedEvent.addHandler(function()
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
                         var image = document.createElement("img");
                         image.setAttribute("src", ImageLoader.getImageUrl(link.href));
-                        image.setAttribute("id", `image-loader_${_postId}-${index}`);
+                        image.setAttribute("id", `loader_${_postId}-${index}`);
                         image.setAttribute("class", "imageloader");
-                        link.classList.toggle("embedded");
-                        ImageLoader.doContainerInsert(image, link, _postId, index);
+                        mediaContainerInsert(image, link, _postId, index);
                     }
                 }
             },
 
-            doContainerInsert: function(elem, link, id, index) {
-                var container = link.parentNode.querySelector(".image-container");
-                if (!container) {
-                    // generate container if necessary
-                    container = document.createElement("div");
-                    container.setAttribute("class", "image-container");
-                }
-
-                ((elem, link, id, index) => {
-                    elem.addEventListener('click', e => {
-                        // toggle our embed state when embed is left-clicked
-                        if (e.which === 1) {
-                            elem.classList.toggle("hidden");
-                            link.classList.toggle("embedded");
-                            var expando = link.parentNode.querySelector(`#expando_${id}-${index}`);
-                            ImageLoader.insertExpandoButton(expando);
-                        }
-                    });
-                })(elem, link, id, index);
-
-                container.appendChild(elem);
-                link.parentNode.appendChild(container);
-            },
-
-            insertExpandoButton: function(override, link, postId, index) {
-                // override is the expando 'button' element
-                if (override && !override.classList.contains("collapso")) {
-                    override.innerText = "\ue90d";
-                    return override.classList.toggle("collapso");
-                } else if (override) {
-                    override.innerText = "\ue907";
-                    return override.classList.toggle("collapso");
-                }
-
-                if (link.querySelector("div.expando") != null) { return; }
-                // process a link into a link container that includes a dynamic styled "button"
-                var expando = document.createElement("div");
-                expando.classList.add("expando");
-                expando.id = `expando_${postId}-${index}`;
-                expando.style.fontFamily = "Icon";
-                expando.innerText = "\ue907";
-                link.appendChild(expando);
-            },
-
-            createImgur: function(href, link, postId, index)
+            createImgur: function(link, postId, index)
             {
                 // we exclude galleries explicitly
-                var imgurName;
-                if ((m = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(href)) != null)
+                var imgurName, _href = link.href;
+                if ((m = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(_href)) != null)
                     imgurName = m[1];
 
                 xhrRequest({
@@ -231,29 +170,29 @@ settingsLoadedEvent.addHandler(function()
                     var response = JSON.parse(xhr).data;
                     if (response.id && response.animated) {
                         var v = document.createElement("video");
-                        v.setAttribute("id", `image-loader_${postId}-${index}`);
+                        v.setAttribute("id", `loader_${postId}-${index}`);
                         v.setAttribute("class", "imageloader");
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
                         v.setAttribute("src", response.mp4);
-                        ImageLoader.doContainerInsert(v, link.parentNode, postId, index);
+                        mediaContainerInsert(v, link, postId, index);
                     } else if (response.id) {
                         // force HTTPS for all static media to conform to CORS rules
                         var _link = response.link.replace(/http\:/, "https\:");
                         var i = document.createElement("img");
-                        i.setAttribute("id", `image-loader_${postId}-${index}`);
+                        i.setAttribute("id", `loader_${postId}-${index}`);
                         i.setAttribute("class", "imageloader");
                         i.setAttribute("src", _link);
-                        ImageLoader.doContainerInsert(i, link.parentNode, postId, index);
+                        mediaContainerInsert(i, link, postId, index);
                     }
                 });
             },
 
-            createGfycat: function(href, link, postId, index)
+            createGfycat: function(link, postId, index)
             {
-                var video_id;
-                if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(href)) != null)
+                var video_id, _href = link.href;
+                if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(_href)) != null)
                     video_id = m[1];
 
                 // ask the gfycat api for the embed url (doubles as verification of content)
@@ -266,21 +205,22 @@ settingsLoadedEvent.addHandler(function()
                     var video_src = JSON.parse(xhr).gfyItem.mobileUrl || false;
                     if (video_src) {
                         var v = document.createElement("video");
-                        v.setAttribute("id", `image-loader_${postId}-${index}`);
+                        v.setAttribute("id", `loader_${postId}-${index}`);
                         v.setAttribute("class", "imageloader");
                         v.setAttribute("autoplay", "");
                         v.setAttribute("loop", "");
                         v.setAttribute("muted", "");
                         v.setAttribute("src", video_src);
-                        ImageLoader.doContainerInsert(v, link.parentNode, postId, index);
+                        mediaContainerInsert(v, link, postId, index);
                     }
                 });
             },
 
-            createGiphy: function(href, link, postId, index)
+            createGiphy: function(link, postId, index)
             {
+                var _href = link.href;
                 var _isGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i;
-                var _matchGiphy = _isGiphy.exec(href);
+                var _matchGiphy = _isGiphy.exec(_href);
                 var _giphyId;
                 if (_matchGiphy != null && _matchGiphy.length > 0)
                     _giphyId = _matchGiphy[1] || _matchGiphy[2];
@@ -288,13 +228,13 @@ settingsLoadedEvent.addHandler(function()
                 if (_giphyId) {
                     var video_src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
                     var v = document.createElement("video");
-                    v.setAttribute("id", `image-loader_${postId}-${index}`);
+                    v.setAttribute("id", `loader_${postId}-${index}`);
                     v.setAttribute("class", "imageloader");
                     v.setAttribute("autoplay", "");
                     v.setAttribute("loop", "");
                     v.setAttribute("muted", "");
                     v.setAttribute("src", video_src);
-                    ImageLoader.doContainerInsert(v, link.parentNode, postId, index);
+                    mediaContainerInsert(v, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
             }
         }

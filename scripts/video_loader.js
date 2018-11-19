@@ -4,239 +4,177 @@ settingsLoadedEvent.addHandler(function()
     {
         VideoLoader =
         {
-            VIDEO_TYPE_NONE: 0,
-            VIDEO_TYPE_YOUTUBE: 1,
-            VIDEO_TYPE_VIMEO: 2,
-            VIDEO_TYPE_TWITCH: 3,
-            VIDEO_TYPE_VINE: 4,
+            parsedVideo: null,
 
-            third_party_scripts: [],
-
-            loadVideos: function(item, id)
+            loadVideos: function(item)
             {
-                var postbody = getDescendentByTagAndClassName(item, "div", "postbody");
-                var links = postbody.getElementsByTagName("a");
+                // don't retrace our DOM nodes (use relative positions of event items)
+                var links = item.querySelectorAll(".sel .postbody a");
+                for (var i = 0; i < links.length; i++) {
+                    VideoLoader.parsedVideo = VideoLoader.getVideoType(links[i].href);
+                    if (VideoLoader.parsedVideo != null) {
+                        (i => {
+                            if (links[i].querySelector("div.expando")) { return; }
+                            links[i].addEventListener("click", e => {
+                                VideoLoader.toggleVideo(e, i);
+                            });
 
-                for (var i = 0; i < links.length; i++)
-                {
-                    var type = VideoLoader.getVideoType(links[i].href);
-                    if (type != VideoLoader.VIDEO_TYPE_NONE)
-                    {
-                        links[i].addEventListener("click", VideoLoader.toggleVideo, false);
+                            var _postBody = links[i].parentNode;
+                            var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                            insertExpandoButton(links[i], _postId, i);
+                        })(i);
                     }
                 }
             },
 
             getVideoType: function(url)
             {
-                if (url.match(/www\.youtube\.com\/watch(_popup)?\?v=/i))
-                    return VideoLoader.VIDEO_TYPE_YOUTUBE;
-                else if (url.match(/youtu\.be\/.+/i))
-                    return VideoLoader.VIDEO_TYPE_YOUTUBE;
-                else if (url.match(/vimeo\.com\/\d+/i))
-                    return VideoLoader.VIDEO_TYPE_VIMEO;
-                else if (url.match(/vimeo\.com\/moogaloop\.swf\?clip_id=\d+.*/i))
-                    return VideoLoader.VIDEO_TYPE_VIMEO;
-                else if (url.match(/twitch\.tv\/\w+\/\w\/\d+.*/i))
-                    return VideoLoader.VIDEO_TYPE_TWITCH;
-                else if (url.match(/vine.co\/v\/\w+/i))
-                    return VideoLoader.VIDEO_TYPE_VINE;
+                // normal youtube videos
+                var _isYoutube1 = /https\:\/\/(?:.*\.|)(?:youtube\..*|youtu.be)\/(?:.*v=([\w\-]{11}).*|([\w\-]{11})(?:\?)?)/i;
+                // youtube playlists with or without video indexes
+                var _isYoutube2 = /https\:\/\/(?:.*\.|)(?:youtube\..*|youtu.be)\/(?:.*v=([\w\-]{11}).*list=([\w\-]{34})|.*list=([\w\-]{34}))/i;
+                // matching for time offsets (works with playlists or simple videos)
+                var _isYTOffset = /https\:\/\/(?:.*\.|)(?:youtube\..*|youtu.be)\/(?:.*t=([\d]+))/i;
+                // twitch channels (with time offset)
+                var _isTwitch1 = /https\:\/\/(?:www\.)?twitch.tv\/(?:videos\/|\?channel=|)([\w\-]+)(?:\?t=([\w\-]+)|)/i;
+                // twitch archived videos (with time offset)
+                var _isTwitch2 = /https\:\/\/(?:www\.|)?twitch.tv\/(?:.*?\&t=([\w\-]+).*?\&video=v([\w\-]+)|.*?\&video=v([\w\-]+))/i;
+                // twitch clips
+                var _isTwitch3 = /https\:\/\/clips\.twitch.tv\/(?:.*\/([\w\-]+)|([\w\-]+))$/i;
+                var _ytMatch1 = _isYoutube1.exec(url);
+                var _ytMatch2 = _isYoutube2.exec(url);
+                var _ytMatchOffset = _isYTOffset.exec(url);
+                var _twitchMatch1 = _isTwitch1.exec(url);
+                var _twitchMatch2 = _isTwitch2.exec(url);
+                var _twitchMatch3 = _isTwitch3.exec(url);
 
-                return VideoLoader.VIDEO_TYPE_NONE;
+                if (_ytMatch1)
+                    return {
+                        type: 1,
+                        id: _ytMatch1[1] || _ytMatch1[2],
+                        offset: _ytMatchOffset && _ytMatchOffset[1]
+                    };
+                else if (_ytMatch2)
+                    return {
+                        type: 1,
+                        id: _ytMatch2[1],
+                        playlist: _ytMatch2[2],
+                        offset: _ytMatchOffset && _ytMatchOffset[1]
+                    };
+                else if (_twitchMatch1)
+                    return { type: 2, channel: _twitchMatch1[1] };
+                else if (_twitchMatch2)
+                    return {
+                        type: 2,
+                        id: _twitchMatch2[2] || _twitchMatch2[3],
+                        offset: _twitchMatch2[1]
+                    };
+                else if (_twitchMatch3)
+                    return { type: 2, clip: _twitchMatch3[1] || _twitchMatch3[2] };
+
+                return null;
             },
 
-            toggleVideo: function(e)
+            toggleVideo: function(e, index)
             {
                 // left click only
                 if (e.button == 0)
                 {
-                    var link = this;
-                    // if there is a video after the link, remove it
-                    if (link.nextSibling != null && link.nextSibling.className == "videoloader")
-                    {
-                        link.parentNode.removeChild(link.nextSibling);
-                    }
-                    else
-                    {
-                        // no video after the link? add one in!
-                        //
-                        var type = VideoLoader.getVideoType(link.href);
-                        var video;
-
-                        if (type == VideoLoader.VIDEO_TYPE_YOUTUBE)
-                            video = VideoLoader.createYoutube(link.href);
-                        else if (type == VideoLoader.VIDEO_TYPE_VIMEO)
-                            video = VideoLoader.createVimeo(link.href);
-                        else if (type == VideoLoader.VIDEO_TYPE_TWITCH)
-                            video = VideoLoader.createTwitch(link.href);
-                        else if (type == VideoLoader.VIDEO_TYPE_VINE)
-                            video = VideoLoader.createVine(link.href);
-
-                        // we actually created a video
-                        if (video != null)
-                        {
-                            var div = document.createElement("div");
-                            div.className = "videoloader";
-                            div.appendChild(video);
-
-                            // add the video right after the link
-                            link.parentNode.insertBefore(div, link.nextSibling);
-                        }
-                    }
-                    
                     e.preventDefault();
+                    var link = e.target;
+                    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
+                    link = _expandoClicked ? link.parentNode : e.target;
+                    var _postBody = link.parentNode;
+                    var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
+
+                    if (VideoLoader.parsedVideo.type === 1)
+                        VideoLoader.createYoutube(link, _postId, index);
+                    else if (VideoLoader.parsedVideo.type === 2)
+                        VideoLoader.createTwitch(link, _postId, index);
                 }
             },
 
-            createYoutube: function(href)
+            createYoutube: function(link, postId, index)
             {
-                var video_id;
-                var start = 0;
-                
-                if ((video_id = href.match(/www\.youtube\.com\/watch(_popup)?\?v=([^&#]+)(#t=(\d+))?/i)))
-                {
-                    start = video_id[4];
-                    video_id = video_id[2];
-                }
-                else if ((video_id = href.match(/youtu\.be\/([^\?]+)(\?t=(.+))?/i)))
-                {
-                    start = VideoLoader.convertTime(video_id[3] || "");
-                    video_id = video_id[1];
-                }
-                else
-                    return null;
+                console.log(VideoLoader.parsedVideo);
+                var video_id = VideoLoader.parsedVideo.id;
+                var video_playlist = VideoLoader.parsedVideo.playlist;
+                var timeOffset = VideoLoader.parsedVideo.offset || 0;
 
-                var width = 640, height = 390;
-                if (getSetting("video_loader_hd"))
-                {
-                    // if they want hd, just make the player bigger, embed api will use higher quality
-                    width = 853;
-                    height = 480;
+                // if they want hd, just make the player bigger, embed api will use higher quality
+                var width = getSetting("video_loader_hd") ? 853 : 640;
+                var height = getSetting("video_loader_hd") ? 480 : 390;
+
+                if (video_id && video_playlist)
+                    video_src = `https://www.youtube.com/embed/videoseries?v=${video_id}&list=${video_playlist}&enablejsapi=1&autoplay=1&start=${timeOffset}`;
+                else if (video_id)
+                    video_src = `https://www.youtube.com/embed/${video_id}?autoplay=1&iv_load_policy=3&rel=0&enablejsapi=1&start=${timeOffset}`;
+                else if (video_playlist)
+                    video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&enablejsapi=1&autoplay=1`;
+
+                console.log(video_src);
+                if (video_src) {
+                    var video = document.createElement("div");
+                    video.setAttribute("class", "yt-container");
+                    video.setAttribute("id", `loader_${postId}-${index}`);
+                    video.innerHTML = /*html*/`
+                        <iframe
+                            id="iframe_${postId}-${index}"
+                            width="${width}"
+                            height="${height}"
+                            src="${video_src}"
+                            frameborder="0"
+                            allow="autoplay; encrypted-media"
+                            allowfullscreen
+                        >
+                        </iframe>
+                    `;
+                    mediaContainerInsert(video, link, postId, index);
                 }
-
-                var i = document.createElement("iframe");
-                i.setAttribute("id", "player");
-                i.setAttribute("type", "text/html");
-                i.setAttribute("width", width);
-                i.setAttribute("height", height);
-                i.setAttribute("src", "//www.youtube.com/embed/" + video_id + "?autoplay=1&iv_load_policy=3&rel=0&start=" + start);
-                i.setAttribute("frameborder", "0");
-                i.setAttribute("style", "width: " + width + "px");
-                i.setAttribute("allowfullscreen", "");
-
-                return i;
             },
 
-            convertTime: function(duration)
+            createTwitch: function(link, postId, index)
             {
-                // convert a time like "1m30s" to "90", this is terrible.
-                var match;
-                if ((match = duration.match(/((\d+)h)?((\d+)m)?((\d+)s)?/)))
-                    return 3600 * parseInt(match[2] || 0) + 60 * parseInt(match[4] || 0) + parseInt(match[6] || 0);
+                console.log(VideoLoader.parsedVideo);
+                var video_id = VideoLoader.parsedVideo.id;
+                var video_channel = VideoLoader.parsedVideo.channel;
+                var video_clip = VideoLoader.parsedVideo.clip;
+                var timeOffset = VideoLoader.parsedVideo.offset || 0;
 
-                return duration;
-            },
+                var width = getSetting("video_loader_hd") ? 853 : 640;
+                var height = getSetting("video_loader_hd") ? 480 : 390;
 
-            createVimeo: function(href)
-            {
-                var video_id;
-                
-                if ((video_id = href.match(/vimeo\.com\/(\d+)/i)))
-                    video_id = video_id[1];
-                else if ((video_id = href.match(/vimeo\.com\/moogaloop\.swf\?clip_id=(\d+)/i)))
-                    video_id = video_id[1];
-                else
-                    return null;
-
-                var url = "http://vimeo.com/moogaloop.swf?clip_id=" + video_id + "&show_title=1&show_byline=1&fullscreen=1";
-
-                return VideoLoader.createVideoObject(url);
-            },
-
-            createVideoObject: function(url)
-            {
-                var o = document.createElement("object");
-                o.setAttribute("width", 640);
-                o.setAttribute("height", 385);
-                o.appendChild(VideoLoader.createParam("movie", url));
-                o.appendChild(VideoLoader.createParam("allowFullScreen", "true"));
-                o.appendChild(VideoLoader.createParam("allowscriptaccess", "always"));
-
-                var embed = document.createElement("embed");
-                embed.setAttribute("src", url);
-                embed.setAttribute("type", "application/x-shockwave-flash");
-                embed.setAttribute("allowscriptaccess", "always");
-                embed.setAttribute("allowfullscreen", "true");
-                embed.setAttribute("width", "640");
-                embed.setAttribute("height", "385");
-
-                o.appendChild(embed);
-                return o;
-            },
-
-            createParam: function(name, value)
-            {
-                var param = document.createElement("param");
-                param.setAttribute("name", name);
-                param.setAttribute("value", value);
-                return param;
-            },
-
-            createTwitch: function(href)
-            {
-                var video_id, channel_id, start;
-
-                if((video_id = href.match(/twitch\.tv\/(\w+)\/(\w)\/(\d+)(\?t=(\w+))?/i)))
-                {
-                    channel_id = video_id[1];
-                    // twitch embed videoIds are garbage, b => a
-                    if(video_id[2] == 'b')
-                        video_id[2] = 'a';
-                    start = VideoLoader.convertTime(video_id[5] || "");
-                    video_id = video_id[2] + video_id[3];
-                }
-                else
-                    return null;
-
-                var o = document.createElement("object");
-                o.setAttribute("width", 620);
-                o.setAttribute("height", 378);
-                o.setAttribute("data", "http://www.twitch.tv/swflibs/TwitchPlayer.swf");
-                o.setAttribute("type", "application/x-shockwave-flash");
-                o.appendChild(VideoLoader.createParam("allowScriptAccess", "always"));
-                o.appendChild(VideoLoader.createParam("allowNetworking", "all"));
-                o.appendChild(VideoLoader.createParam("allowFullScreen", "true"));
-                o.appendChild(VideoLoader.createParam("flashvars", "channel=" + channel_id + "&auto_play=false&start_volume=25&videoId=" + video_id + "&playOffset=" + start));
-
-                return o;
-            },
-
-            createVine: function(href)
-            {
-                var video_id;
-
-                if ((video_id = href.match(/vine\.co\/v\/(\w+)/i)))
-                {
-                    video_id = video_id[1];
-                }
-                else
-                    return null;
-
-                if(VideoLoader.third_party_scripts.indexOf('vine') === -1) {
-                    var vineWidget = document.createElement("script");
-                    vineWidget.setAttribute("src", "https://platform.vine.co/static/scripts/embed.js");
-                    document.head.appendChild(vineWidget);
-                    VideoLoader.third_party_scripts.push('vine');
+                var video_src;
+                if (video_id) {
+                    video_src = `https://player.twitch.tv/?video=v${video_id}&autoplay=true&muted=false&t=${timeOffset}`;
+                } else if (video_clip) {
+                    video_src = `https://clips.twitch.tv/embed?clip=${video_clip}&autoplay=true&muted=false`;
+                } else if (video_channel) {
+                    video_src = `https://player.twitch.tv/?channel=${video_channel}&autoplay=true&muted=false`;
                 }
 
-                var i = document.createElement("iframe");
-                i.setAttribute("src", "//vine.co/v/" + video_id + "/embed/postcard");
-                i.setAttribute("width", 480);
-                i.setAttribute("height", 480);
-                i.setAttribute("frameborder", "0");
+                console.log(video_src);
+                if (video_src) {
+                    var video = document.createElement("div");
+                    video.setAttribute("class", "twitch-container");
+                    video.setAttribute("id", `loader_${postId}-${index}`);
+                    video.innerHTML = /*html*/`
+                        <iframe
+                            id="iframe_${postId}-${index}"
+                            width="${width}"
+                            height="${height}"
+                            src="${video_src}"
+                            frameborder="0"
+                            scrolling="no"
+                            allowfullscreen
+                        >
+                        </iframe>
+                    `;
 
-                return i;
-            }
+                    mediaContainerInsert(video, link, postId, index);
+                }
+            },
         }
 
         processPostEvent.addHandler(VideoLoader.loadVideos);

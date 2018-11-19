@@ -20,52 +20,88 @@ settingsLoadedEvent.addHandler(function() {
         // end dependency injection
 
         EmbedSocials = {
-            getLinks: function(item, id) {
-                var links = document.querySelectorAll("div.postbody a");
-                if (links.length > 0) {
-                    for (var i = 0; i < links.length; i++) {
-                        if (EmbedSocials.isSocialLink(links[i].href))
-                            links[i].addEventListener("click", EmbedSocials.processPost);
+            parsedSocialPost: null,
+
+            getLinks: function(item) {
+                // don't retrace our DOM nodes (use relative positions of event items)
+                var links = item.querySelectorAll(".sel .postbody a");
+                for (var i = 0; i < links.length; i++) {
+                    EmbedSocials.parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
+                    if (EmbedSocials.parsedSocialPost != null) {
+                        ((i) => {
+                            if (links[i].querySelector("div.expando")) { return; }
+                            links[i].addEventListener("click", (e) => {
+                                EmbedSocials.processPost(e, i);
+                            });
+
+                            var _postBody = links[i].parentNode;
+                            var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                            insertExpandoButton(links[i], _postId, i);
+                        })(i);
                     }
                 }
             },
 
-            isSocialLink: function(href) {
+            getSocialType: function(href) {
                 var _isTwitter = /https?\:\/\/twitter.com\/\w+\/status\/(\d+)/i;
                 var _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\//i;
-                if (_isTwitter.test(href)) { return true; }
-                else if (_isInstagram.test(href)) { return true; }
-                return false;
+                var _twttrMatch = _isTwitter.exec(href);
+                var _instgrmMatch = _isInstagram.exec(href);
+                if (_twttrMatch) {
+                    return {
+                        type: 1,
+                        id: _twttrMatch[1]
+                    };
+                } else if (_instgrmMatch) {
+                    return {
+                        type: 2,
+                        id: _instgrmMatch[1]
+                    };
+                }
+                return null;
             },
 
-            insertCommand: function(elem, customCode) {
-                // insert a one-way script that executes synchronously (caution!)
-                var _script = document.createElement("script");
-                _script.textContent = `${customCode}`;
-                return elem.appendChild(_script);
+            processPost: function(e, index) {
+                if (e.button == 0) {
+                    e.preventDefault();
+                    var link = e.target;
+                    if (!document.getElementById("twttr-wjs"))
+                        return console.log("Embed Socials dependency injection failed!");
+
+                    var socialType = EmbedSocials.parsedSocialPost.type;
+                    var socialId = EmbedSocials.parsedSocialPost.id;
+                    // adjust relative node position based on expando state
+                    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
+                    link = _expandoClicked ? link.parentNode : e.target;
+                    var _postBody = link.parentNode;
+                    var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    // cancel early if we're toggling
+                    if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
+
+                    if (socialType === 1 && socialId) {
+                        EmbedSocials.createTwitter(link, socialId, _postId, index);
+                    } else if (socialType === 2 && socialId) {
+                        EmbedSocials.parseInstagram(link, socialId, _postId, index);
+                    }
+                }
             },
 
-            createTwitter: function(postUrl, postId, parentElem) {
+            createTwitter: function(parentLink, socialId, postId, index) {
                 var twttrContainer = document.createElement("div");
-                twttrContainer.id = `tweet-container_${postId}`;
+                var _target = `loader_${postId}-${index}`;
+                twttrContainer.id = _target;
                 twttrContainer.setAttribute("class", "tweet-container");
-                parentElem.appendChild(twttrContainer);
-                var _target = `tweet-container_${postId}`;
 
-                // twttr-wjs can just inject a tweet straight into the DOM
-                EmbedSocials.insertCommand(
-                    parentElem, /*html*/`
+                // twttr-wjs can just inject a tweet iframe straight into the DOM
+                insertCommand(
+                    twttrContainer, /*html*/`
                     window.twttr.widgets.createTweet(
-                        "${postId}",
+                        "${socialId}",
                         document.getElementById("${_target}"),
                         { theme: "dark", width: "500" }
                     );
                 `);
-
-                if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                    const smooth = getSetting('scroll_to_post_smooth', true);
-                    scrollToElement(document.getElementById(_target), smooth ? 200 : 0);
-                }
+                mediaContainerInsert(twttrContainer, parentLink, postId, index);
             },
 
             getDate: function(timestamp) {
@@ -109,12 +145,12 @@ settingsLoadedEvent.addHandler(function() {
                 return captionContainer;
             },
 
-            insertInstagramTemplate: function(postId) {
+            insertInstagramTemplate: function(postId, index) {
                 var container = document.createElement("div");
-                container.id = `instgrm-container_${postId}`;
+                container.id = `instgrm-container_${postId}-${index}`;
                 container.setAttribute("class", "instgrm-container hidden");
                 // use a template for html injection
-                var _template = /*html*/`
+                container.innerHTML = /*html*/`
                     <div class="instgrm-header">
                         <a href="#" id="instgrm_profile_a">
                             <img id="instgrm_author_pic" class="circle">
@@ -145,19 +181,19 @@ settingsLoadedEvent.addHandler(function() {
                         <span id="instgrm_post_timestamp"></span>
                     </div>
                 `;
-                container.innerHTML = _template;
                 var fragment = document.createDocumentFragment();
                 fragment.appendChild(container);
                 return fragment;
             },
 
-            parseInstagram: function(postId, parentElem) {
-                var postUrl = `https://www.instagram.com/p/${postId}/`;
+            parseInstagram: function(parentLink, socialId, postId, index) {
+                var postUrl = `https://www.instagram.com/p/${socialId}/`;
                 // if we have an instagram postId use it to toggle our element rather than query
-                var _target = document.querySelector(`#instgrm-container_${postId}`);
+                var containerQuery = `#instgrm-container_${postId}-${index}`;
+                var _target = parentLink.parentNode.querySelector(containerQuery);
                 if (_target) { return _target.classList.toggle("hidden"); }
 
-                var _target = EmbedSocials.insertInstagramTemplate(postId);
+                var _target = EmbedSocials.insertInstagramTemplate(postId, index);
                 xhrRequest({ type: "GET", url: postUrl }) .then(resp => {
                     // save our likes from the header
                     var _likesMatch = /<meta content="(\d+ Likes, \d+ Comments|\d+ Likes,?|\d+ Comments)/i.exec(resp);
@@ -169,13 +205,6 @@ settingsLoadedEvent.addHandler(function() {
                     var _configGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(resp);
                     var _matchGQL = _configGQL[1] && JSON.parse(_configGQL[1]).shortcode_media;
                     // var _isPrivate = _matchGQL && _matchGQL.owner.is_private;
-
-                    // debugging!
-                    console.log({
-                        likes: _likesMatch && _likesMatch[1],
-                        videoUrl: _videoMatch && _videoMatch[1],
-                        parsedBody: _configGQL && _matchGQL
-                    });
 
                     if (_matchGQL) {
                         var _authorPic = _matchGQL.owner.profile_pic_url;
@@ -196,17 +225,6 @@ settingsLoadedEvent.addHandler(function() {
                             _postMediaUrl = _videoMatch && _videoMatch[1];
                         else
                             _postMediaUrl = _matchGQL.display_resources[0].src;
-
-                        // more debugging!
-                        console.log({
-                            _authorPic,
-                            _authorName,
-                            _authorFullName,
-                            _postTimestamp,
-                            _postURL,
-                            _postCaption,
-                            _postMediaUrl
-                        });
 
                         // populate our html elements
                         var postAuthorPic = _target.querySelector("#instgrm_author_pic");
@@ -246,44 +264,13 @@ settingsLoadedEvent.addHandler(function() {
                         postParentUrl.href = _postURL;
 
                         // compile everything into our container and inject at once
-                        var embedTarget = _target.querySelector(`#instgrm-container_${postId} #instgrm_embed`);
-                        var targetContainer = _target.querySelector(`.instgrm-container`);
+                        var embedTarget = _target.querySelector("#instgrm_embed");
                         embedTarget.appendChild(embed);
-                        targetContainer.classList.remove("hidden");
-                        parentElem.appendChild(_target);
+                        _target.firstChild.classList.toggle("hidden");
+                        mediaContainerInsert(_target, parentLink, postId, index);
                     }
                 });
             },
-
-            processPost: function(e) {
-                if (e.button == 0) {
-                    e.preventDefault();
-                    if (!document.getElementById("twttr-wjs"))
-                        return console.log("Embed Socials dependency injection failed!");
-
-                    var link = this;
-                    var _matchTwitter = /https?\:\/\/twitter.com\/\w+\/status\/(\d+)/i.exec(link.href);
-                    var _matchInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\//i.exec(link.href);
-                    var _twitterPostId = _matchTwitter && _matchTwitter[1];
-                    var _instgrmPostId = _matchInstagram && _matchInstagram[1];
-
-                    var _targetTweet = document.querySelector(`div[id='tweet-container_${_twitterPostId}']`);
-                    var _targetInstgrm = document.querySelector(`div[id='instgrm-container_${_instgrmPostId}']`);
-
-                    if (_twitterPostId) {
-                        if (_targetTweet)
-                            return _targetTweet.classList.toggle("hidden");
-
-                        EmbedSocials.createTwitter(_matchTwitter[0], _twitterPostId, link.parentNode);
-                    }
-                    else if (_instgrmPostId) {
-                        if (_targetInstgrm)
-                            return _targetInstgrm.classList.toggle("hidden");
-
-                        EmbedSocials.parseInstagram(_instgrmPostId, link.parentNode);
-                    }
-                }
-            }
         }
         processPostEvent.addHandler(EmbedSocials.getLinks);
     }

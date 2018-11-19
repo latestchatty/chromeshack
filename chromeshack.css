@@ -55,11 +55,8 @@ a.lol_button {
     font-weight: bold;
 }
 
-.postbody a.embedded {
-    color: #41AAAA !important;
-}
-
 /* expando toggle button (.expando -> .expando.collapso) */
+.postbody a.embedded { color: rgb(61, 154, 154) !important; }
 div.expando {
     display: inline-block !important;
     text-decoration: none !important;
@@ -70,25 +67,32 @@ div.expando {
 }
 /* end expando */
 
-.postbody .image-container {
-    display: grid !important;
-    grid-template-columns: repeat(2, fit-content(100%));
-    grid-auto-rows: fit-content(720px);
-    grid-gap: 5px;
-    align-items: start;
-    justify-items: start;
+.postbody .media-container {
+    display: flex !important;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-items: flex-start;
+    flex-wrap: wrap;
     overflow: hidden !important;
     padding: 0;
     margin: 0.5em 0 0 0;
 }
+.imageloader {
+    /* maximum size for each video/image item */
+    max-width: 50%;
+    max-height: 720px;
+}
 video.imageloader,
 img.imageloader {
+    flex: 1 1 600px;
     object-fit: contain !important;
     height: auto !important;
     width: 100% !important;
     /* try to maintain 16:9 */
     max-height: 720px !important;
 }
+.twitch-container.hidden,
+.yt-container.hidden,
 video.imageloader.hidden,
 img.imageloader.hidden {
     display: none !important;
@@ -958,7 +962,7 @@ a.refresh_pending {
     min-height: 1;
     min-width: 1;
     padding: 0;
-    margin: 1em 0 0 0;
+    margin: 0;
     background-color: transparent;
 }
 .tweet-container.hidden { display: none !important; }
@@ -975,7 +979,7 @@ a.refresh_pending {
     min-width: 325px;
     max-width: 500px;
     padding: 0 0 0.5em 0;
-    margin: 0.5em 0 0 0;
+    margin: 0;
     font-size: 14px;
     font-family: "Segoe UI", "Helvetica", sans-serif;
     color: #262626;
@@ -1039,7 +1043,7 @@ a.refresh_pending {
     width: 100%;
     height: auto;
     max-height: 540px !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
     overflow: hidden;
     padding: 0;
     margin: 0;
@@ -1085,7 +1089,6 @@ a.refresh_pending {
     padding: 0 0.1em 0 0.2em;
 }
 .instgrm-footer span {
-    font-weight: 500;
     line-height: 17px;
     padding: 0 0.1em 0 0.1em;
 }

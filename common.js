@@ -266,3 +266,103 @@ HTMLElement.prototype.removeChildren = function()
     // https://stackoverflow.com/a/42658543
     while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }
+
+function toggleVideoState(video) {
+    // abstracted helper for toggling html5 video embed play/pause state
+    try {
+        if (video && video.nodeName == "VIDEO" && !video.paused) {
+            video.pause();
+            video.currentTime = 0;
+        } else if (video && video.nodeName == "VIDEO" && video.paused) {
+            video.currentTime = 0;
+            video.play();
+        }
+    } catch (err) { console.log(err); }
+}
+
+function toggleMediaItem(link, postBodyElem, postId, index) {
+    // abstracted helper for toggling media container items from a post
+    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
+    var _embedExists = postBodyElem.querySelector(`#loader_${postId}-${index}`);
+    var _expando = postBodyElem.querySelector(`#expando_${postId}-${index}`);
+
+    // pretty aggressive way to handle stopping the video player when toggling the container
+    var iframeMedia = link.parentNode.querySelector(`#iframe_${postId}-${index}`);
+    if (iframeMedia)
+        iframeMedia.parentNode.parentNode.removeChild(iframeMedia.parentNode);
+
+    // state toggle our various embed children
+    toggleVideoState(_embedExists);
+    if (_embedExists && _expando) { toggleExpandoButton(_expando); }
+    if (_embedExists && _expandoClicked) {
+        link.parentNode.classList.toggle("embedded");
+        _embedExists.classList.toggle("hidden");
+        return true;
+    } else if (_embedExists) {
+        link.classList.toggle("embedded");
+        _embedExists.classList.toggle("hidden");
+        return true;
+    }
+
+    return false;
+}
+
+function insertCommand(elem, injectable) {
+    // insert a one-way script that executes synchronously (caution!)
+    var _script = document.createElement("script");
+    _script.textContent = `${injectable}`;
+    elem.appendChild(_script);
+}
+
+function mediaContainerInsert(elem, link, id, index) {
+    // abstracted helper for manipulating the media-container grid from a post
+    var container = link.parentNode.querySelector(".media-container");
+    var expando = link.querySelector(`#expando_${id}-${index}`);
+    if (!container) {
+        // generate container if necessary
+        container = document.createElement("div");
+        container.setAttribute("class", "media-container");
+    }
+
+    ((expando, elem, link, id, index) => {
+        elem.addEventListener('click', e => {
+            // toggle our embed state when image embed is left-clicked
+            if (e.which === 1) {
+                var _embedExists = link.querySelector(`#loader_${id}-${index}`);
+                link.classList.toggle("embedded"); // toggle highlight
+                elem.classList.toggle("hidden");
+                toggleExpandoButton(expando);
+                toggleVideoState(_embedExists);
+            }
+        });
+    })(expando, elem, link, id, index);
+
+    container.appendChild(elem);
+    link.classList.add("embedded");
+    toggleExpandoButton(expando);
+    link.parentNode.appendChild(container);
+}
+
+function insertExpandoButton(link, postId, index) {
+    // abstracted helper for appending an expando button to a link in a post
+    if (link.querySelector("div.expando") != null) { return; }
+    // process a link into a link container that includes a dynamic styled "button"
+    var expando = document.createElement("div");
+    expando.classList.add("expando");
+    expando.id = `expando_${postId}-${index}`;
+    expando.style.fontFamily = "Icon";
+    expando.innerText = "\ue907";
+    link.appendChild(expando);
+}
+
+function toggleExpandoButton(expando) {
+    // abstracted helper for toggling the state of a link-expando button from a post
+    if (expando && !expando.classList.contains("collapso")) {
+        // override is the expando 'button' element
+        expando.innerText = "\ue90d"; // circle-arrow-down
+        return expando.classList.add("collapso");
+    } else if (expando) {
+        expando.innerText = "\ue907"; // circle-arrow-up
+        return expando.classList.remove("collapso");
+    }
+}

@@ -2,6 +2,9 @@ DefaultSettings = {
 
     enabled_scripts: [
         "lol",
+        "getpost",
+        "elder_scroll",
+        "comment_tags",
         "post_preview",
         "dinogegtik",
         "sparkly_comic",
