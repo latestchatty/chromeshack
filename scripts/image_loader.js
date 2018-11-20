@@ -62,6 +62,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     return true;
                 }
+                else if (/https?\:\/\/pbs\.twimg\.com\/media\/[\w\-\.]+/.test(href))
+                {
+                    return true;
+                }
                 else if (/https?\:\/\/pichars.org\/\w+$/.test(href))
                 {
                     return true;
@@ -102,6 +106,8 @@ settingsLoadedEvent.addHandler(function()
                 // no way to get the full image for twitpic, just how a thumbnail
                 if ((m = /https?\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
                     return "https://twitpic.com/show/thumb/" + m[1];
+                else if ((m = /https?\:\/\/pbs\.twimg\.com\/media\/([\w\-\.]+)/.exec(href)) != null)
+                    return "https://pbs.twimg.com/media/" + m[1];
 
                 // grab the username and the photo id
                 if ((m = /https?\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
