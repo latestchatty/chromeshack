@@ -285,7 +285,9 @@ function toggleVideoState(video) {
 function toggleMediaItem(link, postBodyElem, postId, index) {
     // abstracted helper for toggling media container items from a post
     var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-    var _embedExists = postBodyElem.querySelector(`#loader_${postId}-${index}`);
+    var _embedExists = postBodyElem.querySelector(`#loader_${postId}-${index}`) ||
+                        postBodyElem.querySelector(`#instgrm-container_${postId}-${index}`) ||
+                        postBodyElem.querySelector(`#tweet-container_${postId}-${index}`);
     var _expando = postBodyElem.querySelector(`#expando_${postId}-${index}`);
 
     // pretty aggressive way to handle stopping the video player when toggling the container
