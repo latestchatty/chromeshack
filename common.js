@@ -318,7 +318,7 @@ function insertCommand(elem, injectable) {
     elem.appendChild(_script);
 }
 
-function mediaContainerInsert(elem, link, id, index) {
+function mediaContainerInsert(elem, link, id, index, width) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = link.parentNode.querySelector(".media-container");
     var embed = link.querySelector(`#loader_${id}-${index}`);
@@ -328,6 +328,10 @@ function mediaContainerInsert(elem, link, id, index) {
         container = document.createElement("div");
         container.setAttribute("class", "media-container");
     }
+
+    // use our width passed from 'video_loader' to mutate this media container for HD video
+    if (width != null)
+        container.style.gridTemplateColumns = `repeat(auto-fill, minmax(min-content, ${width}px))`;
 
     ((expando, embed, elem, link) => {
         elem.addEventListener('click', e => {

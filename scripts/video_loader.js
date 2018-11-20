@@ -122,7 +122,7 @@ settingsLoadedEvent.addHandler(function()
                         >
                         </iframe>
                     `;
-                    mediaContainerInsert(video, link, postId, index);
+                    mediaContainerInsert(video, link, postId, index, width);
                 }
             },
 
@@ -163,7 +163,7 @@ settingsLoadedEvent.addHandler(function()
                         </iframe>
                     `;
 
-                    mediaContainerInsert(video, link, postId, index);
+                    mediaContainerInsert(video, link, postId, index, width);
                 }
             },
         }
