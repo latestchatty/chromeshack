@@ -70,7 +70,7 @@ div.expando {
 .postbody .media-container {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(min-content, 600px));
-    grid-template-rows: repeat(auto-fit, minmax(min-content, 500px));
+    grid-auto-rows: max(800px);
     grid-gap: 5px;
 }
 video.imageloader,
@@ -964,7 +964,7 @@ a.refresh_pending {
     border: 1px solid #000;
     border-radius: 4px;
     min-height: 325px;
-    max-height: 720px;
+    max-height: 800px;
     min-width: 325px;
     max-width: 960px;
     padding: 0 0 0.5em 0;
