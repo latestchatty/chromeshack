@@ -11,7 +11,7 @@ settingsLoadedEvent.addHandler(function()
                 for (var i = 0; i < links.length; i++) {
                     var parsedVideo = VideoLoader.getVideoType(links[i].href);
                     if (parsedVideo != null) {
-                        (() => {
+                        ((parsedVideo, i) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
                                 VideoLoader.toggleVideo(e, parsedVideo, i);
@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(function()
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                             insertExpandoButton(links[i], _postId, i);
-                        })();
+                        })(parsedVideo, i);
                     }
                 }
             },
@@ -82,9 +82,9 @@ settingsLoadedEvent.addHandler(function()
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                     if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
 
-                    if (videoObj.type === 1)
+                    if (videoObj && videoObj.type === 1)
                         VideoLoader.createYoutube(link, videoObj, _postId, index);
-                    else if (videoObj.type === 2)
+                    else if (videoObj && videoObj.type === 2)
                         VideoLoader.createTwitch(link, videoObj, _postId, index);
                 }
             },

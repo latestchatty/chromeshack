@@ -33,7 +33,12 @@ function toggleMediaItem(link, postBodyElem, postId, index) {
     // pretty aggressive way to handle stopping an iframe player when toggling the container
     var encapMedia = postBodyElem.querySelector(`#iframe_${postId}-${index}`) ||
                     postBodyElem.querySelector(`#loader_${postId}-${index}.tweet-container`);
-    if (encapMedia) { encapMedia.parentNode.parentNode.removeChild(encapMedia.parentNode); }
+    if (encapMedia) {
+        var mediaParent = encapMedia.parentNode.parentNode;
+        var container = mediaParent.parentNode;
+        // make sure we remove both child and spacer
+        container.removeChild(mediaParent);
+    }
 
     // state toggle our various embed children
     toggleVideoState(_embedExists);
