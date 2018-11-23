@@ -30,12 +30,10 @@
 
     function loop() {
         try {
-            xhrRequest({
-                type: "GET",
-                url: `https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`
-            }).then(data => {
-                if (!data.error) {
-                    var _data = JSON.parse(data);
+            xhrRequest(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
+                .then(async res => {
+                var response = await res.json();
+                if (response && !response.error) {
                     g_lastEventId = parseInt(_data.lastEventId);
                     processEvents(_data.events);
                 }
@@ -170,11 +168,9 @@
         });
 
         // We need to get an initial event ID to start with.
-        xhrRequest({
-            type: "GET",
-            url: "https://winchatty.com/v2/getNewestEventId"
-        }).then(data => {
-            g_lastEventId = parseInt(JSON.parse(data).eventId);
+        xhrRequest("https://winchatty.com/v2/getNewestEventId").then(async res => {
+            var response = await res.json();
+            g_lastEventId = parseInt(response.eventId);
             loop();
         });
     }

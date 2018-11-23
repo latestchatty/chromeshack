@@ -156,11 +156,8 @@ settingsLoadedEvent.addHandler(function()
                 var tagsExist = document.querySelector(`div[id^=taggers_${id}].tagger_container`);
                 if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
 
-                xhrRequest({
-                    type: "GET",
-                    url
-                }).then(res => {
-                    var response = JSON.parse(res);
+                xhrRequest(url).then(async res => {
+                    var response = await res.json();
                     for (var _tag in response) {
                         var post = document.getElementById("item_" + id);
                         var body = post.getElementsByClassName("postbody")[0];
@@ -427,14 +424,12 @@ settingsLoadedEvent.addHandler(function()
 
             getCounts: function()
             {
-                xhrRequest({
-                    type: "GET",
-                    url: LOL.COUNT_URL
-                }).then(response => {
+                xhrRequest(LOL.COUNT_URL).then(async res => {
+                    var response = await res.json();
                     // Store original LOL.counts
                     var oldLolCounts = LOL.counts;
 
-                    LOL.counts = JSON.parse(response);
+                    LOL.counts = response;
 
                     setSetting("lol-counts", LOL.counts);
                     setSetting("lol-counts-time", new Date().getTime());

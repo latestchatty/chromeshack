@@ -208,13 +208,11 @@
 
         const usernameLowercase = username.toLowerCase();
 
-        xhrRequest({
-            type: "GET",
-            url: "https://shackstats.com/data/users_info.csv"
-        }).then(response => {
+        xhrRequest("https://shackstats.com/data/users_info.csv").then(async res => {
+            var response = await res.json();
             // papa parse is too slow to parse this whole csv file so filter it down to likely lines using a fast
             // method and then use papa parse to parse that vastly shortened csv file
-            const csvLines = JSON.parse(response).split('\n');
+            const csvLines = response.split('\n');
             const filteredCsvLines = [];
             for (const csvLine of csvLines) {
                 if (filteredCsvLines.length === 0 || csvLine.toLowerCase().includes(usernameLowercase)) {

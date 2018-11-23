@@ -3,3 +3,4 @@ web-ext-artifacts
 # make sure to use --id option when signing!
 .web-extension-id
 .eslintrc*
+Session.vim

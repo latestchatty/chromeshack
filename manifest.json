@@ -29,6 +29,7 @@
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
             "ext/webextension-polyfill/browser-polyfill.min.js",
+            "scripts/media_helpers.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -64,7 +65,14 @@
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js"
         ],
-        "css": [ "chromeshack.css" ],
+        "css": [ 
+            "styles/chromeshack.css",
+            "styles/image_uploader.css",
+            "styles/comic_scripts.css",
+            "styles/embed_socials.css",
+            "styles/two_pane.css",
+            "styles/media.css"
+         ],
         "matches": [
             "*://www.shacknews.com/chatty*",
             "*://new.shacknews.com/chatty*",
@@ -77,6 +85,7 @@
         "js": [
             "ext/webextension-polyfill/browser-polyfill.min.js",
             "scripts/jquery-3.3.1.min.js",
+            "scripts/media_helpers.js",
             "common.js",
             "init_events.js",
             "default_settings.js",
@@ -129,9 +138,9 @@
         "images/lol.png",
         "images/loading-pinned.gif",
         "images/banners/pinned.png",
+        "styles/options.css",
         "shack.png",
         "options.html",
-        "options.css",
         "options.js"
     ]
 }

@@ -11,7 +11,7 @@ settingsLoadedEvent.addHandler(function()
                 for (var i = 0; i < links.length; i++) {
                     var parsedVideo = VideoLoader.getVideoType(links[i].href);
                     if (parsedVideo != null) {
-                        ((i, parsedVideo) => {
+                        (() => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
                                 VideoLoader.toggleVideo(e, parsedVideo, i);
@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(function()
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                             insertExpandoButton(links[i], _postId, i);
-                        })(i, parsedVideo);
+                        })();
                     }
                 }
             },
@@ -95,9 +95,9 @@ settingsLoadedEvent.addHandler(function()
                 var video_playlist = videoObj.playlist;
                 var timeOffset = videoObj.offset ? `&start=${videoObj.offset}` : "";
 
-                // if they want hd, just make the player bigger, embed api will use higher quality
-                var width = getSetting("video_loader_hd") ? 853 : 640;
-                var height = getSetting("video_loader_hd") ? 480 : 390;
+                // keep common 16:9 ratio
+                var width = getSetting("video_loader_hd") ? 854 : 640;
+                var height = getSetting("video_loader_hd") ? 480 : 360;
 
                 if (video_id && video_playlist)
                     video_src = `https://www.youtube.com/embed/videoseries?v=${video_id}&list=${video_playlist}&autoplay=1${timeOffset}`;
@@ -108,6 +108,8 @@ settingsLoadedEvent.addHandler(function()
 
                 if (video_src) {
                     var video = document.createElement("div");
+                    var spacer = document.createElement("div");
+                    spacer.setAttribute("class", "iframe-spacer");
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
@@ -122,7 +124,8 @@ settingsLoadedEvent.addHandler(function()
                         >
                         </iframe>
                     `;
-                    mediaContainerInsert(video, link, postId, index, width);
+                    spacer.appendChild(video);
+                    mediaContainerInsert(spacer, link, postId, index, width, height);
                 }
             },
 
@@ -133,8 +136,8 @@ settingsLoadedEvent.addHandler(function()
                 var video_clip = videoObj.clip;
                 var timeOffset = videoObj.offset || 0;
 
-                var width = getSetting("video_loader_hd") ? 853 : 640;
-                var height = getSetting("video_loader_hd") ? 480 : 390;
+                var width = getSetting("video_loader_hd") ? 854 : 640;
+                var height = getSetting("video_loader_hd") ? 480 : 360;
 
                 var video_src;
                 if (video_id) {
@@ -148,22 +151,24 @@ settingsLoadedEvent.addHandler(function()
                 console.log(video_src);
                 if (video_src) {
                     var video = document.createElement("div");
+                    var spacer = document.createElement("div");
+                    spacer.setAttribute("class", "iframe-spacer");
                     video.setAttribute("class", "twitch-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
                         <iframe
                             id="iframe_${postId}-${index}"
+                            src="${video_src}"
                             width="${width}"
                             height="${height}"
-                            src="${video_src}"
                             frameborder="0"
                             scrolling="no"
                             allowfullscreen
                         >
                         </iframe>
                     `;
-
-                    mediaContainerInsert(video, link, postId, index, width);
+                    spacer.appendChild(video);
+                    mediaContainerInsert(spacer, link, postId, index, width, height);
                 }
             },
         }

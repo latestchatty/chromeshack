@@ -31,18 +31,10 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if (/https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.test(href))
-                {
+                if (/https?\:\/\/(?:i\.|www\.)?imgur.com\/(?:.*\/|.*\/.*\/)?([\w\d\-]+)(\.[webmpng4jgifv]+)?/.test(href) ||
+                    /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href) ||
+                    /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/.test(href))
                     return true;
-                }
-                else if (/https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href))
-                {
-                    return true;
-                }
-                else if (/https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/.test(href))
-                {
-                    return true;
-                }
 
                 return false;
             },
@@ -50,36 +42,15 @@ settingsLoadedEvent.addHandler(function()
             isImage: function(href)
             {
                 // some urls don't end in jpeg/png/etc so the normal test won't work
-                if (/https?\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href))
-                {
+                if (/https?\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href) ||
+                    /https?\:\/\/yfrog.com\/\w+$/.test(href) ||
+                    /https?\:\/\/twitpic.com\/\w+$/.test(href) ||
+                    /https?\:\/\/pbs\.twimg\.com\/media\/[\w\-\.]+/.test(href) ||
+                    /https?\:\/\/pichars.org\/\w+$/.test(href) ||
+                    /https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
                     return true;
-                }
-                else if (/https?\:\/\/yfrog.com\/\w+$/.test(href))
-                {
-                    return true;
-                }
-                else if (/https?\:\/\/twitpic.com\/\w+$/.test(href))
-                {
-                    return true;
-                }
-                else if (/https?\:\/\/pbs\.twimg\.com\/media\/[\w\-\.]+/.test(href))
-                {
-                    return true;
-                }
-                else if (/https?\:\/\/pichars.org\/\w+$/.test(href))
-                {
-                    return true;
-                }
-                else if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
-                {
-                    return true;
-                }
-                else
-                {
-                    href = ImageLoader.getImageUrl(href);
-                    var imageRegex = /\/[^:?]+\.(jpg|jpeg|png|gif|bmp|svg)$/i;
-                    return href.match(imageRegex);
-                }
+
+                return ImageLoader.getImageUrl(href).match(/\/[^:?]+\.(jpg|jpeg|png|gif|bmp|svg)$/i);
             },
 
             getImageUrl: function(href)
@@ -151,96 +122,115 @@ settingsLoadedEvent.addHandler(function()
                         // use HTTPS to better conform to CORS rules
                         // NOTE: ShackPics needs SSL fixes before uncommenting this!
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
-                        var image = document.createElement("img");
-                        image.setAttribute("src", ImageLoader.getImageUrl(link.href));
-                        image.setAttribute("id", `loader_${_postId}-${index}`);
-                        image.setAttribute("class", "imageloader");
-                        mediaContainerInsert(image, link, _postId, index);
+                        var i = document.createElement("img");
+                        var src = ImageLoader.getImageUrl(link.href);
+                        ImageLoader.appendMedia(i, src, link, _postId, index);
                     }
                 }
             },
 
             createImgur: function(link, postId, index)
             {
-                // we exclude galleries explicitly
-                var imgurName, _href = link.href;
-                if ((m = /https?\:\/\/(?:i\.|)?imgur.com(?!\/gallery\/|\/a\/)\/(\w+)/.exec(_href)) != null)
-                    imgurName = m[1];
+                var _link = link.href.replace(/http\:\/\//, "https://");
+                var _match = /https?\:\/\/(?:i\.|www\.)?imgur.com\/(?:gallery\/([\w\d\-]+)|a\/|t\/([\w\d\-]+)\/)?([\w\d\-]+)?(\.[webmpng4jgifv]+)?/.exec(_link);
+                var _imgur = _match && {
+                    gallery: _match[1] || _match[2],
+                    id: _match[3],
+                    ext: _match[4]
+                };
 
-                xhrRequest({
-                    type: "GET",
-                    url: `${ImageLoader.imgurApiBaseUrl}/${imgurName}`,
-                    headers: new Map().set("Authorization", ImageLoader.imgurClientId),
-                }).then(xhr => {
-                    var response = JSON.parse(xhr).data;
-                    if (response.id && response.animated) {
+                // attempt to resolve if we can otherwise use the response method
+                if (_imgur && _imgur.id && _imgur.ext) {
+                    resolveImage(_imgur.id);
+                } else if (_imgur && !_imgur.ext) {
+                    resolveGallery(_link);
+                }
+
+                function resolveImage(hash) {
+                    xhrRequest(`${ImageLoader.imgurApiBaseUrl}/${hash}`,
+                        { headers: new Map().set("Authorization", ImageLoader.imgurClientId)
+                    }).then(async res => {
+                        // verify the hash to be sure this is valid
+                        var response = await res.json();
+                        var data = response.data;
+                        var src = data && data.mp4 || data.webm || data.link;
+                        if (src)
+                            returnMedia(src);
+                        else
+                            throw Error(`Can't resolve imgur link for: ${_link}`);
+                    }).catch(err => { console.log(err); });
+                };
+                function resolveGallery(url) {
+                    // use the json response method to resolve the gallery item
+                    xhrRequest(`https://cors.io/?${url}.json`).then(async res => {
+                        var response = await res.json();
+                        var data = response && response.data.image;
+                        if (data.album_images.images.length > 0) {
+                            var src = data.album_images.images[0];
+                            if (src && src.hash && src.ext)
+                                resolveImage(src.hash);
+                            else
+                                throw Error(`Can't resolve hash for imgur link: ${_link}`);
+                        } else { throw Error(`Can't find gallery item data for: ${_link}`); }
+                    }).catch(err => { console.log(err); });
+                };
+                // capture our current scope variables
+                function returnMedia(url) {
+                    var _animMatch = url.match(/\.(mp4|gifv|webm)/);
+                    var _staticMatch = url.match(/\.(jpe?g|gif|png)/);
+                    if (_animMatch) {
                         var v = document.createElement("video");
-                        v.setAttribute("id", `loader_${postId}-${index}`);
-                        v.setAttribute("class", "imageloader");
-                        v.setAttribute("autoplay", "");
-                        v.setAttribute("loop", "");
-                        v.setAttribute("muted", "");
-                        v.setAttribute("src", response.mp4);
-                        mediaContainerInsert(v, link, postId, index);
-                    } else if (response.id) {
-                        // force HTTPS for all static media to conform to CORS rules
-                        var _link = response.link.replace(/http\:/, "https\:");
+                        ImageLoader.appendMedia(v, url, link, postId, index);
+                    } else if (_staticMatch) {
                         var i = document.createElement("img");
-                        i.setAttribute("id", `loader_${postId}-${index}`);
-                        i.setAttribute("class", "imageloader");
-                        i.setAttribute("src", _link);
-                        mediaContainerInsert(i, link, postId, index);
+                        ImageLoader.appendMedia(i, url, link, postId, index);
                     }
-                });
+                };
             },
 
             createGfycat: function(link, postId, index)
             {
-                var video_id, _href = link.href;
-                if ((m = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(_href)) != null)
-                    video_id = m[1];
+                var _match = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(link.href);
+                var video_id = _match && _match[1];
 
                 // ask the gfycat api for the embed url (doubles as verification of content)
-                xhrRequest({
-                    type: "GET",
-                    url: `https://api.gfycat.com/v1/gfycats/${video_id}`,
-                    headers: new Map().set("Authorization", ImageLoader.imgurClientId),
-                }).then(xhr => {
+                xhrRequest(`https://api.gfycat.com/v1/gfycats/${video_id}`,
+                    { headers: new Map().set("Authorization", ImageLoader.imgurClientId) }
+                ).then(async res => {
                     // use the mobile mp4 embed url (usually smallest)
-                    var video_src = JSON.parse(xhr).gfyItem.mobileUrl || false;
-                    if (video_src) {
+                    var jsonData = await res.json();
+                    console.log(jsonData);
+                    var src = jsonData && jsonData.gfyItem.mobileUrl;
+                    if (src) {
                         var v = document.createElement("video");
-                        v.setAttribute("id", `loader_${postId}-${index}`);
-                        v.setAttribute("class", "imageloader");
-                        v.setAttribute("autoplay", "");
-                        v.setAttribute("loop", "");
-                        v.setAttribute("muted", "");
-                        v.setAttribute("src", video_src);
-                        mediaContainerInsert(v, link, postId, index);
-                    }
-                });
+                        ImageLoader.appendMedia(v, src, link, postId, index);
+                    } else { throw Error(); }
+                }).catch(err => { console.log(err); });
             },
 
             createGiphy: function(link, postId, index)
             {
-                var _href = link.href;
-                var _isGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i;
-                var _matchGiphy = _isGiphy.exec(_href);
-                var _giphyId;
-                if (_matchGiphy != null && _matchGiphy.length > 0)
-                    _giphyId = _matchGiphy[1] || _matchGiphy[2];
+                var _matchGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i.exec(link.href);
+                var _giphyId = _matchGiphy && _matchGiphy[1] || _matchGiphy[2];
 
                 if (_giphyId) {
-                    var video_src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
+                    var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
                     var v = document.createElement("video");
-                    v.setAttribute("id", `loader_${postId}-${index}`);
-                    v.setAttribute("class", "imageloader");
-                    v.setAttribute("autoplay", "");
-                    v.setAttribute("loop", "");
-                    v.setAttribute("muted", "");
-                    v.setAttribute("src", video_src);
-                    mediaContainerInsert(v, link, postId, index);
+                    ImageLoader.appendMedia(v, src, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
+            },
+
+            appendMedia: function(elem, src, link, postId, index) {
+                elem.setAttribute("class", "imageloader");
+                elem.setAttribute("id", `loader_${postId}-${index}`);
+                elem.setAttribute("src", src);
+                if (elem.nodeName === "VIDEO") {
+                    // video specific attributes
+                    elem.setAttribute("autoplay", "");
+                    elem.setAttribute("muted", "");
+                    elem.setAttribute("loop", "");
+                }
+                mediaContainerInsert(elem, link, postId, index);
             }
         }
 

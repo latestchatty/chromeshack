@@ -26,7 +26,7 @@ settingsLoadedEvent.addHandler(function() {
                 for (var i = 0; i < links.length; i++) {
                     var parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
                     if (parsedSocialPost != null) {
-                        ((i, parsedSocialPost) => {
+                        (() => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", (e) => {
                                 EmbedSocials.processPost(e, parsedSocialPost, i);
@@ -35,14 +35,14 @@ settingsLoadedEvent.addHandler(function() {
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                             insertExpandoButton(links[i], _postId, i);
-                        })(i, parsedSocialPost);
+                        })();
                     }
                 }
             },
 
             getSocialType: function(href) {
-                var _isTwitter = /https?\:\/\/twitter.com\/\w+\/status\/(\d+)/i;
-                var _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\//i;
+                var _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i;
+                var _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\/?/i;
                 var _twttrMatch = _isTwitter.exec(href);
                 var _instgrmMatch = _isInstagram.exec(href);
                 if (_twttrMatch) {
@@ -186,21 +186,24 @@ settingsLoadedEvent.addHandler(function() {
             parseInstagram: function(parentLink, socialId, postId, index) {
                 var postUrl = `https://www.instagram.com/p/${socialId}/`;
                 // if we have an instagram postId use it to toggle our element rather than query
-                var containerQuery = `#instgrm-container_${postId}-${index}`;
-                var _target = parentLink.parentNode.querySelector(containerQuery);
+                var _target = parentLink.parentNode.querySelector(`#instgrm-container_${postId}-${index}`);
                 if (_target) { return _target.classList.toggle("hidden"); }
 
                 var _target = EmbedSocials.insertInstagramTemplate(postId, index);
-                xhrRequest({ type: "GET", url: postUrl }) .then(resp => {
+                xhrRequest(postUrl).then(async res => {
+                    var response = await res.text();
                     // save our likes from the header
-                    var _likesMatch = /<meta content="(\d+ Likes, \d+ Comments|\d+ Likes,?|\d+ Comments)/i.exec(resp);
+                    var _likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(response);
                     // save our video url and details if there is any
-                    var _videoMatch = /<meta property="og:video" content="(.*)" \/>/i.exec(resp);
-                    // var _videoWidth = /<meta property="og:video:width" content="(\d+)" \/>/i.exec(resp)[1];
-                    // var _videoHeight = /<meta property="og:video:height" content="(\d+)" \/>/i.exec(resp)[1];
+                    var _videoMatch = /<meta property="og:video" content="(.*)" \/>/i.exec(response);
                     // parse post's graphql dump into a json object
-                    var _configGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(resp);
-                    var _matchGQL = _configGQL[1] && JSON.parse(_configGQL[1]).shortcode_media;
+                    var _configGQL = (() => {
+                        // many things could go wrong so make sure to log errors
+                        var _configGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(response);
+                        try { return JSON.parse(_configGQL[1]); }
+                        catch(err) { console.log(_configGQL, err); }
+                    })();
+                    var _matchGQL = _configGQL && _configGQL.shortcode_media;
                     // var _isPrivate = _matchGQL && _matchGQL.owner.is_private;
 
                     if (_matchGQL) {
@@ -265,7 +268,7 @@ settingsLoadedEvent.addHandler(function() {
                         embedTarget.appendChild(embed);
                         _target.firstChild.classList.toggle("hidden");
                         mediaContainerInsert(_target, parentLink, postId, index);
-                    }
+                    } else { return alert("This account or post has been made private or cannot be found!"); }
                 });
             },
         }

@@ -161,10 +161,8 @@ ElderScroll =
         }
         nextPageURL += '://www.shacknews.com/chatty?page=' + ElderScroll.getNextPage();
 
-        xhrRequest({
-            type: "GET",
-            url: nextPageURL
-        }).then(response => {
+        xhrRequest(nextPageURL).then(async res => {
+            var response = await res.text();
             divThreads.removeChild(ElderScroll.getDivMessage());
             // a _bad_ way of doing this...
             var divResponse = document.createElement('div');

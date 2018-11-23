@@ -5,6 +5,7 @@ function loadOptions()
     showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
+    showImageLoaderNewTab(getOption("image_loader_newtab"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
@@ -41,6 +42,18 @@ function showEmbedSocials(enabled) {
     if (enabled)
         embeds.checked = enabled;
     return embeds.checked;
+}
+
+function showImageLoaderNewTab(enabled)
+{
+    var newtab = document.getElementById("image_loader_newtab");
+    newtab.checked = enabled;
+}
+
+function getImageLoaderNewTab()
+{
+    var newtab = document.getElementById("image_loader_newtab");
+    return newtab.checked;
 }
 
 function showVideoLoaderHD(enabled)
@@ -517,6 +530,7 @@ function saveOptions()
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
+        saveOption("image_loader_newtab", getImageLoaderNewTab());
         saveOption("expiration_watcher_style", getExpirationWatcherStyle());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());

@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>Chrome Shack Options</title>
-        <link rel="stylesheet" type="text/css" href="options.css" />
+        <link rel="stylesheet" type="text/css" href="styles/options.css" />
         <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill.min.js"></script>
         <script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="default_settings.js"></script>
@@ -90,7 +90,10 @@
                     <input type="checkbox" class="script_check" id="image_loader" />
                     <label for="image_loader">Embed images</label>
                 </p>
-                <p class="indent info">Replace links to images with a thumbnail of the image itself.</p>
+                <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
+                <div id="image_loader_settings">
+                    <input type="checkbox" id="image_loader_newtab"/><label for="image_loader_newtab">Open image/video in new window/tab when middle-clicked</label>
+                </div>
                 <p>
                     <input type="checkbox" class="script_check" id="video_loader" />
                     <label for="video_loader">Embed videos</label>

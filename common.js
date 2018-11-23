@@ -74,25 +74,27 @@ String.prototype.trim = function()
 }
 
 // more flexible promisified XHR helper
-function xhrRequest({ type, url, headers, body }) {
-    return new Promise((resolve, reject) => {
-        // headers is a Map()
-        var xhr = new XMLHttpRequest();
-        xhr.open(type, url, true);
-        if (headers) {
-            for (var [key, val] of headers.entries()) {
-                xhr.setRequestHeader(key, val);
-            }
+function xhrRequest(url, optionsObj) {
+    var _headers = new Headers();
+    if (optionsObj && optionsObj.hasOwnProperty("headers")) {
+        for (var [key, val] of optionsObj.headers.entries()) {
+            _headers.append(key, val);
         }
-        xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300)
-                resolve(xhr.response);
-            else
-                reject(xhr.statusText);
-        };
-        xhr.onerror = () => reject(xhr.statusText);
-        xhr.send(body);
-    })
+    }
+    // set some sane defaults
+    if (optionsObj && !optionsObj.hasOwnProperty("mode"))
+        optionsObj.mode = "cors"
+
+    return fetch(url, {
+        method: optionsObj && optionsObj.method,
+        mode: optionsObj && optionsObj.mode,
+        cache: optionsObj && optionsObj.cache,
+        credentials: optionsObj && optionsObj.credentials,
+        headers: optionsObj && _headers,
+        redirect: optionsObj && optionsObj.redirect,
+        referrer: optionsObj && optionsObj.referrer,
+        body: optionsObj && optionsObj.body
+    });
 }
 
 function postFormUrl(url, data, callback)
@@ -267,111 +269,3 @@ HTMLElement.prototype.removeChildren = function()
     while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }
 
-function toggleVideoState(video) {
-    // abstracted helper for toggling html5 video embed pause state
-    try {
-        if (video && video.nodeName === "VIDEO") {
-            if (video.paused) {
-                video.currentTime = 0;
-                video.play();
-            } else {
-                video.pause();
-                video.currentTime = 0;
-            }
-        }
-    } catch (err) { console.log(err); }
-}
-
-function toggleMediaItem(link, postBodyElem, postId, index) {
-    // abstracted helper for toggling media container items from a post
-    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-    var _embedExists = postBodyElem.querySelector(`#loader_${postId}-${index}`) ||
-                        postBodyElem.querySelector(`#instgrm-container_${postId}-${index}`) ||
-                        postBodyElem.querySelector(`#tweet-container_${postId}-${index}`);
-    var _expando = postBodyElem.querySelector(`#expando_${postId}-${index}`);
-
-    // pretty aggressive way to handle stopping the video player when toggling the container
-    var iframeMedia = link.parentNode.querySelector(`#iframe_${postId}-${index}`);
-    if (iframeMedia)
-        iframeMedia.parentNode.parentNode.removeChild(iframeMedia.parentNode);
-
-    // state toggle our various embed children
-    toggleVideoState(_embedExists);
-    if (_embedExists && _expando) { toggleExpandoButton(_expando); }
-    if (_embedExists && _expandoClicked) {
-        link.parentNode.classList.toggle("embedded");
-        _embedExists.classList.toggle("hidden");
-        return true;
-    } else if (_embedExists) {
-        link.classList.toggle("embedded");
-        _embedExists.classList.toggle("hidden");
-        return true;
-    }
-
-    return false;
-}
-
-function insertCommand(elem, injectable) {
-    // insert a one-way script that executes synchronously (caution!)
-    var _script = document.createElement("script");
-    _script.textContent = `${injectable}`;
-    elem.appendChild(_script);
-}
-
-function mediaContainerInsert(elem, link, id, index, width) {
-    // abstracted helper for manipulating the media-container grid from a post
-    var container = link.parentNode.querySelector(".media-container");
-    var embed = link.querySelector(`#loader_${id}-${index}`);
-    var expando = link.querySelector(`#expando_${id}-${index}`);
-    if (!container) {
-        // generate container if necessary
-        container = document.createElement("div");
-        container.setAttribute("class", "media-container");
-    }
-
-    // use our width passed from 'video_loader' to mutate this media container for HD video
-    if (width != null)
-        container.style.gridTemplateColumns = `repeat(auto-fill, minmax(min-content, ${width}px))`;
-
-    ((expando, embed, elem, link) => {
-        elem.addEventListener('click', e => {
-            // toggle our embed state when image embed is left-clicked
-            if (e.which === 1) {
-                link.classList.toggle("embedded"); // toggle highlight
-                elem.classList.toggle("hidden");
-                toggleExpandoButton(expando);
-                toggleVideoState(embed);
-            }
-        });
-    })(expando, embed, elem, link);
-
-    container.appendChild(elem);
-    link.classList.add("embedded");
-    toggleExpandoButton(expando);
-    toggleVideoState(embed);
-    link.parentNode.appendChild(container);
-}
-
-function insertExpandoButton(link, postId, index) {
-    // abstracted helper for appending an expando button to a link in a post
-    if (link.querySelector("div.expando") != null) { return; }
-    // process a link into a link container that includes a dynamic styled "button"
-    var expando = document.createElement("div");
-    expando.classList.add("expando");
-    expando.id = `expando_${postId}-${index}`;
-    expando.style.fontFamily = "Icon";
-    expando.innerText = "\ue907";
-    link.appendChild(expando);
-}
-
-function toggleExpandoButton(expando) {
-    // abstracted helper for toggling the state of a link-expando button from a post
-    if (expando && !expando.classList.contains("collapso")) {
-        // override is the expando 'button' element
-        expando.innerText = "\ue90d"; // circle-arrow-down
-        return expando.classList.add("collapso");
-    } else if (expando) {
-        expando.innerText = "\ue907"; // circle-arrow-up
-        return expando.classList.remove("collapso");
-    }
-}
