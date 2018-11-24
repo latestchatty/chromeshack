@@ -18,7 +18,7 @@ settingsLoadedEvent.addHandler(function()
                         ((i) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
-                                ImageLoader.toggleImage(e, i);
+                               ImageLoader.toggleImage(e, i); 
                             });
 
                             var _postBody = links[i].parentNode;
@@ -102,6 +102,7 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
+                    setLimiter(e.target);
                     var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
@@ -122,9 +123,8 @@ settingsLoadedEvent.addHandler(function()
                         // use HTTPS to better conform to CORS rules
                         // NOTE: ShackPics needs SSL fixes before uncommenting this!
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
-                        var i = document.createElement("img");
                         var src = ImageLoader.getImageUrl(link.href);
-                        ImageLoader.appendMedia(i, src, link, _postId, index);
+                        ImageLoader.appendMedia(src, link, _postId, index);
                     }
                 }
             },
@@ -155,7 +155,7 @@ settingsLoadedEvent.addHandler(function()
                         var data = response.data;
                         var src = data && data.mp4 || data.webm || data.link;
                         if (src)
-                            returnMedia(src);
+                           ImageLoader.appendMedia(src, link, postId, index); 
                         else
                             throw Error(`Can't resolve imgur link for: ${_link}`);
                     }).catch(err => { console.log(err); });
@@ -174,18 +174,6 @@ settingsLoadedEvent.addHandler(function()
                         } else { throw Error(`Can't find gallery item data for: ${_link}`); }
                     }).catch(err => { console.log(err); });
                 };
-                // capture our current scope variables
-                function returnMedia(url) {
-                    var _animMatch = url.match(/\.(mp4|gifv|webm)/);
-                    var _staticMatch = url.match(/\.(jpe?g|gif|png)/);
-                    if (_animMatch) {
-                        var v = document.createElement("video");
-                        ImageLoader.appendMedia(v, url, link, postId, index);
-                    } else if (_staticMatch) {
-                        var i = document.createElement("img");
-                        ImageLoader.appendMedia(i, url, link, postId, index);
-                    }
-                };
             },
 
             createGfycat: function(link, postId, index)
@@ -199,12 +187,10 @@ settingsLoadedEvent.addHandler(function()
                 ).then(async res => {
                     // use the mobile mp4 embed url (usually smallest)
                     var jsonData = await res.json();
-                    console.log(jsonData);
                     var src = jsonData && jsonData.gfyItem.mobileUrl;
-                    if (src) {
-                        var v = document.createElement("video");
-                        ImageLoader.appendMedia(v, src, link, postId, index);
-                    } else { throw Error(); }
+                    if (src)
+                        ImageLoader.appendMedia(src, link, postId, index);
+                    else { throw Error(); }
                 }).catch(err => { console.log(err); });
             },
 
@@ -215,22 +201,28 @@ settingsLoadedEvent.addHandler(function()
 
                 if (_giphyId) {
                     var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
-                    var v = document.createElement("video");
                     ImageLoader.appendMedia(v, src, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
             },
 
-            appendMedia: function(elem, src, link, postId, index) {
-                elem.setAttribute("class", "imageloader");
-                elem.setAttribute("id", `loader_${postId}-${index}`);
-                elem.setAttribute("src", src);
-                if (elem.nodeName === "VIDEO") {
-                    // video specific attributes
-                    elem.setAttribute("autoplay", "");
-                    elem.setAttribute("muted", "");
-                    elem.setAttribute("loop", "");
-                }
-                mediaContainerInsert(elem, link, postId, index);
+            appendMedia: function(src, link, postId, index) {
+				var _animExt = src.match(/\.(mp4|gifv|webm)/i);
+				var _staticExt = src.match(/\.(jpe?g|gif|png)/i);
+				var _elem;
+				if (_animExt) {
+					_elem = document.createElement("video");
+					_elem.setAttribute("autoplay", "");
+					_elem.setAttribute("controls", "");
+                    _elem.setAttribute("muted", "");
+                    _elem.setAttribute("loop", "");
+				}
+				else if (_staticExt)
+					_elem  = document.createElement("img");
+
+                _elem.setAttribute("class", "imageloader");
+                _elem.setAttribute("id", `loader_${postId}-${index}`);
+                _elem.setAttribute("src", src);
+                mediaContainerInsert(_elem, link, postId, index);
             }
         }
 

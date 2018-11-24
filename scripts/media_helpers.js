@@ -2,23 +2,18 @@
     Helper functions for responsive image/video support
 */
 
-function toggleVideoState(elem) {
+function toggleVideoState(elem, override) {
     // abstracted helper for toggling html5 video embed pause state (based on audio)
     if (elem == null) return;
-
-    var toggleFunc = (video) => {
-        if (video.paused) {
+    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video");
+    if (override || video && !video.classList.contains("hidden")) {
+       if (video.paused || override) {
             video.currentTime = 0;
             video.play();
         } else {
             video.pause();
             video.currentTime = 0;
-        }
-    };
-
-    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video");
-    if (video && !video.classList.contains("hidden")) {
-        toggleFunc(video);
+        } 
     }
 }
 
@@ -63,7 +58,18 @@ function insertCommand(elem, injectable) {
     elem.appendChild(_script);
 }
 
+function setLimiter(linkElem) {
+    // provides rate limiting to prevent mouse click race conditions
+    if (!linkElem.dataset.clicked)
+        linkElem.dataset.clicked = true;
+    // ^ this gets changed on the element in mediaContainerInsert
+}
+
 function mediaContainerInsert(elem, link, id, index, width, height) {
+    function unsetLimiter() {
+        if (link.dataset.clicked)
+            link.dataset.clicked = false;
+    }
     // abstracted helper for manipulating the media-container grid from a post
     var container = link.parentNode.querySelector(".media-container");
     var expando = link.querySelector(`#expando_${id}-${index}`);
@@ -74,11 +80,12 @@ function mediaContainerInsert(elem, link, id, index, width, height) {
     }
 
     // make sure we set the play state when our video elements load
-    if (elem && elem.nodeName === "VIDEO")
+    if (elem && elem.nodeName === "VIDEO") {
         elem.addEventListener("canplaythrough", (e) => {
             if (e.target.paused) { toggleVideoState(e.target, 1); }
             if (!e.target.muted) { e.target.muted = true; }
         })
+    }
 
     // use our width passed from 'video_loader' to mutate this media container for HD video
     if (width != null) {
@@ -98,7 +105,7 @@ function mediaContainerInsert(elem, link, id, index, width, height) {
                     e.preventDefault();
                     // open this link in a new window/tab when middle-clicked
                     window.open(embed.src);
-                    // window.open(embed.dataset.url);
+                    unsetLimiter();
                 } else if (e.which === 1) {
                     e.preventDefault();
                     // toggle our embed state when image embed is left-clicked
@@ -106,6 +113,7 @@ function mediaContainerInsert(elem, link, id, index, width, height) {
                     toggleVideoState(embed);
                     elem.classList.toggle("hidden");
                     toggleExpandoButton(expando);
+                    unsetLimiter();
                 }
             });
         }
@@ -115,6 +123,7 @@ function mediaContainerInsert(elem, link, id, index, width, height) {
     link.classList.add("embedded");
     toggleExpandoButton(expando);
     link.parentNode.appendChild(container);
+    unsetLimiter();
 }
 
 function insertExpandoButton(link, postId, index) {

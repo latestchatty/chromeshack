@@ -25,14 +25,11 @@ img.imageloader {
     object-fit: contain !important;
     user-select: none !important;
     outline: 0 !important;
-    max-width: calc(33% - 3px * 2);
-    max-height: 640px;
+    max-width: calc(33% - 6px);
+    max-height: 640px !important;
     margin: 3px;
 }
-video.imageloader {
-    max-width: 854px;
-    max-height: 480px;
-}
+video.imageloader { max-width: calc(50% - 6px); }
 .twitch-container.hidden,
 .yt-container.hidden,
 video.imageloader.hidden,

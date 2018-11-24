@@ -76,6 +76,7 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
+                    setLimiter(e.target);
                     var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;

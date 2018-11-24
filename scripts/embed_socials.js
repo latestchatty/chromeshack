@@ -62,6 +62,7 @@ settingsLoadedEvent.addHandler(function() {
             processPost: function(e, parsedPost, index) {
                 if (e.button == 0) {
                     e.preventDefault();
+                    setLimiter(e.target);
                     if (!document.getElementById("twttr-wjs"))
                         return console.log("Embed Socials dependency injection failed!");
 
