@@ -1,6 +1,110 @@
 /*
-    Helper functions for responsive image/video support
-*/
+ *  Resolvers
+ */
+
+function getEmbedInfo(elem) {
+    // resolves the postId and index of a link or embed
+    if (elem == null) return;
+    var _ref = elem.querySelector(".expando") ||
+                elem.querySelector(".imageloader img") ||
+                elem.querySelector(".imageloader video") ||
+                elem.querySelector(".iframe-container iframe") ||
+                elem.querySelector(".tweet-container iframe") ||
+                elem.querySelector(".instgrm-container") ||
+                elem.querySelector(".yt-container iframe") ||
+                elem.querySelector(".twitch-container iframe");
+    if (_ref == null) return;
+    var split = _ref.id.split(/[\_\-]/);
+
+    var _id = split[1];
+    var _idx = split[2];
+    return {
+        id: _id,
+        index: _idx
+    };
+}
+
+function getLinkRef(embed) {
+    // resolves the expando of an embed in a postBody
+    if (embed == null) return;
+    var infoObj = getEmbedInfo(embed);
+    // every handled embed link has a unique expando by id + index
+    return document.querySelector(`.postbody div[id^='expando_${infoObj.id}-${infoObj.index}']`);
+}
+
+function getEmbedRef(link) {
+    // resolves the embed associated with a link (if any exist)
+    if (link == null) return;
+    var infoObj = getEmbedInfo(link);
+    // every link returns a unique embed object by id + index
+    var retRef = document.querySelector(`.media-container [id$='_${infoObj.id}-${infoObj.index}']`);
+    return retRef;
+}
+
+function getIframeDimensions(elem) {
+    // resolve the width and height of an iframe child
+    // this element must have a parent that is not media-container
+    if (elem == null) return;
+    var _ref = elem.querySelector(".iframe-container iframe") ||
+                    elem.querySelector(".yt-container iframe") ||
+                    elem.querySelector(".twitch-container iframe") ||
+                    elem.querySelector(".instgrm-container video") ||
+                    (elem.classList != null && elem.classList.contains("tweet-container") && elem);
+    var _width = _ref && _ref.width != null && _ref.width;
+    var _height = _ref && _ref.height != null && _ref.height;
+    return { width: _width, height: _height, ref: _ref };
+}
+
+
+/*
+ *  State Transition Toggles
+ */
+
+function toggleMediaItem(link) {
+    // abstracted helper for toggling media container items from a link/expando
+    var _isExpando = link.classList != null && link.classList.contains("expando");
+    var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
+    var container = _postBody.querySelector(".media-container");
+    var _embed = getEmbedRef(link);
+
+    // pretty aggressive way to handle stopping an iframe player when toggling the container
+    var encapMediaObj = getIframeDimensions(_embed);
+    if (encapMediaObj && encapMediaObj.ref) {
+        // remove our media child if it contains a video element otherwise allow toggle("hidden")
+        var embed = (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
+                    encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container")) ?
+                    encapMediaObj.ref.parentNode.parentNode : encapMediaObj.ref;
+        container.removeChild(embed);
+        return toggleMediaLink(_embed, link, true);
+    }
+
+    return toggleMediaLink(_embed, link);
+}
+
+function toggleMediaLink(embedElem, link, override) {
+    var _expando = link.querySelector(".expando");
+    // state toggle our various embed children
+    if (override) {
+        // edge case when forcefully removing an embed child
+        link.classList.toggle("embedded");
+        toggleExpandoButton(_expando);
+        return true;
+    }
+    else if (embedElem) {
+        if (embedElem.nodeName === "IMG" || embedElem.nodeName === "VIDEO" ||
+            embedElem.classList.contains("yt-container") ||
+            embedElem.classList.contains("twitch-container") ||
+            embedElem.classList.contains("iframe-container"))
+            embedElem.parentNode.classList.toggle("hidden");
+        else
+            embedElem.classList.toggle("hidden");
+        toggleVideoState(embedElem);
+        link.classList.toggle("embedded");
+        toggleExpandoButton(_expando);
+        return true;
+    }
+    return false;
+}
 
 function toggleVideoState(elem, override) {
     // abstracted helper for toggling html5 video embed pause state (based on audio)
@@ -13,129 +117,8 @@ function toggleVideoState(elem, override) {
         } else {
             video.pause();
             video.currentTime = 0;
-        } 
-    }
-}
-
-function toggleMediaItem(link, postBodyElem, postId, index) {
-    // abstracted helper for toggling media container items from a link/expando
-    var _expandoClicked = link.classList !== undefined && link.classList.contains("expando");
-    var _embedExists = postBodyElem.querySelector(`#loader_${postId}-${index}`) ||
-                        postBodyElem.querySelector(`#instgrm-container_${postId}-${index}`) ||
-                        postBodyElem.querySelector(`#tweet-container_${postId}-${index}`);
-    var _expando = postBodyElem.querySelector(`#expando_${postId}-${index}`);
-
-    // pretty aggressive way to handle stopping an iframe player when toggling the container
-    var encapMedia = postBodyElem.querySelector(`#iframe_${postId}-${index}`) ||
-                    postBodyElem.querySelector(`#loader_${postId}-${index}.tweet-container`);
-    if (encapMedia) {
-        var mediaParent = encapMedia.parentNode.parentNode;
-        var container = mediaParent.parentNode;
-        // make sure we remove both child and spacer
-        container.removeChild(mediaParent);
-    }
-
-    // state toggle our various embed children
-    toggleVideoState(_embedExists);
-    if (_embedExists && _expando) { toggleExpandoButton(_expando); }
-    if (_embedExists && _expandoClicked) {
-        link.parentNode.classList.toggle("embedded");
-        _embedExists.classList.toggle("hidden");
-        return true;
-    } else if (_embedExists) {
-        link.classList.toggle("embedded");
-        _embedExists.classList.toggle("hidden");
-        return true;
-    }
-
-    return false;
-}
-
-function insertCommand(elem, injectable) {
-    // insert a one-way script that executes synchronously (caution!)
-    var _script = document.createElement("script");
-    _script.textContent = `${injectable}`;
-    elem.appendChild(_script);
-}
-
-function setLimiter(linkElem) {
-    // provides rate limiting to prevent mouse click race conditions
-    if (!linkElem.dataset.clicked)
-        linkElem.dataset.clicked = true;
-    // ^ this gets changed on the element in mediaContainerInsert
-}
-
-function mediaContainerInsert(elem, link, id, index, width, height) {
-    function unsetLimiter() {
-        if (link.dataset.clicked)
-            link.dataset.clicked = false;
-    }
-    // abstracted helper for manipulating the media-container grid from a post
-    var container = link.parentNode.querySelector(".media-container");
-    var expando = link.querySelector(`#expando_${id}-${index}`);
-    if (!container) {
-        // generate container if necessary
-        container = document.createElement("div");
-        container.setAttribute("class", "media-container");
-    }
-
-    // make sure we set the play state when our video elements load
-    if (elem && elem.nodeName === "VIDEO") {
-        elem.addEventListener("canplaythrough", (e) => {
-            if (e.target.paused) { toggleVideoState(e.target, 1); }
-            if (!e.target.muted) { e.target.muted = true; }
-        })
-    }
-
-    // use our width passed from 'video_loader' to mutate this media container for HD video
-    if (width != null) {
-        elem.style.flex = `0 0 ${width}px`;
-        elem.style.minHeight = `${height}px`;
-    }
-
-    (() => {
-        var _twttr = elem && elem.querySelector(".tweet-container") ||
-            (elem.classList != null && elem.classList.contains("tweet-container"));
-        var _twitch = elem && elem.querySelector(".twitch-container") ||
-            (elem.classList != null && elem.classList.contains("twitch-container"));
-        if (!_twttr && !_twitch) {
-            elem.addEventListener('mousedown', e => {
-                var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
-                if (e.which === 2 && getSetting("image_loader_newtab")) {
-                    e.preventDefault();
-                    // open this link in a new window/tab when middle-clicked
-                    window.open(embed.src);
-                    unsetLimiter();
-                } else if (e.which === 1) {
-                    e.preventDefault();
-                    // toggle our embed state when image embed is left-clicked
-                    link.classList.toggle("embedded"); // toggle highlight
-                    toggleVideoState(embed);
-                    elem.classList.toggle("hidden");
-                    toggleExpandoButton(expando);
-                    unsetLimiter();
-                }
-            });
         }
-    })();
-
-    container.appendChild(elem);
-    link.classList.add("embedded");
-    toggleExpandoButton(expando);
-    link.parentNode.appendChild(container);
-    unsetLimiter();
-}
-
-function insertExpandoButton(link, postId, index) {
-    // abstracted helper for appending an expando button to a link in a post
-    if (link.querySelector("div.expando") != null) { return; }
-    // process a link into a link container that includes a dynamic styled "button"
-    var expando = document.createElement("div");
-    expando.classList.add("expando");
-    expando.id = `expando_${postId}-${index}`;
-    expando.style.fontFamily = "Icon";
-    expando.innerText = "\ue907";
-    link.appendChild(expando);
+    }
 }
 
 function toggleExpandoButton(expando) {
@@ -150,3 +133,77 @@ function toggleExpandoButton(expando) {
     }
 }
 
+
+/*
+ *  Misc. Functions
+ */
+
+function mediaContainerInsert(elem, link, id, index) {
+    // abstracted helper for manipulating the media-container grid from a post
+    var container = link.parentNode.querySelector(".media-container");
+    var _hasMedia = container !== null && getEmbedRef(link);
+    var _isExpando = link.classList != null && link.classList.contains("expando");
+    var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
+    if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
+    else if (!container) {
+        container = document.createElement("div");
+        container.setAttribute("class", "media-container");
+    }
+
+    attachChildEvents(elem, id, index);
+    container.appendChild(elem);
+    if (!_hasMedia) { _postBody.appendChild(container); }
+    container = link.parentNode.querySelector(".media-container");
+    elem = container.querySelector(`[id$='_${id}-${index}']`);
+    toggleMediaLink(elem, link);
+}
+
+function insertCommand(elem, injectable) {
+    // insert a one-way script that executes synchronously (caution!)
+    var _script = document.createElement("script");
+    _script.textContent = `${injectable}`;
+    elem.appendChild(_script);
+}
+
+function insertExpandoButton(link, postId, index) {
+    // abstracted helper for appending an expando button to a link in a post
+    if (link.querySelector("div.expando") != null) { return; }
+    // process a link into a link container that includes a dynamic styled "button"
+    var expando = document.createElement("div");
+    expando.classList.add("expando");
+    expando.id = `expando_${postId}-${index}`;
+    expando.style.fontFamily = "Icon";
+    expando.innerText = "\ue907";
+    link.appendChild(expando);
+}
+
+function attachChildEvents(elem, id, index) {
+    var childElem = elem.querySelector("img") || elem.querySelector("video");
+    var iframeElem = getIframeDimensions(elem);
+
+    if (iframeElem.id == null && childElem != null) {
+        if (childElem && childElem.nodeName === "VIDEO") {
+            // make sure to toggle the video state on visible media
+            childElem.addEventListener("canplaythrough", e => {
+                if (e.target.paused) { toggleVideoState(e.target, 1); }
+                if (!e.target.muted) { e.target.muted = true; }
+            });
+        }
+        if (childElem && childElem.nodeName === "IMG" || childElem.nodeName === "VIDEO") {
+            // only apply click events on video and img elements (for edge case sanity)
+            childElem.addEventListener('mousedown', e => {
+                var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
+                var link = getLinkRef(embed.parentNode);
+                if (e.which === 2 && getSetting("image_loader_newtab")) {
+                    e.preventDefault();
+                    // open this link in a new window/tab when middle-clicked
+                    window.open(embed.src);
+                } else if (e.which === 1) {
+                    e.preventDefault();
+                    // toggle our embed state when image embed is left-clicked
+                    toggleMediaLink(embed, link);
+                }
+            });
+        }
+    }
+}

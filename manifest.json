@@ -29,7 +29,6 @@
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.js",
             "ext/webextension-polyfill/browser-polyfill.min.js",
-            "scripts/media_helpers.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -54,6 +53,7 @@
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
+            "scripts/media_helpers.js",
             "scripts/shack-userpopup.user.js",
             "scripts/jquery-3.3.1.min.js",
             "scripts/jquery.drop.js",
@@ -65,7 +65,7 @@
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js"
         ],
-        "css": [ 
+        "css": [
             "styles/chromeshack.css",
             "styles/image_uploader.css",
             "styles/comic_scripts.css",
@@ -109,6 +109,8 @@
         "https://api.gfycat.com/v1/*",
         "https://filedrop.gfycat.com/*",
         "https://api.imgur.com/*",
+        "https://imgur.com/*.json",
+        "https://*.imgur.com/*.json",
         "https://chattypics.com/*",
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
@@ -118,11 +120,11 @@
         "https://www.instagram.com/p/*",
         "https://publish.twitter.com/*",
         "https://*.youtube.com/embed/*",
+        "https://api.streamable.com/videos/*",
         "*://*.shacknews.com/*",
         "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
-        "scripts/video_loader_helper.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",

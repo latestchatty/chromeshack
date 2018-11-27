@@ -22,11 +22,11 @@ settingsLoadedEvent.addHandler(function() {
         EmbedSocials = {
             getLinks: function(item) {
                 // don't retrace our DOM nodes (use relative positions of event items)
-                var links = item.querySelectorAll(".sel .postbody a");
+                var links = item.querySelectorAll(".sel .postbody > a");
                 for (var i = 0; i < links.length; i++) {
                     var parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
                     if (parsedSocialPost != null) {
-                        (() => {
+                        ((parsedSocialPost, i) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", (e) => {
                                 EmbedSocials.processPost(e, parsedSocialPost, i);
@@ -35,7 +35,7 @@ settingsLoadedEvent.addHandler(function() {
                             var _postBody = links[i].parentNode;
                             var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                             insertExpandoButton(links[i], _postId, i);
-                        })();
+                        })(parsedSocialPost, i);
                     }
                 }
             },
@@ -62,7 +62,6 @@ settingsLoadedEvent.addHandler(function() {
             processPost: function(e, parsedPost, index) {
                 if (e.button == 0) {
                     e.preventDefault();
-                    setLimiter(e.target);
                     if (!document.getElementById("twttr-wjs"))
                         return console.log("Embed Socials dependency injection failed!");
 
@@ -74,7 +73,7 @@ settingsLoadedEvent.addHandler(function() {
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
                     // cancel early if we're toggling
-                    if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
+                    if (toggleMediaItem(link, _postId, index)) { return; }
 
                     if (socialType === 1 && socialId) {
                         EmbedSocials.createTwitter(link, socialId, _postId, index);
@@ -88,15 +87,14 @@ settingsLoadedEvent.addHandler(function() {
                 var twttrContainer = document.createElement("div");
                 var _target = `loader_${postId}-${index}`;
                 twttrContainer.id = _target;
-                twttrContainer.setAttribute("class", "tweet-container");
+                twttrContainer.setAttribute("class", "tweet-container hidden");
 
                 // twttr-wjs can just inject a tweet iframe straight into the DOM
                 insertCommand(
                     twttrContainer, /*html*/`
                     window.twttr.widgets.createTweet(
                         "${socialId}",
-                        document.getElementById("${_target}"),
-                        { theme: "dark", width: "500" }
+                        document.getElementById("${_target}"), { theme: "dark" }
                     );
                 `);
                 mediaContainerInsert(twttrContainer, parentLink, postId, index);
@@ -109,7 +107,7 @@ settingsLoadedEvent.addHandler(function() {
                 return `${_date.toLocaleString().split(',')[0]} ${_date.toLocaleTimeString('en-US')}`;
             },
 
-            taggifyCaption: function(caption, elem) {
+            taggifyCaption: function(caption) {
                 var captionContainer = document.createElement("span");
                 captionContainer.id = "instgrm_post_caption";
                 var tagLink = "https://instagr.am/explore/tags/";
@@ -169,7 +167,6 @@ settingsLoadedEvent.addHandler(function() {
                     </div>
                     <div id="instgrm_embed"></div>
                     <div id="instgrm-caption"></div>
-                    <div class="hr2"></div>
                     <div class="instgrm-footer">
                         <span>A post shared by</span>
                         <a id="instgrm_post_url" href="#">
@@ -267,7 +264,6 @@ settingsLoadedEvent.addHandler(function() {
                         // compile everything into our container and inject at once
                         var embedTarget = _target.querySelector("#instgrm_embed");
                         embedTarget.appendChild(embed);
-                        _target.firstChild.classList.toggle("hidden");
                         mediaContainerInsert(_target, parentLink, postId, index);
                     } else { return alert("This account or post has been made private or cannot be found!"); }
                 });

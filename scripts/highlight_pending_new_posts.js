@@ -34,8 +34,8 @@
                 .then(async res => {
                 var response = await res.json();
                 if (response && !response.error) {
-                    g_lastEventId = parseInt(_data.lastEventId);
-                    processEvents(_data.events);
+                    g_lastEventId = parseInt(response.lastEventId);
+                    processEvents(response.events);
                 }
                 // Short delay in between loop iterations.
                 setTimeout(loop, 5000);

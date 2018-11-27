@@ -2,13 +2,17 @@
 /* social embedding styling containers */
 .tweet-container {
     display: block;
-    min-height: 1;
-    min-width: 1;
+    /* resets */
     padding: 0;
     margin: 0;
     background-color: transparent;
 }
 .tweet-container.hidden { display: none !important; }
+twitter-widget {
+    /* do our injected twttr-wjs widget styling here */
+    min-width: var(--min-media-item-width);
+    max-width: var(--max-media-item-width);
+}
 
 /* custom instagram container */
 .instgrm-container {
@@ -17,14 +21,15 @@
     background: #fff;
     border: 1px solid #000;
     border-radius: 4px;
-    min-height: 325px;
-    max-height: 800px;
-    min-width: 325px;
-    max-width: 600px;
+    min-height: var(--min-media-item-height);
+    max-height: var(--max-media-item-height);
+    min-width: var(--min-media-item-width);
+    max-width: var(--max-media-item-width);
+    box-sizing: border-box !important;
     padding: 0 0 0.5em 0;
     margin: 0;
     font-size: 14px;
-    font-family: "Segoe UI", "Helvetica", sans-serif;
+    font-family: var(--common-sans);
     color: #262626;
 }
 .instgrm-container.hidden { display: none !important; }
@@ -41,7 +46,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    max-height: 48px;
+    max-height: 36px;
     margin: 0.5em 0 0.5em 0;
 }
 #instgrm_author_pic.circle {
@@ -72,7 +77,7 @@
 
 #instgrm_embed {
     display: flex;
-    flex-direction: column;
+    flex-flow: column nowrap;
     align-self: center;
     align-items: center;
     justify-content: center;
@@ -85,18 +90,16 @@
     height: auto !important;
     object-fit: contain;
 }
-#instgrm_embed video {
-    object-fit: cover !important;
-}
 
+#instgrm-caption {
+    flex: 0 0 auto;
+    padding: 10px;
+}
 #instgrm_post_caption {
     display: flex;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     align-self: center;
     align-items: center;
-    min-height: 36px;
-    padding: 5px;
-    margin: 0 0.5em;
 }
 #instgrm_post_caption span {
     margin: 0 0.1em 0 0.1em;
@@ -113,32 +116,33 @@
     overflow-wrap: break-word;
 }
 
-.instgrm-container .hr2 {
-    display: block;
-    width: 100%;
-    align-self: center;
-    justify-content: center;
-    border-top: 1px solid lightgray;
-    margin: 0.25em 0 0.25em 0;
-}
-
 .instgrm-footer {
+    flex: 0;
     display: flex;
+    flex-flow: row nowrap;
     align-self: center;
+    justify-self: center;
     align-items: center;
     justify-content: center;
-    margin: 0.2em 0 0.5em 0;
+    margin: auto 5px 0 5px;
+    border-top: 1px solid lightgray;
+    font-size: 13px;
+    font-weight: 400;
+    color: #262626;
+    width: 100%;
 }
-.instgrm-footer span:first-child {
-    flex-shrink: 0;
-    padding: 0 0.1em 0 0.2em;
-}
+.instgrm-footer span:first-child { flex: 0 0 auto; }
 .instgrm-footer span {
     line-height: 17px;
-    padding: 0 0.1em 0 0.1em;
+    padding: 3px 0.1em 0 0.2em;
+    color:
+}
+.instgrm-footer a > span {
+    display: flex;
+    align-self: center;
 }
 #instgrm_post_timestamp {
-    min-width: 50px;
+    min-width: 0 !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

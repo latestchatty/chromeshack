@@ -10,7 +10,6 @@ settingsLoadedEvent.addHandler(function()
 
             loadImages: function(item)
             {
-                // don't retrace our DOM nodes (use relative positions of event items)
                 var links = item.querySelectorAll(".sel .postbody a");
                 for (var i = 0; i < links.length; i++) {
                     if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
@@ -18,7 +17,7 @@ settingsLoadedEvent.addHandler(function()
                         ((i) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
-                               ImageLoader.toggleImage(e, i); 
+                               ImageLoader.toggleImage(e, i);
                             });
 
                             var _postBody = links[i].parentNode;
@@ -102,12 +101,11 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
-                    setLimiter(e.target);
                     var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
-                    if (toggleMediaItem(link, _postBody, _postId, index)) { return; }
+                    if (toggleMediaItem(link, _postId, index)) return;
 
                     if (ImageLoader.isVideo(link.href))
                     {
@@ -129,7 +127,7 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
-            createImgur: function(link, postId, index)
+            createImgur: async function(link, postId, index)
             {
                 var _link = link.href.replace(/http\:\/\//, "https://");
                 var _match = /https?\:\/\/(?:i\.|www\.)?imgur.com\/(?:gallery\/([\w\d\-]+)|a\/|t\/([\w\d\-]+)\/)?([\w\d\-]+)?(\.[webmpng4jgifv]+)?/.exec(_link);
@@ -142,6 +140,13 @@ settingsLoadedEvent.addHandler(function()
                 // attempt to resolve if we can otherwise use the response method
                 if (_imgur && _imgur.id && _imgur.ext) {
                     resolveImage(_imgur.id);
+                } else if (_imgur && _imgur.id && /\.com\/a\//i.test(_link)) {
+                    // fallback to parsing because of imgur's awful album api
+                    var src = await resolveParse(_link);
+                    if (src)
+                        ImageLoader.appendMedia(src, link, postId, index);
+                    else
+                        throw Error(`Can't resolve imgur album image for: ${_link}`);
                 } else if (_imgur && !_imgur.ext) {
                     resolveGallery(_link);
                 }
@@ -155,7 +160,7 @@ settingsLoadedEvent.addHandler(function()
                         var data = response.data;
                         var src = data && data.mp4 || data.webm || data.link;
                         if (src)
-                           ImageLoader.appendMedia(src, link, postId, index); 
+                           ImageLoader.appendMedia(src, link, postId, index);
                         else
                             throw Error(`Can't resolve imgur link for: ${_link}`);
                     }).catch(err => { console.log(err); });
@@ -165,14 +170,36 @@ settingsLoadedEvent.addHandler(function()
                     xhrRequest(`https://cors.io/?${url}.json`).then(async res => {
                         var response = await res.json();
                         var data = response && response.data.image;
-                        if (data.album_images.images.length > 0) {
+                        if (data.album_images != null && data.album_images.images.length > 0) {
                             var src = data.album_images.images[0];
                             if (src && src.hash && src.ext)
                                 resolveImage(src.hash);
                             else
                                 throw Error(`Can't resolve hash for imgur link: ${_link}`);
-                        } else { throw Error(`Can't find gallery item data for: ${_link}`); }
+                        } else if (data.galleryTags != null && data.galleryTags.length > 0) {
+                            var src = data.galleryTags[0].hash;
+                            if (src)
+                                resolveImage(src);
+                            else
+                                throw Error(`Failed to resolve hash data for imgur gallery: ${_link}`);
+                        }
+                        else { throw Error(`Can't find gallery item data for: ${_link}`); }
                     }).catch(err => { console.log(err); });
+                };
+                function resolveParse(url) {
+                    return new Promise((resolve, reject) => {
+                        xhrRequest(url).then(async res => {
+                            var response = await res.text();
+                            var match = /<meta.*\"og\:(?:video\".*=\"([\w\.\-\d\/\:]+)|image\".*=\"([\w\.\-\d\/\:]+))/i.exec(response);
+                            // prefer video over static media
+                            if (match != null && match[1] != null)
+                                resolve(match[1]);
+                            else if (match != null && match[2] != null)
+                                resolve(match[2]);
+                            else
+                                reject();
+                        }).catch(err => { console.log(err); });
+                    });
                 };
             },
 
@@ -206,23 +233,25 @@ settingsLoadedEvent.addHandler(function()
             },
 
             appendMedia: function(src, link, postId, index) {
-				var _animExt = src.match(/\.(mp4|gifv|webm)/i);
-				var _staticExt = src.match(/\.(jpe?g|gif|png)/i);
-				var _elem;
-				if (_animExt) {
-					_elem = document.createElement("video");
-					_elem.setAttribute("autoplay", "");
-					_elem.setAttribute("controls", "");
+                var mediaElem = document.createElement("div");
+                mediaElem.setAttribute("class", "imageloader grid-item hidden");
+
+                var _animExt = src.match(/\.(mp4|gifv|webm)/i);
+                var _staticExt = src.match(/\.(jpe?g|gif|png)/i);
+                var _elem;
+                if (_animExt) {
+                    _elem = document.createElement("video");
+                    _elem.setAttribute("autoplay", "");
                     _elem.setAttribute("muted", "");
                     _elem.setAttribute("loop", "");
-				}
-				else if (_staticExt)
-					_elem  = document.createElement("img");
+                }
+                else if (_staticExt)
+                    _elem  = document.createElement("img");
 
-                _elem.setAttribute("class", "imageloader");
                 _elem.setAttribute("id", `loader_${postId}-${index}`);
                 _elem.setAttribute("src", src);
-                mediaContainerInsert(_elem, link, postId, index);
+                mediaElem.appendChild(_elem);
+                mediaContainerInsert(mediaElem, link, postId, index);
             }
         }
 

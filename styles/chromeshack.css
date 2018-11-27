@@ -393,7 +393,8 @@ div.post_length_counter_text {
     justify-content: center;
     border: 1px solid #555;
     background: #908a9d;
-    font-size: 21px;
+    font-size: 16px;
+    font-weight: 600;
     color: white;
     font-family: 'Shack Sans', sans-serif;
     -webkit-user-select: none;
