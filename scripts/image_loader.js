@@ -30,7 +30,7 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if (/https?\:\/\/(?:i\.|www\.)?imgur.com\/(?:.*\/|.*\/.*\/)?([\w\d\-]+)(\.[webmpng4jgifv]+)?/.test(href) ||
+                if (/https?\:\/\/(?:i\.|m\.|www\.)?imgur.com\/(?:.*\/|.*\/.*\/)?([\w\d\-]+)(\.[webmpng4jgifv]+)?/.test(href) ||
                     /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href) ||
                     /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/.test(href))
                     return true;
@@ -130,7 +130,7 @@ settingsLoadedEvent.addHandler(function()
             createImgur: async function(link, postId, index)
             {
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _match = /https?\:\/\/(?:i\.|www\.)?imgur.com\/(?:gallery\/([\w\d\-]+)|a\/|t\/([\w\d\-]+)\/)?([\w\d\-]+)?(\.[webmpng4jgifv]+)?/.exec(_link);
+                var _match = /https?\:\/\/(?:i\.|m\.|www\.)?imgur.com\/(?:gallery\/([\w\d\-]+)|a\/|t\/([\w\d\-]+)\/)?([\w\d\-]+)?(\.[webmpng4jgifv]+)?/.exec(_link);
                 var _imgur = _match && {
                     gallery: _match[1] || _match[2],
                     id: _match[3],
@@ -138,17 +138,17 @@ settingsLoadedEvent.addHandler(function()
                 };
 
                 // attempt to resolve if we can otherwise use the response method
-                if (_imgur && _imgur.id && _imgur.ext) {
+                if (_imgur && _imgur.id && _imgur.ext || /\.com\/([\w\d\-]{7})$/i.test(_match[0])) {
                     resolveImage(_imgur.id);
-                } else if (_imgur && _imgur.id && /\.com\/a\//i.test(_link)) {
+                } else if (_imgur && _imgur.id && /\.com\/a\//i.test(_match[0])) {
                     // fallback to parsing because of imgur's awful album api
-                    var src = await resolveParse(_link);
+                    var src = await resolveParse(_match[0]);
                     if (src)
                         ImageLoader.appendMedia(src, link, postId, index);
                     else
-                        throw Error(`Can't resolve imgur album image for: ${_link}`);
+                        throw Error(`Can't resolve imgur album image for: ${_match[0]}`);
                 } else if (_imgur && !_imgur.ext) {
-                    resolveGallery(_link);
+                    resolveGallery(_match[0]);
                 }
 
                 function resolveImage(hash) {
@@ -162,12 +162,12 @@ settingsLoadedEvent.addHandler(function()
                         if (src)
                            ImageLoader.appendMedia(src, link, postId, index);
                         else
-                            throw Error(`Can't resolve imgur link for: ${_link}`);
+                            throw Error(`Can't resolve imgur link for: ${_match[0]}`);
                     }).catch(err => { console.log(err); });
                 };
                 function resolveGallery(url) {
                     // use the json response method to resolve the gallery item
-                    xhrRequest(`https://cors.io/?${url}.json`).then(async res => {
+                    xhrRequest(`${url}.json`).then(async res => {
                         var response = await res.json();
                         var data = response && response.data.image;
                         if (data.album_images != null && data.album_images.images.length > 0) {
@@ -175,15 +175,15 @@ settingsLoadedEvent.addHandler(function()
                             if (src && src.hash && src.ext)
                                 resolveImage(src.hash);
                             else
-                                throw Error(`Can't resolve hash for imgur link: ${_link}`);
+                                throw Error(`Can't resolve hash for imgur link: ${_match[0]}`);
                         } else if (data.galleryTags != null && data.galleryTags.length > 0) {
                             var src = data.galleryTags[0].hash;
                             if (src)
                                 resolveImage(src);
                             else
-                                throw Error(`Failed to resolve hash data for imgur gallery: ${_link}`);
+                                throw Error(`Failed to resolve hash data for imgur gallery: ${_match[0]}`);
                         }
-                        else { throw Error(`Can't find gallery item data for: ${_link}`); }
+                        else { throw Error(`Can't find gallery item data for: ${_match[0]}`); }
                     }).catch(err => { console.log(err); });
                 };
                 function resolveParse(url) {
