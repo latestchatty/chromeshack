@@ -168,9 +168,17 @@ settingsLoadedEvent.addHandler(function()
                 function resolveGallery(url) {
                     // use the json response method to resolve the gallery item
                     xhrRequest(`${url}.json`).then(async res => {
-                        var response = await res.json();
+                        var response = await res;
+                        if (res.status === 404) {
+                            // try resolving gallery item by parse if get an initial 404
+                            var src = await resolveParse(url);
+                            if (src)
+                                ImageLoader.appendMedia(src, link, postId, index);
+                            else
+                                throw Error(`Can't resolve imgur gallery image for: ${_match[0]}`);
+                        } else if (res.ok) { response = await res.json(); }
                         var data = response && response.data.image;
-                        if (data.ext && data.hash) {
+                        if (data.album_images == null && data.ext && data.hash) {
                             // this "gallery" has file data so let's use it
                             resolveImage(data.hash);
                         }
@@ -205,7 +213,7 @@ settingsLoadedEvent.addHandler(function()
                             else
                                 reject();
                         }).catch(err => { console.log(err); });
-                    });
+                    }).catch(err => { console.log(err); });
                 };
             },
 
