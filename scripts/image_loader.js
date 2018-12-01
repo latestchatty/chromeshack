@@ -223,9 +223,7 @@ settingsLoadedEvent.addHandler(function()
                 var video_id = _match && _match[1];
 
                 // ask the gfycat api for the embed url (doubles as verification of content)
-                xhrRequest(`https://api.gfycat.com/v1/gfycats/${video_id}`,
-                    { headers: new Map().set("Authorization", ImageLoader.imgurClientId) }
-                ).then(async res => {
+                xhrRequest(`https://api.gfycat.com/v1/gfycats/${video_id}`).then(async res => {
                     // use the mobile mp4 embed url (usually smallest)
                     var jsonData = await res.json();
                     var src = jsonData && jsonData.gfyItem.mobileUrl;
