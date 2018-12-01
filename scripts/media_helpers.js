@@ -2,43 +2,38 @@
  *  Resolvers
  */
 
-function getEmbedInfo(elem) {
-    // resolves the postId and index of a link or embed
-    if (elem == null) return;
-    var _ref = elem.querySelector(".expando") ||
-                elem.querySelector(".imageloader img") ||
-                elem.querySelector(".imageloader video") ||
-                elem.querySelector(".iframe-container iframe") ||
-                elem.querySelector(".tweet-container iframe") ||
-                elem.querySelector(".instgrm-container") ||
-                elem.querySelector(".yt-container iframe") ||
-                elem.querySelector(".twitch-container iframe");
-    if (_ref == null) return;
-    var split = _ref.id.split(/[\_\-]/);
-
-    var _id = split[1];
-    var _idx = split[2];
-    return {
-        id: _id,
-        index: _idx
-    };
+function getEmbedInfo(link) {
+    // resolves the postId and index of a link
+    if (link == null) return;
+    var _linkInfo = link.firstElementChild.id.split(/[\_\-]/);
+    if (_linkInfo != null) {
+        var _id = _linkInfo[1];
+        var _idx = _linkInfo[2];
+        return {
+            id: _id,
+            index: _idx
+        };
+    }
 }
 
 function getLinkRef(embed) {
-    // resolves the expando of an embed in a postBody
+    // resolves the link of an embed in a postBody
     if (embed == null) return;
-    var infoObj = getEmbedInfo(embed);
-    // every handled embed link has a unique expando by id + index
-    return document.querySelector(`.postbody div[id^='expando_${infoObj.id}-${infoObj.index}']`);
+    var _embedInfo = embed.id.split(/[\_\-]/);
+    if (_embedInfo != null)
+        var _linkRef = document.querySelector(`.postbody div[id^='expando_${_embedInfo[1]}-${_embedInfo[2]}']`);
+        return _linkRef.parentNode;
 }
 
 function getEmbedRef(link) {
     // resolves the embed associated with a link (if any exist)
     if (link == null) return;
     var infoObj = getEmbedInfo(link);
-    // every link returns a unique embed object by id + index
-    var retRef = document.querySelector(`.media-container [id$='_${infoObj.id}-${infoObj.index}']`);
-    return retRef;
+    if (infoObj && infoObj.id && infoObj.index) {
+        var _getpostEmbed = document.querySelector(`.postbody > div[id='getpost_${infoObj.id}-${infoObj.index}']`);
+        var _mediaEmbed = document.querySelector(`.media-container [id$='_${infoObj.id}-${infoObj.index}']`);
+        return _getpostEmbed || _mediaEmbed;
+    }
 }
 
 function getIframeDimensions(elem) {
@@ -193,7 +188,7 @@ function attachChildEvents(elem, id, index) {
             // only apply click events on video and img elements (for edge case sanity)
             childElem.addEventListener('mousedown', e => {
                 var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
-                var link = getLinkRef(embed.parentNode);
+                var link = getLinkRef(embed);
                 if (e.which === 2 && getSetting("image_loader_newtab")) {
                     e.preventDefault();
                     // open this link in a new window/tab when middle-clicked

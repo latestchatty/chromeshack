@@ -170,13 +170,19 @@ settingsLoadedEvent.addHandler(function()
                     xhrRequest(`${url}.json`).then(async res => {
                         var response = await res.json();
                         var data = response && response.data.image;
-                        if (data.album_images != null && data.album_images.images.length > 0) {
+                        if (data.ext && data.hash) {
+                            // this "gallery" has file data so let's use it
+                            resolveImage(data.hash);
+                        }
+                        else if (data.album_images != null && data.album_images.images.length > 0) {
+                            // no hash + ext so try albums
                             var src = data.album_images.images[0];
                             if (src && src.hash && src.ext)
                                 resolveImage(src.hash);
                             else
                                 throw Error(`Can't resolve hash for imgur link: ${_match[0]}`);
                         } else if (data.galleryTags != null && data.galleryTags.length > 0) {
+                            // fallback to resolving from the gallery hash
                             var src = data.galleryTags[0].hash;
                             if (src)
                                 resolveImage(src);

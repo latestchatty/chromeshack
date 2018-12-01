@@ -172,6 +172,9 @@ div.getPost {
 div.getPost div.postbody {
     margin: 0.25em 0.25em 1em 1.5em;
 }
+div.getPost.hidden {
+    display: none !important;
+}
 
 div.getPost div.refresh,
 div.getPost div.reply,
