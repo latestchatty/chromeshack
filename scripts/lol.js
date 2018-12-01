@@ -59,7 +59,7 @@ settingsLoadedEvent.addHandler(function()
                 var css = '';
                 for (var i = 0; i < LOL.tags.length; i++)
                 {
-                    css += '.oneline_tags .oneline_' + LOL.tags[i].name + ' { background-color: ' + LOL.tags[i].color + '; }\n';
+                    css += `.oneline_tags .oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
                 }
 
                 var styleBlock = document.createElement('style');
@@ -152,7 +152,7 @@ settingsLoadedEvent.addHandler(function()
 
             getUsers: function(id)
             {
-                var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id);
+                var url = `${LOL.URL}api.php?special=get_taggers&thread_id=${encodeURIComponent(id)}`;
                 var tagsExist = document.querySelector(`div[id^=taggers_${id}].tagger_container`);
                 if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
 
@@ -180,11 +180,31 @@ settingsLoadedEvent.addHandler(function()
                     }
                 }).catch(err => {
                     alert("Problem getting taggers. Try again.");
+                    console.log(err);
                 });
             },
 
-            lolThread: function(e)
+            isThreadTagged: function(id, tag, user) {
+                var url = `${LOL.URL}api.php?special=get_taggers&thread_id=${encodeURIComponent(id)}`;
+                return new Promise(resolve => {
+                    xhrRequest(url).then(async res => {
+                        var response = await res.json();
+                        for (var _tag in response) {
+                            response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                                // loop through each tag and user for this post
+                                if (tagger === user && tag === _tag) {
+                                    return resolve(true);
+                                }
+                            });
+                        }
+                        return resolve(false);
+                    }).catch(err => { throw err; });
+                }).catch(err => { console.log(err); });
+            },
+
+            lolThread: async function(e)
             {
+                e.preventDefault();
                 var user = LOL.getUsername();
                 if (!user)
                 {
@@ -196,11 +216,11 @@ settingsLoadedEvent.addHandler(function()
                 var element = e.target;
                 var tag = element.dataset.loltag;
                 var id = element.dataset.threadid;
-                var isloled = element.dataset.isloled == 'true';
+                var isloled = element.dataset.isloled || await LOL.isThreadTagged(id, tag, user);
 
                 var url = LOL.URL + "report.php";
 
-                var data = 'who=' + user + '&what=' + id + '&tag=' + encodeURIComponent(tag) + '&version=' + LOL.VERSION;
+                var data = `who=${user}&what=${id}&tag=${encodeURIComponent(tag)}&version=${LOL.VERSION}`;
 
                 if (isloled) {
                     data += '&action=untag';
@@ -210,31 +230,28 @@ settingsLoadedEvent.addHandler(function()
                         data += '&moderation=' + moderation;
                 }
 
-                postFormUrl(url, data, function(response)
-                {
-                    if (response.status == 200 && (response.responseText.indexOf("ok") == 0 || response.responseText.indexOf("You have already") == 0))
-                    {
+                postXHR(url, data).then(async res => {
+                    var response = await res.text();
+                    if (res.ok && response.indexOf("ok") == 0) {
                         // looks like it worked
                         var new_tag;
                         if (isloled) {
-                           new_tag = tag;
+                           new_tag = "* U N - ";
+                           for (var i = 0; i < tag.length; i++)
+                               new_tag += " " + tag[i].toUpperCase() + " ";
+                           new_tag += " ' D *";
+                           element.dataset.isloled = false;
                         } else {
                             new_tag = "*";
                             for (var i = 0; i < tag.length; i++)
                                 new_tag += " " + tag[i].toUpperCase() + " ";
                             new_tag += " ' D *";
+                            element.dataset.isloled = true;
                         }
-
                         element.replaceHTML(new_tag);
-                        element.dataset.isloled = !isloled;
-                    }
-                    else
-                    {
-                        alert(response.responseText);
-                    }
+                    } else
+                        alert(response);
                 });
-
-                e.preventDefault();
             },
 
             getUsername: function()

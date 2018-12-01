@@ -97,23 +97,20 @@ function xhrRequest(url, optionsObj) {
     });
 }
 
-function postFormUrl(url, data, callback)
-{
-    // It's necessary to set the request headers for PHP's $_POST stuff to work properly
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if(xhr.readyState == 4)
-        {
-            if(xhr != undefined && xhr != null)
-            {
-                callback(xhr);
-            }
-        }
-    }
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(data);
+function postXHR(url, data) {
+    return new Promise((resolve, reject) => {
+        xhrRequest(url, {
+            method: "POST",
+            headers: new Map().set("Content-type", "application/x-www-form-urlencoded"),
+            body: data
+        }).then(async res => {
+            var response = await res;
+            if (response.ok)
+                resolve(response);
+            else
+                reject(res.status);
+        })
+    }).catch(err => { console.log(err); });
 }
 
 function getCookieValue(name, defaultValue)
