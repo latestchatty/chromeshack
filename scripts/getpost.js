@@ -13,7 +13,7 @@ settingsLoadedEvent.addHandler(function() {
             },
 
             isChattyLink: function(href) {
-                var _isRootPost = /shacknews.com\/chatty\?id=\d+$/i;
+                var _isRootPost = /shacknews.com\/chatty\?id=\d+/i;
                 if (_isRootPost.test(href)) { return true; }
                 return false;
             },
