@@ -387,22 +387,24 @@ div.post_length_counter_text {
     display: none !important;
 }
 #post_highlighter_container a#jump_to_new_post {
-    display: inline-block;
+    display: inline-flex;
     position: absolute;
-    text-align: center;
+    align-self: center;
+    justify-self: center;
     justify-content: center;
+    align-content: center;
     border: 1px solid #555;
     background: #908a9d;
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 600;
     color: white;
     font-family: 'Shack Sans', sans-serif;
     -webkit-user-select: none;
-    padding: 1px 4px 0 2px;
+    padding: 4px 3px 2px 2px;
     white-space: nowrap;
     cursor: pointer;
     line-height: 16px;
-    top: 0;
+    top: -2px;
     left: 0;
 }
 #post_highlighter_container a#jump_to_new_post:hover {

@@ -123,6 +123,8 @@ settingsLoadedEvent.addHandler(function()
                     var video = document.createElement("div");
                     var spacer = document.createElement("div");
                     spacer.setAttribute("class", "iframe-spacer hidden");
+                    spacer.style.height = `${height}px`;
+                    spacer.style.width = `${width}px`;
                     video.setAttribute("class", "iframe-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
@@ -181,6 +183,8 @@ settingsLoadedEvent.addHandler(function()
                     var video = document.createElement("div");
                     var spacer = document.createElement("div");
                     spacer.setAttribute("class", "iframe-spacer hidden");
+                    spacer.style.height = `${height}px`;
+                    spacer.style.width = `${width}px`;
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
@@ -223,6 +227,8 @@ settingsLoadedEvent.addHandler(function()
                     var video = document.createElement("div");
                     var spacer = document.createElement("div");
                     spacer.setAttribute("class", "iframe-spacer hidden");
+                    spacer.style.height = `${height}px`;
+                    spacer.style.width = `${width}px`;
                     video.setAttribute("class", "twitch-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
