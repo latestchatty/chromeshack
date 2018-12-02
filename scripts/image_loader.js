@@ -4,10 +4,6 @@ settingsLoadedEvent.addHandler(function()
     {
         ImageLoader =
         {
-            imgurApiBaseUrl: "https://api.imgur.com/3/image",
-
-            imgurClientId: "Client-ID c045579f61fc802",
-
             loadImages: function(item)
             {
                 var links = item.querySelectorAll(".sel .postbody a");
@@ -149,16 +145,18 @@ settingsLoadedEvent.addHandler(function()
                 function parseImgur(url) {
                     return new Promise(resolve => {
                         xhrRequest(url).then(async res => {
-                            var response = await res.text();
-                            var _staticMatch = /og\:image\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
-                            var _vidMatch = /og\:video\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
-                            // prefer video over static media
-                            if (_vidMatch != null)
-                                resolve({ src: _vidMatch[1], type: 1 });
-                            else if (_staticMatch != null)
-                                resolve({ src: _staticMatch[1], type: 2 });
-                            else
-                                throw new Error(`Unable to parse Imgur link: ${url}`);
+                            if (res.ok) {
+                                var response = await res.text();
+                                var _staticMatch = /og\:image\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
+                                var _vidMatch = /og\:video\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
+                                // prefer video over static media
+                                if (_vidMatch != null)
+                                    resolve({ src: _vidMatch[1], type: 1 });
+                                else if (_staticMatch != null)
+                                    resolve({ src: _staticMatch[1], type: 2 });
+                                else
+                                    throw new Error(`Unable to parse Imgur link: ${url}`);
+                            } else { throw new Error(`An error occurred fetching Imgur url: ${link.href} = ${res.status}: ${res.statusText}`); }
                         }).catch(err => { console.log(err); });
                     });
                 };
