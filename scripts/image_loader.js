@@ -178,16 +178,19 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
-            createGfycat: function(link, postId, index)
+            createGfycat: async function(link, postId, index)
             {
                 var _link = link.href.replace(/http\:\/\//, "https://");
                 var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:([\w]+)|([\w]+)\-.*?)/.exec(_link);
                 // we can match against both direct and indirect links
                 var gfycat_id = _match && _match[1] || _match[2];
+                var gfycatKey = await getGfycatCredentials();
 
                 if (gfycat_id) {
                     var url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
-                    xhrRequest(url).then(async res => {
+                    xhrRequest(url, {
+                        headers: new Map().set("Authorization", gfycatKey)
+                    }).then(async res => {
                         if (res.ok && res.status !== 404) {
                             var json = await res.json();
                             if (json && json.gfyItem.mobileUrl != null) {
@@ -196,6 +199,29 @@ settingsLoadedEvent.addHandler(function()
                         } else { throw new Error(`An error occurred fetching Gfycat url: ${link.href} = ${res.status}: ${res.statusText}`); }
                     }).catch(err => { console.log(err); });
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
+
+                function getGfycatCredentials() {
+                    var sessionKey = sessionStorage.getItem("gfycatKey");
+                    if (!sessionKey) {
+                        var __obf = {
+                            "grant_type": "client_credentials",
+                            "client_secret": atob("OERaNnZUeURMZWUzWk5pR3B3Snd0aXV4NnJNYVlWQXF4OFV2N0Y4c01NUjBla1NlUXdNWGNuWTF5MGdNSVk1Sg=="),
+                            "client_id": atob("Ml9nV3Nkb0s=")
+                        };
+                        return new Promise(resolve => {
+                            postXHR("https://api.gfycat.com/v1/oauth/token", JSON.stringify(__obf))
+                            .then(async res => {
+                                var json = await res.json();
+                                if (json.access_token != null && json.access_token.length > 0) {
+                                    sessionStorage.setItem("gfycatKey", json.access_token);
+                                    resolve(json.access_token);
+                                } else
+                                    resolve();
+                            });
+                        }).catch(err => { console.log(err); });
+                    }
+                    return sessionKey;
+                }
             },
 
             createGiphy: function(link, postId, index)
