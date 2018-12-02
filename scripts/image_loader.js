@@ -32,7 +32,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 if (/https?\:\/\/(?:i\.|m\.|www\.)?imgur.com\/(?:.*\/|.*\/.*\/)?([\w\d\-]+)(\.[webmpng4jgifv]+)?/.test(href) ||
                     /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href) ||
-                    /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/.test(href))
+                    /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)[\w\d\-]+/.test(href))
                     return true;
 
                 return false;
@@ -220,28 +220,25 @@ settingsLoadedEvent.addHandler(function()
             createGfycat: function(link, postId, index)
             {
                 var _match = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(link.href);
-                var video_id = _match && _match[1];
+                var gfycat_id = _match && _match[1];
 
-                // ask the gfycat api for the embed url (doubles as verification of content)
-                xhrRequest(`https://api.gfycat.com/v1/gfycats/${video_id}`).then(async res => {
-                    // use the mobile mp4 embed url (usually smallest)
-                    var jsonData = await res.json();
-                    var src = jsonData && jsonData.gfyItem.mobileUrl;
-                    if (src)
-                        ImageLoader.appendMedia(src, link, postId, index);
-                    else { throw Error(); }
-                }).catch(err => { console.log(err); });
+                if (gfycat_id) {
+                    // use the mobile mp4 url (smallest, works even for static uploads)
+                    var src = `https://thumbs.gfycat.com/${gfycat_id}-mobile.mp4`
+                    ImageLoader.appendMedia(src, link, postId, index);
+                } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
             },
 
             createGiphy: function(link, postId, index)
             {
-                var _matchGiphy = /https?\:\/\/giphy.com\/(?:embed\/([A-Za-z0-9]+)|gifs\/.*\-([A-Za-z0-9]+))/i.exec(link.href);
-                var _giphyId = _matchGiphy && _matchGiphy[1] || _matchGiphy[2];
+                // only use the alphanumeric id without the label
+                var _matchGiphy = /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)(?:.*\-)?([\w\d\-]+)/i.exec(link.href);
+                var _giphyId = _matchGiphy && _matchGiphy[1];
 
                 if (_giphyId) {
                     var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
-                    ImageLoader.appendMedia(v, src, link, postId, index);
-                } else { console.log(`An error occurred parsing the Giphy url: ${href}`) }
+                    ImageLoader.appendMedia(src, link, postId, index);
+                } else { console.log(`An error occurred parsing the Giphy url: ${link.href}`); }
             },
 
             appendMedia: function(src, link, postId, index) {
