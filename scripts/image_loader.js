@@ -130,90 +130,37 @@ settingsLoadedEvent.addHandler(function()
             createImgur: async function(link, postId, index)
             {
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _match = /https?\:\/\/(?:i\.|m\.|www\.)?imgur.com\/(?:gallery\/([\w\d\-]+)|a\/|t\/([\w\d\-]+)\/)?([\w\d\-]+)?(\.[webmpng4jgifv]+)?/.exec(_link);
-                var _imgur = _match && {
-                    gallery: _match[1] || _match[2],
-                    id: _match[3],
-                    ext: _match[4]
-                };
-
-                // attempt to resolve if we can otherwise use the response method
-                if (_imgur && _imgur.id && _imgur.ext || /\.com\/([\w\d\-]{7})$/i.test(_match[0])) {
-                    resolveImage(_imgur.id);
-                } else if (_imgur && _imgur.id && /\.com\/a\//i.test(_match[0])) {
-                    // fallback to parsing because of imgur's awful album api
-                    var src = await resolveParse(_match[0]);
-                    if (src)
-                        ImageLoader.appendMedia(src, link, postId, index);
-                    else
-                        throw Error(`Can't resolve imgur album image for: ${_match[0]}`);
-                } else if (_imgur && !_imgur.ext) {
-                    resolveGallery(_match[0]);
+                var _isImgur = /https?\:\/\/i.imgur.com\/[\w\d]+\.[gifvwebmp4ngj]+$/i.test(_link);
+                if (_link.length > 0 && _isImgur) {
+                    // we've already got what we need so use it
+                    var _src = _link.replace(/\.[gifvwebmp4]+$/i, ".mp4");
+                    ImageLoader.appendMedia(_src, link, postId, index);
+                }
+                else if (_link.length > 0) {
+                    var _parsedObj = await parseImgur(_link);
+                    resolveImage(_parsedObj);
                 }
 
-                function resolveImage(hash) {
-                    xhrRequest(`${ImageLoader.imgurApiBaseUrl}/${hash}`,
-                        { headers: new Map().set("Authorization", ImageLoader.imgurClientId)
-                    }).then(async res => {
-                        // verify the hash to be sure this is valid
-                        var response = await res.json();
-                        var data = response.data;
-                        var src = data && data.mp4 || data.webm || data.link;
-                        if (src)
-                           ImageLoader.appendMedia(src, link, postId, index);
-                        else
-                            throw Error(`Can't resolve imgur link for: ${_match[0]}`);
-                    }).catch(err => { console.log(err); });
-                };
-                function resolveGallery(url) {
-                    // use the json response method to resolve the gallery item
-                    xhrRequest(`${url}.json`).then(async res => {
-                        var response = await res;
-                        if (res.status === 404) {
-                            // try resolving gallery item by parse if get an initial 404
-                            var src = await resolveParse(url);
-                            if (src)
-                                ImageLoader.appendMedia(src, link, postId, index);
-                            else
-                                throw Error(`Can't resolve imgur gallery image for: ${_match[0]}`);
-                        } else if (res.ok) { response = await res.json(); }
-                        var data = response && response.data.image;
-                        if (data.album_images == null && data.ext && data.hash) {
-                            // this "gallery" has file data so let's use it
-                            resolveImage(data.hash);
-                        }
-                        else if (data.album_images != null && data.album_images.images.length > 0) {
-                            // no hash + ext so try albums
-                            var src = data.album_images.images[0];
-                            if (src && src.hash && src.ext)
-                                resolveImage(src.hash);
-                            else
-                                throw Error(`Can't resolve hash for imgur link: ${_match[0]}`);
-                        } else if (data.galleryTags != null && data.galleryTags.length > 0) {
-                            // fallback to resolving from the gallery hash
-                            var src = data.galleryTags[0].hash;
-                            if (src)
-                                resolveImage(src);
-                            else
-                                throw Error(`Failed to resolve hash data for imgur gallery: ${_match[0]}`);
-                        }
-                        else { throw Error(`Can't find gallery item data for: ${_match[0]}`); }
-                    }).catch(err => { console.log(err); });
-                };
-                function resolveParse(url) {
-                    return new Promise((resolve, reject) => {
+                function resolveImage(imgurObj) {
+                    if (imgurObj && imgurObj.src != null) {
+                        ImageLoader.appendMedia(imgurObj.src, link, postId, index);
+                    } else { console.log("Something went wrong when appending Imgur object!"); }
+                }
+                function parseImgur(url) {
+                    return new Promise(resolve => {
                         xhrRequest(url).then(async res => {
                             var response = await res.text();
-                            var match = /<meta.*\"og\:(?:video\".*=\"([\w\.\-\d\/\:]+)|image\".*=\"([\w\.\-\d\/\:]+))/i.exec(response);
+                            var _staticMatch = /og\:image\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
+                            var _vidMatch = /og\:video\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
                             // prefer video over static media
-                            if (match != null && match[1] != null)
-                                resolve(match[1]);
-                            else if (match != null && match[2] != null)
-                                resolve(match[2]);
+                            if (_vidMatch != null)
+                                resolve({ src: _vidMatch[1], type: 1 });
+                            else if (_staticMatch != null)
+                                resolve({ src: _staticMatch[1], type: 2 });
                             else
-                                reject();
+                                throw new Error(`Unable to parse Imgur link: ${url}`);
                         }).catch(err => { console.log(err); });
-                    }).catch(err => { console.log(err); });
+                    });
                 };
             },
 
@@ -223,16 +170,23 @@ settingsLoadedEvent.addHandler(function()
                 var gfycat_id = _match && _match[1];
 
                 if (gfycat_id) {
-                    // use the mobile mp4 url (smallest, works even for static uploads)
-                    var src = `https://thumbs.gfycat.com/${gfycat_id}-mobile.mp4`
-                    ImageLoader.appendMedia(src, link, postId, index);
+                    xhrRequest(link.href).then(async res => {
+                        if (res.ok) {
+                            var response = await res.text();
+                            // parse the website for the mobile mp4 link (smallest, works even for static uploads)
+                            var _matchGfycat = /\"og:video".+?content=\"(.*?)\".*?\/>/i.exec(response);
+                            if (_matchGfycat == null) { throw new Error(`Failed to parse Gfycat for mobile link: ${link.href}`); }
+                            var src = _matchGfycat != null && _matchGfycat[1];
+                            ImageLoader.appendMedia(src, link, postId, index);
+                        } else { throw new Error(`An error occurred fetching Gfycat url: ${link.href} = ${res.status}: ${res.statusText}`); }
+                    }).catch(err => { console.log(err); });
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
             },
 
             createGiphy: function(link, postId, index)
             {
                 // only use the alphanumeric id without the label
-                var _matchGiphy = /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)(?:.*\-)?([\w\d\-]+)/i.exec(link.href);
+                var _matchGiphy = /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)(?:.*\-)?([\w\d\-]+)/igm.exec(link.href);
                 var _giphyId = _matchGiphy && _matchGiphy[1];
 
                 if (_giphyId) {
