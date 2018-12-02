@@ -73,8 +73,30 @@ String.prototype.trim = function()
     return this.replace(/^\s+|\s+$/g,"");
 }
 
-// more flexible promisified XHR helper
+function xhrRequestLegacy(url, optionsObj) {
+    // promisified legacy XHR helper using XMLHttpRequest()
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open(optionsObj.method || "GET", url);
+        if (optionsObj != null && optionsObj.hasOwnProperty("headers")) {
+            for (var [key, val] of optionsObj.headers.entries()) {
+                xhr.setRequestHeader(key, val);
+            }
+        }
+        xhr.onload = () => {
+            if (this.status >= 200 && this.status < 300 ||
+                xhr.statusText.toUpperCase().indexOf("OK") > -1) {
+                resolve(xhr.response);
+            }
+            reject({ status: this.status, statusText: xhr.statusText });
+        };
+        xhr.onerror = () => { reject({ status: this.status, statusText: xhr.statusText }); };
+        xhr.send();
+    }).catch(err => { console.log(err); });
+}
+
 function xhrRequest(url, optionsObj) {
+    // newer fetch() based promisified XHR helper
     var _headers = new Headers();
     if (optionsObj && optionsObj.hasOwnProperty("headers")) {
         for (var [key, val] of optionsObj.headers.entries()) {
@@ -84,16 +106,21 @@ function xhrRequest(url, optionsObj) {
     // set some sane defaults
     if (optionsObj && !optionsObj.hasOwnProperty("mode"))
         optionsObj.mode = "cors"
+    if (optionsObj && !optionsObj.hasOwnProperty("cache"))
+        optionsObj.cache = "no-cache"
+    if (optionsObj && !optionsObj.hasOwnProperty("method"))
+        optionsObj.method = "GET"
 
-    return fetch(url, {
-        method: optionsObj && optionsObj.method,
-        mode: optionsObj && optionsObj.mode,
-        cache: optionsObj && optionsObj.cache,
-        credentials: optionsObj && optionsObj.credentials,
-        headers: optionsObj && _headers,
-        redirect: optionsObj && optionsObj.redirect,
-        referrer: optionsObj && optionsObj.referrer,
-        body: optionsObj && optionsObj.body
+    return fetch(url, optionsObj && {
+        method: optionsObj.method,
+        mode: optionsObj.mode,
+        cache: optionsObj.cache,
+        credentials: optionsObj.credentials,
+        headers: _headers,
+        redirect: optionsObj.redirect,
+        referrer: optionsObj.referrer,
+        referrerPolicy: optionsObj.referrerPolicy,
+        body: optionsObj.body
     });
 }
 

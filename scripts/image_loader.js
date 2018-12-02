@@ -188,16 +188,26 @@ settingsLoadedEvent.addHandler(function()
 
                 if (gfycat_id) {
                     var url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
-                    xhrRequest(url, {
-                        headers: new Map().set("Authorization", gfycatKey)
-                    }).then(async res => {
-                        if (res.ok && res.status !== 404) {
+                    if (!!window.chrome) {
+                        xhrRequest(url, {
+                            headers: new Map().set("Authorization", gfycatKey)
+                        }).then(async res => {
                             var json = await res.json();
                             if (json && json.gfyItem.mobileUrl != null) {
                                 ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
                             } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
-                        } else { throw new Error(`An error occurred fetching Gfycat url: ${link.href} = ${res.status}: ${res.statusText}`); }
-                    }).catch(err => { console.log(err); });
+                        }).catch(err => { console.log(err); });
+                    } else {
+                        // fallback to older XHR method for Firefox for this endpoint
+                        xhrRequestLegacy(url, {
+                            headers: new Map().set("Authorization", gfycatKey)
+                        }).then(res => {
+                            var json = JSON.parse(res);
+                            if (json && json.gfyItem.mobileUrl != null) {
+                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                            } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
+                        }).catch(err => { console.log(err); });
+                    }
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
 
                 function getGfycatCredentials() {
