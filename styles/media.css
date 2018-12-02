@@ -35,17 +35,15 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
-.imageloader {
-    object-fit: contain !important;
-    overflow: hidden !important;
-}
 .imageloader video,
 .imageloader img {
     outline: 0 !important;
-    width: 100%;
+    width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box;
+    object-fit: contain !important;
     max-height: var(--max-media-item-height);
     max-width: var(--max-media-item-width);
-    box-sizing: border-box;
 }
 .iframe-container.hidden,
 .twitch-container.hidden,

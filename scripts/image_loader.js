@@ -26,8 +26,8 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if (/https?\:\/\/(?:i\.|m\.|www\.)?imgur.com\/(?:.*\/|.*\/.*\/)?([\w\d\-]+)(\.[webmpng4jgifv]+)?/.test(href) ||
-                    /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.test(href) ||
+                if (/https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?[\w\d\-]+/.test(href) ||
+                    /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:[\w]+|[\w]+\-.*?)/.test(href) ||
                     /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)[\w\d\-]+/.test(href))
                     return true;
 
@@ -125,57 +125,74 @@ settingsLoadedEvent.addHandler(function()
 
             createImgur: async function(link, postId, index)
             {
+                var authHdr = "Client-ID c045579f61fc802";
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _isImgur = /https?\:\/\/i.imgur.com\/[\w\d]+\.[gifvwebmp4ngj]+$/i.test(_link);
-                if (_link.length > 0 && _isImgur) {
-                    // we've already got what we need so use it
-                    var _src = _link.replace(/\.[gifvwebmp4]+$/i, ".mp4");
-                    ImageLoader.appendMedia(_src, link, postId, index);
-                }
-                else if (_link.length > 0) {
-                    var _parsedObj = await parseImgur(_link);
-                    resolveImage(_parsedObj);
+                var _matchShortcode = /https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?([\w\d\-]+)/i.exec(_link);
+
+                if (_link.length > 0 && _matchShortcode != null) {
+                    // resolve by album otherwise fallback to resolving by image
+                    var imgurAlbum = await resolveImgurAlbum(_matchShortcode[1] || _matchShortcode[2]);
+                    if (imgurAlbum != null)
+                        ImageLoader.appendMedia(imgurAlbum, link, postId, index);
+                    else {
+                        var imgurImage = await resolveImgur(_matchShortcode[1] || _matchShortcode[2]);
+                        if (imgurImage != null)
+                            ImageLoader.appendMedia(imgurImage, link, postId, index);
+                        else
+                            throw new Error(`Could not resolve Imgur: ${_link} = ${_matchShortcode[1] || _matchShortcode[2]}`);
+                    }
                 }
 
-                function resolveImage(imgurObj) {
-                    if (imgurObj && imgurObj.src != null) {
-                        ImageLoader.appendMedia(imgurObj.src, link, postId, index);
-                    } else { console.log("Something went wrong when appending Imgur object!"); }
-                }
-                function parseImgur(url) {
+                function resolveImgur(shortcode) {
+                    var url = `https://api.imgur.com/3/image/${shortcode}`;
                     return new Promise(resolve => {
-                        xhrRequest(url).then(async res => {
-                            if (res.ok) {
-                                var response = await res.text();
-                                var _staticMatch = /og\:image\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
-                                var _vidMatch = /og\:video\".+?=\"([\w\d\:\-\.\/]+).*?\"/i.exec(response);
-                                // prefer video over static media
-                                if (_vidMatch != null)
-                                    resolve({ src: _vidMatch[1], type: 1 });
-                                else if (_staticMatch != null)
-                                    resolve({ src: _staticMatch[1], type: 2 });
-                                else
-                                    throw new Error(`Unable to parse Imgur link: ${url}`);
-                            } else { throw new Error(`An error occurred fetching Imgur url: ${link.href} = ${res.status}: ${res.statusText}`); }
-                        }).catch(err => { console.log(err); });
+                        fetchImgur(url).then(json => {
+                            if (json.status !== 404) {
+                                if (json && json.data.mp4 != null)
+                                    resolve(json.data.mp4);
+                                else if (json && json.data.link != null)
+                                    resolve(json.data.link);
+                            } else { resolve(null); }
+                        });
                     });
                 };
+                function resolveImgurAlbum(shortcode) {
+                    var url = `https://api.imgur.com/3/album/${shortcode}`;
+                    return new Promise(resolve => {
+                        fetchImgur(url).then(json => {
+                            if (json.status !== 404) {
+                                if (json && json.data.images != null &&
+                                    json.data.images[0].mp4 != null)
+                                    resolve(json.data.images[0].mp4);
+                                else if (json && json.data.images != null &&
+                                    json.data.images[0].link != null)
+                                    resolve(json.data.images[0].link);
+                            } else { resolve(null); }
+                        });
+                    });
+                };
+                function fetchImgur(url) {
+                    return xhrRequest(url, { headers: new Map().set("Authorization", authHdr) })
+                        .then(async res => await res.json())
+                        .catch(err => { console.log(err); });
+                }
             },
 
             createGfycat: function(link, postId, index)
             {
-                var _match = /https?\:\/\/(?:\w+\.|)gfycat\.com\/(\w+)/.exec(link.href);
-                var gfycat_id = _match && _match[1];
+                var _link = link.href.replace(/http\:\/\//, "https://");
+                var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:([\w]+)|([\w]+)\-.*?)/.exec(_link);
+                // we can match against both direct and indirect links
+                var gfycat_id = _match && _match[1] || _match[2];
 
                 if (gfycat_id) {
-                    xhrRequest(link.href).then(async res => {
-                        if (res.ok) {
-                            var response = await res.text();
-                            // parse the website for the mobile mp4 link (smallest, works even for static uploads)
-                            var _matchGfycat = /\"og:video".+?content=\"(.*?)\".*?\/>/i.exec(response);
-                            if (_matchGfycat == null) { throw new Error(`Failed to parse Gfycat for mobile link: ${link.href}`); }
-                            var src = _matchGfycat != null && _matchGfycat[1];
-                            ImageLoader.appendMedia(src, link, postId, index);
+                    var url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
+                    xhrRequest(url).then(async res => {
+                        if (res.ok && res.status !== 404) {
+                            var json = await res.json();
+                            if (json && json.gfyItem.mobileUrl != null) {
+                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                            } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
                         } else { throw new Error(`An error occurred fetching Gfycat url: ${link.href} = ${res.status}: ${res.statusText}`); }
                     }).catch(err => { console.log(err); });
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
