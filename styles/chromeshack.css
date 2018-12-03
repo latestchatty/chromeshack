@@ -433,12 +433,10 @@ a.refresh_pending {
 }
 .lol a.who_tagged_this.hidden { display: none !important }
 
-.postbody .tagger_container { margin: 1em 0 0.25em 0; }
-.postbody .oneline_lols,
-.postbody .oneline_infs,
-.postbody .oneline_unfs,
-.postbody .oneline_tags {
-    /* styling for tagger container */
+.postbody > .tagger_container { margin: 1em 0 0.25em 0; }
+.postbody > .tagger_container.hidden { display: none !important; }
+.tagger_container > div[class^='oneline_'] {
+    /* styling for generic tagger container */
     display: flex;
     flex-wrap: wrap;
     max-width: 100%;
@@ -447,25 +445,21 @@ a.refresh_pending {
     word-break: break-word;
     white-space: nowrap;
 }
-.postbody .tagger_container.hidden { display: none !important; }
-.oneline_lols .oneline_lol,
-.oneline_infs .oneline_inf,
-.oneline_unfs .oneline_unf,
-.oneline_tags .oneline_tag,
-.oneline_wtfs .oneline_wtf {
-    /* set some general tag button rules */
+.tagger_container > div[class^='oneline_'] > span {
+    /* general tag button rules */
     border-radius: 2px;
     color: #000;
     font-size: 10px;
     font-weight: bold;
     margin: 2px;
     padding: 0 2px;
+    /* color for unknown tags */
+    background: #00ffff;
 }
 /* try to match with existing tag buttons */
-.oneline_lols > span { background: #f80; }
-.oneline_infs > span { background: #09c; }
-.oneline_unfs > span { background: #ff0000; }
-.oneline_tags > span { background: #77bb22; }
-.oneline_wtfs > span { background: #c000c0; }
+.oneline_lols > span { background: #f80 !important; }
+.oneline_infs > span { background: #09c !important; }
+.oneline_unfs > span { background: #ff0000 !important; }
+.oneline_tags > span { background: #77bb22 !important; }
+.oneline_wtfs > span { background: #c000c0 !important; }
 /* end LOL stuff */
-
