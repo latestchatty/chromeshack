@@ -20,8 +20,8 @@ DefaultSettings = {
     lol_tags: [
         {name: "lol", color: "#f80"},
         {name: "inf", color: "#09c"},
-        {name: "unf", color: "#f00"},
-        {name: "tag", color: "#7b2"},
+        {name: "unf", color: "#ff0000"},
+        {name: "tag", color: "#77bb22"},
         {name: "wtf", color: "#c000c0"}
     ],
 

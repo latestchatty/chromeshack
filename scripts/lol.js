@@ -59,7 +59,9 @@ settingsLoadedEvent.addHandler(function()
                 var css = '';
                 for (var i = 0; i < LOL.tags.length; i++)
                 {
-                    css += `.oneline_tags .oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
+                    // apply user-customized styling for both oneline tags and postbody tags
+                    css += `.capcontainer .oneline_tags .oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
+                    css += `.tagger_container > .oneline_${LOL.tags[i].name}s > span.oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
                 }
 
                 var styleBlock = document.createElement('style');

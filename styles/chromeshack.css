@@ -435,8 +435,8 @@ a.refresh_pending {
 
 .postbody > .tagger_container { margin: 1em 0 0.25em 0; }
 .postbody > .tagger_container.hidden { display: none !important; }
-.tagger_container > div[class^='oneline_'] {
-    /* styling for generic tagger container */
+.tagger_container > div {
+    /* styling for generic tagger container child */
     display: flex;
     flex-wrap: wrap;
     max-width: 100%;
@@ -445,7 +445,7 @@ a.refresh_pending {
     word-break: break-word;
     white-space: nowrap;
 }
-.tagger_container > div[class^='oneline_'] > span {
+.tagger_container > div > span {
     /* general tag button rules */
     border-radius: 2px;
     color: #000;
@@ -456,10 +456,4 @@ a.refresh_pending {
     /* color for unknown tags */
     background: #00ffff;
 }
-/* try to match with existing tag buttons */
-.oneline_lols > span { background: #f80 !important; }
-.oneline_infs > span { background: #09c !important; }
-.oneline_unfs > span { background: #ff0000 !important; }
-.oneline_tags > span { background: #77bb22 !important; }
-.oneline_wtfs > span { background: #c000c0 !important; }
 /* end LOL stuff */
