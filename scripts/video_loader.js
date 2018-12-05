@@ -27,12 +27,12 @@ settingsLoadedEvent.addHandler(function()
             getVideoType: function(url)
             {
                 // youtube videos and/or playlists (without offset)
-                var _isStreamable = /https?\:\/\/streamable\.com\/([\w\d]+)/i.exec(url);
-                var _isXboxDVR = /https?\:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w\d\-]+)\/video\/([\w\d\-]+)/i.exec(url);
-                var _isYoutube = /https\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:(?:watch|watch_popup)?[\?\&tv\=]{3}?)?([\w\-]{11}[^\?\&t\=]?)(?:[\?\&]list=([\w]{34}))?/i.exec(url);
-                var _isYTOffset = /https\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:.*[\?\&]t=([\ds]+))/i.exec(url);
+                var _isStreamable = /https?\:\/\/streamable\.com\/([\w]+)/i.exec(url);
+                var _isXboxDVR = /https?\:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w\d\-]+)\/video\/([\w\-]+)/i.exec(url);
+                var _isYoutube = /https?\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:(?:watch|watch_popup)?[\?\&tv\=]{3}?)?([\w\-]{11}[^\?\&t\=]?)(?:[\?\&]list=([\w]{34}))?/i.exec(url);
+                var _isYTOffset = /https?\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:.*[\?\&]t=([\ds]+))/i.exec(url);
                 // twitch channels, videos, and clips (with time offset)
-                var _isTwitch = /https\:\/\/(?:.*\.)?twitch.tv\/(?:videos\/([\d]{9})|\?channel=([\w\-]+))?(?:\?t=([\w\-]+)|([\w\-]+))?(?:\/clip\/([\w\-]+))?/i.exec(url);
+                var _isTwitch = /https?\:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w\-]+)(?:.*?t=(\w+))?|collections\/([\w\-]+))|([\w\-]+)))/i.exec(url);
 
                 if (_isYoutube) {
                     return {
@@ -43,24 +43,30 @@ settingsLoadedEvent.addHandler(function()
                     };
                 }
                 else if (_isTwitch) {
-                    if (_isTwitch[4] || _isTwitch[2]) {
+                    if (_isTwitch[6]) {
                         // twitch channels
                         return {
                             type: 2,
-                            channel: _isTwitch[4] || _isTwitch[2]
+                            channel: _isTwitch[6]
                         };
-                    } else if (_isTwitch[1]) {
+                    } else if (_isTwitch[5]) {
+                        // twitch collections
+                        return {
+                            type: 2,
+                            collection: _isTwitch[5]
+                        };
+                    } else if (_isTwitch[3]) {
                         // twitch videos
                         return {
                             type: 2,
-                            video: _isTwitch[1],
-                            offset: _isTwitch[3]
+                            video: _isTwitch[3],
+                            offset: _isTwitch[4]
                         };
-                    } else if (_isTwitch[4] && _isTwitch[5]) {
+                    } else if (_isTwitch[1] || _isTwitch[2]) {
                         // twitch clip
                         return {
                             type: 2,
-                            clip: _isTwitch[5]
+                            clip: _isTwitch[1] || _isTwitch[2]
                         };
                     }
                 }
@@ -208,6 +214,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var video_id = videoObj.video;
                 var video_channel = videoObj.channel;
+                var video_collection = videoObj.collection;
                 var video_clip = videoObj.clip;
                 var timeOffset = videoObj.offset || 0;
 
@@ -217,10 +224,12 @@ settingsLoadedEvent.addHandler(function()
                 var video_src;
                 if (video_id) {
                     video_src = `https://player.twitch.tv/?video=v${video_id}&autoplay=true&muted=false&t=${timeOffset}`;
-                } else if (video_clip) {
-                    video_src = `https://clips.twitch.tv/embed?clip=${video_clip}&autoplay=true&muted=false`;
                 } else if (video_channel) {
                     video_src = `https://player.twitch.tv/?channel=${video_channel}&autoplay=true&muted=false`;
+                } else if (video_collection) {
+                    video_src = `https://player.twitch.tv/?collection=${video_collection}&autoplay=true&muted=false`;
+                } else if (video_clip) {
+                    video_src = `https://clips.twitch.tv/embed?clip=${video_clip}&autoplay=true&muted=false`;
                 }
 
                 if (video_src) {
