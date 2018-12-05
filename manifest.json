@@ -24,7 +24,7 @@
         "16": "shack.png",
         "144": "icon.png"
     },
-    "content_scripts": {
+    "content_scripts": [{
         "js": [
             "ext/closure-library/crypt.js",
             "ext/papaparse/papaparse.min.js",
@@ -80,7 +80,7 @@
         ],
         "all_frames": false,
         "run_at": "document_idle"
-    },
+    }],
     "permissions": [
         "contextMenus",
         "notifications",
