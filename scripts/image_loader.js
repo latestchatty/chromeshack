@@ -72,8 +72,10 @@ settingsLoadedEvent.addHandler(function()
                 // no way to get the full image for twitpic, just how a thumbnail
                 if ((m = /https?\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
                     return "https://twitpic.com/show/thumb/" + m[1];
-                else if ((m = /https?\:\/\/pbs\.twimg\.com\/media\/([\w\-\.]+)/.exec(href)) != null)
-                    return "https://pbs.twimg.com/media/" + m[1];
+                else if ((m = /(https?\:\/\/pbs\.twimg\.com\/media\/)(?:([\w\-]+)\?format=([\w]+)\&|([\w\-\.]+))?/.exec(href)) != null) {
+                    if (m[3] != null) { return `${m[1]}${m[4] || m[2]}\.${m[3]}` }
+                    else { return `${m[1]}${m[4] || m[2]}`; }
+                }
 
                 // grab the username and the photo id
                 if ((m = /https?\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
@@ -250,8 +252,8 @@ settingsLoadedEvent.addHandler(function()
                 var mediaElem = document.createElement("div");
                 mediaElem.setAttribute("class", "imageloader grid-item hidden");
 
-                var _animExt = src.match(/\.(mp4|gifv|webm)/i);
-                var _staticExt = src.match(/\.(jpe?g|gif|png)/i);
+                var _animExt = /\.(mp4|gifv|webm)/i.test(src);
+                var _staticExt = /\.(jpe?g|gif|png)/i.test(src);
                 var _elem;
                 if (_animExt) {
                     _elem = document.createElement("video");
