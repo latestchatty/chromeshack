@@ -1,16 +1,3 @@
-// ==UserScript==
-// @name Shacknews: User Popup
-// @namespace http://www.lmnopc.com/greasemonkey/
-// @description Adds dropdown menus to users
-// @include http://shacknews.com/*
-// @include http://www.shacknews.com/*
-// @match http://shacknews.com/*
-// @match http://www.shacknews.com/*
-// @exclude http://www.shacknews.com/frame_chatty.x*
-// @exclude http://bananas.shacknews.com/*
-// @exclude http://*.gmodules.com/*
-// @exclude http://*.facebook.com/*
-// ==/UserScript==
 /*
     Shack: User Popup
     (ↄ)2011 Thom Wetzel
@@ -19,7 +6,6 @@
 
     2011-04-26
         * First stab at profiles
-
 */
 (function() {
 
@@ -209,7 +195,7 @@
         const usernameLowercase = username.toLowerCase();
 
         xhrRequest("https://shackstats.com/data/users_info.csv").then(async res => {
-            var response = await res.json();
+            var response = await res.text();
             // papa parse is too slow to parse this whole csv file so filter it down to likely lines using a fast
             // method and then use papa parse to parse that vastly shortened csv file
             const csvLines = response.split('\n');
@@ -233,7 +219,8 @@
 
             // use setTimeout so that the loading bar disappears before we show the modal alert
             setTimeout(() => alert(username + ' has ' + addCommas(count) + ' posts'), 0);
-        }).catch(() => {
+        }).catch(err => {
+            console.log(err);
             alert('Unable to load the post counts.');
         });
     }
@@ -343,8 +330,9 @@
         try {
             var t = e.target;
             var p = t.parentNode;
-            var pp = p.parentNode;
-            var ppp = pp.parentNode;
+            // use the nuShack username rather than the full switcher string (if applicable)
+            var matchFilteredUser = t.tagName === 'A' && /(.*?)\s\-\s\(/i.exec(t.innerHTML);
+            var sanitizedUser = !!matchFilteredUser ? matchFilteredUser[1] : t.innerHTML;
 
             // Post author clicked
             if ((t.tagName == 'A') && (p.tagName == 'SPAN') && (p.className == 'user'))
@@ -352,7 +340,7 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                displayUserMenu(t, t.innerHTML, t.innerHTML);
+                displayUserMenu(t, sanitizedUser, sanitizedUser);
             }
 
             // User name clicked (at the top of the banner?)
@@ -369,10 +357,9 @@
             {
                 e.preventDefault();
                 e.stopPropagation();
-                displayUserMenu(t, t.innerHTML, 'You');
+                displayUserMenu(t, sanitizedUser, 'You');
             }
             else {
-
                 var parentDropdown = e.target;
                 while (parentDropdown != null
                     && Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {

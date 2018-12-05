@@ -24,11 +24,10 @@
         "16": "shack.png",
         "144": "icon.png"
     },
-    "content_scripts": [
-    {
+    "content_scripts": {
         "js": [
             "ext/closure-library/crypt.js",
-            "ext/papaparse/papaparse.js",
+            "ext/papaparse/papaparse.min.js",
             "ext/webextension-polyfill/browser-polyfill.min.js",
             "common.js",
             "sentence_parser.js",
@@ -82,27 +81,6 @@
         "all_frames": false,
         "run_at": "document_idle"
     },
-    {
-        "js": [
-            "ext/webextension-polyfill/browser-polyfill.min.js",
-            "scripts/jquery-3.3.1.min.js",
-            "scripts/media_helpers.js",
-            "common.js",
-            "init_events.js",
-            "default_settings.js",
-            "settings.js",
-            "scripts/shack-userpopup.user.js"
-        ],
-        "matches": [ "*://www.shacknews.com/*" ],
-        "exclude_matches": [
-            "*://www.shacknews.com/chatty*",
-            "*://new.shacknews.com/chatty*",
-            "*://www.shacknews.com/article/*"
-        ],
-        "all_frames": false,
-        "run_at": "document_idle"
-    }
-    ],
     "permissions": [
         "contextMenus",
         "notifications",
