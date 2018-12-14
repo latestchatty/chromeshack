@@ -22,9 +22,9 @@ twitter-widget {
     border: 1px solid #000;
     border-radius: 4px;
     min-height: var(--min-media-item-height);
-    max-height: var(--max-media-item-height);
+    max-height: var(--max-social-item-height);
     min-width: var(--min-media-item-width);
-    max-width: var(--max-media-item-width);
+    max-width: var(--max-social-item-width);
     box-sizing: border-box !important;
     padding: 0 0 0.5em 0;
     margin: 0;
@@ -89,6 +89,8 @@ twitter-widget {
     width: 100% !important;
     height: auto !important;
     object-fit: contain;
+    min-height: var(--min-media-item-height);
+    min-width: var(--min-media-item-width);
 }
 
 #instgrm-caption {
@@ -135,7 +137,6 @@ twitter-widget {
 .instgrm-footer span {
     line-height: 17px;
     padding: 3px 0.1em 0 0.2em;
-    color:
 }
 .instgrm-footer a > span {
     display: flex;

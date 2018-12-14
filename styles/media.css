@@ -3,12 +3,14 @@
 @media only screen and (max-width: 768px) {
     /* switch to a scrollable column-only layout */
     .media-container { grid-template-columns: 100% !important; }
+    .instgrm-container { max-width: unset !important; }
 }
 @media only screen and (min-width: 1267px) {
     .media-container {
         /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
         grid-template-columns: repeat(auto-fit, minmax(auto, var(--min-media-col-size))) !important;
     }
+    .instgrm-container { max-width: unset !important; }
 }
 /* END MEDIA QUERIES */
 
@@ -18,8 +20,10 @@
     --min-media-col-size: calc(33% - var(--gutter-size));
     --max-media-col-size: calc(50% - var(--gutter-size));
     --max-media-item-height: 480px;
+    --max-social-item-height: 800px;
     --min-media-item-height: 200px;
     --max-media-item-width: 640px;
+    --max-social-item-width: calc(50% - var(--gutter-size));
     --min-media-item-width: 300px;
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
