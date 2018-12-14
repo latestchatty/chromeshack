@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.53",
+    "version": "1.54",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -11,6 +11,7 @@
     "background": {
         "scripts": [
             "ext/webextension-polyfill/browser-polyfill.min.js",
+            "common.js",
             "background.js"
         ]
     },
@@ -23,11 +24,10 @@
         "16": "shack.png",
         "144": "icon.png"
     },
-    "content_scripts": [
-    {
+    "content_scripts": [{
         "js": [
             "ext/closure-library/crypt.js",
-            "ext/papaparse/papaparse.js",
+            "ext/papaparse/papaparse.min.js",
             "ext/webextension-polyfill/browser-polyfill.min.js",
             "common.js",
             "sentence_parser.js",
@@ -40,17 +40,20 @@
             "scripts/video_loader.js",
             "scripts/sparkly_comic.js",
             "scripts/collapse.js",
+            "scripts/comment_tags.js",
             "scripts/new_comment_highlighter.js",
             "scripts/highlight_users.js",
             "scripts/local_timestamp.js",
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
+            "scripts/embed_socials.js",
             "scripts/elder_scroll.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
             "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
+            "scripts/media_helpers.js",
             "scripts/shack-userpopup.user.js",
             "scripts/jquery-3.3.1.min.js",
             "scripts/jquery.drop.js",
@@ -62,7 +65,14 @@
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js"
         ],
-        "css": [ "chromeshack.css" ],
+        "css": [
+            "styles/chromeshack.css",
+            "styles/image_uploader.css",
+            "styles/comic_scripts.css",
+            "styles/embed_socials.css",
+            "styles/two_pane.css",
+            "styles/media.css"
+         ],
         "matches": [
             "*://www.shacknews.com/chatty*",
             "*://new.shacknews.com/chatty*",
@@ -70,49 +80,28 @@
         ],
         "all_frames": false,
         "run_at": "document_idle"
-    },
-    {
-        "js": [
-            "ext/webextension-polyfill/browser-polyfill.min.js",
-            "scripts/jquery-3.3.1.min.js",
-            "common.js",
-            "init_events.js",
-            "default_settings.js",
-            "settings.js",
-            "scripts/shack-userpopup.user.js"
-        ],
-        "matches": [ "*://www.shacknews.com/*" ],
-        "exclude_matches": [
-            "*://www.shacknews.com/chatty*",
-            "*://new.shacknews.com/chatty*",
-            "*://www.shacknews.com/article/*"
-        ],
-        "all_frames": false,
-        "run_at": "document_idle"
-    }
-    ],
+    }],
     "permissions": [
         "contextMenus",
         "notifications",
         "tabs",
-        "https://api.gfycat.com/v1/*",
+        "https://api.imgur.com/3/*",
+        "https://api.gfycat.com/v1/gfycats/*",
         "https://filedrop.gfycat.com/*",
-        "https://api.imgur.com/*",
         "https://chattypics.com/*",
         "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
         "https://winchatty.com/nusearch?*",
         "https://shackstats.com/data/users_info.csv",
-        "http://gamewith.us/_widgets/shack-profile-popup.php?user=*",
-        "https://platform.vine.co/static/scripts/embed.js",
-        "http://www.twitch.tv/swflibs/TwitchPlayer.swf",
-        "http://vimeo.com/moogaloop.swf?clip_id=*",
-        "*://*.youtube.com/embed/*",
+        "https://embed.twitch.tv/embed/*",
+        "https://www.instagram.com/p/*",
+        "https://publish.twitter.com/*",
+        "https://*.youtube.com/embed/*",
+        "https://api.streamable.com/videos/*",
         "*://*.shacknews.com/*",
         "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
-        "scripts/video_loader_helper.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",
@@ -128,9 +117,9 @@
         "images/lol.png",
         "images/loading-pinned.gif",
         "images/banners/pinned.png",
+        "styles/options.css",
         "shack.png",
         "options.html",
-        "options.css",
         "options.js"
     ]
 }

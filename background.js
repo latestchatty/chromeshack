@@ -1,22 +1,3 @@
-function postFormUrl(url, data, callback)
-{
-    // It's necessary to set the request headers for PHP's $_POST stuff to work properly
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if(xhr.readyState == 4)
-        {
-            if(xhr != undefined && xhr != null)
-            {
-                callback(xhr);
-            }
-        }
-    }
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(data);
-}
-
 function getSettings()
 {
     // work around chrome bug 161028
@@ -149,67 +130,55 @@ function startNotifications()
 
 function pollNotifications()
 {
-    try {
-        var notificationuid = getSetting("notificationuid");
-        //console.log("Notification UID is " + notificationuid);
-        if (notificationuid != "" && notificationuid != undefined) {
-            //http://notifications.winchatty.com/v2/notifications/waitForNotification
-            postFormUrl("https://winchatty.com/v2/notifications/waitForNotification", "clientId=" + notificationuid,
-                function (res) {
-                    try {
-                        if(res && res.responseText.length > 0 && res.status === 200) {
-                            var notifications = JSON.parse(res.responseText);
-                            if(!notifications.error) {
-                                //console.log("notification response text: " + res.responseText);
-                                if (notifications.messages) {
-                                    for (var i = 0; i < notifications.messages.length; i++) {
-                                        var n = notifications.messages[i];
-                                        browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                            type: "basic",
-                                            title: n.subject,
-                                            message: n.body,
-                                            iconUrl: "icon.png"
-                                        })
-                                    }
-                                }
-                                //If everything was successful, poll again in 15 seconds.
-                                setTimeout(pollNotifications, 15000);
-                                return;
-                            } else {
-                                if(notifications.code === 'ERR_UNKNOWN_CLIENT_ID') {
-                                    browser.notifications.create("ErrorChromeshackNotification" , {
-                                        type: "basic",
-                                        title: "ChromeShack Error",
-                                        message: "Notifications are no longer enabled for this client, please try enabling them again.",
-                                        iconUrl: "icon.png"
-                                    });
-                                    setSetting('notificationuid', '');
-                                    setSetting('notifications', false);
-                                    return;
-                                } else if (notifications.code == 'ERR_CLIENT_NOT_ASSOCIATED') {
-                                    browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
-                                       function(tabs){
-                                          // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
-                                          if(tabs.length === 0) {
-                                            browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
-                                          }
-                                       });
-                                }
-                            }
+    var notificationuid = getSetting("notificationuid");
+    //console.log("Notification UID is " + notificationuid);
+    if (notificationuid != "" && notificationuid != undefined) {
+        var _dataBody = `clientId=${notificationuid}`;
+        postXHR("https://winchatty.com/v2/notifications/waitForNotification", _dataBody)
+            .then(async response => {
+                var notifications = await response.json();
+                if(!notifications.error) {
+                    //console.log("notification response text: " + res.responseText);
+                    if (notifications.messages) {
+                        for (var i = 0; i < notifications.messages.length; i++) {
+                            var n = notifications.messages[i];
+                            browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                                type: "basic",
+                                title: n.subject,
+                                message: n.body,
+                                iconUrl: "icon.png"
+                            })
                         }
-                    } catch (e) {}
-
-                    //If something went wrong, wait a minute before trying again.
-                    setTimeout(pollNotifications, 60000);
+                    }
+                    //If everything was successful, poll again in 15 seconds.
+                    setTimeout(pollNotifications, 15000);
+                    return;
+                } else {
+                    if(notifications.code === 'ERR_UNKNOWN_CLIENT_ID') {
+                        browser.notifications.create("ErrorChromeshackNotification" , {
+                            type: "basic",
+                            title: "ChromeShack Error",
+                            message: "Notifications are no longer enabled for this client, please try enabling them again.",
+                            iconUrl: "icon.png"
+                        });
+                        setSetting('notificationuid', '');
+                        setSetting('notifications', false);
+                        return;
+                    } else if (notifications.code == 'ERR_CLIENT_NOT_ASSOCIATED') {
+                        browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'},
+                            function(tabs){
+                                // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
+                                if(tabs.length === 0) {
+                                browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
+                                }
+                            });
+                    }
                 }
-            );
-        }
-        else {
-            //console.log("Notifications not set up.");
-        }
-    }
-    catch (e) {
-        setTimeout(pollNotifications, 60000);
+                setTimeout(pollNotifications, 60000);
+            }).catch(err => {
+                console.log(err);
+                setTimeout(pollNotifications, 60000);
+            });
     }
 }
 
@@ -283,22 +252,17 @@ browser.runtime.onMessage.addListener(function(request, sender)
         return Promise.resolve(getSettings());
     }
     else if (request.name == "setSetting")
-        setSetting(request.key, request.value);
+        return Promise.resolve(setSetting(request.key, request.value));
     else if (request.name == "collapseThread")
-        collapseThread(request.id);
+        return Promise.resolve(collapseThread(request.id));
     else if (request.name == "unCollapseThread")
-        unCollapseThread(request.id);
+        return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
-    {
-        openIncognito(request.value);
-        return Promise.resolve();
-    }
-    else if (request.name === 'allowedIncognitoAccess') {
+        return Promise.resolve(openIncognito(request.value));
+    else if (request.name === 'allowedIncognitoAccess')
         return Promise.resolve(allowedIncognito);
-    }
-    else {
-        return Promise.resolve();
-    }
+
+    return Promise.resolve();
 });
 
 addContextMenus();

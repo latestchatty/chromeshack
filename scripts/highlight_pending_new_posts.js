@@ -1,41 +1,8 @@
 (function() {
     var g_lastEventId = 0;
 
-    function has(obj, key) {
-        return Object.prototype.hasOwnProperty.call(obj, key);
-    }
-
     function startsWith(haystack, needle) {
         return haystack.indexOf(needle) == 0;
-    }
-
-    function ajaxGet(url, doneFunc, failFunc) {
-        $.ajax({
-            type: "GET",
-            url: url,
-            cache: false,
-            dataType: 'json',
-        }).done(function(data, textStatus, jqXHR) {
-            if (has(data, 'error')) {
-                var message = `${data.code} - ${data.message}`;
-                console.log(`Request failed: ${url} - ${message}`);
-                failFunc(message);
-            } else {
-                doneFunc(data);
-            }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            var message = '';
-            if ($.type(textStatus) === 'string') {
-                message += textStatus;
-            } else {
-                message += 'unknown error';
-            }
-            if ($.type(errorThrown) === 'string') {
-                message += ` - ${errorThrown}`;
-            }
-            console.log(`Request failed: ${url} - ${message}`);
-            failFunc(message);
-        });
     }
 
     function processEvents(events) {
@@ -62,18 +29,18 @@
     }
 
     function loop() {
-        ajaxGet(
-            'https://winchatty.com/v2/waitForEvent?lastEventId=' + g_lastEventId,
-            function(data) {
-                g_lastEventId = parseInt(data.lastEventId);
-                processEvents(data.events);
-
+        try {
+            xhrRequest(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
+                .then(async res => {
+                var response = await res.json();
+                if (response && !response.error) {
+                    g_lastEventId = parseInt(response.lastEventId);
+                    processEvents(response.events);
+                }
                 // Short delay in between loop iterations.
-                setTimeout(loop, 2000);
-            },
-            function(error) {
-                // This is a non-essential feature so we will simply stop looping if this fails.
+                setTimeout(loop, 5000);
             });
+        } catch (e) { };
     }
 
     function isCollapsed(aRefresh) {
@@ -110,7 +77,8 @@
         return filtered;
     }
 
-    function jumpToNewPost() {
+    function jumpToNewPost(e) {
+        e.preventDefault();
         var aRefreshes = getNonCollapsedPendings();
         if (aRefreshes.length > 0) {
             var scroll = $(window).scrollTop();
@@ -134,7 +102,7 @@
     }
 
     function installJumpToNewPostButton() {
-        var header = document.getElementsByTagName('header')[0];
+        var position = document.querySelector(".header-bottom .logo.alt");
         var starContainer = document.createElement("div");
         var star = document.createElement('a');
         starContainer.setAttribute("id", "post_highlighter_container");
@@ -143,7 +111,8 @@
         star.addEventListener('click', jumpToNewPost);
 
         starContainer.appendChild(star);
-        header.appendChild(starContainer);
+        position.appendChild(starContainer);
+        // position.parentNode.insertBefore(starContainer, position);
     }
 
     function showOrHideJumpToNewPostButton() {
@@ -199,15 +168,11 @@
         });
 
         // We need to get an initial event ID to start with.
-        ajaxGet(
-            'https://winchatty.com/v2/getNewestEventId',
-            function(data) {
-                g_lastEventId = parseInt(data.eventId);
-                loop();
-            },
-            function(error) {
-                // This is a non-essential feature so we will simply disable the feature if this fails.
-            });
+        xhrRequest("https://winchatty.com/v2/getNewestEventId").then(async res => {
+            var response = await res.json();
+            g_lastEventId = parseInt(response.eventId);
+            loop();
+        });
     }
 
     settingsLoadedEvent.addHandler(function() {

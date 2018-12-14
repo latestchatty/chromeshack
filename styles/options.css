@@ -106,7 +106,7 @@ h2.group { font-size: 18pt; margin-top: 25px; background: #3264C8; color: white;
    padding-bottom: 5px; text-align: center; }
 div.group_header { font-size: 12pt; font-weight: bold; color: white; margin-top: 15px; }
 
-div#video_loader_settings, div#highlight_users_settings { margin-left: 25px; }
+div#image_loader_settings, div#video_loader_settings, div#highlight_users_settings { margin-left: 25px; }
 
 p.info { font-style: italic; color: #808080; }
 p.indent { margin-left: 25px; }

@@ -5,12 +5,14 @@ function loadOptions()
     showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
+    showImageLoaderNewTab(getOption("image_loader_newtab"));
     showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
     $('input#scroll_to_post_smooth').prop('checked', getOption('scroll_to_post_smooth'));
+    showEmbedSocials(getOption("embed_socials"));
     showEnabledScripts();
     trackChanges();
 }
@@ -33,6 +35,25 @@ function clearSettings()
     localStorage.clear();
     loadOptions();
     saveOptions();
+}
+
+function showEmbedSocials(enabled) {
+    var embeds = document.getElementById("embed_socials");
+    if (enabled)
+        embeds.checked = enabled;
+    return embeds.checked;
+}
+
+function showImageLoaderNewTab(enabled)
+{
+    var newtab = document.getElementById("image_loader_newtab");
+    newtab.checked = enabled;
+}
+
+function getImageLoaderNewTab()
+{
+    var newtab = document.getElementById("image_loader_newtab");
+    return newtab.checked;
 }
 
 function showVideoLoaderHD(enabled)
@@ -369,30 +390,27 @@ function toggleSettingsVisible()
 
 function logInForNotifications(notificationuid)
 {
-    postFormUrl("https://winchatty.com/v2/notifications/registerNotifierClient",
-        encodeURI("id=" + notificationuid + "&name=Chrome Shack (" + (new Date()) + ")"),
-        function(res) {
-            //console.log("Response from register client " + res.responseText);
-            var result = JSON.parse(res.responseText);
-            if(result.result === "success") {
-                browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'}).then(function(tabs) {
-                    if(tabs.length === 0) {
-                        browser.tabs.create({url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid});
-                    } else {
-                        //Since they requested, we'll open the tab and make sure they're at the correct url.
-                        browser.tabs.update(
-                            tabs[0].tabId,
-                            {
-                                active: true,
-                                highlighted: true,
-                                url: "https://winchatty.com/v2/notifications/ui/login?clientId=" + notificationuid
-                            }
-                        );
-                    }
-                })
-            }
-        }
-    );
+    var _dataBody = encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`);
+    postXHR("https://winchatty.com/v2/notifications/registerNotifierClient", _dataBody)
+    .then(() => {
+        //console.log("Response from register client " + res.responseText);
+        browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'})
+            .then(tabs => {
+                if(tabs.length === 0) {
+                    browser.tabs.create({url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`});
+                } else {
+                    //Since they requested, we'll open the tab and make sure they're at the correct url.
+                    browser.tabs.update(
+                        tabs[0].tabId,
+                        {
+                            active: true,
+                            highlighted: true,
+                            url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`
+                        }
+                    );
+                }
+            });
+    }).catch(err => { console.log(err); });
 }
 
 function updateNotificationOptions() {
@@ -400,13 +418,16 @@ function updateNotificationOptions() {
     if (getNotifications()) {
         var uid = getOption("notificationuid");
         if (uid === "" || uid === undefined) {
-            getUrl("https://winchatty.com/v2/notifications/generateId", function (res) {
-                var data = JSON.parse(res.responseText);
-                var notificationUID = data.id;
-                //console.log("Got notification id of " + notificationUID);
-                saveOption("notificationuid", notificationUID);
-                logInForNotifications(notificationUID);
-            })
+            xhrRequest("https://winchatty.com/v2/notifications/generateId")
+                .then(async res => {
+                    if (res.ok) {
+                        var data = await res.json();
+                        var notificationUID = data.id;
+                        //console.log("Got notification id of " + notificationUID);
+                        saveOption("notificationuid", notificationUID);
+                        logInForNotifications(notificationUID);
+                    }
+                });
         }
         else {
             //console.log("Notifications already set up using an id of " + notificationUID);
@@ -506,6 +527,7 @@ function saveOptions()
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
+        saveOption("image_loader_newtab", getImageLoaderNewTab());
         saveOption("expiration_watcher_style", getExpirationWatcherStyle());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());
@@ -513,6 +535,7 @@ function saveOptions()
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
         saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
+        saveOption("embed_socials", showEmbedSocials());
     }
     catch (err)
     {

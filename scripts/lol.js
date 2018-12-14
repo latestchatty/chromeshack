@@ -59,7 +59,9 @@ settingsLoadedEvent.addHandler(function()
                 var css = '';
                 for (var i = 0; i < LOL.tags.length; i++)
                 {
-                    css += '.oneline_tags .oneline_' + LOL.tags[i].name + ' { background-color: ' + LOL.tags[i].color + '; }\n';
+                    // apply user-customized styling for both oneline tags and postbody tags
+                    css += `.capcontainer .oneline_tags .oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
+                    css += `.tagger_container > .oneline_${LOL.tags[i].name}s > span.oneline_${LOL.tags[i].name} { background-color: ${LOL.tags[i].color}; }\n`;
                 }
 
                 var styleBlock = document.createElement('style');
@@ -94,6 +96,8 @@ settingsLoadedEvent.addHandler(function()
                     lol_div.appendChild(LOL.createButton(LOL.tags[i].name, id, LOL.tags[i].color));
                 }
 
+                // put our tagger-list button at the end of the lol button array
+                lol_div.appendChild(LOL.createGetUsers(id));
 
                 // add them in
                 author.appendChild(lol_div);
@@ -103,26 +107,28 @@ settingsLoadedEvent.addHandler(function()
 
                 LOL.posts.push(id);
             },
-            createGetUsers: function(tag, id)
+
+            createGetUsers: function(id)
             {
                 var button = document.createElement("a");
                 button.href = "#";
-                button.className = "hidden";
                 button.innerText = " ";
-                button.id = "get_lol_users_" + tag + "_" + id;
+                button.id = "get_lol_users_" + id;
                 button.dataset.threadid = id;
-                button.dataset.loltag = tag;
-                button.addEventListener("click", (e) => { LOL.getUsers(tag, id); e.preventDefault(); });
+                button.setAttribute("class", "who_tagged_this hidden");
+                button.addEventListener("click", (e) => { LOL.getUsers(id); e.preventDefault(); });
 
                 var icon = document.createElement("span");
                 //stole from account icon in new redesign.
-                icon.innerText = "";
-                icon.style.fontSize = "12px";
                 icon.style.fontFamily = "Icon";
+                icon.style.fontSize = "12px";
                 icon.style.fontWeight = "100";
+                icon.innerText = "\uea04";
+                icon.title = `Show who tagged this post`;
                 button.appendChild(icon);
                 return button;
             },
+
             createButton: function(tag, id, color)
             {
                 var button = document.createElement("a");
@@ -141,48 +147,66 @@ settingsLoadedEvent.addHandler(function()
                 var span = document.createElement("span");
                 span.appendChild(document.createTextNode("["));
                 span.appendChild(button);
-                span.appendChild(LOL.createGetUsers(tag, id));
                 span.appendChild(document.createTextNode("]"));
 
                 return span;
             },
-            getUsers: function(tag, id)
-            {
-                var url = LOL.URL + 'api.php?special=get_taggers&thread_id=' + encodeURIComponent(id) + '&tag=' + encodeURIComponent(tag);
 
-                getUrl(url, function(response)
-                {
-                    if (response.status == 200) {
-                        var response = JSON.parse(response.responseText);
+            getUsers: function(id)
+            {
+                var url = `${LOL.URL}api.php?special=get_taggers&thread_id=${encodeURIComponent(id)}`;
+                var tagsExist = document.querySelector(`div[id^=taggers_${id}].tagger_container`);
+                if (tagsExist != null) { return tagsExist.classList.toggle("hidden"); }
+
+                xhrRequest(url).then(async res => {
+                    var response = await res.json();
+                    for (var _tag in response) {
                         var post = document.getElementById("item_" + id);
                         var body = post.getElementsByClassName("postbody")[0];
-                        var container = document.getElementById("taggers_" + id);
-                        if(!container) {
+                        var container = document.getElementById(`taggers_${id}`);
+                        if (!container) {
                             container = document.createElement("div");
                             container.id = "taggers_" + id;
-                        } else {
-                            container.innerHTML = "";
+                            container.setAttribute("class", "tagger_container");
                         }
                         var tagSection = document.createElement("div");
-                        tagSection.className = "oneline_tags";
-                        tagSection.style.whiteSpace = "normal";
-                        tagSection.style["overflow-wrap"] = "break-word";
-                        tagSection.style.overflow = "unset";
-                        response[tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                        tagSection.className = `oneline_${_tag}s`;
+                        response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
                             var taggerNode = document.createElement("span");
-                            taggerNode.className = 'oneline_' + tag;
+                            taggerNode.className = 'oneline_' + _tag;
                             taggerNode.innerText = tagger;
                             tagSection.appendChild(taggerNode);
                         });
                         container.appendChild(tagSection);
                         body.appendChild(container);
-                    } else {
-                        alert("Problem getting taggers. Try again.");
                     }
+                }).catch(err => {
+                    alert("Problem getting taggers. Try again.");
+                    console.log(err);
                 });
             },
-            lolThread: function(e)
+
+            isThreadTagged: function(id, tag, user) {
+                var url = `${LOL.URL}api.php?special=get_taggers&thread_id=${encodeURIComponent(id)}`;
+                return new Promise(resolve => {
+                    xhrRequest(url).then(async res => {
+                        var response = await res.json();
+                        for (var _tag in response) {
+                            response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                                // loop through each tag and user for this post
+                                if (tagger === user && tag === _tag) {
+                                    return resolve(true);
+                                }
+                            });
+                        }
+                        return resolve(false);
+                    }).catch(err => { throw err; });
+                }).catch(err => { console.log(err); });
+            },
+
+            lolThread: async function(e)
             {
+                e.preventDefault();
                 var user = LOL.getUsername();
                 if (!user)
                 {
@@ -194,11 +218,11 @@ settingsLoadedEvent.addHandler(function()
                 var element = e.target;
                 var tag = element.dataset.loltag;
                 var id = element.dataset.threadid;
-                var isloled = element.dataset.isloled == 'true';
+                var isloled = element.dataset.isloled || await LOL.isThreadTagged(id, tag, user);
 
                 var url = LOL.URL + "report.php";
 
-                var data = 'who=' + user + '&what=' + id + '&tag=' + encodeURIComponent(tag) + '&version=' + LOL.VERSION;
+                var data = `who=${user}&what=${id}&tag=${encodeURIComponent(tag)}&version=${LOL.VERSION}`;
 
                 if (isloled) {
                     data += '&action=untag';
@@ -208,31 +232,28 @@ settingsLoadedEvent.addHandler(function()
                         data += '&moderation=' + moderation;
                 }
 
-                postFormUrl(url, data, function(response)
-                {
-                    if (response.status == 200 && (response.responseText.indexOf("ok") == 0 || response.responseText.indexOf("You have already") == 0))
-                    {
+                postXHR(url, data).then(async res => {
+                    var response = await res.text();
+                    if (res.ok && response.indexOf("ok") == 0) {
                         // looks like it worked
                         var new_tag;
                         if (isloled) {
-                           new_tag = tag;
+                           new_tag = "* U N - ";
+                           for (var i = 0; i < tag.length; i++)
+                               new_tag += " " + tag[i].toUpperCase() + " ";
+                           new_tag += " ' D *";
+                           element.dataset.isloled = false;
                         } else {
                             new_tag = "*";
                             for (var i = 0; i < tag.length; i++)
                                 new_tag += " " + tag[i].toUpperCase() + " ";
                             new_tag += " ' D *";
+                            element.dataset.isloled = true;
                         }
-
                         element.replaceHTML(new_tag);
-                        element.dataset.isloled = !isloled;
-                    }
-                    else
-                    {
-                        alert(response.responseText);
-                    }
+                    } else
+                        alert(response);
                 });
-
-                e.preventDefault();
             },
 
             getUsername: function()
@@ -247,7 +268,6 @@ settingsLoadedEvent.addHandler(function()
 
             getModeration: function(id)
             {
-                console.log("getting moderation for id: " + id);
                 var tags = ["fpmod_offtopic", "fpmod_nws", "fpmod_stupid", "fpmod_informative", "fpmod_political"];
                 var item = document.getElementById("item_" + id);
                 var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
@@ -339,9 +359,9 @@ settingsLoadedEvent.addHandler(function()
 
                         var get_users_element = document.getElementById("get_lol_users_" + tag + "_" + id);
                         if(get_users_element) {
-                            get_users_element.className = ""; //Unhide since there are taggers.
+                            get_users_element.classList.remove("hidden"); //Unhide since there are taggers.
                         }
-                        
+
                         // Add * x indicators in the fullpost
                         var tgt = document.getElementById(tag + id);
                         if (!tgt && id == rootId)
@@ -357,7 +377,6 @@ settingsLoadedEvent.addHandler(function()
 
                         if (tgt)
                         {
-                            // do not use replaceHTML here - there be dragons!
                             if (LOL.showCounts == 'short')
                             {
                                 tgt.replaceHTML(LOL.counts[rootId][id][tag]);
@@ -367,6 +386,11 @@ settingsLoadedEvent.addHandler(function()
                                 tgt.replaceHTML(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
                             }
                         }
+
+                        // toggle our LOL tagger button since we're updating
+                        var taggerButton = document.querySelector(`#get_lol_users_${id}.who_tagged_this`);
+                        if (taggerButton != null)
+                            taggerButton.classList.remove("hidden");
 
                         // Add (lol * 3) indicators to the onelines
                         if (!document.getElementById('oneline_' + tag + 's_' + id))
@@ -419,23 +443,20 @@ settingsLoadedEvent.addHandler(function()
 
             getCounts: function()
             {
-                getUrl(LOL.COUNT_URL, function(response)
-                {
-                    if (response.status == 200)
+                xhrRequest(LOL.COUNT_URL).then(async res => {
+                    var response = await res.json();
+                    // Store original LOL.counts
+                    var oldLolCounts = LOL.counts;
+
+                    LOL.counts = response;
+
+                    setSetting("lol-counts", LOL.counts);
+                    setSetting("lol-counts-time", new Date().getTime());
+
+                    // Call displayCounts again only if the counts have actually changed
+                    if (LOL.counts != oldLolCounts)
                     {
-                        // Store original LOL.counts
-                        var oldLolCounts = LOL.counts;
-
-                        LOL.counts = JSON.parse(response.responseText);
-
-                        setSetting("lol-counts", LOL.counts);
-                        setSetting("lol-counts-time", new Date().getTime());
-
-                        // Call displayCounts again only if the counts have actually changed
-                        if (LOL.counts != oldLolCounts)
-                        {
-                            LOL.displayCounts();
-                        }
+                        LOL.displayCounts();
                     }
                 });
             },

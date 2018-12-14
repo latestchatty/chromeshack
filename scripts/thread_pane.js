@@ -213,5 +213,5 @@ let refreshThreadPane;
         if ($a.hasClass('capped')) {
             $a.removeClass('capped');
         }
-    }    
+    }
 })();

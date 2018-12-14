@@ -73,75 +73,71 @@ String.prototype.trim = function()
     return this.replace(/^\s+|\s+$/g,"");
 }
 
-// utility function to make an XMLHttpRequest
-function getUrl(url, callback, errorCallback)
-{
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState == 4) {
-            if (xhr.status >= 200 && xhr.status <= 399) {
-                callback(xhr);
-            } else if (errorCallback) {
-                errorCallback();
+function xhrRequestLegacy(url, optionsObj) {
+    // promisified legacy XHR helper using XMLHttpRequest()
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open(optionsObj.method || "GET", url);
+        if (optionsObj != null && optionsObj.hasOwnProperty("headers")) {
+            for (var [key, val] of optionsObj.headers.entries()) {
+                xhr.setRequestHeader(key, val);
             }
         }
-    };
-    xhr.open("GET", url, true);
-    xhr.send();
-}
-
-function putUrl(url, data, callback)
-{
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function()
-	{
-		if(xhr.readyState == 4)
-		{
-			if(xhr != undefined && xhr != null)
-			{
-				callback(xhr);
-			}
-		}
-	}
-	xhr.open("PUT", url, true);
-	xhr.send(data);
-}
-
-function postUrl(url, data, callback)
-{
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function()
-	{
-		if(xhr.readyState == 4)
-		{
-			if(xhr != undefined && xhr != null)
-			{
-				callback(xhr);
-			}
-		}
-	}
-	xhr.open("POST", url, true);
-	xhr.send(data);
-}
-
-function postFormUrl(url, data, callback)
-{
-    // It's necessary to set the request headers for PHP's $_POST stuff to work properly
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if(xhr.readyState == 4)
-        {
-            if(xhr != undefined && xhr != null)
-            {
-                callback(xhr);
+        xhr.onload = () => {
+            if (this.status >= 200 && this.status < 300 ||
+                xhr.statusText.toUpperCase().indexOf("OK") > -1) {
+                resolve(xhr.response);
             }
+            reject({ status: this.status, statusText: xhr.statusText });
+        };
+        xhr.onerror = () => { reject({ status: this.status, statusText: xhr.statusText }); };
+        xhr.send();
+    }).catch(err => { console.log(err); });
+}
+
+function xhrRequest(url, optionsObj) {
+    // newer fetch() based promisified XHR helper
+    var _headers = new Headers();
+    if (optionsObj && optionsObj.hasOwnProperty("headers")) {
+        for (var [key, val] of optionsObj.headers.entries()) {
+            _headers.append(key, val);
         }
     }
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(data);
+    // set some sane defaults
+    if (optionsObj && !optionsObj.hasOwnProperty("mode"))
+        optionsObj.mode = "cors"
+    if (optionsObj && !optionsObj.hasOwnProperty("cache"))
+        optionsObj.cache = "no-cache"
+    if (optionsObj && !optionsObj.hasOwnProperty("method"))
+        optionsObj.method = "GET"
+
+    return fetch(url, optionsObj && {
+        method: optionsObj.method,
+        mode: optionsObj.mode,
+        cache: optionsObj.cache,
+        credentials: optionsObj.credentials,
+        headers: _headers,
+        redirect: optionsObj.redirect,
+        referrer: optionsObj.referrer,
+        referrerPolicy: optionsObj.referrerPolicy,
+        body: optionsObj.body
+    });
+}
+
+function postXHR(url, data) {
+    return new Promise((resolve, reject) => {
+        xhrRequest(url, {
+            method: "POST",
+            headers: new Map().set("Content-type", "application/x-www-form-urlencoded"),
+            body: data
+        }).then(async res => {
+            var response = await res;
+            if (response.ok)
+                resolve(response);
+            else
+                reject(res.status);
+        })
+    }).catch(err => { console.log(err); });
 }
 
 function getCookieValue(name, defaultValue)
@@ -248,17 +244,13 @@ function convertUrlToLink(text)
 
 function scrollToElement(elem, duration)
 {
-    if (typeof duration === 'undefined') {
-        duration = 200;
-    }
-
     $(elem).animate(
         { scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top },
-        { duration: duration, easing: 'swing'}
+        { duration: duration ? 150 : duration, easing: 'swing'}
     );
     $('html,body').animate(
-        { scrollTop: $(elem).offset().top - ($(window).height()/3) },
-        { duration: duration, easing: 'swing'}
+        { scrollTop: $(elem).offset().top - ($(window).height()/4) },
+        { duration: duration ? 150 : duration, easing: 'swing'}
     );
 }
 
@@ -300,3 +292,4 @@ HTMLElement.prototype.removeChildren = function()
     // https://stackoverflow.com/a/42658543
     while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }
+
