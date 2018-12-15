@@ -1,6 +1,8 @@
 let refreshThreadPane;
 
 (() => {
+    var isFirefoxAndroid = false;
+
     refreshThreadPane = () => {
         if (getSetting('enabled_scripts').contains('thread_pane')) {
             try {
@@ -90,7 +92,7 @@ let refreshThreadPane;
             for (let i = 0; i < mostRecentSubtree.length; i++) {
                 const { postAuthor, postPreviewHtml } = mostRecentSubtree[i];
                 const $postDiv = $('<div class="cs_thread_pane_reply">');
-                $postDiv.append($('<div class="cs_thread_pane_reply_arrow">').text('↪'));
+                $postDiv.append($('<div class="cs_thread_pane_reply_arrow">').text(isFirefoxAndroid ? '–' : '↪'));
                 $postDiv.append($('<div class="cs_thread_pane_reply_preview">').html(postPreviewHtml));
                 $postDiv.append($('<div class="cs_thread_pane_reply_divider">').text(':'));
                 $postDiv.append($('<div class="cs_thread_pane_reply_author">').text(postAuthor));
