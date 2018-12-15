@@ -1,4 +1,6 @@
 (function() {
+    var isFirefoxAndroid = false;
+
     var g_lastEventId = 0;
 
     function startsWith(haystack, needle) {
@@ -141,6 +143,10 @@
     }
 
     function install() {
+        if (isFirefoxAndroid) {
+            return; // desktop only
+        }
+
         // Only install on the main /chatty page, not an individual thread.
         if (document.getElementById('newcommentbutton') === null) {
             return;

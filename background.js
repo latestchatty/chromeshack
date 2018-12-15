@@ -1,27 +1,46 @@
-function getSettings()
-{
-    // work around chrome bug 161028
-    var s = {};
-    for (var key in localStorage)
-        s[key] = localStorage[key];
-    return s;
+var isFirefoxAndroid = false;
+
+function getSettings() {
+    if (isFirefoxAndroid) {
+        return browser.storage.local.get("settings") || {};
+    } else {
+        // work around chrome bug 161028
+        var s = {};
+        for (var key in localStorage)
+            s[key] = localStorage[key];
+        return Promise.resolve(s);
+    }
 }
 
-function getSetting(name, default_value)
-{
-    var value = localStorage[name];
+function getSetting(name, default_value) {
+    var store = isFirefoxAndroid ? getSettings() : localStorage;
+    var value = store[name];
     if (!value)
         return default_value;
     return JSON.parse(value);
 }
 
-function deleteSetting(name)
-{
-    for (var key in localStorage)
-    {
+function deleteSetting(name) {
+    var store = isFirefoxAndroid ? getSettings() : localStorage;
+
+    for (var key in store) {
         if (key == name) {
-            localStorage.splice(key, 1);
+            store.splice(key, 1);
         }
+    }
+
+    if (isFirefoxAndroid) {
+        browser.storage.local.set({ settings: store });
+    }
+}
+
+function setSetting(name, value) {
+    var store = isFirefoxAndroid ? getSettings() : localStorage;
+
+    store[name] = JSON.stringify(value);
+
+    if (isFirefoxAndroid) {
+        browser.storage.local.set({ settings: store });
     }
 }
 
@@ -65,11 +84,6 @@ function migrateSettings(version)
     setSetting("version", current_version);
 }
 
-function setSetting(name, value)
-{
-    localStorage[name] = JSON.stringify(value);
-}
-
 function showPageAction(tabId, url)
 {
     browser.pageAction.setIcon({ "tabId": tabId, "path": "shack.png" });
@@ -108,28 +122,38 @@ function unCollapseThread(id)
 
 function addContextMenus()
 {
-    // get rid of any old and busted context menus
-    browser.contextMenus.removeAll();
+    if (typeof browser !== 'undefined' && typeof browser.contextMenus !== 'undefined') {
+        // get rid of any old and busted context menus
+        browser.contextMenus.removeAll();
 
-    // add some basic context menus
-    browser.contextMenus.create(
-    {
-        title: "Show comment history",
-        contexts: [ 'link' ],
-        onclick: showCommentHistoryClick,
-        documentUrlPatterns: [ "https://*.shacknews.com/*" ],
-        targetUrlPatterns: [ "https://*.shacknews.com/profile/*" ]
-    });
+        // add some basic context menus
+        browser.contextMenus.create(
+        {
+            title: "Show comment history",
+            contexts: [ 'link' ],
+            onclick: showCommentHistoryClick,
+            documentUrlPatterns: [ "https://*.shacknews.com/*" ],
+            targetUrlPatterns: [ "https://*.shacknews.com/profile/*" ]
+        });
+    }
 }
 
 function startNotifications()
 {
+    if (isFirefoxAndroid) {
+        return; // desktop only
+    }
+
     browser.notifications.onClicked.addListener(notificationClicked);
     pollNotifications();
 }
 
 function pollNotifications()
 {
+    if (isFirefoxAndroid) {
+        return; // desktop only
+    }
+
     var notificationuid = getSetting("notificationuid");
     //console.log("Notification UID is " + notificationuid);
     if (notificationuid != "" && notificationuid != undefined) {
@@ -249,7 +273,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         var tab = sender.tab;
         if (tab)
             showPageAction(tab.id, tab.url);
-        return Promise.resolve(getSettings());
+        return getSettings();
     }
     else if (request.name == "setSetting")
         return Promise.resolve(setSetting(request.key, request.value));

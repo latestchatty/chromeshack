@@ -141,19 +141,20 @@
                 <p class="indent info">Auto center and scroll to selected posts</p>
             </div>
 
-            <h2>
-                <input type="checkbox" class="script_check" id="enable_notifications">
-                <label for="enable_notifications">Push Notifications</label>
-            </h2>
-            <p class="info">
-                Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed.  You must restart Chrome after enabling notifications.
-            </p>
-            <div id="enable_notifications_settings">
-                <p>
-                    <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank">Change notification options...</a>
+            <div class="desktop_only">
+                <h2>
+                    <input type="checkbox" class="script_check" id="enable_notifications">
+                    <label for="enable_notifications">Push Notifications</label>
+                </h2>
+                <p class="info">
+                    Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed.  You must restart Chrome after enabling notifications.
                 </p>
+                <div id="enable_notifications_settings">
+                    <p>
+                        <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank">Change notification options...</a>
+                    </p>
+                </div>
             </div>
-
 
             <h2 class="group">Viewing Threads</h2>
 
@@ -168,11 +169,13 @@
             </h2>
             <p class="info">Color highlighting within the tree of thread replies.</p>
             <div>
-                <p>
-                    <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
-                    <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
-                </p>
-                <p class="indent info">Use the WinChatty push service to highlight threads that have received new replies that you need to refresh to see.  A button at the top of the chatty indicates how many threads have new posts and, upon clicking the button, will take you to the next thread with new posts.</p>
+                <div class="desktop_only">
+                    <p>
+                        <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
+                        <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
+                    </p>
+                    <p class="indent info">Use the WinChatty push service to highlight threads that have received new replies that you need to refresh to see.  A button at the top of the chatty indicates how many threads have new posts and, upon clicking the button, will take you to the next thread with new posts.</p>
+                </div>
                 <p>
                     <input type="checkbox" class="script_check" id="new_comment_highlighter" />
                     <label for="new_comment_highlighter">Highlight new posts since last refresh</label>

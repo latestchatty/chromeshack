@@ -1,3 +1,6 @@
+var settings;
+var isFirefoxAndroid = false;
+
 function loadOptions()
 {
     showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
@@ -19,20 +22,20 @@ function loadOptions()
 
 function getOption(name)
 {
-    var value = localStorage[name];
-    if (value)
-        return JSON.parse(value);
+    var v = settings[name];
+    if (v)
+        return JSON.parse(v);
     return DefaultSettings[name];
 }
 
 function saveOption(name, value)
 {
-    localStorage[name] = JSON.stringify(value);
+    settings[name] = JSON.stringify(value);
 }
 
 function clearSettings()
 {
-    localStorage.clear();
+    settings = {};
     loadOptions();
     saveOptions();
 }
@@ -536,6 +539,12 @@ function saveOptions()
         saveOption("user_filters", getUserFilters());
         saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
         saveOption("embed_socials", showEmbedSocials());
+
+        if (isFirefoxAndroid) {
+            browser.storage.local.set({ settings });
+        } else {
+            localStorage = settings;
+        }
     }
     catch (err)
     {
@@ -549,15 +558,6 @@ function saveOptions()
         status.replaceHTML("");
     }, 2000);
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadOptions();
-    document.getElementById('add_tag').addEventListener('click', addTag);
-    document.getElementById('clear_settings').addEventListener('click', clearSettings);
-    document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
-    document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
-    document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
-});
 
 function trackChanges() {
     var links = document.getElementById('content').getElementsByTagName('a');
@@ -580,3 +580,29 @@ function trackChanges() {
         textareas[i].addEventListener('input', saveOptions);
     }
 }
+
+$(document).ready(function() {
+    if (isFirefoxAndroid) {
+        $('.desktop_only').css('display', 'none');
+
+        browser.storage.local.get("settings")
+            .then(
+                function success(result) {
+                    settings = result.settings || {};
+                    loadOptions();
+                },
+                function error(e) {
+                    settings = {};
+                    loadOptions();
+                });
+    } else {
+        settings = localStorage;
+        loadOptions();
+    }
+
+    document.getElementById('add_tag').addEventListener('click', addTag);
+    document.getElementById('clear_settings').addEventListener('click', clearSettings);
+    document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
+    document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
+    document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
+});
