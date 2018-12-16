@@ -16,7 +16,7 @@ function Build() {
         _MangleFilenameReferencesInFile -FilePath $file -NameMappings $nameMappings
     }
 
-    $localXpiFilePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'chromeshack-temp.zip')
+    $localXpiFilePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'chromeshack@electroly.com.xpi')
     Remove-Item -Force $localXpiFilePath -ErrorAction SilentlyContinue
     [System.IO.Compression.ZipFile]::CreateFromDirectory($dir, $localXpiFilePath)
     Remove-Item -Recurse -Force $dir -ErrorAction SilentlyContinue
