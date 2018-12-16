@@ -191,13 +191,15 @@ settingsLoadedEvent.addHandler(function()
                 return new Promise(resolve => {
                     xhrRequest(url).then(async res => {
                         var response = await res.json();
-                        for (var _tag in response) {
-                            response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
-                                // loop through each tag and user for this post
-                                if (tagger === user && tag === _tag) {
-                                    return resolve(true);
-                                }
-                            });
+                        if(response.length != 0) {
+                            for (var _tag in response) {
+                                response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                                    // loop through each tag and user for this post
+                                    if (tagger === user && tag === _tag) {
+                                        return resolve(true);
+                                    }
+                                });
+                            }
                         }
                         return resolve(false);
                     }).catch(err => { throw err; });
