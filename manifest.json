@@ -24,6 +24,11 @@
         "16": "shack.png",
         "144": "icon.png"
     },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "chromeshack@electroly.com"
+        }
+    },
     "content_scripts": [{
         "js": [
             "ext/closure-library/crypt.js",
@@ -83,6 +88,7 @@
     }],
     "permissions": [
         "notifications",
+        "storage",
         "tabs",
         "https://api.imgur.com/3/*",
         "https://api.gfycat.com/v1/gfycats/*",

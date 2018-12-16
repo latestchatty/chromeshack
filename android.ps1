@@ -16,9 +16,6 @@ function Build() {
         _MangleFilenameReferencesInFile -FilePath $file -NameMappings $nameMappings
     }
 
-    Remove-Item -Force (Join-Path $dir 'manifest.json')
-    Move-Item (Join-Path $dir 'manifest-android.json') (Join-Path $dir 'manifest.json')
-
     $localXpiFilePath = (Join-Path ([System.IO.Path]::GetTempPath()) 'chromeshack-temp.zip')
     Remove-Item -Force $localXpiFilePath -ErrorAction SilentlyContinue
     [System.IO.Compression.ZipFile]::CreateFromDirectory($dir, $localXpiFilePath)
@@ -77,6 +74,7 @@ function _CopyFiles([string]$Prefix, [string]$SrcDir, [string]$SrcRelativePath, 
 
 function _MangleFilenameReferencesInFile([string]$FilePath, [object]$NameMappings) {
     $quotes = @( '"', "'" )
+    $filename = [System.IO.Path]::GetFileName($FilePath)
     $extension = [System.IO.Path]::GetExtension($FilePath)
     if ($extension -eq '.html' -or $extension -eq '.js' -or $extension -eq '.json') {
         $content = [System.IO.File]::ReadAllText($FilePath)
@@ -87,7 +85,16 @@ function _MangleFilenameReferencesInFile([string]$FilePath, [object]$NameMapping
                 $content = $content.Replace($search, $replace)
             }
         }
-        $content = $content.Replace('var isFirefoxAndroid = false;', 'var isFirefoxAndroid = true;');
+
+        if ($extension -eq '.js') {
+            $content = $content.Replace('var isFirefoxAndroid = false;', 'var isFirefoxAndroid = true;');
+        }
+
+        if ($filename -eq 'manifest.json') {
+            # remove the notifications permission on android
+            $content = $content.Replace('"notifications",', '');
+        }
+
         [System.IO.File]::WriteAllText($FilePath, $content)
     }
 }
