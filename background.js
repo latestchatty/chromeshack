@@ -120,24 +120,6 @@ function unCollapseThread(id)
     }
 }
 
-function addContextMenus()
-{
-    if (typeof browser !== 'undefined' && typeof browser.contextMenus !== 'undefined') {
-        // get rid of any old and busted context menus
-        browser.contextMenus.removeAll();
-
-        // add some basic context menus
-        browser.contextMenus.create(
-        {
-            title: "Show comment history",
-            contexts: [ 'link' ],
-            onclick: showCommentHistoryClick,
-            documentUrlPatterns: [ "https://*.shacknews.com/*" ],
-            targetUrlPatterns: [ "https://*.shacknews.com/profile/*" ]
-        });
-    }
-}
-
 function startNotifications()
 {
     if (isFirefoxAndroid) {
@@ -288,8 +270,6 @@ browser.runtime.onMessage.addListener(function(request, sender)
 
     return Promise.resolve();
 });
-
-addContextMenus();
 
 // attempt to update version settings
 var last_version = getSetting("version", 0);

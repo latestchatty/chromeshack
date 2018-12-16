@@ -82,7 +82,6 @@
         "run_at": "document_idle"
     }],
     "permissions": [
-        "contextMenus",
         "notifications",
         "tabs",
         "https://api.imgur.com/3/*",
