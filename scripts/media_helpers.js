@@ -172,6 +172,55 @@ function insertExpandoButton(link, postId, index) {
     link.appendChild(expando);
 }
 
+function appendMedia(src, link, postId, index, container, override) {
+    // compile our media items into a given container element
+    var mediaElem = container != null ? container : document.createElement("div");
+    if (Array.isArray(src)) {
+        var nodeList = [];
+        for (var item of src) {
+            // let collator know we're working on an Instagram post
+            if (container) { nodeList.push(createMediaElem(item, postId, index, true)); }
+            else { nodeList.push(createMediaElem(item, postId, index)); }
+        }
+        for (var node of nodeList) {
+            mediaElem.appendChild(node);
+        }
+        // only use carousel if we have multiple items
+        if (nodeList.length > 1) { insertCarousel(mediaElem); }
+    } else if (src != null && src.length > 0) {
+        mediaElem.appendChild(createMediaElem(src, postId, index));
+    }
+    // only append if we're not being called to return an element
+    if (!override) {
+        mediaElem.setAttribute("class", "medialoader hidden");
+        mediaContainerInsert(mediaElem, link, postId, index);
+    } else if (container != null) {
+        // append to the given container if enabled (alternate style)
+    } else { return mediaElem; }
+
+    function createMediaElem(href, postId, index, override) {
+        var _animExt = /\.(mp4|gifv|webm)/i.test(href);
+        var _staticExt = /\.(jpe?g|gif|png)/i.test(href);
+        var _elem;
+        if (_animExt) {
+            _elem = document.createElement("video");
+            if (!override) {
+                _elem.setAttribute("autoplay", "");
+                _elem.setAttribute("muted", "");
+                _elem.setAttribute("loop", "");
+            } else {
+                _elem.setAttribute("controls", ""); // for Instagram
+            }
+        }
+        else if (_staticExt)
+            _elem  = document.createElement("img");
+
+        _elem.setAttribute("id", `loader_${postId}-${index}`);
+        _elem.setAttribute("src", href);
+        return _elem;
+    }
+}
+
 function attachChildEvents(elem, id, index) {
     var childElem = elem.querySelector("img") || elem.querySelector("video");
     var iframeElem = getIframeDimensions(elem);
