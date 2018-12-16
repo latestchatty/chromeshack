@@ -23,6 +23,9 @@ function reloadSettings(raiseEvent) {
                 },
                 function error(e) {
                     settings = {};
+                    if (raiseEvent) {
+                        settingsLoadedEvent.raise();
+                    }
                 });
     } else {
         browser.runtime.sendMessage({name: "getSettings"}).then(function(response)
