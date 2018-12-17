@@ -128,48 +128,30 @@ function toggleExpandoButton(expando) {
     }
 }
 
-
 /*
- *  Misc. Functions
+ *  Media Insertion Functions
  */
 
-function mediaContainerInsert(elem, link, id, index) {
+function mediaContainerInsert(elem, link, id, index, container) {
     // abstracted helper for manipulating the media-container grid from a post
-    var container = link.parentNode.querySelector(".media-container");
+    var container = locateContainer(link);
     var _hasMedia = container !== null && getEmbedRef(link);
     var _isExpando = link.classList != null && link.classList.contains("expando");
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
-    else if (!container) {
-        container = document.createElement("div");
-        container.setAttribute("class", "media-container");
-    }
 
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
-    if (!_hasMedia) { _postBody.appendChild(container); }
-    container = link.parentNode.querySelector(".media-container");
+    if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
+        // insert items below their associated link
+        _postBody.insertBefore(container, link.nextSibling);
+    } else if (!_hasMedia) {
+        // move items into a unified container
+        _postBody.appendChild(container);
+    }
+    // pass our newly appended media element to our state manager
     elem = container.querySelector(`[id$='_${id}-${index}']`);
     toggleMediaLink(elem, link);
-}
-
-function insertCommand(elem, injectable) {
-    // insert a one-way script that executes synchronously (caution!)
-    var _script = document.createElement("script");
-    _script.textContent = `${injectable}`;
-    elem.appendChild(_script);
-}
-
-function insertExpandoButton(link, postId, index) {
-    // abstracted helper for appending an expando button to a link in a post
-    if (link.querySelector("div.expando") != null) { return; }
-    // process a link into a link container that includes a dynamic styled "button"
-    var expando = document.createElement("div");
-    expando.classList.add("expando");
-    expando.id = `expando_${postId}-${index}`;
-    expando.style.fontFamily = "Icon";
-    expando.innerText = "\ue907";
-    link.appendChild(expando);
 }
 
 function appendMedia(src, link, postId, index, container, override) {
@@ -194,8 +176,6 @@ function appendMedia(src, link, postId, index, container, override) {
     if (!override) {
         mediaElem.setAttribute("class", "medialoader hidden");
         mediaContainerInsert(mediaElem, link, postId, index);
-    } else if (container != null) {
-        // append to the given container if enabled (alternate style)
     } else { return mediaElem; }
 
     function createMediaElem(href, postId, index, override) {
@@ -219,6 +199,51 @@ function appendMedia(src, link, postId, index, container, override) {
         _elem.setAttribute("src", href);
         return _elem;
     }
+}
+
+function locateContainer(link, postId, index) {
+    // resolve our link container for media embedding (or create one)
+    var _isAlternateStyle = getSetting("enabled_scripts").contains("alternate_embed_style");
+    var container = link.parentNode.querySelector(".media-container");
+    if (!_isAlternateStyle && container != null && container.id.length == 0) {
+        // return the unified container
+        return container;
+    } else if (_isAlternateStyle || container == null) {
+        // ... unless we're using the alternate style
+        container = document.createElement("div");
+        container.setAttribute("class", "media-container");
+        // flag the container so we know we have an embed child
+        if (_isAlternateStyle) { container.setAttribute("id", `${postId}-${index}`); }
+        return container;
+    }
+}
+
+
+/*
+ *  Misc. Functions
+ */
+
+function insertCommand(elem, injectable) {
+    // insert a one-way script that executes synchronously (caution!)
+    var _script = document.createElement("script");
+    _script.textContent = `${injectable}`;
+    elem.appendChild(_script);
+}
+
+function insertExpandoButton(link, postId, index) {
+    // abstracted helper for appending an expando button to a link in a post
+    if (link.querySelector("div.expando") != null) { return; }
+    // process a link into a link container that includes a dynamic styled "button"
+    var expando = document.createElement("div");
+    expando.classList.add("expando");
+    expando.id = `expando_${postId}-${index}`;
+    expando.style.fontFamily = "Icon";
+    expando.innerText = "\ue907";
+    link.appendChild(expando);
+}
+
+function insertCarousel(elem) {
+
 }
 
 function attachChildEvents(elem, id, index) {

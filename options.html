@@ -86,59 +86,70 @@
             </h2>
             <p class="info">Various enhancements to the display of expanded posts.</p>
             <div>
-                <p>
-                    <input type="checkbox" class="script_check" id="image_loader" />
-                    <label for="image_loader">Embed images</label>
-                </p>
-                <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
-                <div id="image_loader_settings">
-                    <input type="checkbox" id="image_loader_newtab"/><label for="image_loader_newtab">Open image/video in new window/tab when middle-clicked</label>
-                </div>
-                <p>
-                    <input type="checkbox" class="script_check" id="video_loader" />
-                    <label for="video_loader">Embed videos</label>
-                </p>
-                <p class="indent info">Replace links to some video hosters with the video, clip, or playlist itself.</p>
-                <p class="indent info">Supported: Youtube, Twitch.tv, Streamable, and XboxDVR.</p>
-                <div id="video_loader_settings">
-                    <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
-                </div>
-                <p>
-                    <input type="checkbox" class="script_check" id="embed_socials" />
-                    <label for="embed_socials">Embed Social Links</label>
-                </p>
-                <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
-                <p class="indent info"><i>NOTE: Tracker blocking addons like Ghostery and Firefox's Tracker Blocker interfere with this feature. Please disable tracker blocking!</i></p>
-                <p>
-                    <input type="checkbox" class="script_check" id="getpost" />
-                    <label for="getpost">Embed posts</label>
-                </p>
-                <p class="indent info">When clicking a link to a Shacknews post, show the post inline rather than in a new window.</p>
-                <p>
-                    <input type="checkbox" class="script_check" id="nws_incognito" />
-                    <label for="nws_incognito">Open NWS links in incognito mode</label>
-                </p>
-                <p class="indent info">When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window.  You must enable this extension to work in incognito mode.</p>
-                <p>
-                    <input type="checkbox" class="script_check" id="dinogegtik" />
-                    <label for="dinogegtik">Dino gegtik</label>
-                </p>
-                <p class="indent info">Replace boring gegtik posts with a comic strip.</p>
-                <p>
-                    <input type="checkbox" class="script_check" id="sparkly_comic" />
-                    <label for="sparkly_comic">Sparkly comic</label>
-                </p>
-                <p class="indent info">Replace sparkly posts with a comic strip.</p>
-                <p>
-                    <input type="checkbox" class="script_check" id="scrolling_performance_hack" />
-                    <label for="scrolling_performance_hack">Scrolling performance hack</label>
-                </p>
-                <p class="indent info">Work around slow scrolling performance</p>
-                <p>
-                    <label><input type="checkbox" class="script_check" id="scroll_to_post" /> Auto post focusing</label>
-                    (with <label><input type="checkbox" id="scroll_to_post_smooth">smooth scrolling</label>)
-                </p>
-                <p class="indent info">Auto center and scroll to selected posts</p>
+                <fieldset>
+                    <legend>Embedding</legend>
+                    <p>
+                        <input type="checkbox" class="script_check" id="alternate_embed_style" />
+                        <label for="alternate_embed_style">Alternate embedding style</label>
+                    </p>
+                    <p class="indent info">Embed media items (images, videos, and socials) near their associated link.</p>
+                    <p>
+                        <input type="checkbox" class="script_check" id="image_loader" />
+                        <label for="image_loader">Embed images</label>
+                    </p>
+                    <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
+                    <div id="image_loader_settings">
+                        <input type="checkbox" id="image_loader_newtab"/><label for="image_loader_newtab">Open image/video in new window/tab when middle-clicked</label>
+                    </div>
+                    <p>
+                        <input type="checkbox" class="script_check" id="video_loader" />
+                        <label for="video_loader">Embed videos</label>
+                    </p>
+                    <p class="indent info">Replace links to some video hosters with the video, clip, or playlist itself.</p>
+                    <p class="indent info">Supported: Youtube, Twitch.tv, Streamable, and XboxDVR.</p>
+                    <div id="video_loader_settings">
+                        <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
+                    </div>
+                    <p>
+                        <input type="checkbox" class="script_check" id="embed_socials" />
+                        <label for="embed_socials">Embed Social Links</label>
+                    </p>
+                    <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
+                    <p class="indent info"><i>NOTE: Tracker blocking addons like Ghostery and Firefox's Tracker Blocker interfere with this feature. Please disable tracker blocking!</i></p>
+                    <p>
+                        <input type="checkbox" class="script_check" id="getpost" />
+                        <label for="getpost">Embed posts</label>
+                    </p>
+                    <p class="indent info">When clicking a link to a Shacknews post, show the post inline rather than in a new window.</p>
+                </fieldset>
+                <fieldset>
+                    <legend>Options</legend>
+                    <p>
+                        <input type="checkbox" class="script_check" id="nws_incognito" />
+                        <label for="nws_incognito">Open NWS links in incognito mode</label>
+                    </p>
+                    <p class="indent info">When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window.</p>
+                    <p>
+                        <input type="checkbox" class="script_check" id="dinogegtik" />
+                        <label for="dinogegtik">Dino gegtik</label>
+                    </p>
+                    <p class="indent info">Replace boring gegtik posts with a comic strip.</p>
+                    <p>
+                        <input type="checkbox" class="script_check" id="sparkly_comic" />
+                        <label for="sparkly_comic">Sparkly comic</label>
+                    </p>
+                    <p class="indent info">Replace sparkly posts with a comic strip.</p>
+                    <p>
+                        <input type="checkbox" class="script_check" id="scrolling_performance_hack" />
+                        <label for="scrolling_performance_hack">Scrolling performance hack</label>
+                    </p>
+                    <p class="indent info">Work around slow scrolling performance</p>
+                    <p>
+                        <label><input type="checkbox" class="script_check" id="scroll_to_post" /> Auto post focusing</label>
+                        (with <label><input type="checkbox" id="scroll_to_post_smooth">smooth scrolling</label>)
+                    </p>
+                    <p class="indent info">Auto center and scroll to selected posts</p>
+                </fieldset>
             </div>
 
             <h2>

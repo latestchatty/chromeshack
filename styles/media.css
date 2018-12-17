@@ -39,8 +39,8 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
-.imageloader video,
-.imageloader img {
+.medialoader video,
+.medialoader img {
     outline: 0 !important;
     width: 100% !important;
     height: auto !important;
