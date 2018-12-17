@@ -79,6 +79,7 @@ twitter-widget {
 #instgrm_embed img {
     display: flex;
     width: 100%;
+    min-height: var(--min-media-item-height);
     max-height: var(--max-media-item-height);
 }
 
