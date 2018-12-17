@@ -75,22 +75,11 @@ twitter-widget {
 }
 .instgrm-logo svg { margin: 15px; }
 
-#instgrm_embed {
-    display: flex;
-    flex-flow: column nowrap;
-    align-self: center;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden !important;
-    padding: 0;
-}
 #instgrm_embed video,
 #instgrm_embed img {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: contain;
-    min-height: var(--min-media-item-height);
-    min-width: var(--min-media-item-width);
+    display: flex;
+    width: 100%;
+    max-height: var(--max-media-item-height);
 }
 
 #instgrm-caption {

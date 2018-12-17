@@ -216,7 +216,7 @@ settingsLoadedEvent.addHandler(function() {
                         var _postTimestamp = EmbedSocials.getDate(_matchGQL.taken_at_timestamp);
                         var _postURL = `https://instagr.am/p/${_matchGQL.shortcode}/`;
                         var _postCaption = _matchGQL.edge_media_to_caption;
-                        var _postMediaUrl = EmbedSocials.collectInstgrmMedia(_matchGQL)[0];
+                        var _postMediaUrls = EmbedSocials.collectInstgrmMedia(_matchGQL);
                         if (_postCaption && _postCaption.edges[0]) {
                             _postCaption = _matchGQL.edge_media_to_caption.edges[0].node.text;
                             var caption = _target.querySelector("#instgrm-caption");
@@ -231,18 +231,6 @@ settingsLoadedEvent.addHandler(function() {
                         var postLinkName = _target.querySelector("#instgrm_postlink_name");
                         var postTimestamp = _target.querySelector("#instgrm_post_timestamp");
                         var postParentUrl = _target.querySelector("#instgrm_post_url");
-
-                        var embed;
-                        // choose video over images
-                        if (_postMediaUrl.match(/\.mp4/i)) {
-                            embed = document.createElement("video");
-                            embed.setAttribute("src", _postMediaUrl);
-                            embed.setAttribute("muted", "");
-                            embed.setAttribute("controls", "");
-                        } else {
-                            embed = document.createElement("img");
-                            embed.setAttribute("src", _postMediaUrl);
-                        }
                         // set some relevant shortcuts in the header
                         var _profileLinkA = _target.querySelector("#instgrm_profile_a");
                         var _profileLinkB = _target.querySelector("#instgrm_profile_b");
@@ -262,7 +250,7 @@ settingsLoadedEvent.addHandler(function() {
 
                         // compile everything into our container and inject at once
                         var embedTarget = _target.querySelector("#instgrm_embed");
-                        embedTarget.appendChild(embed);
+                        appendMedia(_postMediaUrls, parentLink, postId, index, embedTarget, true);
                         mediaContainerInsert(_target, parentLink, postId, index);
                     } else { return alert("This account or post has been made private or cannot be found!"); }
                 });

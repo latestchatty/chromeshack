@@ -102,6 +102,8 @@
         "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
+        "ext/flickity/flickity.min.css",
+        "ext/flickity/flickity.pkgd.min.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",

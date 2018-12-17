@@ -242,37 +242,57 @@ function insertExpandoButton(link, postId, index) {
     link.appendChild(expando);
 }
 
-function insertCarousel(elem) {
-
+function insertCarousel(elem, container) {
+    var head = document.getElementsByTagName("head")[0];
+    var carouselCSS = document.createElement("link");
+    carouselCSS.rel = "stylesheet";
+    carouselCSS.type = "text/css";
+    carouselCSS.href = browser.runtime.getURL("ext/flickity/flickity.min.css");
+    head.appendChild(carouselCSS);
+    // use CommonJS/RequireJS to load Flickity under a global property
+    var carousel = browser.runtime.getURL("ext/flickity/flickity.pkgd.min.js");
+    bodyRef = document.getElementsByTagName("body")[0];
+    insertCommand(bodyRef, `window.Flickity = require(["${carousel}"]);`);
+    // enable flickity on the specified container
+    var flickityOpts = '{ "wrapAround": false, "pageDots": false }';
+    if (container != null) { container.setAttribute("data-flickity", flickityOpts); }
+    else { elem.setAttribute("data-flickity", flickityOpts); }
 }
 
 function attachChildEvents(elem, id, index) {
-    var childElem = elem.querySelector("img") || elem.querySelector("video");
+    var childElems = [].concat(
+        Array.from(elem.querySelectorAll("video")),
+        Array.from(elem.querySelectorAll("img"))
+    );
     var iframeElem = getIframeDimensions(elem);
 
-    if (iframeElem.id == null && childElem != null) {
-        if (childElem && childElem.nodeName === "VIDEO") {
-            // make sure to toggle the video state on visible media
-            childElem.addEventListener("canplaythrough", e => {
-                if (e.target.paused) { toggleVideoState(e.target, 1); }
-                if (!e.target.muted) { e.target.muted = true; }
-            });
-        }
-        if (childElem && childElem.nodeName === "IMG" || childElem.nodeName === "VIDEO") {
-            // only apply click events on video and img elements (for edge case sanity)
-            childElem.addEventListener('mousedown', e => {
-                var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
-                var link = getLinkRef(embed);
-                if (e.which === 2 && getSetting("image_loader_newtab")) {
-                    e.preventDefault();
-                    // open this link in a new window/tab when middle-clicked
-                    window.open(embed.src);
-                } else if (e.which === 1) {
-                    e.preventDefault();
-                    // toggle our embed state when image embed is left-clicked
-                    toggleMediaLink(embed, link);
+    if (iframeElem.id == null && childElems != null && childElems.length > 0) {
+        childElems.forEach(item => {
+            if (item && item.nodeName === "VIDEO") {
+                // make sure to toggle the video state on visible media
+                if (item.parentNode.dataset.flickity == null) {
+                    item.addEventListener("canplaythrough", e => {
+                        if (e.target.paused) { toggleVideoState(e.target, 1); }
+                        if (!e.target.muted) { e.target.muted = true; }
+                    });
                 }
-            });
-        }
+            }
+            if (item && item.nodeName === "IMG" || item.nodeName === "VIDEO") {
+                // only apply click events on video and img elements (for edge case sanity)
+                item.addEventListener('mousedown', e => {
+                    var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
+                    var link = getLinkRef(embed);
+                    if (e.which === 2 && getSetting("image_loader_newtab")) {
+                        e.preventDefault();
+                        // open this link in a new window/tab when middle-clicked
+                        window.open(embed.src);
+                    } else if (e.which === 1) {
+                        e.preventDefault();
+                        // toggle our embed state when image embed is left-clicked
+                        toggleMediaLink(embed, link);
+                    }
+                });
+            }
+        });
     }
 }

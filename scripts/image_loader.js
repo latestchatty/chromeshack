@@ -134,12 +134,12 @@ settingsLoadedEvent.addHandler(function()
                 if (_link.length > 0 && _matchShortcode != null) {
                     // resolve by album otherwise fallback to resolving by image
                     var imgurAlbum = await resolveImgurAlbum(_matchShortcode[1] || _matchShortcode[2]);
-                    if (imgurAlbum != null)
-                        ImageLoader.appendMedia(imgurAlbum, link, postId, index);
+                    if (imgurAlbum != null && imgurAlbum.length > 0)
+                        appendMedia(imgurAlbum, link, postId, index);
                     else {
                         var imgurImage = await resolveImgur(_matchShortcode[1] || _matchShortcode[2]);
                         if (imgurImage != null)
-                            ImageLoader.appendMedia(imgurImage, link, postId, index);
+                            appendMedia(imgurImage, link, postId, index);
                         else
                             throw new Error(`Could not resolve Imgur: ${_link} = ${_matchShortcode[1] || _matchShortcode[2]}`);
                     }
@@ -159,16 +159,21 @@ settingsLoadedEvent.addHandler(function()
                     });
                 };
                 function resolveImgurAlbum(shortcode) {
+                    //var shortcode = "oo0Ptek"; // multi-item test
                     var url = `https://api.imgur.com/3/album/${shortcode}`;
                     return new Promise(resolve => {
                         fetchImgur(url).then(json => {
                             if (json.status !== 404) {
-                                if (json && json.data.images != null &&
-                                    json.data.images[0].mp4 != null)
-                                    resolve(json.data.images[0].mp4);
-                                else if (json && json.data.images != null &&
-                                    json.data.images[0].link != null)
-                                    resolve(json.data.images[0].link);
+                                var collector = [];
+                                if (json && json.data.images != null && json.data.images.length > 0) {
+                                    json.data.images.forEach(item => {
+                                        if (item.mp4 != null)
+                                            collector.push(item.mp4);
+                                        else if (item.link != null)
+                                            collector.push(item.link);
+                                    });
+                                    resolve(collector);
+                                } else { console.log(`Unable to find any Imgur media items for: ${url}`); }
                             } else { resolve(null); }
                         });
                     });
