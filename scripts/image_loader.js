@@ -120,7 +120,7 @@ settingsLoadedEvent.addHandler(function()
                         // NOTE: ShackPics needs SSL fixes before uncommenting this!
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
                         var src = ImageLoader.getImageUrl(link.href);
-                        ImageLoader.appendMedia(src, link, _postId, index);
+                        appendMedia(src, link, _postId, index);
                     }
                 }
             },
@@ -201,7 +201,7 @@ settingsLoadedEvent.addHandler(function()
                         }).then(async res => {
                             var json = await res.json();
                             if (json && json.gfyItem.mobileUrl != null) {
-                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                                appendMedia(json.gfyItem.mobileUrl, link, postId, index);
                             } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
                         }).catch(err => { console.log(err); });
                     } else {
@@ -211,7 +211,7 @@ settingsLoadedEvent.addHandler(function()
                         }).then(res => {
                             var json = JSON.parse(res);
                             if (json && json.gfyItem.mobileUrl != null) {
-                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                                appendMedia(json.gfyItem.mobileUrl, link, postId, index);
                             } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
                         }).catch(err => { console.log(err); });
                     }
@@ -249,31 +249,9 @@ settingsLoadedEvent.addHandler(function()
 
                 if (_giphyId) {
                     var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
-                    ImageLoader.appendMedia(src, link, postId, index);
+                    appendMedia(src, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${link.href}`); }
             },
-
-            appendMedia: function(src, link, postId, index) {
-                var mediaElem = document.createElement("div");
-                mediaElem.setAttribute("class", "imageloader grid-item hidden");
-
-                var _animExt = /\.(mp4|gifv|webm)/i.test(src);
-                var _staticExt = /\.(jpe?g|gif|png)/i.test(src);
-                var _elem;
-                if (_animExt) {
-                    _elem = document.createElement("video");
-                    _elem.setAttribute("autoplay", "");
-                    _elem.setAttribute("muted", "");
-                    _elem.setAttribute("loop", "");
-                }
-                else if (_staticExt)
-                    _elem  = document.createElement("img");
-
-                _elem.setAttribute("id", `loader_${postId}-${index}`);
-                _elem.setAttribute("src", src);
-                mediaElem.appendChild(_elem);
-                mediaContainerInsert(mediaElem, link, postId, index);
-            }
         }
 
         processPostEvent.addHandler(ImageLoader.loadImages);

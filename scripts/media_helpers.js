@@ -43,7 +43,7 @@ function getIframeDimensions(elem) {
     var _ref = elem.querySelector(".iframe-container iframe") ||
                     elem.querySelector(".yt-container iframe") ||
                     elem.querySelector(".twitch-container iframe") ||
-                    elem.querySelector(".instgrm-container video") ||
+                    elem.querySelector(".instgrm-container") ||
                     (elem.classList != null && elem.classList.contains("tweet-container") && elem);
     var _width = _ref && _ref.width != null && _ref.width;
     var _height = _ref && _ref.height != null && _ref.height;
@@ -83,6 +83,7 @@ function toggleMediaLink(embedElem, link, override) {
         // edge case when forcefully removing an embed child
         link.classList.toggle("embedded");
         toggleExpandoButton(_expando);
+        triggerReflow(embedElem);
         return true;
     }
     else if (embedElem) {
@@ -96,6 +97,7 @@ function toggleMediaLink(embedElem, link, override) {
         toggleVideoState(embedElem);
         link.classList.toggle("embedded");
         toggleExpandoButton(_expando);
+        triggerReflow(embedElem);
         return true;
     }
     return false;
@@ -168,7 +170,10 @@ function appendMedia(src, link, postId, index, container, override) {
             mediaElem.appendChild(node);
         }
         // only use carousel if we have multiple items
-        if (nodeList.length > 1) { insertCarousel(mediaElem); }
+        if (nodeList.length > 1) {
+            mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
+            insertCarousel(mediaElem);
+        }
     } else if (src != null && src.length > 0) {
         mediaElem.appendChild(createMediaElem(src, postId, index));
     }
@@ -223,13 +228,18 @@ function locateContainer(link, postId, index) {
  *  Misc. Functions
  */
 
-function insertCommand(elem, injectable) {
+function insertCommand(elem, injectable, id, override) {
+    var _script = document.getElementById(id);
+    if (document.getElementById(id) != null && !override)
+        return;
+    else if (override && !!_script)
+        _script.parentNode.removeChild(_script);
     // insert a one-way script that executes synchronously (caution!)
     var _script = document.createElement("script");
+    _script.setAttribute("id", id);
     _script.textContent = `${injectable}`;
     elem.appendChild(_script);
 }
-
 function insertExpandoButton(link, postId, index) {
     // abstracted helper for appending an expando button to a link in a post
     if (link.querySelector("div.expando") != null) { return; }
@@ -242,21 +252,26 @@ function insertExpandoButton(link, postId, index) {
     link.appendChild(expando);
 }
 
-function insertCarousel(elem, container) {
+function insertCarousel(elem) {
     var head = document.getElementsByTagName("head")[0];
-    var carouselCSS = document.createElement("link");
-    carouselCSS.rel = "stylesheet";
-    carouselCSS.type = "text/css";
-    carouselCSS.href = browser.runtime.getURL("ext/flickity/flickity.min.css");
-    head.appendChild(carouselCSS);
-    // use CommonJS/RequireJS to load Flickity under a global property
-    var carousel = browser.runtime.getURL("ext/flickity/flickity.pkgd.min.js");
-    bodyRef = document.getElementsByTagName("body")[0];
-    insertCommand(bodyRef, `window.Flickity = require(["${carousel}"]);`);
-    // enable flickity on the specified container
-    var flickityOpts = '{ "wrapAround": false, "pageDots": false }';
-    if (container != null) { container.setAttribute("data-flickity", flickityOpts); }
-    else { elem.setAttribute("data-flickity", flickityOpts); }
+    if (head.innerHTML.indexOf("flickity.min.css") == -1) {
+        // make sure we have necessary css injected
+        var carouselCSS = document.createElement("link");
+        carouselCSS.rel = "stylesheet";
+        carouselCSS.type = "text/css";
+        carouselCSS.href = browser.runtime.getURL("ext/flickity/flickity.min.css");
+        head.appendChild(carouselCSS);
+    }
+    // inject via background script (sendMessage)
+    var flickityOpts = '{ "wrapAround": false, "pageDots": false, "contain": true }';
+    var _container = (!!elem.classList && elem.classList.contains("instgrm-container")) ?
+        closestParent(elem, { indexSelector: "instgrm-container_" }) :
+        closestParent(elem, { indexSelector: "medialoader_" });
+    // check for a parent container unless this element is a parent container
+    if (!!_container && _container.id !== elem.id)
+        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id} #${elem.id}`, opts: flickityOpts });
+    else if (!!_container)
+        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id}`, opts: flickityOpts });
 }
 
 function attachChildEvents(elem, id, index) {
@@ -278,6 +293,10 @@ function attachChildEvents(elem, id, index) {
                 }
             }
             if (item && item.nodeName === "IMG" || item.nodeName === "VIDEO") {
+                item.addEventListener("load", e => {
+                    // trigger a reflow via resize event when media items are loaded
+                    triggerReflow(e.target);
+                });
                 // only apply click events on video and img elements (for edge case sanity)
                 item.addEventListener('mousedown', e => {
                     var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
@@ -295,4 +314,11 @@ function attachChildEvents(elem, id, index) {
             }
         });
     }
+}
+
+function triggerReflow(elem) {
+    $(elem).ready(function() {
+        // trigger a resize via jQuery ready() to recalc the carousel
+        insertCommand(elem, `window.dispatchEvent(new Event('resize'));`, "reflow-wjs", true);
+    });
 }

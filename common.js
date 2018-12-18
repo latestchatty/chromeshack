@@ -293,3 +293,30 @@ HTMLElement.prototype.removeChildren = function()
     while (this.hasChildNodes()) this.removeChild(this.lastChild);
 }
 
+function closestParent(elem, { cssSelector, indexSelector }) {
+    if (!!elem.parentNode && !!elem.parentNode.attributes) {
+        // search backwards in the DOM for the closest parent whose attributes match a selector
+        for(; elem && elem !== document; elem = elem.parentNode) {
+            for (var attrChild of Array.from(elem.attributes)) {
+                if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
+                    return elem;
+                else if (cssSelector && !!elem) {
+                    // slower css regex selector method (can match the elem as well)
+                    var match = elem.querySelector(`:scope ${cssSelector}`);
+                    if (!!match) return match;
+                }
+            }
+        }
+    } else if (!!elem.attributes) {
+        // this is a top level node, check it anyway
+        for (var attrChild of Array.from(elem.attributes)) {
+            if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
+                return elem;
+            else if (cssSelector && !!elem) {
+                // slower css regex selector method (can match the elem as well)
+                var match = elem.querySelector(`:scope ${cssSelector}`);
+                if (!!match) return match;
+            }
+        }
+    }
+}

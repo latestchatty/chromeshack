@@ -21,16 +21,12 @@ twitter-widget {
     background: #fff;
     border: 1px solid #000;
     border-radius: 4px;
-    min-height: var(--min-media-item-height);
-    max-height: var(--max-social-item-height);
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-social-item-width);
-    box-sizing: border-box !important;
     padding: 0 0 0.5em 0;
     margin: 0;
     font-size: 14px;
     font-family: var(--common-sans);
     color: #262626;
+    max-width: var(--max-media-item-width);
 }
 .instgrm-container.hidden { display: none !important; }
 .instgrm-container span { color: #262626; }
@@ -75,11 +71,21 @@ twitter-widget {
 }
 .instgrm-logo svg { margin: 15px; }
 
-#instgrm_embed video,
-#instgrm_embed img {
-    display: flex;
-    width: 100%;
+#instgrm_embed {
+    flex: 1;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    min-width: var(--min-media-item-width);
+    max-width: var(--max-media-item-width);
+    min-height: var(--min-media-item-height);
     max-height: var(--max-media-item-height);
+}
+#instgrm_embed img,
+#instgrm_embed video {
+    object-fit: contain !important;
+    width: 100%;
+    height: auto !important;
 }
 
 #instgrm-caption {
@@ -91,6 +97,7 @@ twitter-widget {
     flex-flow: row wrap;
     align-self: center;
     align-items: center;
+    min-width: var(--min-media-item-width);
 }
 #instgrm_post_caption span {
     margin: 0 0.1em 0 0.1em;

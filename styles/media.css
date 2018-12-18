@@ -19,10 +19,8 @@
     --gutter-size: 6px;
     --min-media-col-size: calc(33% - var(--gutter-size));
     --max-media-col-size: calc(50% - var(--gutter-size));
-    --max-social-item-height: 800px;
     --min-media-item-height: 200px;
     --max-media-item-height: 640px;
-    --max-social-item-width: calc(50% - var(--gutter-size));
     --min-media-item-width: 300px;
     --max-media-item-width: 640px;
     --min-media-row-size: 200px;
@@ -52,8 +50,8 @@
 .iframe-container.hidden,
 .twitch-container.hidden,
 .yt-container.hidden,
-.imageloader video.hidden,
-.imageloader img.hidden {
+.medialoader video.hidden,
+.medialoader img.hidden {
     display: none !important;
 }
 .iframe-container,
@@ -89,3 +87,17 @@ div.expando {
 }
 /* end expando */
 
+/* customizations for flickity */
+.flickity-prev-next-button {
+    width: 35px;
+    height: 35px;
+    opacity: 0.33;
+}
+.flickity-prev-next-button:hover {
+    opacity: 0.5;
+}
+.flickity-prev-next-button.previous { left: 0; }
+.flickity-prev-next-button.next { right: 0; }
+.flickity-prev-next-button:disabled {
+  display: none;
+}

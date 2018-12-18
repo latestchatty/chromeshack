@@ -251,16 +251,34 @@ browser.runtime.onMessage.addListener(function(request, sender)
             showPageAction(tab.id, tab.url);
         return Promise.resolve(getSettings());
     }
-    else if (request.name == "setSetting")
+    else if (request.name === "setSetting")
         return Promise.resolve(setSetting(request.key, request.value));
-    else if (request.name == "collapseThread")
+    else if (request.name === "collapseThread")
         return Promise.resolve(collapseThread(request.id));
-    else if (request.name == "unCollapseThread")
+    else if (request.name === "unCollapseThread")
         return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
         return Promise.resolve(openIncognito(request.value));
     else if (request.name === 'allowedIncognitoAccess')
         return Promise.resolve(allowedIncognito);
+    else if (request.name === "injectCarousel") {
+        browser.tabs.executeScript(null, { code: `window.Flickity === undefined` })
+        .then((res) => {
+            if (res) {
+                browser.tabs.executeScript(null, { file: "ext/flickity/flickity.pkgd.min.js" }).then(() => {
+                    browser.tabs.executeScript(null, { code: `
+                        var container = document.querySelector("${request.select}");
+                        var flckty = new Flickity(container, ${request.opts});
+                    ` });
+                });
+            } else {
+                browser.tabs.executeScript(null, { code: `
+                    var container = document.querySelector("${request.select}");
+                    var flckty = new Flickity(container, ${request.opts});
+                ` });
+            }
+        });
+    }
 
     return Promise.resolve();
 });
