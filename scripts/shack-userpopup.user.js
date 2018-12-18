@@ -359,17 +359,6 @@
                 e.stopPropagation();
                 displayUserMenu(t, sanitizedUser, 'You');
             }
-            else {
-                var parentDropdown = e.target;
-                while (parentDropdown != null
-                    && Object.prototype.toString.call(parentDropdown) != "[object HTMLDocument]") {
-                    if (parentDropdown.className.split(' ').indexOf('userDropdown') > -1) {
-                        parentDropdown.className += ' hidden';
-                        break;
-                    }
-                    parentDropdown = parentDropdown.parentNode;
-                }
-            }
         }
         catch (e) { console.log(e) };
     }, false);
