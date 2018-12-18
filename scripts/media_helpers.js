@@ -136,7 +136,7 @@ function toggleExpandoButton(expando) {
 
 function mediaContainerInsert(elem, link, id, index, container) {
     // abstracted helper for manipulating the media-container grid from a post
-    var container = locateContainer(link);
+    var container = locateContainer(link, id, index);
     var _hasMedia = container !== null && getEmbedRef(link);
     var _isExpando = link.classList != null && link.classList.contains("expando");
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
