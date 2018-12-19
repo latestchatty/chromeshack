@@ -41,7 +41,7 @@ settingsLoadedEvent.addHandler(function() {
             },
 
             getSocialType: function(href) {
-                var _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i;
+                var _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status(?:es)?\/(\d+)/i;
                 var _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\/?/i;
                 var _twttrMatch = _isTwitter.exec(href);
                 var _instgrmMatch = _isInstagram.exec(href);
