@@ -37,6 +37,10 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
+.medialoader {
+    height: 100%;
+    width: 100%;
+}
 .medialoader video,
 .medialoader img {
     outline: 0 !important;
@@ -44,7 +48,9 @@
     height: auto !important;
     box-sizing: border-box;
     object-fit: contain !important;
+    min-height: var(--min-media-item-height);
     max-height: var(--max-media-item-height);
+    min-width: var(--min-media-item-width);
     max-width: var(--max-media-item-width);
 }
 .iframe-container.hidden,
@@ -89,15 +95,11 @@ div.expando {
 
 /* customizations for flickity */
 .flickity-prev-next-button {
-    width: 35px;
-    height: 35px;
-    opacity: 0.33;
+    width: 25px !important;
+    height: 25px !important;
+    opacity: 0.25;
 }
-.flickity-prev-next-button:hover {
-    opacity: 0.5;
-}
-.flickity-prev-next-button.previous { left: 0; }
-.flickity-prev-next-button.next { right: 0; }
-.flickity-prev-next-button:disabled {
-  display: none;
-}
+.flickity-prev-next-button.previous { left: 3px; }
+.flickity-prev-next-button.previous { right: 3px; }
+.flickity-prev-next-button:hover { opacity: 0.6; }
+.flickity-prev-next-button:disabled { display: none; }

@@ -250,7 +250,9 @@ settingsLoadedEvent.addHandler(function() {
 
                         // compile everything into our container and inject at once
                         var embedTarget = _target.querySelector("#instgrm_embed");
-                        appendMedia(_postMediaUrls, parentLink, postId, index, embedTarget, true);
+                        var mediaContainer = appendMedia(_postMediaUrls, parentLink, postId, index, null, true);
+                        mediaContainer.classList.add("instgrm-embed");
+                        embedTarget.appendChild(mediaContainer);
                         mediaContainerInsert(_target, parentLink, postId, index);
                     } else { return alert("This account or post has been made private or cannot be found!"); }
                 });

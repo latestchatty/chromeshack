@@ -262,20 +262,22 @@ browser.runtime.onMessage.addListener(function(request, sender)
     else if (request.name === 'allowedIncognitoAccess')
         return Promise.resolve(allowedIncognito);
     else if (request.name === "injectCarousel") {
+        let commonCode = `
+            if (triggerReflow === undefined)
+                var triggerReflow = () => { window.dispatchEvent(new Event('resize')); }
+            var container = document.querySelector("${request.select}");
+            var flckty = new Flickity(container, ${request.opts});
+            flckty.on('ready', triggerReflow);
+            flckty.on('change', triggerReflow);
+        `;
         browser.tabs.executeScript(null, { code: `window.Flickity === undefined` })
         .then((res) => {
             if (res) {
                 browser.tabs.executeScript(null, { file: "ext/flickity/flickity.pkgd.min.js" }).then(() => {
-                    browser.tabs.executeScript(null, { code: `
-                        var container = document.querySelector("${request.select}");
-                        var flckty = new Flickity(container, ${request.opts});
-                    ` });
+                    browser.tabs.executeScript(null, { code: `${commonCode}` });
                 });
             } else {
-                browser.tabs.executeScript(null, { code: `
-                    var container = document.querySelector("${request.select}");
-                    var flckty = new Flickity(container, ${request.opts});
-                ` });
+                browser.tabs.executeScript(null, { code: `${commonCode}` });
             }
         });
     }

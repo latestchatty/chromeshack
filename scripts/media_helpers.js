@@ -263,15 +263,18 @@ function insertCarousel(elem) {
         head.appendChild(carouselCSS);
     }
     // inject via background script (sendMessage)
-    var flickityOpts = '{ "wrapAround": false, "pageDots": false, "contain": true }';
-    var _container = (!!elem.classList && elem.classList.contains("instgrm-container")) ?
-        closestParent(elem, { indexSelector: "instgrm-container_" }) :
-        closestParent(elem, { indexSelector: "medialoader_" });
+    var flickityOpts = {
+        wrapAround: false,
+        pageDots: false,
+        contain: true,
+        adaptiveHeight: true
+    };
+    var _container = closestParent(elem, { indexSelector: "medialoader_" });
     // check for a parent container unless this element is a parent container
     if (!!_container && _container.id !== elem.id)
-        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id} #${elem.id}`, opts: flickityOpts });
+        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id} #${elem.id}`, opts: JSON.stringify(flickityOpts) });
     else if (!!_container)
-        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id}`, opts: flickityOpts });
+        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id}`, opts: JSON.stringify(flickityOpts) });
 }
 
 function attachChildEvents(elem, id, index) {
@@ -282,7 +285,7 @@ function attachChildEvents(elem, id, index) {
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
-        childElems.forEach(item => {
+        childElems.forEach((item, idx) => {
             if (item && item.nodeName === "VIDEO") {
                 // make sure to toggle the video state on visible media
                 if (item.parentNode.dataset.flickity == null) {
@@ -293,10 +296,13 @@ function attachChildEvents(elem, id, index) {
                 }
             }
             if (item && item.nodeName === "IMG" || item.nodeName === "VIDEO") {
-                item.addEventListener("load", e => {
-                    // trigger a reflow via resize event when media items are loaded
-                    triggerReflow(e.target);
-                });
+                if (idx == childElems.length-1) {
+                    // only install a load event on the last child in the list
+                    item.addEventListener("load", e => {
+                        // trigger a reflow via resize event when media items are loaded
+                        triggerReflow(e.target);
+                    });
+                }
                 // only apply click events on video and img elements (for edge case sanity)
                 item.addEventListener('mousedown', e => {
                     var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
@@ -319,6 +325,7 @@ function attachChildEvents(elem, id, index) {
 function triggerReflow(elem) {
     $(elem).ready(function() {
         // trigger a resize via jQuery ready() to recalc the carousel
-        insertCommand(elem, `window.dispatchEvent(new Event('resize'));`, "reflow-wjs", true);
+        var body = document.getElementsByTagName("body")[0];
+        insertCommand(body, `window.dispatchEvent(new Event('resize'));`, "reflow-wjs", true);
     });
 }

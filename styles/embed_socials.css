@@ -72,20 +72,20 @@ twitter-widget {
 .instgrm-logo svg { margin: 15px; }
 
 #instgrm_embed {
-    flex: 1;
-    width: 100% !important;
-    height: 100% !important;
+    flex: 1 1 auto;
+    object-fit: contain !important;
+    overflow: hidden !important;
     box-sizing: border-box !important;
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-media-item-width);
-    min-height: var(--min-media-item-height);
-    max-height: var(--max-media-item-height);
 }
 #instgrm_embed img,
 #instgrm_embed video {
     object-fit: contain !important;
-    width: 100%;
+    width: 100% !important;
     height: auto !important;
+    min-width: var(--min-media-item-width);
+    max-width: var(--max-media-item-width);
+    min-height: var(--min-media-item-height);
+    max-height: var(--max-media-item-height);
 }
 
 #instgrm-caption {
