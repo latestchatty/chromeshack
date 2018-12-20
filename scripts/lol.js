@@ -219,13 +219,15 @@ settingsLoadedEvent.addHandler(function()
                 var element = e.target;
                 var tag = element.dataset.loltag;
                 var id = element.dataset.threadid;
-                var isTagged = await LOL.isThreadTagged(id, tag, user);
+                var isTagged = element.dataset.isloled === undefined ?
+                    await LOL.isThreadTagged(id, tag, user) :
+                    JSON.parse(element.dataset.isloled);
 
                 var url = LOL.URL + "report.php";
 
                 var data = `who=${user}&what=${id}&tag=${encodeURIComponent(tag)}&version=${LOL.VERSION}`;
 
-                if (isTagged) {
+                if (typeof isTagged === "boolean" && isTagged) {
                     data += '&action=untag';
                 } else {
                     var moderation = LOL.getModeration(id);
@@ -238,16 +240,18 @@ settingsLoadedEvent.addHandler(function()
                     if (res.ok && response.indexOf("ok") == 0) {
                         // looks like it worked
                         var new_tag;
-                        if (isTagged) {
+                        if (typeof isTagged === "boolean" && isTagged) {
                            new_tag = "* U N - ";
                            for (var i = 0; i < tag.length; i++)
                                new_tag += " " + tag[i].toUpperCase() + " ";
                            new_tag += " ' D *";
+                           element.dataset.isloled = false;
                         } else {
                             new_tag = "*";
                             for (var i = 0; i < tag.length; i++)
                                 new_tag += " " + tag[i].toUpperCase() + " ";
                             new_tag += " ' D *";
+                            element.dataset.isloled = true;
                         }
                         element.replaceHTML(new_tag);
                     } else
