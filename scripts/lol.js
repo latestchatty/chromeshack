@@ -188,21 +188,20 @@ settingsLoadedEvent.addHandler(function()
 
             isThreadTagged: function(id, tag, user) {
                 var url = `${LOL.URL}api.php?special=get_taggers&thread_id=${encodeURIComponent(id)}`;
-                return new Promise(resolve => {
+                return new Promise((resolve, reject) => {
                     xhrRequest(url).then(async res => {
                         var response = await res.json();
                         if(response.length != 0) {
                             for (var _tag in response) {
-                                response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'})).forEach(tagger => {
+                                let _sorted = response[_tag].sort((a, b) => a.localeCompare(b, 'en', {'sensitivity': 'base'}));
+                                for (let tag of _sorted) {
                                     // loop through each tag and user for this post
-                                    if (tagger === user && tag === _tag) {
-                                        return resolve(true);
-                                    }
-                                });
+                                    if (tag === user) { return resolve(true); }
+                                }
                             }
                         }
-                        return resolve(false);
-                    }).catch(err => { throw err; });
+                        resolve(false);
+                    }).catch(err => { reject(err); });
                 }).catch(err => { console.log(err); });
             },
 
@@ -220,13 +219,13 @@ settingsLoadedEvent.addHandler(function()
                 var element = e.target;
                 var tag = element.dataset.loltag;
                 var id = element.dataset.threadid;
-                var isloled = element.dataset.isloled || await LOL.isThreadTagged(id, tag, user);
+                var isTagged = await LOL.isThreadTagged(id, tag, user);
 
                 var url = LOL.URL + "report.php";
 
                 var data = `who=${user}&what=${id}&tag=${encodeURIComponent(tag)}&version=${LOL.VERSION}`;
 
-                if (isloled) {
+                if (isTagged) {
                     data += '&action=untag';
                 } else {
                     var moderation = LOL.getModeration(id);
@@ -239,18 +238,16 @@ settingsLoadedEvent.addHandler(function()
                     if (res.ok && response.indexOf("ok") == 0) {
                         // looks like it worked
                         var new_tag;
-                        if (isloled) {
+                        if (isTagged) {
                            new_tag = "* U N - ";
                            for (var i = 0; i < tag.length; i++)
                                new_tag += " " + tag[i].toUpperCase() + " ";
                            new_tag += " ' D *";
-                           element.dataset.isloled = false;
                         } else {
                             new_tag = "*";
                             for (var i = 0; i < tag.length; i++)
                                 new_tag += " " + tag[i].toUpperCase() + " ";
                             new_tag += " ' D *";
-                            element.dataset.isloled = true;
                         }
                         element.replaceHTML(new_tag);
                     } else
