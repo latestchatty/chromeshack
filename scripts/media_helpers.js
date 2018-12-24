@@ -137,7 +137,7 @@ function toggleExpandoButton(expando) {
 function mediaContainerInsert(elem, link, id, index, container) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = locateContainer(link, id, index);
-    var _hasMedia = container !== null && getEmbedRef(link);
+    var _hasMedia = getEmbedRef(link);
     var _isExpando = link.classList != null && link.classList.contains("expando");
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
@@ -147,8 +147,7 @@ function mediaContainerInsert(elem, link, id, index, container) {
     if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
-    } else if (!_hasMedia) {
-        // move items into a unified container
+    } else if (!document.querySelector(".media-container")) {
         _postBody.appendChild(container);
     }
     // pass our newly appended media element to our state manager
@@ -230,13 +229,11 @@ function locateContainer(link, postId, index) {
 
 function insertCommand(elem, injectable, id, override) {
     var _script = document.getElementById(id);
-    if (document.getElementById(id) != null && !override)
-        return;
-    else if (override && !!_script)
-        _script.parentNode.removeChild(_script);
+    if (!!id && !override && document.getElementById(id) != null) { return; }
+    else if (override && !!_script) { _script.parentNode.removeChild(_script); }
     // insert a one-way script that executes synchronously (caution!)
     var _script = document.createElement("script");
-    _script.setAttribute("id", id);
+    if (!!id) { _script.setAttribute("id", id); }
     _script.textContent = `${injectable}`;
     elem.appendChild(_script);
 }
