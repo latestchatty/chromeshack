@@ -134,10 +134,10 @@ function toggleExpandoButton(expando) {
  *  Media Insertion Functions
  */
 
-function mediaContainerInsert(elem, link, id, index, container) {
+function mediaContainerInsert(elem, link, id, index) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = locateContainer(link, id, index);
-    var _hasMedia = getEmbedRef(link);
+    var _hasMedia = container != null && getEmbedRef(link);
     var _isExpando = link.classList != null && link.classList.contains("expando");
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
@@ -147,7 +147,7 @@ function mediaContainerInsert(elem, link, id, index, container) {
     if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
-    } else if (!document.querySelector(".media-container")) {
+    } else if (!_hasMedia) {
         _postBody.appendChild(container);
     }
     // pass our newly appended media element to our state manager
