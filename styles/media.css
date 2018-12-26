@@ -2,13 +2,13 @@
 /* MEDIA QUERIES FOR RESPONSIVENESS (workaround for image weirdness) */
 @media only screen and (max-width: 768px) {
     /* switch to a scrollable column-only layout */
-    .media-container { grid-template-columns: 100% !important; }
+    .media-container.responsive { grid-template-columns: 100% !important; }
     .instgrm-container { max-width: unset !important; }
 }
 @media only screen and (min-width: 1267px) {
-    .media-container {
+    .media-container.responsive {
         /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
-        grid-template-columns: repeat(auto-fit, minmax(auto, var(--min-media-col-size))) !important;
+        grid-template-columns: repeat(auto-fit, minmax(var(--min-media-col-size), 1fr)) !important;
     }
     .instgrm-container { max-width: unset !important; }
 }
@@ -22,13 +22,14 @@
     --min-media-item-height: 200px;
     --max-media-item-height: 640px;
     --min-media-item-width: 300px;
-    --max-media-item-width: 640px;
+    --max-media-item-width: 854px;
+    --max-social-item-width: 640px;
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.media-container {
+.media-container.responsive {
     display: grid !important;
     /* default to a largest-first-or-50% layout */
     grid-template-columns: repeat(auto-fit, minmax(var(--max-media-col-size), 1fr));

@@ -148,6 +148,7 @@ function mediaContainerInsert(elem, link, id, index) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
     } else if (!_hasMedia) {
+        container.setAttribute("class", "media-container responsive");
         _postBody.appendChild(container);
     }
     // pass our newly appended media element to our state manager
