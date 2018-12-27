@@ -10,7 +10,6 @@
         /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
         grid-template-columns: repeat(auto-fit, minmax(var(--min-media-col-size), 1fr)) !important;
     }
-    .instgrm-container { max-width: unset !important; }
 }
 /* END MEDIA QUERIES */
 
