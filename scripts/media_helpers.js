@@ -51,25 +51,45 @@ function getIframeDimensions(elem) {
 }
 
 
+function locateContainer(link, postId, index) {
+    // resolve our link container for media embedding (or create one)
+    var _isAlternateStyle = getSetting("enabled_scripts").contains("alternate_embed_style");
+    var container = _isAlternateStyle ?
+        link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
+        link.parentNode.querySelector("div.media-container");
+    if (container != null) {
+        return container; // return the existing container
+    } else {
+        container = document.createElement("div");
+        container.setAttribute("class", "media-container");
+        // flag the container so we know we have an embed child
+        if (_isAlternateStyle) { container.setAttribute("id", `link_${postId}-${index}`); }
+        return container;
+    }
+}
+
+
 /*
  *  State Transition Toggles
  */
 
-function toggleMediaItem(link) {
+function toggleMediaItem(link, postId, index) {
     // abstracted helper for toggling media container items from a link/expando
-    var _isExpando = link.classList != null && link.classList.contains("expando");
-    var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
-    var container = _postBody.querySelector(".media-container");
+    var container = locateContainer(link, postId, index);
     var _embed = getEmbedRef(link);
 
     // pretty aggressive way to handle stopping an iframe player when toggling the container
     var encapMediaObj = getIframeDimensions(_embed);
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
+        var altContainer = getSetting("enabled_scripts").contains("alternate_embed_style") && container.parentNode;
         var embed = (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
                     encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container")) ?
                     encapMediaObj.ref.parentNode.parentNode : encapMediaObj.ref;
-        container.removeChild(embed);
+        if (!!altContainer)
+            altContainer.removeChild(container);
+        else
+            container.removeChild(embed);
         return toggleMediaLink(_embed, link, true);
     }
 
@@ -203,23 +223,6 @@ function appendMedia(src, link, postId, index, container, override) {
         _elem.setAttribute("id", `loader_${postId}-${index}`);
         _elem.setAttribute("src", href);
         return _elem;
-    }
-}
-
-function locateContainer(link, postId, index) {
-    // resolve our link container for media embedding (or create one)
-    var _isAlternateStyle = getSetting("enabled_scripts").contains("alternate_embed_style");
-    var container = link.parentNode.querySelector(".media-container");
-    if (!_isAlternateStyle && container != null && container.id.length == 0) {
-        // return the unified container
-        return container;
-    } else if (_isAlternateStyle || container == null) {
-        // ... unless we're using the alternate style
-        container = document.createElement("div");
-        container.setAttribute("class", "media-container");
-        // flag the container so we know we have an embed child
-        if (_isAlternateStyle) { container.setAttribute("id", `${postId}-${index}`); }
-        return container;
     }
 }
 
