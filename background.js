@@ -263,17 +263,52 @@ browser.runtime.onMessage.addListener(function(request, sender)
         return Promise.resolve(allowedIncognito);
     else if (request.name === "injectCarousel") {
         let commonCode = `
-            if (triggerReflow === undefined)
-                var triggerReflow = () => { window.dispatchEvent(new Event('resize')); }
             var container = document.querySelector("${request.select}");
-            var flckty = new Flickity(container, ${request.opts});
-            flckty.on('ready', triggerReflow);
-            flckty.on('change', triggerReflow);
+            var carouselOpts = {
+                slidesPerView: 1,
+                centeredSlides: true,
+                navigation: {
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+                },
+                on: {
+                    init: function() {
+                        // do not autoplay secondary slides
+                        var wrapper = container.querySelector(".swiper-wrapper");
+                        var mediaSlideFirstIndex = function(elem) {
+                            for (var i in elem.children) {
+                                if (elem.children[i].nodeName === "VIDEO")
+                                    return i;
+                            }
+                            return -1;
+                        };
+                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
+
+                        if (this.realIndex == videoSlideIndex)
+                            wrapper.children[videoSlideIndex].play();
+                    },
+                    transitionEnd: function() {
+                        // toggle autoplay on slides as we transition to/from them
+                        var slides = container.querySelectorAll('video');
+                        slides.forEach(function(x) {
+                            if (x.className.indexOf("swiper-slide-active") > -1) {
+                                x.play();
+                                x.muted = false;
+                            }
+                            else {
+                                x.muted = true;
+                                x.pause();
+                            }
+                        });
+                    }
+                }
+            };
+            var swiper = new Swiper(container, carouselOpts);
         `;
-        browser.tabs.executeScript(null, { code: `window.Flickity === undefined` })
+        browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
         .then((res) => {
             if (res) {
-                browser.tabs.executeScript(null, { file: "ext/flickity/flickity.pkgd.min.js" }).then(() => {
+                browser.tabs.executeScript(null, { file: "ext/swiper/swiper.min.js" }).then(() => {
                     browser.tabs.executeScript(null, { code: `${commonCode}` });
                 });
             } else {

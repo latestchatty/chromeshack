@@ -79,14 +79,18 @@ twitter-widget {
 }
 #instgrm_embed img,
 #instgrm_embed video {
+    /* let swiper carousel style itself */
     outline: 0 !important;
     object-fit: contain !important;
     width: 100% !important;
     height: auto !important;
-    min-width: var(--min-media-item-width);
     max-width: var(--max-social-item-width);
-    min-height: var(--min-media-item-height);
     max-height: var(--max-media-item-height);
+}
+#instgrm_embed img:not(.swiper-slide),
+#instgrm_embed video:not(.swiper-slide) {
+    min-width: var(--min-media-item-width);
+    min-height: var(--min-media-item-height);
 }
 
 #instgrm-caption {

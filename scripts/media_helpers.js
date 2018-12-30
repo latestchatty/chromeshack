@@ -126,7 +126,8 @@ function toggleMediaLink(embedElem, link, override) {
 function toggleVideoState(elem, override) {
     // abstracted helper for toggling html5 video embed pause state (based on audio)
     if (elem == null) return;
-    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video");
+    // ignore carousel children when autoplaying
+    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video:not(.swiper-slide)");
     if (override || video && !video.classList.contains("hidden")) {
        if (video.paused || override) {
             video.currentTime = 0;
@@ -162,6 +163,7 @@ function mediaContainerInsert(elem, link, id, index) {
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
 
+    // don't put click events on the carousel
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
     if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
@@ -192,14 +194,14 @@ function appendMedia(src, link, postId, index, container, override) {
         // only use carousel if we have multiple items
         if (nodeList.length > 1) {
             mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
-            insertCarousel(mediaElem);
+            mediaElem = insertCarousel(mediaElem);
         }
     } else if (src != null && src.length > 0) {
         mediaElem.appendChild(createMediaElem(src, postId, index));
     }
     // only append if we're not being called to return an element
     if (!override) {
-        mediaElem.setAttribute("class", "medialoader hidden");
+        mediaElem.classList.add("medialoader", "hidden");
         mediaContainerInsert(mediaElem, link, postId, index);
     } else { return mediaElem; }
 
@@ -255,27 +257,38 @@ function insertExpandoButton(link, postId, index) {
 
 function insertCarousel(elem) {
     var head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("flickity.min.css") == -1) {
+    if (head.innerHTML.indexOf("swiper.min.css") == -1) {
         // make sure we have necessary css injected
         var carouselCSS = document.createElement("link");
         carouselCSS.rel = "stylesheet";
         carouselCSS.type = "text/css";
-        carouselCSS.href = browser.runtime.getURL("ext/flickity/flickity.min.css");
+        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper.min.css");
         head.appendChild(carouselCSS);
     }
+    var carouselContainer = document.createElement("div");
+    carouselContainer.setAttribute("class", "swiper-container");
+    carouselContainer.innerHTML = /*html*/`
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    `;
+    // insert our media container into a carousel container
+    // ... and rename the media container to be our carousel wrapper
+    elem.classList.add("swiper-wrapper");
+    // move our element container id to our carousel wrapper
+    carouselContainer.setAttribute("id", elem.id);
+    elem.removeAttribute("id");
+    // set our swiper children as slides in the carousel
+    for (var child of elem.childNodes) {
+        child.classList.add("swiper-slide");
+        if (child.nodeName === "VIDEO") {
+            child.removeAttribute("autoplay");
+            child.removeAttribute("muted");
+        }
+    }
+    carouselContainer.appendChild(elem);
     // inject via background script (sendMessage)
-    var flickityOpts = {
-        wrapAround: false,
-        pageDots: false,
-        contain: true,
-        adaptiveHeight: true
-    };
-    var _container = closestParent(elem, { indexSelector: "medialoader_" });
-    // check for a parent container unless this element is a parent container
-    if (!!_container && _container.id !== elem.id)
-        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id} #${elem.id}`, opts: JSON.stringify(flickityOpts) });
-    else if (!!_container)
-        browser.runtime.sendMessage({ name: "injectCarousel", select: `#${_container.id}`, opts: JSON.stringify(flickityOpts) });
+    browser.runtime.sendMessage({ name: "injectCarousel", select: `#${carouselContainer.id}.swiper-container` });
+    return carouselContainer;
 }
 
 function attachChildEvents(elem, id, index) {
@@ -287,37 +300,48 @@ function attachChildEvents(elem, id, index) {
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
         childElems.forEach((item, idx) => {
-            if (item && item.nodeName === "VIDEO") {
-                // make sure to toggle the video state on visible media
-                if (item.parentNode.dataset.flickity == null) {
+            if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
+                if (childElems.length == 1) {
+                    // don't interfere with carousel media settings
                     item.addEventListener("canplaythrough", e => {
+                        // autoplay videos (muted) when shown
                         if (e.target.paused) { toggleVideoState(e.target, 1); }
                         if (!e.target.muted) { e.target.muted = true; }
                     });
                 }
-            }
-            if (item && item.nodeName === "IMG" || item.nodeName === "VIDEO") {
-                if (idx == childElems.length-1) {
-                    // only install a load event on the last child in the list
+                else {
+                    item.addEventListener('click', e => {
+                    // allow toggling play state by clicking the carousel video
+                        if (e.target.nodeName === "VIDEO") {
+                            if (e.target.paused) { e.target.play(); }
+                            else { e.target.pause(); }
+                        }
+                    });
+                }
+                if (elem.classList != null && elem.classList.contains("swiper-container") &&
+                    idx == childElems.length-1) {
+                    // force last carousel slide to recalc the container once media has loaded
                     item.addEventListener("load", e => {
-                        // trigger a reflow via resize event when media items are loaded
                         triggerReflow(e.target);
                     });
                 }
-                // only apply click events on video and img elements (for edge case sanity)
-                item.addEventListener('mousedown', e => {
-                    var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
-                    var link = getLinkRef(embed);
-                    if (e.which === 2 && getSetting("image_loader_newtab")) {
-                        e.preventDefault();
-                        // open this link in a new window/tab when middle-clicked
-                        window.open(embed.src);
-                    } else if (e.which === 1) {
-                        e.preventDefault();
-                        // toggle our embed state when image embed is left-clicked
-                        toggleMediaLink(embed, link);
-                    }
-                });
+
+                // don't attach click-to-hide events to swiper slides
+                if (elem.classList != null && !elem.classList.contains("swiper-container")) {
+                    item.addEventListener('mousedown', e => {
+                        var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
+                        var link = getLinkRef(embed);
+                        if (e.which === 2 && getSetting("image_loader_newtab")) {
+                            e.preventDefault();
+                            // open this link in a new window/tab when middle-clicked
+                            window.open(embed.src);
+                        } else if (e.which === 1) {
+                            e.preventDefault();
+                            // toggle our embed state when image embed is left-clicked
+                            toggleMediaLink(embed, link);
+                        }
+                    });
+                }
             }
         });
     }
