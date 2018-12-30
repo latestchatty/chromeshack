@@ -42,11 +42,8 @@ ElderScroll =
                 var eventArr = [
                     'mousemove',
                     'animationend',
-                    'transitionend',
                     'oAnimationEnd',
-                    'oTransitionEnd',
-                    'webkitAnimationEnd',
-                    'webkitTransitionEnd'
+                    'webkitAnimationEnd'
                 ];
                 for (var i=0; i < eventArr.length; i++) {
                     window.addEventListener(eventArr[i], function(e) {
