@@ -3,7 +3,6 @@
 @media only screen and (max-width: 768px) {
     /* switch to a scrollable column-only layout */
     .media-container.responsive { grid-template-columns: 100% !important; }
-    .instgrm-container { max-width: unset !important; }
 }
 @media only screen and (min-width: 1267px) {
     .media-container.responsive {
@@ -41,16 +40,23 @@
     height: 100%;
     width: 100%;
 }
-.medialoader video,
-.medialoader img {
+.medialoader video:not(.swiper-slide),
+.medialoader img:not(.swiper-slide) {
     outline: 0 !important;
     width: 100% !important;
     height: auto !important;
     box-sizing: border-box;
     object-fit: contain !important;
     min-height: var(--min-media-item-height);
-    max-height: var(--max-media-item-height);
     min-width: var(--min-media-item-width);
+    max-height: var(--max-media-item-height);
+    max-width: var(--max-media-item-width);
+}
+.medialoader video.swiper-slide,
+.medialoader img.swiper-slide {
+    /* let carousel style itself but maintain ratio */
+    object-fit: contain !important;
+    max-height: var(--max-media-item-height);
     max-width: var(--max-media-item-width);
 }
 .iframe-container.hidden,
@@ -94,7 +100,13 @@ div.expando {
 /* end expando */
 
 /* customizations for carousel */
+:not(div.instgrm-container) .swiper-container {
+    /* workaround 1 for non-instagram responsiveness */
+    margin: unset !important;
+}
 .swiper-container.medialoader {
+    /* workaround 2 for non-instagram responsiveness */
+    margin: unset !important;
     max-width: var(--max-media-item-width);
     max-height: var(--max-media-item-height);
 }

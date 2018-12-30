@@ -183,8 +183,8 @@ settingsLoadedEvent.addHandler(function() {
 
             parseInstagram: function(parentLink, socialId, postId, index) {
                 // start post parsing test list
-                //var socialId = "BrEyN7CntQF"; // image
-                //var socialId = "BrWe9fYBPRS"; // multi-image
+                //var socialId = "BqiWTWbgPr_9PYvcOrz4xMrmfRPfxkKvCq-qc00"; // image
+                //var socialId = "Bqgc_ILAHAh3nQztrir-X5S9_CpD3WLdRNyU5I0"; // multi-image
                 //var socialId = "BrTUB4ehLjW"; // video
                 //var socialId = "Bog2xW2HtAX"; // multi-video
                 // end post parsing test list
