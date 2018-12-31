@@ -2,17 +2,13 @@
 
 First, become an organization member and gain the trust of the other members.
 
-- For Chrome:
-    - Consider creating a new Google account specifically for releasing Chrome Shack.
-    - Pay the $5 developer signup fee to Google by clicking the "Pay this fee now" button at the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/developer/dashboard)
-    - File an issue in the `chromeshack` repository requesting to be added to the [Chrome Shack Publishers](https://groups.google.com/forum/#!forum/chrome-shack-publishers) Google Group, and either include your Google account's email address in the issue, or otherwise get that address to one of the other Chrome Shack publishers.
-    - Once you've been added to the Google Group, then go back to the [dashboard](https://chrome.google.com/webstore/developer/dashboard).
-    - "Group: Chrome Shack" should appear and Chrome Shack should be listed.  If it is, then you now have the keys to the castle.  Follow the release procedure below to publish releases.
-- For Firefox:
-    - Register for a [Firefox Add-ons developer account](https://addons.mozilla.org/en-US/developers/).
-    - File an issue in the `chromeshack` repository requesting to be added to the Firefox add-on, and either include your Firefox Add-on account's email address in the issue, or otherwise get that address to one of the other Chrome Shack publishers.
-    - Once you've been added to the Firefox add-on, then go to the [dashboard](https://addons.mozilla.org/en-US/developers/).
-    - Chrome Shack should be listed under "My Add-ons".  If it is, then you now have the keys to the castle.  Follow the release procedure below to publish releases.    
+1. Pay the $5 developer signup fee to Google by clicking the "Pay this fee now" button at the bottom of the [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/developer/dashboard).
+1. Register for a [Firefox Add-ons developer account](https://addons.mozilla.org/en-US/developers/).
+1. File an issue in the `chromeshack` repository requesting publish access, and either include your Chrome Web Store and Firefox Add-on email addresses in the ticket, or arrange to send them to another publisher via Shackmessage or email.
+1. An existing publisher will add you to the [Chrome Shack Publishers Google Group](https://groups.google.com/forum/#!forum/chrome-shack-publishers) as an owner, and to the [Firefox add-on authors](https://addons.mozilla.org/en-US/developers/addon/chromeshack/ownership) as an owner.
+1. Once your request is granted, then verify that you are now holding the keys to the castle:
+    - Log into the  [Chrome Web Store developer dashboard](https://chrome.google.com/webstore/developer/dashboard).  "Group: Chrome Shack" should appear and Chrome Shack should be listed.
+    - Log into the [Firefox add-ons Developer Hub](https://addons.mozilla.org/en-US/developers/).  Chrome Shack should be listed under "My Add-ons".
 
 # Release procedure
 
