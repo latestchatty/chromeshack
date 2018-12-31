@@ -299,7 +299,8 @@ function attachChildEvents(elem, id, index) {
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
-        childElems.forEach((item, idx) => {
+        var swiperBool = closestParent(childElems[0], { cssSelector: ".swiper-container" }) != null;
+        childElems.forEach(item => {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
@@ -320,21 +321,23 @@ function attachChildEvents(elem, id, index) {
                 }
 
                 // don't attach click-to-hide events to swiper slides
-                if (elem.classList != null && !elem.classList.contains("swiper-container")) {
+                (swiperBool => {
                     item.addEventListener('mousedown', e => {
                         var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         var link = getLinkRef(embed);
                         if (e.which === 2 && getSetting("image_loader_newtab")) {
                             e.preventDefault();
-                            // open this link in a new window/tab when middle-clicked
-                            window.open(embed.src);
-                        } else if (e.which === 1) {
+                            // pause our current video before re-opening it
+                            if (e.target.nodeName === "VIDEO") { e.target.pause(); }
+                            // open this media link in a new window/tab when middle-clicked
+                            window.open(e.target.src);
+                        } else if (e.which === 1 && !swiperBool) {
                             e.preventDefault();
-                            // toggle our embed state when image embed is left-clicked
+                            // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);
                         }
                     });
-                }
+                })(swiperBool);
             }
         });
     }

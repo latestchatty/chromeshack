@@ -294,7 +294,6 @@ browser.runtime.onMessage.addListener(function(request, sender)
                         }
                         // autoplay only if video is the first slide
                         var videoSlideIndex = mediaSlideFirstIndex(wrapper);
-                        console.log(swiperEl.realIndex, videoSlideIndex);
                         if (swiperEl.realIndex === videoSlideIndex)
                             wrapper.children[videoSlideIndex].play();
                     },
