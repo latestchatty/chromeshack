@@ -129,20 +129,20 @@ settingsLoadedEvent.addHandler(function()
             {
                 var authHdr = "Client-ID c045579f61fc802";
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _matchShortcode = /https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?([\w\d\-]+)/i.exec(_link);
+                var _matchShortcode = /https?\:\/\/(?:.+?\.)?imgur.com\/(?:a\/(\w+)|t\/.+?\/(\w+)|gallery\/(\w+))?(\w+)?/i.exec(_link);
+                var albumShortcode = _matchShortcode[1] || _matchShortcode[2] || _matchShortcode[3];
+                var imageShortcode = _matchShortcode[4];
 
                 if (_link.length > 0 && _matchShortcode != null) {
                     // resolve by album otherwise fallback to resolving by image
-                    var imgurAlbum = await resolveImgurAlbum(_matchShortcode[1] || _matchShortcode[2]);
+                    var imgurAlbum = albumShortcode != null && await resolveImgurAlbum(albumShortcode);
+                    var imgurImage = imageShortcode != null && await resolveImgur(imageShortcode);
                     if (imgurAlbum != null && imgurAlbum.length > 0)
                         appendMedia(imgurAlbum, link, postId, index);
-                    else {
-                        var imgurImage = await resolveImgur(_matchShortcode[1] || _matchShortcode[2]);
-                        if (imgurImage != null)
-                            appendMedia(imgurImage, link, postId, index);
-                        else
-                            throw new Error(`Could not resolve Imgur: ${_link} = ${_matchShortcode[1] || _matchShortcode[2]}`);
-                    }
+                    else if (imgurImage != null)
+                        appendMedia(imgurImage, link, postId, index);
+                    else
+                        throw new Error(`Could not resolve Imgur shortcode from: ${_link}`);
                 }
 
                 function resolveImgur(shortcode) {
