@@ -312,17 +312,10 @@ function attachChildEvents(elem, id, index) {
                 else {
                     item.addEventListener('click', e => {
                     // allow toggling play state by clicking the carousel video
-                        if (e.target.nodeName === "VIDEO") {
+                        if (e.target.nodeName === "VIDEO" && !e.target.hasAttribute("controls")) {
                             if (e.target.paused) { e.target.play(); }
                             else { e.target.pause(); }
                         }
-                    });
-                }
-                if (elem.classList != null && elem.classList.contains("swiper-container") &&
-                    idx == childElems.length-1) {
-                    // force last carousel slide to recalc the container once media has loaded
-                    item.addEventListener("load", e => {
-                        triggerReflow(e.target);
                     });
                 }
 

@@ -265,6 +265,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         let commonCode = `
             var container = document.querySelector("${request.select}");
             var carouselOpts = {
+                autoHeight: true,
                 slidesPerView: 1,
                 centeredSlides: true,
                 navigation: {
@@ -273,18 +274,28 @@ browser.runtime.onMessage.addListener(function(request, sender)
                 },
                 on: {
                     init: function() {
-                        // do not autoplay secondary slides
+                        var swiperEl = this;
                         var wrapper = container.querySelector(".swiper-wrapper");
                         var mediaSlideFirstIndex = function(elem) {
-                            for (var i in elem.children) {
-                                if (elem.children[i].nodeName === "VIDEO")
+                            var iter = Array.from(elem.children);
+                            for (var i=0; i<iter.length-1; i++) {
+                                if (iter[i].nodeName === "VIDEO")
                                     return i;
                             }
                             return -1;
                         };
-                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
 
-                        if (this.realIndex == videoSlideIndex)
+                        // if video is first then recalc the carousel height once loaded
+                        var firstSlide = wrapper.children[0];
+                        if (firstSlide.nodeName === "VIDEO") {
+                            firstSlide.addEventListener("loadedmetadata", function() {
+                                swiperEl.update();
+                            });
+                        }
+                        // autoplay only if video is the first slide
+                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
+                        console.log(swiperEl.realIndex, videoSlideIndex);
+                        if (swiperEl.realIndex === videoSlideIndex)
                             wrapper.children[videoSlideIndex].play();
                     },
                     transitionEnd: function() {
