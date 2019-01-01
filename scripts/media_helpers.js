@@ -299,7 +299,8 @@ function attachChildEvents(elem, id, index) {
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
-        var swiperBool = closestParent(childElems[0], { cssSelector: ".swiper-container" }) != null;
+        var swiperEl = closestParent(childElems[0], { cssSelector: ".swiper-wrapper" });
+        var instgrmEl = closestParent(childElems[0], { cssSelector: ".instgrm-embed" });
         childElems.forEach(item => {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
@@ -321,7 +322,7 @@ function attachChildEvents(elem, id, index) {
                 }
 
                 // don't attach click-to-hide events to swiper slides
-                (swiperBool => {
+                ((swiperEl, instgrmEl) => {
                     item.addEventListener('mousedown', e => {
                         var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         var link = getLinkRef(embed);
@@ -331,13 +332,13 @@ function attachChildEvents(elem, id, index) {
                             if (e.target.nodeName === "VIDEO") { e.target.pause(); }
                             // open this media link in a new window/tab when middle-clicked
                             window.open(e.target.src);
-                        } else if (e.which === 1 && !swiperBool) {
+                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);
                         }
                     });
-                })(swiperBool);
+                })(swiperEl, instgrmEl);
             }
         });
     }

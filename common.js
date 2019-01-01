@@ -297,7 +297,7 @@ function closestParent(elem, { cssSelector, indexSelector }) {
     if (!!elem.parentNode && !!elem.parentNode.attributes) {
         // search backwards in the DOM for the closest parent whose attributes match a selector
         for(; elem && elem !== document; elem = elem.parentNode) {
-            for (var attrChild of Array.from(elem.attributes)) {
+            for (var attrChild of Array.from(elem.attributes || {})) {
                 if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
                     return elem;
                 else if (cssSelector && !!elem) {
