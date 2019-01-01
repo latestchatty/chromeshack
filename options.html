@@ -93,14 +93,19 @@
                         <label for="alternate_embed_style">Alternate embedding style</label>
                     </p>
                     <p class="indent info">Embed media items (images, videos, and socials) near their associated link.</p>
+
+                    <p>
+                        <input type="checkbox" id="image_loader_newtab"/>
+                        <label for="image_loader_newtab">Middle-click'ing embed opens new window</label>
+                    </p>
+                    <p class="indent info">Open embedded media in new window/tab when middle-clicked.</p>
+                    <p class="indent info"><i>NOTE: Iframe players (Youtube/Twitch/etc.) are not affected by this.</i></p>
+
                     <p>
                         <input type="checkbox" class="script_check" id="image_loader" />
                         <label for="image_loader">Embed images</label>
                     </p>
                     <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
-                    <div id="image_loader_settings">
-                        <input type="checkbox" id="image_loader_newtab"/><label for="image_loader_newtab">Open image/video in new window/tab when middle-clicked</label>
-                    </div>
                     <p>
                         <input type="checkbox" class="script_check" id="video_loader" />
                         <label for="video_loader">Embed videos</label>
