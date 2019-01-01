@@ -120,7 +120,7 @@ settingsLoadedEvent.addHandler(function()
                         // NOTE: ShackPics needs SSL fixes before uncommenting this!
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
                         var src = ImageLoader.getImageUrl(link.href);
-                        ImageLoader.appendMedia(src, link, _postId, index);
+                        appendMedia(src, link, _postId, index);
                     }
                 }
             },
@@ -129,20 +129,20 @@ settingsLoadedEvent.addHandler(function()
             {
                 var authHdr = "Client-ID c045579f61fc802";
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _matchShortcode = /https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?([\w\d\-]+)/i.exec(_link);
+                var _matchShortcode = /https?\:\/\/(?:.+?\.)?imgur.com\/(?:a\/(\w+)|t\/.+?\/(\w+)|gallery\/(\w+))?(\w+)?/i.exec(_link);
+                var albumShortcode = _matchShortcode[1] || _matchShortcode[2] || _matchShortcode[3];
+                var imageShortcode = _matchShortcode[4];
 
                 if (_link.length > 0 && _matchShortcode != null) {
                     // resolve by album otherwise fallback to resolving by image
-                    var imgurAlbum = await resolveImgurAlbum(_matchShortcode[1] || _matchShortcode[2]);
-                    if (imgurAlbum != null)
-                        ImageLoader.appendMedia(imgurAlbum, link, postId, index);
-                    else {
-                        var imgurImage = await resolveImgur(_matchShortcode[1] || _matchShortcode[2]);
-                        if (imgurImage != null)
-                            ImageLoader.appendMedia(imgurImage, link, postId, index);
-                        else
-                            throw new Error(`Could not resolve Imgur: ${_link} = ${_matchShortcode[1] || _matchShortcode[2]}`);
-                    }
+                    var imgurAlbum = albumShortcode != null && await resolveImgurAlbum(albumShortcode);
+                    var imgurImage = imageShortcode != null && await resolveImgur(imageShortcode);
+                    if (imgurAlbum != null && imgurAlbum.length > 0)
+                        appendMedia(imgurAlbum, link, postId, index);
+                    else if (imgurImage != null)
+                        appendMedia(imgurImage, link, postId, index);
+                    else
+                        throw new Error(`Could not resolve Imgur shortcode from: ${_link}`);
                 }
 
                 function resolveImgur(shortcode) {
@@ -159,16 +159,21 @@ settingsLoadedEvent.addHandler(function()
                     });
                 };
                 function resolveImgurAlbum(shortcode) {
+                    //var shortcode = "oo0Ptek"; // multi-item test
                     var url = `https://api.imgur.com/3/album/${shortcode}`;
                     return new Promise(resolve => {
                         fetchImgur(url).then(json => {
                             if (json.status !== 404) {
-                                if (json && json.data.images != null &&
-                                    json.data.images[0].mp4 != null)
-                                    resolve(json.data.images[0].mp4);
-                                else if (json && json.data.images != null &&
-                                    json.data.images[0].link != null)
-                                    resolve(json.data.images[0].link);
+                                var collector = [];
+                                if (json && json.data.images != null && json.data.images.length > 0) {
+                                    json.data.images.forEach(item => {
+                                        if (item.mp4 != null)
+                                            collector.push(item.mp4);
+                                        else if (item.link != null)
+                                            collector.push(item.link);
+                                    });
+                                    resolve(collector);
+                                } else { console.log(`Unable to find any Imgur media items for: ${url}`); }
                             } else { resolve(null); }
                         });
                     });
@@ -196,7 +201,7 @@ settingsLoadedEvent.addHandler(function()
                         }).then(async res => {
                             var json = await res.json();
                             if (json && json.gfyItem.mobileUrl != null) {
-                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                                appendMedia(json.gfyItem.mobileUrl, link, postId, index);
                             } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
                         }).catch(err => { console.log(err); });
                     } else {
@@ -206,7 +211,7 @@ settingsLoadedEvent.addHandler(function()
                         }).then(res => {
                             var json = JSON.parse(res);
                             if (json && json.gfyItem.mobileUrl != null) {
-                                ImageLoader.appendMedia(json.gfyItem.mobileUrl, link, postId, index);
+                                appendMedia(json.gfyItem.mobileUrl, link, postId, index);
                             } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
                         }).catch(err => { console.log(err); });
                     }
@@ -244,31 +249,9 @@ settingsLoadedEvent.addHandler(function()
 
                 if (_giphyId) {
                     var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
-                    ImageLoader.appendMedia(src, link, postId, index);
+                    appendMedia(src, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${link.href}`); }
             },
-
-            appendMedia: function(src, link, postId, index) {
-                var mediaElem = document.createElement("div");
-                mediaElem.setAttribute("class", "imageloader grid-item hidden");
-
-                var _animExt = /\.(mp4|gifv|webm)/i.test(src);
-                var _staticExt = /\.(jpe?g|gif|png)/i.test(src);
-                var _elem;
-                if (_animExt) {
-                    _elem = document.createElement("video");
-                    _elem.setAttribute("autoplay", "");
-                    _elem.setAttribute("muted", "");
-                    _elem.setAttribute("loop", "");
-                }
-                else if (_staticExt)
-                    _elem  = document.createElement("img");
-
-                _elem.setAttribute("id", `loader_${postId}-${index}`);
-                _elem.setAttribute("src", src);
-                mediaElem.appendChild(_elem);
-                mediaContainerInsert(mediaElem, link, postId, index);
-            }
         }
 
         processPostEvent.addHandler(ImageLoader.loadImages);

@@ -251,16 +251,81 @@ browser.runtime.onMessage.addListener(function(request, sender)
             showPageAction(tab.id, tab.url);
         return Promise.resolve(getSettings());
     }
-    else if (request.name == "setSetting")
+    else if (request.name === "setSetting")
         return Promise.resolve(setSetting(request.key, request.value));
-    else if (request.name == "collapseThread")
+    else if (request.name === "collapseThread")
         return Promise.resolve(collapseThread(request.id));
-    else if (request.name == "unCollapseThread")
+    else if (request.name === "unCollapseThread")
         return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
         return Promise.resolve(openIncognito(request.value));
     else if (request.name === 'allowedIncognitoAccess')
         return Promise.resolve(allowedIncognito);
+    else if (request.name === "injectCarousel") {
+        let commonCode = `
+            var container = document.querySelector("${request.select}");
+            var carouselOpts = {
+                autoHeight: true,
+                slidesPerView: 1,
+                centeredSlides: true,
+                navigation: {
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+                },
+                on: {
+                    init: function() {
+                        var swiperEl = this;
+                        var wrapper = container.querySelector(".swiper-wrapper");
+                        var mediaSlideFirstIndex = function(elem) {
+                            var iter = Array.from(elem.children);
+                            for (var i=0; i<iter.length-1; i++) {
+                                if (iter[i].nodeName === "VIDEO")
+                                    return i;
+                            }
+                            return -1;
+                        };
+
+                        // if video is first then recalc the carousel height once loaded
+                        var firstSlide = wrapper.children[0];
+                        if (firstSlide.nodeName === "VIDEO") {
+                            firstSlide.addEventListener("loadedmetadata", function() {
+                                swiperEl.update();
+                            });
+                        }
+                        // autoplay only if video is the first slide
+                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
+                        if (swiperEl.realIndex === videoSlideIndex)
+                            wrapper.children[videoSlideIndex].play();
+                    },
+                    transitionEnd: function() {
+                        // toggle autoplay on slides as we transition to/from them
+                        var slides = container.querySelectorAll('video');
+                        slides.forEach(function(x) {
+                            if (x.className.indexOf("swiper-slide-active") > -1) {
+                                x.play();
+                                x.muted = false;
+                            }
+                            else {
+                                x.muted = true;
+                                x.pause();
+                            }
+                        });
+                    }
+                }
+            };
+            var swiper = new Swiper(container, carouselOpts);
+        `;
+        browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
+        .then((res) => {
+            if (res) {
+                browser.tabs.executeScript(null, { file: "ext/swiper/swiper.min.js" }).then(() => {
+                    browser.tabs.executeScript(null, { code: `${commonCode}` });
+                });
+            } else {
+                browser.tabs.executeScript(null, { code: `${commonCode}` });
+            }
+        });
+    }
 
     return Promise.resolve();
 });

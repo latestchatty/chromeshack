@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.55",
+    "version": "1.56",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -102,6 +102,8 @@
         "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
+        "ext/swiper/swiper.min.css",
+        "ext/swiper/swiper.min.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",

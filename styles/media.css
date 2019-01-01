@@ -2,12 +2,12 @@
 /* MEDIA QUERIES FOR RESPONSIVENESS (workaround for image weirdness) */
 @media only screen and (max-width: 768px) {
     /* switch to a scrollable column-only layout */
-    .media-container { grid-template-columns: 100% !important; }
+    .media-container.responsive { grid-template-columns: 100% !important; }
 }
 @media only screen and (min-width: 1267px) {
-    .media-container {
+    .media-container.responsive {
         /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
-        grid-template-columns: repeat(auto-fit, minmax(auto, var(--min-media-col-size))) !important;
+        grid-template-columns: repeat(auto-fit, minmax(var(--min-media-col-size), 1fr)) !important;
     }
 }
 /* END MEDIA QUERIES */
@@ -17,16 +17,17 @@
     --gutter-size: 6px;
     --min-media-col-size: calc(33% - var(--gutter-size));
     --max-media-col-size: calc(50% - var(--gutter-size));
-    --max-media-item-height: 480px;
     --min-media-item-height: 200px;
-    --max-media-item-width: 640px;
+    --max-media-item-height: 640px;
     --min-media-item-width: 300px;
+    --max-media-item-width: 854px;
+    --max-social-item-width: 640px;
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.media-container {
+.media-container.responsive {
     display: grid !important;
     /* default to a largest-first-or-50% layout */
     grid-template-columns: repeat(auto-fit, minmax(var(--max-media-col-size), 1fr));
@@ -35,12 +36,25 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
-.imageloader video,
-.imageloader img {
+.medialoader {
+    height: 100%;
+    width: 100%;
+}
+.medialoader video:not(.swiper-slide),
+.medialoader img:not(.swiper-slide) {
     outline: 0 !important;
     width: 100% !important;
     height: auto !important;
     box-sizing: border-box;
+    object-fit: contain !important;
+    min-height: var(--min-media-item-height);
+    min-width: var(--min-media-item-width);
+    max-height: var(--max-media-item-height);
+    max-width: var(--max-media-item-width);
+}
+.medialoader video.swiper-slide,
+.medialoader img.swiper-slide {
+    /* let carousel style itself but maintain ratio */
     object-fit: contain !important;
     max-height: var(--max-media-item-height);
     max-width: var(--max-media-item-width);
@@ -48,8 +62,8 @@
 .iframe-container.hidden,
 .twitch-container.hidden,
 .yt-container.hidden,
-.imageloader video.hidden,
-.imageloader img.hidden {
+.medialoader video.hidden,
+.medialoader img.hidden {
     display: none !important;
 }
 .iframe-container,
@@ -85,3 +99,21 @@ div.expando {
 }
 /* end expando */
 
+/* customizations for carousel */
+:not(div.instgrm-container) .swiper-container {
+    /* workaround 1 for non-instagram responsiveness */
+    margin: unset !important;
+}
+.swiper-container.medialoader {
+    /* workaround 2 for non-instagram responsiveness */
+    margin: unset !important;
+    max-width: var(--max-media-item-width);
+    max-height: var(--max-media-item-height);
+}
+.swiper-container.instgrm-embed {
+    max-width: var(--max-social-item-width);
+    max-height: var(--max-media-item-height);
+}
+.swiper-button-next,
+.swiper-button-prev { opacity: 0.5 !important; }
+.swiper-button-disabled { opacity: 0.2 !important; }

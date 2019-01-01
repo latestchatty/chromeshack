@@ -11,7 +11,7 @@
 twitter-widget {
     /* do our injected twttr-wjs widget styling here */
     min-width: var(--min-media-item-width);
-    max-width: var(--max-media-item-width);
+    max-width: var(--max-social-item-width);
 }
 
 /* custom instagram container */
@@ -21,16 +21,12 @@ twitter-widget {
     background: #fff;
     border: 1px solid #000;
     border-radius: 4px;
-    min-height: var(--min-media-item-height);
-    max-height: var(--max-media-item-height);
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-media-item-width);
-    box-sizing: border-box !important;
     padding: 0 0 0.5em 0;
     margin: 0;
     font-size: 14px;
     font-family: var(--common-sans);
     color: #262626;
+    max-width: var(--max-social-item-width);
 }
 .instgrm-container.hidden { display: none !important; }
 .instgrm-container span { color: #262626; }
@@ -75,20 +71,23 @@ twitter-widget {
 }
 .instgrm-logo svg { margin: 15px; }
 
-#instgrm_embed {
-    display: flex;
-    flex-flow: column nowrap;
-    align-self: center;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden !important;
-    padding: 0;
-}
-#instgrm_embed video,
-#instgrm_embed img {
+#instgrm_embed img:not(.swiper-slide),
+#instgrm_embed video:not(.swiper-slide) {
+    outline: 0 !important;
+    object-fit: contain !important;
     width: 100% !important;
     height: auto !important;
-    object-fit: contain;
+    min-width: var(--min-media-item-width);
+    min-height: var(--min-media-item-height);
+    max-width: var(--max-social-item-width);
+    max-height: var(--max-media-item-height);
+}
+#instgrm_embed img.swiper-slide,
+#instgrm_embed video.swiper-slide {
+    /* let carousel style itself but maintain ratio */
+    object-fit: contain !important;
+    max-width: var(--max-social-item-width);
+    max-height: var(--max-media-item-height);
 }
 
 #instgrm-caption {
@@ -100,6 +99,7 @@ twitter-widget {
     flex-flow: row wrap;
     align-self: center;
     align-items: center;
+    min-width: var(--min-media-item-width);
 }
 #instgrm_post_caption span {
     margin: 0 0.1em 0 0.1em;
@@ -135,7 +135,6 @@ twitter-widget {
 .instgrm-footer span {
     line-height: 17px;
     padding: 3px 0.1em 0 0.2em;
-    color:
 }
 .instgrm-footer a > span {
     display: flex;

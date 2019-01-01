@@ -41,7 +41,7 @@ settingsLoadedEvent.addHandler(function() {
             },
 
             getSocialType: function(href) {
-                var _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i;
+                var _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status(?:es)?\/(\d+)/i;
                 var _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\/?/i;
                 var _twttrMatch = _isTwitter.exec(href);
                 var _instgrmMatch = _isInstagram.exec(href);
@@ -182,6 +182,13 @@ settingsLoadedEvent.addHandler(function() {
             },
 
             parseInstagram: function(parentLink, socialId, postId, index) {
+                // start post parsing test list
+                //var socialId = "BqiWTWbgPr_9PYvcOrz4xMrmfRPfxkKvCq-qc00"; // image
+                //var socialId = "Bqgc_ILAHAh3nQztrir-X5S9_CpD3WLdRNyU5I0"; // multi-image
+                //var socialId = "BrTUB4ehLjW"; // video
+                //var socialId = "Bog2xW2HtAX"; // multi-video
+                // end post parsing test list
+
                 var postUrl = `https://www.instagram.com/p/${socialId}/`;
                 // if we have an instagram postId use it to toggle our element rather than query
                 var _target = parentLink.parentNode.querySelector(`#instgrm-container_${postId}-${index}`);
@@ -192,8 +199,6 @@ settingsLoadedEvent.addHandler(function() {
                     var response = await res.text();
                     // save our likes from the header
                     var _likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(response);
-                    // save our video url and details if there is any
-                    var _videoMatch = /<meta property="og:video" content="(.*)" \/>/i.exec(response);
                     // parse post's graphql dump into a json object
                     var _configGQL = (() => {
                         // many things could go wrong so make sure to log errors
@@ -211,18 +216,12 @@ settingsLoadedEvent.addHandler(function() {
                         var _postTimestamp = EmbedSocials.getDate(_matchGQL.taken_at_timestamp);
                         var _postURL = `https://instagr.am/p/${_matchGQL.shortcode}/`;
                         var _postCaption = _matchGQL.edge_media_to_caption;
-                        var _postMediaUrl = "";
+                        var _postMediaUrls = EmbedSocials.collectInstgrmMedia(_matchGQL);
                         if (_postCaption && _postCaption.edges[0]) {
                             _postCaption = _matchGQL.edge_media_to_caption.edges[0].node.text;
                             var caption = _target.querySelector("#instgrm-caption");
                             caption.appendChild(EmbedSocials.taggifyCaption(_postCaption));
                         }
-
-                        // use the first video link otherwise use the first image in the list
-                        if (_videoMatch)
-                            _postMediaUrl = _videoMatch && _videoMatch[1];
-                        else
-                            _postMediaUrl = _matchGQL.display_resources[0].src;
 
                         // populate our html elements
                         var postAuthorPic = _target.querySelector("#instgrm_author_pic");
@@ -232,18 +231,6 @@ settingsLoadedEvent.addHandler(function() {
                         var postLinkName = _target.querySelector("#instgrm_postlink_name");
                         var postTimestamp = _target.querySelector("#instgrm_post_timestamp");
                         var postParentUrl = _target.querySelector("#instgrm_post_url");
-
-                        var embed;
-                        // choose video over images
-                        if (_postMediaUrl.match(/.mp4$/i)) {
-                            embed = document.createElement("video");
-                            embed.setAttribute("src", _postMediaUrl);
-                            embed.setAttribute("muted", "");
-                            embed.setAttribute("controls", "");
-                        } else {
-                            embed = document.createElement("img");
-                            embed.setAttribute("src", _postMediaUrl);
-                        }
                         // set some relevant shortcuts in the header
                         var _profileLinkA = _target.querySelector("#instgrm_profile_a");
                         var _profileLinkB = _target.querySelector("#instgrm_profile_b");
@@ -263,10 +250,29 @@ settingsLoadedEvent.addHandler(function() {
 
                         // compile everything into our container and inject at once
                         var embedTarget = _target.querySelector("#instgrm_embed");
-                        embedTarget.appendChild(embed);
+                        var mediaContainer = appendMedia(_postMediaUrls, parentLink, postId, index, null, true);
+                        mediaContainer.classList.add("instgrm-embed");
+                        embedTarget.appendChild(mediaContainer);
                         mediaContainerInsert(_target, parentLink, postId, index);
                     } else { return alert("This account or post has been made private or cannot be found!"); }
                 });
+            },
+
+            collectInstgrmMedia: function(parsedGQL) {
+                var collector = [];
+                if (parsedGQL.__typename === "GraphSidecar") {
+                    parsedGQL.edge_sidecar_to_children.edges.forEach(edge => {
+                        Object.entries(edge).forEach(item => {
+                            // pick the video url of this item, or the smallest of the media choices (640x640)
+                            collector.push(item[1].video_url != null ? item[1].video_url : item[1].display_resources[0].src);
+                        })
+                    });
+                } else if (parsedGQL.__typename === "GraphVideo") {
+                    collector.push(parsedGQL.video_url);
+                } else if (parsedGQL.__typename === "GraphImage") {
+                    collector.push(parsedGQL.display_resources[0].src);
+                }
+                return collector;
             },
         }
         processPostEvent.addHandler(EmbedSocials.getLinks);

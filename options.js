@@ -13,6 +13,7 @@ function loadOptions()
     showUserFilters(getOption("user_filters"));
     $('input#scroll_to_post_smooth').prop('checked', getOption('scroll_to_post_smooth'));
     showEmbedSocials(getOption("embed_socials"));
+    showAlternateEmbedStyle(getOption("alternate_embed_style"));
     showEnabledScripts();
     trackChanges();
 }
@@ -42,6 +43,13 @@ function showEmbedSocials(enabled) {
     if (enabled)
         embeds.checked = enabled;
     return embeds.checked;
+}
+
+function showAlternateEmbedStyle(enabled) {
+    var embedStyle = document.getElementById("alternate_embed_style");
+    if (enabled)
+        embedStyle.checked = enabled;
+    return embedStyle.checked;
 }
 
 function showImageLoaderNewTab(enabled)
@@ -536,6 +544,7 @@ function saveOptions()
         saveOption("user_filters", getUserFilters());
         saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
         saveOption("embed_socials", showEmbedSocials());
+        saveOption("alternate_embed_style", showAlternateEmbedStyle());
     }
     catch (err)
     {
