@@ -102,6 +102,8 @@
         "*://*.bit-shift.com/*"
     ],
     "web_accessible_resources": [
+        "ext/basiclightbox/basicLightbox.min.css",
+        "ext/basiclightbox/basicLightbox.min.js",
         "ext/swiper/swiper.min.css",
         "ext/swiper/swiper.min.js",
         "images/banners/offtopic.png",

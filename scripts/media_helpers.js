@@ -291,6 +291,19 @@ function insertCarousel(elem) {
     return carouselContainer;
 }
 
+function insertLightbox(elem) {
+    var head = document.getElementsByTagName("head")[0];
+    if (head.innerHTML.indexOf("basicLightbox.min.css") == -1) {
+        // make sure we have necessary css injected
+        var lightboxCSS = document.createElement("link");
+        lightboxCSS.rel = "stylesheet";
+        lightboxCSS.type = "text/css";
+        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox.min.css");
+        head.appendChild(lightboxCSS);
+    }
+    browser.runtime.sendMessage({ name: 'lightbox', elemText: elem.outerHTML });
+}
+
 function attachChildEvents(elem, id, index) {
     var childElems = [].concat(
         Array.from(elem.querySelectorAll("video")),
@@ -330,8 +343,8 @@ function attachChildEvents(elem, id, index) {
                             e.preventDefault();
                             // pause our current video before re-opening it
                             if (e.target.nodeName === "VIDEO") { e.target.pause(); }
-                            // open this media link in a new window/tab when middle-clicked
-                            window.open(e.target.src);
+                            // reopen this element in a lightbox overlay
+                            insertLightbox(e.target);
                         } else if (e.which === 1 && swiperEl == null && instgrmEl == null) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked

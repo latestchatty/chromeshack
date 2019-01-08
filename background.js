@@ -261,13 +261,29 @@ browser.runtime.onMessage.addListener(function(request, sender)
         return Promise.resolve(openIncognito(request.value));
     else if (request.name === 'allowedIncognitoAccess')
         return Promise.resolve(allowedIncognito);
+    else if (request.name === 'lightbox') {
+        let commonCode = `
+            var lightbox = window.basicLightbox.create('${request.elemText}');
+            lightbox.show();
+        `;
+        browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
+        .then((res) => {
+            if (res) {
+                browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox.min.js" }).then(() => {
+                    browser.tabs.executeScript(null, { code: `${commonCode}` });
+                });
+            } else {
+                browser.tabs.executeScript(null, { code: `${commonCode}` });
+            }
+        });
+    }
     else if (request.name === "injectCarousel") {
         let commonCode = `
             var container = document.querySelector("${request.select}");
             var carouselOpts = {
                 autoHeight: true,
-                slidesPerView: 1,
                 centeredSlides: true,
+                slidesPerView: 'auto',
                 navigation: {
                   nextEl: '.swiper-button-next',
                   prevEl: '.swiper-button-prev',
@@ -313,6 +329,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
                     }
                 }
             };
+            if (${getSetting("alternate_embed_style")} === true) { carouselOpts.autoHeight = false; }
             var swiper = new Swiper(container, carouselOpts);
         `;
         browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
