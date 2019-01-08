@@ -129,15 +129,12 @@ settingsLoadedEvent.addHandler(function()
                     var video = document.createElement("div");
                     var spacer = document.createElement("div");
                     spacer.setAttribute("class", "iframe-spacer hidden");
-                    spacer.style.height = `${height}px`;
-                    spacer.style.width = `${width}px`;
+                    spacer.setAttribute("style", `min-width: ${width*.33}px; max-height: ${height}px; max-width: ${width}px;`);
                     video.setAttribute("class", "iframe-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     video.innerHTML = /*html*/`
                         <iframe
                             id="iframe_${postId}-${index}"
-                            width="${width}"
-                            height="${height}"
                             src="${video_src}"
                             frameborder="0"
                             scale="tofit"
@@ -195,8 +192,6 @@ settingsLoadedEvent.addHandler(function()
                     video.innerHTML = /*html*/`
                         <iframe
                             id="iframe_${postId}-${index}"
-                            width="${width}"
-                            height="${height}"
                             src="${video_src}"
                             frameborder="0"
                             allow="autoplay; encrypted-media"
@@ -242,8 +237,6 @@ settingsLoadedEvent.addHandler(function()
                         <iframe
                             id="iframe_${postId}-${index}"
                             src="${video_src}"
-                            width="${width}"
-                            height="${height}"
                             frameborder="0"
                             scrolling="no"
                             allowfullscreen
