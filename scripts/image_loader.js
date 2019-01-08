@@ -28,7 +28,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 if (/https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?[\w\d\-]+/.test(href) ||
                     /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:[\w]+|[\w]+\-.*?)/.test(href) ||
-                    /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)[\w\d\-]+/.test(href))
+                    /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?[\w\-]+/i.test(href))
                     return true;
 
                 return false;
@@ -244,11 +244,11 @@ settingsLoadedEvent.addHandler(function()
             createGiphy: function(link, postId, index)
             {
                 // only use the alphanumeric id without the label
-                var _matchGiphy = /https?\:\/\/(?:.*\.)?giphy.com\/(?:embed\/|gifs\/)(?:.*\-)?([\w\d\-]+)/igm.exec(link.href);
+                var _matchGiphy = /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?([\w\-]+)/i.exec(link.href);
                 var _giphyId = _matchGiphy && _matchGiphy[1];
 
                 if (_giphyId) {
-                    var src = `https://media2.giphy.com/media/${_giphyId}/giphy.mp4`;
+                    var src = `https://media.giphy.com/media/${_giphyId}/giphy.mp4`;
                     appendMedia(src, link, postId, index);
                 } else { console.log(`An error occurred parsing the Giphy url: ${link.href}`); }
             },
