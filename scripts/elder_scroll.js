@@ -40,7 +40,6 @@ ElderScroll =
             // apply some additional aggressive performance enhancements for Webkit
             if (perfHack) {
                 var eventArr = [
-                    'mousemove',
                     'animationend',
                     'oAnimationEnd',
                     'webkitAnimationEnd'
