@@ -27,7 +27,7 @@ settingsLoadedEvent.addHandler(function()
             isVideo: function(href)
             {
                 if (/https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?[\w\d\-]+/.test(href) ||
-                    /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:[\w]+|[\w]+\-.*?)/.test(href) ||
+                    /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/[\w]+|[\w]+|[\w]+\-.*?)/.test(href) ||
                     /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?[\w\-]+/i.test(href))
                     return true;
 
@@ -188,7 +188,7 @@ settingsLoadedEvent.addHandler(function()
             createGfycat: async function(link, postId, index)
             {
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:([\w]+)|([\w]+)\-.*?)/.exec(_link);
+                var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/.exec(_link);
                 // we can match against both direct and indirect links
                 var gfycat_id = _match && _match[1] || _match[2];
                 var gfycatKey = await getGfycatCredentials();
