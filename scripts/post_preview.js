@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(function()
                     var previewButton = document.createElement("button");
                     previewButton.id = "previewButton";
                     previewButton.setAttribute("type", "button");
-                    previewButton.replaceHTML("Preview");
+                    previewButton.innerHTML = "Preview";
                     if (getSetting("post_preview_location") == "Left")
                         postButton.parentNode.insertBefore(previewButton, postButton);
                     else
@@ -54,7 +54,7 @@ settingsLoadedEvent.addHandler(function()
             {
                 var previewArea = document.getElementById("previewArea");
                 var form_body = document.getElementById("frm_body");
-                previewArea.replaceHTML(generatePreview(form_body.value));
+                previewArea.innerHTML = generatePreview(form_body.value);
                 previewArea.style.display = "block";
                 if(getSetting("post_preview_live") === false) {
                     form_body.style.display = "none";
@@ -77,7 +77,7 @@ settingsLoadedEvent.addHandler(function()
 
             updatePreview: function()
             {
-                document.getElementById("previewArea").replaceHTML(generatePreview(document.getElementById("frm_body").value));
+                document.getElementById("previewArea").innerHTML = generatePreview(document.getElementById("frm_body").value);
             }
         }
 

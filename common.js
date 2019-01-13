@@ -271,22 +271,6 @@ function elementIsVisible(elem)
     );
 }
 
-HTMLElement.prototype.appendHTML = function(html)
-{
-    // https://stackoverflow.com/a/42658543
-    var dom = new DOMParser().parseFromString(html, 'text/html').body;
-    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
-}
-
-HTMLElement.prototype.replaceHTML = function(html)
-{
-    // ex: https://stackoverflow.com/a/42658543
-    // a slower but somewhat safer alternative to innerHTML
-    while (this.hasChildNodes()) this.removeChild(this.lastChild);
-    var dom = new DOMParser().parseFromString(html, 'text/html').body;
-    while (dom.hasChildNodes()) this.appendChild(dom.firstChild);
-}
-
 HTMLElement.prototype.removeChildren = function()
 {
     // https://stackoverflow.com/a/42658543

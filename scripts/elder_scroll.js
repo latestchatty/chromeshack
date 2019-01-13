@@ -162,7 +162,7 @@ ElderScroll =
             divThreads.removeChild(ElderScroll.getDivMessage());
             // a _bad_ way of doing this...
             var divResponse = document.createElement('div');
-            divResponse.replaceHTML(response);
+            divResponse.innerHTML = response;
 
             var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
             var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');

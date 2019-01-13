@@ -38,7 +38,7 @@
 
         if (text == null || text.length == 0)
         {
-            ret.replaceHTML('&nbsp;');
+            ret.innerHTML = '&nbsp;';
         }
         else
         {

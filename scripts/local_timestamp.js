@@ -44,7 +44,7 @@ LocalTimeStamp =
 			dt=hours+":"+minutes+" "+suffix;
         }
 
-		elm.replaceHTML(`${dd} ${dt} ${tz}`);
+		elm.innerHTML  = `${dd} ${dt} ${tz}`;
     },
 
     formatTimezone: function(tz)
