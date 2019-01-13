@@ -37,18 +37,13 @@ ElderScroll =
                 if (perfHack) { e.stopImmediatePropagation(); }
             }, true);
 
-            // apply some additional aggressive performance enhancements for Webkit
             if (perfHack) {
-                var eventArr = [
-                    'animationend',
-                    'oAnimationEnd',
-                    'webkitAnimationEnd'
-                ];
-                for (var i=0; i < eventArr.length; i++) {
-                    window.addEventListener(eventArr[i], function(e) {
-                        e.stopImmediatePropagation();
-                    }, true);
-                }
+                // apply an additional aggressive performance enhancement for Webkit link-hover
+                window.addEventListener('transitionend', function(e) {
+                    // only do this if we don't need the transition event
+                    var swiperExists = document.querySelector("div.swiper-wrapper");
+                    if (swiperExists == null) { e.stopImmediatePropagation(); }
+                }, true);
             }
         }
     },
