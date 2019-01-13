@@ -151,7 +151,7 @@ let refreshThreadPane;
     }
 
     function parseRootAuthor($opDiv) {
-        const $rootAuthorAnchor = $opDiv.find('div.postmeta span.author span.user a');
+        const $rootAuthorAnchor = $opDiv.find('div.postmeta span.author span.user');
         if ($rootAuthorAnchor.length !== 1) {
             throw new Error(`Could not find the author username.`);
         }
