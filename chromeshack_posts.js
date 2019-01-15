@@ -24,8 +24,7 @@ ChromeShack =
                             var source_id = elem.id;
 
                             // starts with "root", they probably refreshed the thread
-                            if (node && node.id.indexOf("root_") == 0)
-                            {
+                            if (node.classList != null && node.classList.contains("root")) {
                                 // don't scroll - can't tell between fullpost and rootpost!
                                 debounced(ChromeShack.processFullPosts, elem);
                             }
