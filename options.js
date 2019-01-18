@@ -11,7 +11,6 @@ function loadOptions()
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
-    $('input#scroll_to_post_smooth').prop('checked', getOption('scroll_to_post_smooth'));
     showEmbedSocials(getOption("embed_socials"));
     showAlternateEmbedStyle(getOption("alternate_embed_style"));
     showEnabledScripts();
@@ -542,7 +541,6 @@ function saveOptions()
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
-        saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
         saveOption("embed_socials", showEmbedSocials());
         saveOption("alternate_embed_style", showAlternateEmbedStyle());
     }
