@@ -11,7 +11,8 @@ settingsLoadedEvent.addHandler(function () {
                 {original: "timaste", new_name: "timmytaste", original_id: 172749, alt_id: 10187646},
                 {original: "The Grolar Bear", new_name: "The Gorilla Bear", original_id: 209153, alt_id: 10187648},
                 {original: "jingletard", new_name: "Jingletardigrade", original_id: 194581, alt_id: 10196015},
-                {original: "ArB", new_name: "jingleArB", original_id: 159879, alt_id: 10195980}
+                {original: "ArB", new_name: "jingleArB", original_id: 159879, alt_id: 10195980},
+                {original: "Rigor Morts", new_name: "dewhickey", original_id: 173971, alt_id: 10196460}
             ],
 
             loadSwitchers: function (item) {
