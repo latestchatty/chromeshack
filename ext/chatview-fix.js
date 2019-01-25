@@ -152,7 +152,7 @@ function show_item_fullpost(f, h, b) {
     var k = parent.document.getElementById("root_" + f);
     var e = parent.document.getElementById("item_" + h);
     push_front_element(e, b);
-    scrollToItem(b); // patched scroll-to-post
+    scrollToItem(e); // patched scroll-to-post
     e.className = add_to_className(e.className, "sel");
     var c = find_element(e, "DIV", "oneline");
     c.className = add_to_className(c.className, "hidden")
@@ -675,50 +675,17 @@ function elementVisible(b) {
 // end external code
 
 // start local code
-let monkeyPatch = /*javascript*/`
-    function clickItem(b, f) {
-        var d = window.frames.dom_iframe;
-        var e = d.document.getElementById("item_" + f);
-        if (uncap_thread(b)) {
-            elem_position = $("#item_" + f).position();
-            scrollToItem($("li#item_" + f).get(0)); // patched
-        }
-        sLastClickedItem = f;
-        sLastClickedRoot = b;
-        if (d.document.getElementById("items_complete") && e) {
-            var c = find_element(e, "DIV", "fullpost");
-            var a = import_node(document, c);
-            show_item_fullpost(b, f, a);
-            return false
-        } else {
-            path_pieces = document.location.pathname.split("?");
-            parent_url = path_pieces[0];
-            navigate_page_no_history(d, "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url);
-            return false
-        }
-
-        function scrollToItem(b) {
-            if (!elementVisible(b)) {
-                $(b).animate({ scrollTop: $('body').scrollTop() + $(b).offset().top - $('body').offset().top }, 0);
-                $('html, body').animate({ scrollTop: $(b).offset().top - ($(window).height()/4) }, 0);
-            }
-        }
-        function elementVisible(b) {
-            var elementTop = $(b).offset().top;
-            var elementBottom = elementTop + $(b).outerHeight();
-            var viewportTop = $(window).scrollTop();
-            var viewportBottom = viewportTop + $(window).height();
-            return elementBottom > viewportTop && elementTop < viewportBottom;
-        }
-    }
-`;
+let monkeyPatch = `${clickItem.toString()}
+${show_item_fullpost.toString()}
+${scrollToItem.toString()}
+${elementVisible.toString()}`;
+console.log(monkeyPatch);
 // end local code
-
 
 // injection logic for chatview-fix
 var chatViewFixElem = document.createElement("script");
 chatViewFixElem.id = "chatviewfix-wjs";
-chatViewFixElem.innerHTML = `${monkeyPatch}`;
+chatViewFixElem.innerHTML = monkeyPatch;
 var bodyRef = document.getElementsByTagName("body")[0];
 var cvfRef = document.getElementById("chatviewfix-wjs");
 if (cvfRef) { bodyRef.removeChild(cvfRef); }
