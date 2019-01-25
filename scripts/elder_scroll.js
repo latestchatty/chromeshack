@@ -189,7 +189,6 @@ ElderScroll =
             divThreads.appendChild(fragment.cloneNode(true));
 
             // update pageNavigation divs
-            var divThreadContainer = ElderScroll.getDivThreadContainer();
             var divNavigation = ElderScroll.getDivNavigation();
             divNavigation[0].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[0]);
             divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);

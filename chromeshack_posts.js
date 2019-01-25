@@ -4,7 +4,7 @@ ChromeShack =
     {
         // use some cached debounce helpers to prevent odd event behavior when bubbling
         // monkey patch the 'clickItem()' method on Chatty
-        browser.runtime.sendMessage({ name: 'clickItemFix' });
+        browser.runtime.sendMessage({ name: 'chatViewFix' });
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         var observer = new MutationObserver(function(mutationsList) {

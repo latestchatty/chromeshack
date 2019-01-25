@@ -261,65 +261,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
         return Promise.resolve(openIncognito(request.value));
     else if (request.name === "allowedIncognitoAccess")
         return Promise.resolve(allowedIncognito);
-    else if (request.name === "clickItemFix") {
-        let monkeyPatch = `
-            var clickItemFixElem = document.createElement("script");
-            clickItemFixElem.id = "clickitemfix-wjs";
-            clickItemFixElem.innerHTML = \`
-                // monkey-patch applied by Chrome Shack to fix scroll-to-post issues
-                var elementVisible = function(b) {
-                    var elementTop = $(b).offset().top;
-                    var elementBottom = elementTop + $(b).outerHeight();
-                    var viewportTop = $(window).scrollTop();
-                    var viewportBottom = viewportTop + $(window).height();
-                    return elementBottom > viewportTop && elementTop < viewportBottom;
-                }
-                var scrollToItem = function(b) {
-                    if (!elementVisible(b)) {
-                        $(b).animate({ scrollTop: $('body').scrollTop() + $(b).offset().top - $('body').offset().top }, 0);
-                        $('html, body').animate({ scrollTop: $(b).offset().top - ($(window).height()/4) }, 0);
-                    }
-                }
-                var clickItem = function(b, f) {
-                    var d = window.frames.dom_iframe;
-                    var e = d.document.getElementById("item_" + f);
-                    if (uncap_thread(b)) {
-                        elem_position = $("#item_" + f).position();
-                        scrollToItem($("li#item_" + f).get(0));
-                    }
-                    sLastClickedItem = f;
-                    sLastClickedRoot = b;
-                    if (d.document.getElementById("items_complete") && e) {
-                        var c = find_element(e, "DIV", "fullpost");
-                        var a = import_node(document, c);
-                        show_item_fullpost(b, f, a);
-                        return false
-                    } else {
-                        path_pieces = document.location.pathname.split("?");
-                        parent_url = path_pieces[0];
-                        navigate_page_no_history(d, "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url);
-                        return false
-                    }
-                }
-            \`;
-            var bodyRef = document.getElementsByTagName("body")[0];
-            bodyRef.appendChild(clickItemFixElem);
-        `;
-        browser.tabs.executeScript(null, { code: `document.getElementById("clickitemfix-wjs") == null`})
-        .then(res => {
-            if (res) { browser.tabs.executeScript(null, { code: `${monkeyPatch}` }); }
-            else {
-                browser.tabs.executeScript(null, { code: `
-                    var ci = document.getElementById("clickitemfix-wjs");
-                    ci.parentNode.removeChild(ci);
-                    // override previous monkey-patch
-                    var clickItem = function() { return false; }
-                ` }).then(() => {
-                    browser.tabs.executeScript(null, { code: `${monkeyPatch}` });
-                });
-            }
-        });
-    }
+    else if (request.name === "chatViewFix")
+        browser.tabs.executeScript(null, { file: "ext/chatview-fix.js" });
     else if (request.name === "lightbox") {
         let commonCode = `
             var lightbox = window.basicLightbox.create('${request.elemText}');

@@ -107,6 +107,7 @@
         "ext/basiclightbox/basicLightbox.min.js",
         "ext/swiper/swiper.min.css",
         "ext/swiper/swiper.min.js",
+        "ext/chatview-fix.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",
