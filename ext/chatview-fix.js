@@ -679,7 +679,6 @@ let monkeyPatch = `${clickItem.toString()}
 ${show_item_fullpost.toString()}
 ${scrollToItem.toString()}
 ${elementVisible.toString()}`;
-console.log(monkeyPatch);
 // end local code
 
 // injection logic for chatview-fix
