@@ -2,10 +2,6 @@ ChromeShack =
 {
     install: function()
     {
-        // use some cached debounce helpers to prevent odd event behavior when bubbling
-        // monkey patch the 'clickItem()' method on Chatty
-        browser.runtime.sendMessage({ name: 'chatViewFix' });
-
         // use MutationObserver instead of Mutation Events for a massive performance boost
         var observer = new MutationObserver(function(mutationsList) {
             mutationsList.forEach(function(mutation) {
@@ -58,6 +54,9 @@ ChromeShack =
         }
         ChromeShack.processPostStyle(element);
         fullPostsCompletedEvent.raise();
+
+        // monkey patch the 'clickItem()' method on Chatty once we're done loading
+        browser.runtime.sendMessage({ name: 'chatViewFix' });
     },
 
     processPost: function(item, root_id)
