@@ -261,8 +261,12 @@ browser.runtime.onMessage.addListener(function(request, sender)
         return Promise.resolve(openIncognito(request.value));
     else if (request.name === "allowedIncognitoAccess")
         return Promise.resolve(allowedIncognito);
-    else if (request.name === "chatViewFix")
-        browser.tabs.executeScript(null, { file: "ext/chatview-fix.js" });
+    else if (request.name === "chatViewFix") {
+        browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
+        .then(res => {
+            if (res) { browser.tabs.executeScript(null, { file: "ext/chatview-fix.js" }); }
+        });
+    }
     else if (request.name === "lightbox") {
         let commonCode = `
             var lightbox = window.basicLightbox.create('${request.elemText}');

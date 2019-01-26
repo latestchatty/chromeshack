@@ -675,7 +675,7 @@ function elementVisible(b) {
 // end external code
 
 // start local code
-let monkeyPatch = `${clickItem.toString()}
+var monkeyPatchCVF = `${clickItem.toString()}
 ${show_item_fullpost.toString()}
 ${scrollToItem.toString()}
 ${elementVisible.toString()}`;
@@ -684,8 +684,6 @@ ${elementVisible.toString()}`;
 // injection logic for chatview-fix
 var chatViewFixElem = document.createElement("script");
 chatViewFixElem.id = "chatviewfix-wjs";
-chatViewFixElem.innerHTML = monkeyPatch;
+chatViewFixElem.innerHTML = monkeyPatchCVF;
 var bodyRef = document.getElementsByTagName("body")[0];
-var cvfRef = document.getElementById("chatviewfix-wjs");
-if (cvfRef) { bodyRef.removeChild(cvfRef); }
 bodyRef.appendChild(chatViewFixElem);
