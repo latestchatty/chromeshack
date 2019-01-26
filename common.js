@@ -237,6 +237,21 @@ function debounce(cb, delay)
     };
 }
 
+function scrollToElement(elem) {
+    if (!elementVisible(elem)) {
+        $(elem).animate({ scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top }, 0);
+        $('html, body').animate({ scrollTop: $(elem).offset().top - ($(window).height()/4) }, 0);
+    }
+}
+
+function elementVisible(elem) {
+    var elementTop = $(elem).offset().top;
+    var elementBottom = elementTop + $(b).outerHeight();
+    var viewportTop = $(window).scrollTop();
+    var viewportBottom = viewportTop + $(window).height();
+    return elementBottom > viewportTop && elementTop < viewportBottom;
+}
+
 function convertUrlToLink(text)
 {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');

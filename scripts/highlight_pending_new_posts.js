@@ -81,19 +81,13 @@
         e.preventDefault();
         var aRefreshes = getNonCollapsedPendings();
         if (aRefreshes.length > 0) {
-            var scroll = $(window).scrollTop();
             var divFirstFullPost = aRefreshes[0].parentNode.parentNode.parentNode;
-
             for (var i = 0; i < aRefreshes.length; i++) {
                 var aRefresh = aRefreshes[i];
                 var divPostItem = aRefresh.parentNode.parentNode.parentNode;
-                var offset = $(divPostItem).offset().top;
-
                 // if the element would be elsewhere on the page - scroll to it
-                if (!elementIsVisible(divPostItem) && offset > scroll) {
-                    scrollToElement(divPostItem);
-                    return;
-                }
+                if (!elementVisible(divPostItem))
+                    return scrollToElement(divPostItem);
             }
 
             // default to the first pending post
