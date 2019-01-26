@@ -238,15 +238,13 @@ function debounce(cb, delay)
 }
 
 function scrollToElement(elem) {
-    if (!elementVisible(elem)) {
-        $(elem).animate({ scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top }, 0);
-        $('html, body').animate({ scrollTop: $(elem).offset().top - ($(window).height()/4) }, 0);
-    }
+    $(elem).animate({ scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top }, 0);
+    $('html, body').animate({ scrollTop: $(elem).offset().top - ($(window).height()/4) }, 0);
 }
 
-function elementVisible(elem) {
+function elementIsVisible(elem) {
     var elementTop = $(elem).offset().top;
-    var elementBottom = elementTop + $(b).outerHeight();
+    var elementBottom = elementTop + $(elem).outerHeight();
     var viewportTop = $(window).scrollTop();
     var viewportBottom = viewportTop + $(window).height();
     return elementBottom > viewportTop && elementTop < viewportBottom;
