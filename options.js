@@ -11,7 +11,6 @@ function loadOptions()
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
-    $('input#scroll_to_post_smooth').prop('checked', getOption('scroll_to_post_smooth'));
     showEmbedSocials(getOption("embed_socials"));
     showAlternateEmbedStyle(getOption("alternate_embed_style"));
     showEnabledScripts();
@@ -297,7 +296,7 @@ function addTag(event, tag)
     var lol_div = document.getElementById("lol_tags");
 
     var tag_row = document.createElement("div");
-    tag_row.replaceHTML(`Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`);
+    tag_row.innerHTML = `Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`;
 
     var remove_link = document.createElement("a");
     remove_link.href = "#";
@@ -542,20 +541,19 @@ function saveOptions()
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
-        saveOption("scroll_to_post_smooth", $('input#scroll_to_post_smooth').prop('checked'));
         saveOption("embed_socials", showEmbedSocials());
         saveOption("alternate_embed_style", showAlternateEmbedStyle());
     }
     catch (err)
     {
         //alert("There was an error while saving your settings:\n" + err);
-        status.replaceHTML(`Error: ${err}`);
+        status.innerHTML = `Error: ${err}`;
         return;
     }
 
-    status.replaceHTML("Options Saved.");
+    status.innerHTML = "Options Saved.";
     setTimeout(function() {
-        status.replaceHTML("");
+        status.innerHTML = "";
     }, 2000);
 }
 

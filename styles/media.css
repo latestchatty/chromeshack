@@ -36,6 +36,11 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
+.media-container:not(.responsive),
+.media-container:not(.responsive) img,
+.media-container:not(.responsive) video {
+    max-height: unset !important;
+}
 .medialoader {
     height: 100%;
     width: 100%;
@@ -114,6 +119,13 @@ div.expando {
     max-width: var(--max-social-item-width);
     max-height: var(--max-media-item-height);
 }
+.media-container:not(.responsive) .swiper-container.medialoader,
+.media-container:not(.responsive) .swiper-container.instgrm-embed {
+    max-height: unset !important;
+}
 .swiper-button-next,
 .swiper-button-prev { opacity: 0.5 !important; }
 .swiper-button-disabled { opacity: 0.2 !important; }
+
+/* fix z-index of lightbox so header bar doesn't cover it */
+div.basicLightbox { z-index: 99999; }

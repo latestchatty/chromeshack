@@ -37,19 +37,13 @@ ElderScroll =
                 if (perfHack) { e.stopImmediatePropagation(); }
             }, true);
 
-            // apply some additional aggressive performance enhancements for Webkit
             if (perfHack) {
-                var eventArr = [
-                    'mousemove',
-                    'animationend',
-                    'oAnimationEnd',
-                    'webkitAnimationEnd'
-                ];
-                for (var i=0; i < eventArr.length; i++) {
-                    window.addEventListener(eventArr[i], function(e) {
-                        e.stopImmediatePropagation();
-                    }, true);
-                }
+                // apply an additional aggressive performance enhancement for Webkit link-hover
+                window.addEventListener('transitionend', function(e) {
+                    // only do this if we don't need the transition event
+                    var swiperExists = document.querySelector("div.swiper-wrapper");
+                    if (swiperExists == null) { e.stopImmediatePropagation(); }
+                }, true);
             }
         }
     },
@@ -163,7 +157,7 @@ ElderScroll =
             divThreads.removeChild(ElderScroll.getDivMessage());
             // a _bad_ way of doing this...
             var divResponse = document.createElement('div');
-            divResponse.replaceHTML(response);
+            divResponse.innerHTML = response;
 
             var newDivThreadContainer = getDescendentByTagAndClassName(divResponse, 'div', 'commentsblock');
             var newDivNavigation = getDescendentByTagAndClassName(newDivThreadContainer, 'div', 'pagenavigation');
@@ -195,7 +189,6 @@ ElderScroll =
             divThreads.appendChild(fragment.cloneNode(true));
 
             // update pageNavigation divs
-            var divThreadContainer = ElderScroll.getDivThreadContainer();
             var divNavigation = ElderScroll.getDivNavigation();
             divNavigation[0].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[0]);
             divNavigation[1].parentNode.replaceChild(newDivNavigation.cloneNode(true), divNavigation[1]);

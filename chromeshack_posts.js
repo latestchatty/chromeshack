@@ -3,15 +3,8 @@ ChromeShack =
     install: function()
     {
         // use some cached debounce helpers to prevent odd event behavior when bubbling
-        var debounced = debounce(function(cb, node) { cb(node); }, 500);
-        var debouncedScroll = debounce(function(cb, node, arg) {
-            if (arg) { cb(node, arg); }
-            else { cb(node); }
-            if (getSetting("enabled_scripts").contains("scroll_to_post")) {
-                const smooth = getSetting('scroll_to_post_smooth', true);
-                scrollToElement(node, smooth ? 200 : 0);
-            }
-        }, 100);
+        // monkey patch the 'clickItem()' method on Chatty
+        browser.runtime.sendMessage({ name: 'chatViewFix' });
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         var observer = new MutationObserver(function(mutationsList) {
@@ -21,37 +14,33 @@ ChromeShack =
                         // wrap in a try/catch in case our element node is null
                         try {
                             var elem = node.parentNode;
-                            var source_id = elem.id;
+                            var source_id = (!!elem && elem.id != null) && elem.id;
 
                             // starts with "root", they probably refreshed the thread
-                            if (node && node.id.indexOf("root_") == 0)
-                            {
-                                // don't scroll - can't tell between fullpost and rootpost!
-                                debounced(ChromeShack.processFullPosts, elem);
-                            }
+                            if (node.classList != null && node.classList.contains("root"))
+                                ChromeShack.processFullPosts(elem);
 
                             // starts with "item_", they probably clicked on a reply
-                            if (source_id.indexOf("item_") == 0)
+                            if (!!source_id && source_id.indexOf("item_") == 0)
                             {
                                 // grab the id from the old node, since the new node doesn't contain the id
                                 var id = source_id.substr(5);
-                                debouncedScroll(ChromeShack.processPost, elem, id);
+                                ChromeShack.processPost(elem, id);
                             }
                         }
-                        catch (e) {}
+                        catch (e) { console.log("A problem occurred when processing a post:", e); }
                     })
 
                     mutation.addedNodes.forEach(function (changedNode) {
                         try {
-                            var changed_id = changedNode.id;
+                            var changed_id = changedNode.id !== null && changedNode.id;
 
                             // check specifically for the postbox being added
-                            if (changed_id == "postbox")
-                            {
-                                debouncedScroll(ChromeShack.processPostBox, changedNode);
+                            if (!!changed_id && changed_id == "postbox") {
+                                ChromeShack.processPostBox(changedNode);
                             }
                         }
-                        catch (e) {}
+                        catch (e) { console.log("A problem occurred when processing a post:", e); }
                     })
                 }
             })

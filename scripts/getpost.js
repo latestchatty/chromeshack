@@ -42,8 +42,8 @@ settingsLoadedEvent.addHandler(function() {
                         var response = await res.text();
                         var postDiv = document.createElement("div");
                         // hack-ish way of "parsing" string to DOM
-                        postDiv.replaceHTML(response);
-                        postDiv = postDiv.childNodes[1];
+                        postDiv.innerHTML = response;
+                        postDiv = postDiv.childNodes[5];
 
                         // nuke fullpost class as we don't want
                         // chatview.js to interact with posts it's

@@ -34,7 +34,7 @@ settingsLoadedEvent.addHandler(function()
                 }
                 link.href = url;
                 link.title = "Check out what got the [lol]s";
-                link.replaceHTML("* L O L ' d *");
+                link.innerHTML = "* L O L ' d *";
                 link.style.backgroundImage = `url("${browser.runtime.getURL("../images/lol.png")}")`;
                 // insert our link intelligently to preserve formatting
                 if (newComment != null)
@@ -255,7 +255,7 @@ settingsLoadedEvent.addHandler(function()
                             new_tag += " ' D *";
                             element.dataset.isloled = true;
                         }
-                        element.replaceHTML(new_tag);
+                        element.innerHTML = new_tag;
                     } else
                         alert(response);
                 });
@@ -384,11 +384,11 @@ settingsLoadedEvent.addHandler(function()
                         {
                             if (LOL.showCounts == 'short')
                             {
-                                tgt.replaceHTML(LOL.counts[rootId][id][tag]);
+                                tgt.innerHTML = LOL.counts[rootId][id][tag];
                             }
                             else
                             {
-                                tgt.replaceHTML(`${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`);
+                                tgt.innerHTML = `${tag} \u00d7 ${LOL.counts[rootId][id][tag]}`;
                             }
                         }
 

@@ -427,15 +427,16 @@ settingsLoadedEvent.addHandler(function()
 
             updateStatusLabel: function(files) {
                 // update our status label
+                var label = $("#uploadStatusLabel")[0];
                 if (files != null && files.length > 0 && files.length < 2) {
-                    $("#uploadStatusLabel")[0].replaceHTML(`${files[0].name}`);
+                    label.innerHTML = `${files[0].name}`;
                     return true;
                 } else if (files != null && files.length > 1) {
-                    $("#uploadStatusLabel")[0].replaceHTML(`${files.length} items for upload`);
+                    label.innerHTML = `${files.length} items for upload`;
                     return true;
                 }
 
-                $("#uploadStatusLabel")[0].replaceHTML("");
+                label.innerHTML = "";
                 return false;
             },
 

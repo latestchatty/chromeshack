@@ -36,12 +36,12 @@ settingsLoadedEvent.addHandler(function()
 
                         var s1 = document.createElement("span");
                         s1.className = "shadow";
-                        s1.replaceHTML(lines[i]);
+                        s1.innerHTML = lines[i];
                         panel.appendChild(s1);
 
                         var s2 = document.createElement("span");
                         s2.className = "front";
-                        s2.replaceHTML(lines[i]);
+                        s2.innerHTML = lines[i];
                         panel.appendChild(s2);
 
                         comic_div.appendChild(panel);

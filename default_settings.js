@@ -3,7 +3,6 @@ DefaultSettings = {
     enabled_scripts: [
         "lol",
         "getpost",
-        "elder_scroll",
         "comment_tags",
         "post_preview",
         "dinogegtik",
@@ -13,8 +12,7 @@ DefaultSettings = {
         "nws_incognito",
         "category_banners",
         "new_comment_highlighter",
-        "scrolling_performance_hack",
-        "scroll_to_post"
+        "scrolling_performance_hack"
     ],
 
     lol_tags: [
@@ -50,7 +48,5 @@ DefaultSettings = {
     video_loader_hd: true,
 
     expiration_watcher_style: "Bar",
-
-    scroll_to_post_smooth: true
 
 }
