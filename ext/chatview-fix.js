@@ -660,17 +660,8 @@ function toggle_shacktags_legend() {
     $("#shacktags_legend_table").toggle()
 }
 function scrollToItem(b) {
-    if (!elementVisible(b)) {
-        $(b).animate({ scrollTop: $('body').scrollTop() + $(b).offset().top - $('body').offset().top }, 0);
-        $('html, body').animate({ scrollTop: $(b).offset().top - ($(window).height()/4) }, 0);
-    }
-}
-function elementVisible(b) {
-    var elementTop = $(b).offset().top;
-    var elementBottom = elementTop + $(b).outerHeight();
-    var viewportTop = $(window).scrollTop();
-    var viewportBottom = viewportTop + $(window).height();
-    return elementBottom > viewportTop && elementTop < viewportBottom;
+    // wrapper for scrollToElement with visibility checking
+    if (!elementIsVisible(b)) { scrollToElement(b); }
 }
 // end external code
 
@@ -678,7 +669,8 @@ function elementVisible(b) {
 var monkeyPatchCVF = `${clickItem.toString()}
 ${show_item_fullpost.toString()}
 ${scrollToItem.toString()}
-${elementVisible.toString()}`;
+${scrollToElement.toString()}
+${elementIsVisible.toString()}`;
 // end local code
 
 // injection logic for chatview-fix
