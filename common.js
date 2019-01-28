@@ -49,10 +49,13 @@ function stripHtml(html)
     return String(html).replace(/(<([^>]+)>)/ig, '');
 }
 
-function insertStyle(css)
+function insertStyle(css, containerName)
 {
-    var style = document.createElement("style");
-    style.type = "text/css";
+    var style = document.getElementById(containerName) || document.createElement("style");
+    if (!style.id) {
+        style.type = "text/css";
+        style.id = containerName;
+    }
     style.appendChild(document.createTextNode(css));
     document.getElementsByTagName("head")[0].appendChild(style);
 }
@@ -237,17 +240,30 @@ function debounce(cb, delay)
     };
 }
 
-function scrollToElement(elem) {
-    $(elem).animate({ scrollTop: $('body').scrollTop() + $(elem).offset().top - $('body').offset().top }, 0);
-    $('html, body').animate({ scrollTop: $(elem).offset().top - ($(window).height()/4) }, 0);
+function scrollToElement(elem, toFitBool) {
+    if (typeof jQuery === "function" && elem instanceof jQuery) { elem = elem[0]; }
+    if (toFitBool)
+        $('html, body').animate({ scrollTop: $(elem).offset().top - 54 }, 0);
+    else
+        $('html, body').animate({ scrollTop: $(elem).offset().top - ($(window).height()/4) }, 0);
 }
 
-function elementIsVisible(elem) {
-    var elementTop = $(elem).offset().top;
-    var elementBottom = elementTop + $(elem).outerHeight();
-    var viewportTop = $(window).scrollTop();
-    var viewportBottom = viewportTop + $(window).height();
-    return elementBottom > viewportTop && elementTop < viewportBottom;
+function elementIsVisible(elem, partialBool) {
+    // only check to ensure vertical visibility
+    if (typeof jQuery === "function" && elem instanceof jQuery) { elem = elem[0]; }
+    var rect = elem.getBoundingClientRect();
+    var visibleHeight = window.innerHeight;
+    if (partialBool)
+        return rect.top <= visibleHeight && (rect.top + rect.height) >= 0;
+
+    return rect.top >= 0 && (rect.top + rect.height) <= visibleHeight;
+}
+
+function elementFitsViewport(elem) {
+    if (typeof jQuery === "function" && elem instanceof jQuery) { elem = elem[0]; }
+    var elemHeight = elem.getBoundingClientRect().height;
+    var visibleHeight = window.innerHeight;
+    return elemHeight < visibleHeight;
 }
 
 function convertUrlToLink(text)
@@ -262,29 +278,18 @@ HTMLElement.prototype.removeChildren = function()
 }
 
 function closestParent(elem, { cssSelector, indexSelector }) {
-    if (!!elem.parentNode && !!elem.parentNode.attributes) {
-        // search backwards in the DOM for the closest parent whose attributes match a selector
-        for(; elem && elem !== document; elem = elem.parentNode) {
-            for (var attrChild of Array.from(elem.attributes || {})) {
-                if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
-                    return elem;
-                else if (cssSelector && !!elem) {
-                    // slower css regex selector method (can match the elem as well)
-                    var match = elem.querySelector(`:scope ${cssSelector}`);
-                    if (!!match) return match;
-                }
-            }
-        }
-    } else if (!!elem.attributes) {
-        // this is a top level node, check it anyway
+    if (typeof jQuery === "function" && elem instanceof jQuery) { elem = elem[0]; }
+    // search backwards in the DOM for the closest parent whose attributes match a selector
+    for(; elem && elem !== document; elem = elem.parentNode) {
         for (var attrChild of Array.from(elem.attributes)) {
-            if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
+            if (indexSelector && !!elem && attrChild.textContent.indexOf(indexSelector) > -1)
                 return elem;
             else if (cssSelector && !!elem) {
-                // slower css regex selector method (can match the elem as well)
+                // slower css regex selector method
                 var match = elem.querySelector(`:scope ${cssSelector}`);
                 if (!!match) return match;
             }
         }
     }
+    return null;
 }

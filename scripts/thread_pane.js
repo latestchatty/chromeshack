@@ -116,6 +116,7 @@ let refreshThreadPane;
 
             $cardDiv.click(() => {
                 const $li = $(`li#item_${mostRecentPostId}`);
+                const li_root = closestParent($li, { indexSelector: "root_" });
                 uncapThread(threadId);
 
                 $opDiv.removeClass('cs_flash_animation');
@@ -123,7 +124,10 @@ let refreshThreadPane;
                 $cardDiv.removeClass('cs_dim_animation');
 
                 setTimeout(() => {
-                    window.scrollTo(0, $li.offset().top - ($(window).height()/3));
+                    var elemFits = elementFitsViewport(li_root);
+                    // scroll to fit thread or newest reply if applicable
+                    if (elemFits) { scrollToElement(li_root, true); }
+                    else { scrollToElement($li); }
 
                     $opDiv.addClass('cs_flash_animation');
                     $li.addClass('cs_flash_animation');
