@@ -44,9 +44,11 @@ settingsLoadedEvent.addHandler(function()
             {
                 if (count > 0) {
                     var commentDisplay = document.getElementById("chatty_settings");
-                    var commentsCount = commentDisplay.childNodes[4].innerText.split(" ")[0];
+                    var commentsCount = commentDisplay.childNodes[4].innerText != null &&
+                        commentDisplay.childNodes[4].innerText.split(" ")[0];
                     var newComments = `${commentsCount} Comments (${count} New)`;
-                    commentDisplay.childNodes[4].innerHTML = newComments;
+                    if (commentsCount)
+                        commentDisplay.childNodes[4].innerHTML = newComments;
                 }
             },
 
