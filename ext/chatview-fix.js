@@ -679,3 +679,4 @@ chatViewFixElem.id = "chatviewfix-wjs";
 chatViewFixElem.innerHTML = monkeyPatchCVF;
 var bodyRef = document.getElementsByTagName("body")[0];
 bodyRef.appendChild(chatViewFixElem);
+undefined;
