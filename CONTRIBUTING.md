@@ -27,7 +27,7 @@ Gain the ability to publish new releases to the Chrome and Firefox web stores.
     - Click Publish Item.  Click "PUBLISH" when prompted.
 - Release to the Firefox Add-ons site.
     - Log into the [Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/).
-    - Click "Edit Listing" under "Chrome Shack" under "My Add-ons"
+    - Click "Edit Product Page" under "Chrome Shack" under "My Add-ons"
     - Click "Upload New Version" on the left side
     - Click "Select a file..." and pick the zip
     - Click "Continue"
