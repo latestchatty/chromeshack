@@ -74,8 +74,9 @@
             "styles/media.css"
          ],
         "matches": [
+            "*://shacknews.com/chatty*",
             "*://www.shacknews.com/chatty*",
-            "*://new.shacknews.com/chatty*",
+            "*://shacknews.com/article/*",
             "*://www.shacknews.com/article/*"
         ],
         "all_frames": false,
