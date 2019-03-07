@@ -129,9 +129,9 @@ settingsLoadedEvent.addHandler(function()
             {
                 var authHdr = "Client-ID c045579f61fc802";
                 var _link = link.href.replace(/http\:\/\//, "https://");
-                var _matchShortcode = /https?\:\/\/(?:.+?\.)?imgur.com\/(?:a\/(\w+)|t\/.+?\/(\w+)|gallery\/(\w+))?(\w+)?/i.exec(_link);
-                var albumShortcode = _matchShortcode[1] || _matchShortcode[2] || _matchShortcode[3];
-                var imageShortcode = _matchShortcode[4] || _matchShortcode[3];
+                var _matchShortcode = /https?\:\/\/(?:.+?\.)?imgur.com\/(?:r\/.*?\/(\w+)|a\/(\w+)|t\/.+?\/(\w+)|gallery\/(\w+))?(\w+)?/i.exec(_link);
+                var albumShortcode = _matchShortcode[2] || _matchShortcode[3] || _matchShortcode[4];
+                var imageShortcode = _matchShortcode[1] || _matchShortcode[3] || _matchShortcode[5];
 
                 if (_link.length > 0 && _matchShortcode != null) {
                     // resolve by album otherwise fallback to resolving by image
