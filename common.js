@@ -80,7 +80,7 @@ function xhrRequestLegacy(url, optionsObj) {
     // promisified legacy XHR helper using XMLHttpRequest()
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open(optionsObj.method || "GET", url);
+        xhr.open(optionsObj != null ? optionsObj.method : "GET", url);
         if (optionsObj != null && optionsObj.hasOwnProperty("headers")) {
             for (var [key, val] of optionsObj.headers.entries()) {
                 xhr.setRequestHeader(key, val);

@@ -96,6 +96,7 @@
         "https://shackstats.com/data/users_info.csv",
         "https://embed.twitch.tv/embed/*",
         "https://www.instagram.com/p/*",
+        "https://cors.io/?*",
         "https://publish.twitter.com/*",
         "https://*.youtube.com/embed/*",
         "https://api.streamable.com/videos/*",

@@ -189,7 +189,8 @@ settingsLoadedEvent.addHandler(function() {
                 //var socialId = "Bog2xW2HtAX"; // multi-video
                 // end post parsing test list
 
-                var postUrl = `https://www.instagram.com/p/${socialId}/`;
+                // use a CORS proxy to avoid CORB rule for this parsing step
+                var postUrl = `https://cors.io/?https://www.instagram.com/p/${socialId}/`;
                 // if we have an instagram postId use it to toggle our element rather than query
                 var _target = parentLink.parentNode.querySelector(`#instgrm-container_${postId}-${index}`);
                 if (_target) { return _target.classList.toggle("hidden"); }
