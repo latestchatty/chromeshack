@@ -4,7 +4,7 @@ settingsLoadedEvent.addHandler(function()
     if (getSetting("enabled_scripts").contains("new_comment_highlighter"))
     {
         NewCommentHighlighter =
-        {   
+        {
             highlight: function()
             {
                 var last_id = getSetting("new_comment_highlighter_last_id");
@@ -31,16 +31,10 @@ settingsLoadedEvent.addHandler(function()
                 {
                     var post = new_posts.snapshotItem(i);
 
-                    // root post
-                    if (post.className == 'sel last')
-                        post.className += ' newcommenthighlighter_newrootpost';
-                    else if (post.className == 'last')
-                        post.className += ' newcommenthighlighter_last';
-                    else if (post.className == '')
-                        post.className += 'newcommenthighlighter';
-
-                    if (post == post.parentNode.childNodes[1])
-                        post.parentNode.className = 'newcommenthighlighter';
+                    var preview = post.getElementsByClassName('oneline_body');
+                    if(preview.length > 0) {
+                        preview[0].className += " newcommenthighlighter";
+                    }
                 }
 
                 NewCommentHighlighter.displayNewCommentCount(new_posts.snapshotLength);
@@ -48,9 +42,14 @@ settingsLoadedEvent.addHandler(function()
 
             displayNewCommentCount: function(count)
             {
-					var query = '//div[@id="chatty_settings"]';
-					var cs = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-					cs.innerHTML = cs.innerHTML.replace(' Comments', ' Comments (' + count + ' New)');
+                if (count > 0) {
+                    var commentDisplay = document.getElementById("chatty_settings");
+                    var commentsCount = commentDisplay.childNodes[4].innerText != null &&
+                        commentDisplay.childNodes[4].innerText.split(" ")[0];
+                    var newComments = `${commentsCount} Comments (${count} New)`;
+                    if (commentsCount)
+                        commentDisplay.childNodes[4].innerHTML = newComments;
+                }
             },
 
             getPostsAfter: function(last_id)

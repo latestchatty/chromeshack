@@ -1,0 +1,131 @@
+
+/* MEDIA QUERIES FOR RESPONSIVENESS (workaround for image weirdness) */
+@media only screen and (max-width: 768px) {
+    /* switch to a scrollable column-only layout */
+    .media-container.responsive { grid-template-columns: 100% !important; }
+}
+@media only screen and (min-width: 1267px) {
+    .media-container.responsive {
+        /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
+        grid-template-columns: repeat(auto-fit, minmax(var(--min-media-col-size), 1fr)) !important;
+    }
+}
+/* END MEDIA QUERIES */
+
+/* basic rules for styling media/socials children */
+:root {
+    --gutter-size: 6px;
+    --min-media-col-size: calc(33% - var(--gutter-size));
+    --max-media-col-size: calc(50% - var(--gutter-size));
+    --min-media-item-height: 200px;
+    --max-media-item-height: 640px;
+    --min-media-item-width: 300px;
+    --max-media-item-width: 854px;
+    --max-social-item-width: 640px;
+    --min-media-row-size: 200px;
+    --max-media-row-size: 640px;
+    --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.media-container.responsive {
+    display: grid !important;
+    /* default to a largest-first-or-50% layout */
+    grid-template-columns: repeat(auto-fit, minmax(var(--max-media-col-size), 1fr));
+    grid-template-rows: min-content 1fr;
+    grid-auto-flow: row dense;
+    grid-gap: var(--gutter-size);
+    margin: 0.75em 0 0 0;
+}
+.media-container:not(.responsive),
+.media-container:not(.responsive) img,
+.media-container:not(.responsive) video {
+    max-height: unset !important;
+}
+.medialoader {
+    height: 100%;
+    width: 100%;
+}
+.medialoader video:not(.swiper-slide),
+.medialoader img:not(.swiper-slide) {
+    outline: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box;
+    object-fit: contain !important;
+    min-height: var(--min-media-item-height);
+    min-width: var(--min-media-item-width);
+    max-height: var(--max-media-item-height);
+    max-width: var(--max-media-item-width);
+}
+.medialoader video.swiper-slide,
+.medialoader img.swiper-slide {
+    /* let carousel style itself but maintain ratio */
+    object-fit: contain !important;
+    max-height: var(--max-media-item-height);
+    max-width: var(--max-media-item-width);
+}
+.iframe-container.hidden,
+.twitch-container.hidden,
+.yt-container.hidden,
+.medialoader video.hidden,
+.medialoader img.hidden {
+    display: none !important;
+}
+.iframe-container,
+.yt-container,
+.twitch-container {
+    position: relative;
+    /* 16:9 for 854x480 */
+    padding-bottom: 56.21%;
+    height: 0;
+}
+.iframe-container iframe,
+.yt-container iframe,
+.twitch-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* expando toggle button (.expando -> .expando.collapso) */
+.postbody a.embedded { color: rgb(61, 154, 154) !important; }
+div.expando {
+    display: inline-block !important;
+    text-decoration: none !important;
+    color: white !important;
+    font-size: 13px;
+    font-weight: 100;
+    position: relative;
+    margin-right: 6px;
+    top: 2px;
+    left: 5px;
+}
+/* end expando */
+
+/* customizations for carousel */
+:not(div.instgrm-container) .swiper-container {
+    /* workaround 1 for non-instagram responsiveness */
+    margin: unset !important;
+}
+.swiper-container.medialoader {
+    /* workaround 2 for non-instagram responsiveness */
+    margin: unset !important;
+    max-width: var(--max-media-item-width);
+    max-height: var(--max-media-item-height);
+}
+.swiper-container.instgrm-embed {
+    max-width: var(--max-social-item-width);
+    max-height: var(--max-media-item-height);
+}
+.media-container:not(.responsive) .swiper-container.medialoader,
+.media-container:not(.responsive) .swiper-container.instgrm-embed {
+    max-height: unset !important;
+}
+.swiper-button-next,
+.swiper-button-prev { opacity: 0.5 !important; }
+.swiper-button-disabled { opacity: 0.2 !important; }
+
+/* fix z-index of lightbox so header bar doesn't cover it */
+div.basicLightbox { z-index: 99999; }

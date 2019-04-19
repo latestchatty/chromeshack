@@ -1,93 +1,293 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html>
     <head>
         <title>Chrome Shack Options</title>
-        <link rel="stylesheet" type="text/css" href="options.css" />
+        <link rel="stylesheet" type="text/css" href="styles/options.css" />
+        <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill.min.js"></script>
+        <script type="text/javascript" src="scripts/jquery-3.3.1.min.js"></script>
         <script type="text/javascript" src="default_settings.js"></script>
         <script type="text/javascript" src="common.js"></script>
-        <script type="text/javascript" src="version.js"></script>
         <script type="text/javascript" src="options.js"></script>
         <meta charset="UTF-8" />
+        <style type="text/css">
+        body { font-family: helvetica, arial, sans-serif; font-size: 12px; }
+        </style>
     </head>
-    <body onload="loadOptions()">
-        <h2>
-            <input type="checkbox" class="script_check" id="lol" />
-            <label for="lol">LOL tags</label>
-        </h2>
-        <div id="lol_settings">
-            <div id="lol_tags"></div>
-            <a href="#" onclick="addTag(); return false;">Add</a>
+    <body>
+        <div id="content">
+            <h2 class="group">Viewing Posts</h2>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="lol" />
+                <label for="lol">LOL Tags</label>
+            </h2>
+            <p class="info">
+                Tag posts using the ShackLOL system, and show how many tags each post in the chatty has received.
+            </p>
+            <div id="lol_settings">
+                <div id="lol_tag_countbox">
+                    <label>Show LOL counts:</label>
+                    <select id="lol_show_counts">
+                        <option value="limited">Limited</option>
+                        <option value="short">Limited Counts Only</option>
+                        <option value="all">All</option>
+                        <option value="none">None</option>
+                    </select>
+                </div>
+                <fieldset>
+                    <legend>Tags</legend>
+                    <div id="lol_tags"></div>
+                    <a href="#" id="add_tag">Add</a>
+                </fieldset>
+                <fieldset>
+                    <legend>[ughs]</legend>
+                    <p class="info">[ugh] is a special tag type. Posts with the selected number of [ugh]s are automatically collapsed when you load the page.</p>
+                    <div id="ugh_field">
+                        <label>[ugh] threshold:</label>
+                        <select id="lol_ugh_threshold">
+                            <option value="0">Disabled</option>
+                            <option value="1">Collapse posts with 1 [ugh]</option>
+                            <option value="2">Collapse posts with 2 [ugh]s</option>
+                            <option value="3">Collapse posts with 3 [ugh]s</option>
+                            <option value="4">Collapse posts with 4 [ugh]s</option>
+                            <option value="5">Collapse posts with 5 [ugh]s</option>
+                            <option value="6">Collapse posts with 6 [ugh]s</option>
+                            <option value="7">Collapse posts with 7 [ugh]s</option>
+                            <option value="8">Collapse posts with 8 [ugh]s</option>
+                            <option value="9">Collapse posts with 9 [ugh]s</option>
+                            <option value="10">Collapse posts with 10 [ugh]s</option>
+                        </select>
+                    </div>
+                    <p class="info">Remember that [ugh] is a special tag. Don't tag things with it unless they're super depressing soul-sucking posts that you don't feel should be posted on the Shack. If you don't agree to this, don't install and use the tag. Misusers will be banned.</p>
+                </fieldset>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="category_banners" />
+                <label for="category_banners">Moderation Banners</label>
+            </h2>
+            <p class="info">Show a banner at the top of each post indicating its moderation flag.</p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="expiration_watcher" />
+                <label for="expiration_watcher">Expiration Meters</label>
+            </h2>
+            <p class="info">Show a meter that indicates how close a thread is to expiring.</p>
+            <div id="expiration_watcher_settings">
+                <ul>
+                    <span>Style:</span>
+                    <li><input type="radio" name="expiration_watcher_style" id="expiration_watcher_bar"/><label for="expiration_watcher_bar">Bar</label></li>
+                    <li><input type="radio" name="expiration_watcher_style" id="expiration_watcher_doom"/><label for="expiration_watcher_doom">Doom</label></li>
+                </ul>
+            </div>
+
+            <h2>
+                <label>Multimedia Embedding</label>
+            </h2>
+            <p class="info">Show multimedia links inline when clicked.</p>
+            <div>
+            <p>
+                <input type="checkbox" class="script_check" id="alternate_embed_style" />
+                <label for="alternate_embed_style">Alternate embedding style</label>
+            </p>
+            <p class="indent info">Embed media items (images, videos, and socials) near their associated link.</p>
+
+            <p>
+                <input type="checkbox" id="image_loader_newtab"/>
+                <label for="image_loader_newtab">Middle-click opens media lightbox</label>
+            </p>
+            <p class="indent info">Opens embedded media in a fullscreen overlay when middle-clicked.</p>
+
+            <p>
+                <input type="checkbox" class="script_check" id="image_loader" />
+                <label for="image_loader">Embed images</label>
+            </p>
+            <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
+
+            <p>
+                <input type="checkbox" class="script_check" id="video_loader" />
+                <label for="video_loader">Embed videos</label>
+            </p>
+            <p class="indent info">Replace links to some video hosters with the video, clip, or playlist itself.</p>
+            <p class="indent info">Supported: Youtube, Twitch.tv, Streamable, and XboxDVR.</p>
+            <div id="video_loader_settings">
+                <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
+            </div>
+
+            <p>
+                <input type="checkbox" class="script_check" id="embed_socials" />
+                <label for="embed_socials">Embed social links</label>
+            </p>
+            <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
+
+            <p class="indent info"><i>NOTE: Tracker blocking addons like Ghostery and Firefox's Tracker Blocker interfere with this feature. Please disable tracker blocking!</i></p>
+            <p>
+                <input type="checkbox" class="script_check" id="getpost" />
+                <label for="getpost">Embed posts</label>
+            </p>
+            <p class="indent info">When clicking a link to a Shacknews post, show the post inline rather than in a new window.</p></div>
+
+            <h2>
+                <label>Post Enhancements</label>
+            </h2>
+            <p class="info">Various enhancements to the display of expanded posts.</p>
+            <div>
+                <p>
+                    <input type="checkbox" class="script_check" id="nws_incognito" />
+                    <label for="nws_incognito">Open NWS links in incognito mode</label>
+                </p>
+                <p class="indent info">When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="dinogegtik" />
+                    <label for="dinogegtik">Dino gegtik</label>
+                </p>
+                <p class="indent info">Replace boring gegtik posts with a comic strip.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="sparkly_comic" />
+                    <label for="sparkly_comic">Sparkly comic</label>
+                </p>
+                <p class="indent info">Replace sparkly posts with a comic strip.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="scrolling_performance_hack" />
+                    <label for="scrolling_performance_hack">Scrolling performance hack</label>
+                </p>
+                <p class="indent info">Work around slow scrolling performance</p>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="enable_notifications">
+                <label for="enable_notifications">Push Notifications</label>
+            </h2>
+            <p class="info">
+                Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed.  You must restart Chrome after enabling notifications.
+            </p>
+            <div id="enable_notifications_settings">
+                <p>
+                    <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank">Change notification options...</a>
+                </p>
+            </div>
+
+
+            <h2 class="group">Viewing Threads</h2>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="thread_pane" />
+                <label for="thread_pane">Two-Pane Layout</label>
+            </h2>
+            <p class="info">Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet modes in the mobile clients.</p>
+
+            <h2>
+                <label>Highlighting</label>
+            </h2>
+            <p class="info">Color highlighting within the tree of thread replies.</p>
+            <div>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
+                    <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
+                </p>
+                <p class="indent info">Use the WinChatty push service to highlight threads that have received new replies that you need to refresh to see.  A button at the top of the chatty indicates how many threads have new posts and, upon clicking the button, will take you to the next thread with new posts.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="new_comment_highlighter" />
+                    <label for="new_comment_highlighter">Highlight new posts since last refresh</label>
+                </p>
+                <p class="indent info">After refreshing the chatty or an individual thread, show a blue bar next to posts which are new.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_users" />
+                    <label for="highlight_users">Highlight users</label>
+                </p>
+                <p class="indent info">Highlight usernames in various colors to indicate their membership in user-specified groups.</p>
+                <div id="highlight_users_settings">
+                    <div id="highlight_groups"></div>
+                    <a href="#" id="add_highlight_group">Add</a>
+                </div>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="custom_user_filters" />
+                <label for="custom_user_filters">Custom User Filters</label>
+            </h2>
+            <p class="info">Hide all posts from specific users.</p>
+            <div id="custom_user_filters_settings">
+                <p>
+                    <select id="filtered_users" size="5"></select>
+                    <button id="remove_user_filter_btn">Remove</button>
+                </p>
+                <p>
+                    <input id="new_user_filter_text">
+                    <button id="add_user_filter_btn">Add</button>
+                </p>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="switchers" />
+                <label for="switchers">Shame Switchers</label>
+            </h2>
+            <p class="info">Show the original username of shackers who changed names.</p>
+
+
+            <h2 class="group">Composing Posts</h2>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="comment_tags" />
+                <label for="comment_tags">Shacktag Legend</label>
+            </h2>
+            <p class="info">Show an improved Shacktag legend next to the post box.</p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="post_preview" />
+                <label for="post_preview">Post Preview</label>
+            </h2>
+            <p class="info">Allow previewing a post, with full Shacktag formatting, before submitting the post.</p>
+            <div id="post_preview_settings">
+                <ul>
+                    <span>Button location:</span>
+                    <li><input type="radio" name="post_preview_location" id="post_preview_left"/><label for="post_preview_left">Left of post button</label></li>
+                    <li><input type="radio" name="post_preview_location" id="post_preview_right"/><label for="post_preview_right">Right of post button</label></li>
+                </ul>
+                <div id="live_preview_checkbox">
+                    <input type="checkbox" class="script_check" id="post_preview_live" />
+                    <label for="post_preview_live">Live preview (as you type!)</label>
+                </div>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="image_upload" />
+                <label for="image_upload">Image Upload</label>
+            </h2>
+            <p class="info">Allow uploading images to Imgur or Chattypics directly from the post box.</p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="post_length_counter" />
+                <label for="post_length_counter">Post Length Counter</label>
+            </h2>
+            <p class="info">Show a live count of characters left before the post preview gets truncated.</p>
+
+
+            <h2 class="group">Chatty</h2>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="elder_scroll" />
+                <label for="elder_scroll">Infinite Scrolling</label>
+            </h2>
+            <p class="info">Use infinite scrolling instead of explicit previous/next page buttons.</p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="use_winchatty_search" />
+                <label for="use_winchatty_search">WinChatty NuSearch</label>
+            </h2>
+            <p class="info">Use WinChatty NuSearch instead of the Shacknews comment search when using the search box and the search links in the user dropdown menu.</p>
+
+
+            <h2 class="group">Settings</h2>
+
+            <h2>
+                <label>Reset to Default</label>
+            </h2>
+            <p class="info">Reset your settings to Chrome Shack's defaults. All of your changes will be lost!</p>
+            <button id="clear_settings">Reset</button>
+
         </div>
-        <h2>
-            <input type="checkbox" class="script_check" id="comment_tags" />
-            <label for="comment_tags">Comment Tags</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="post_preview" />
-            <label for="post_preview">Post Preview</label>
-        </h2>
-        <div id="post_preview_settings">
-            Button Location: 
-            <input type="radio" name="post_preview_location" id="post_preview_left"/><label for="post_preview_left">Left</label>
-            <input type="radio" name="post_preview_location" id="post_preview_right"/><label for="post_preview_right">Right</label>
-        </div>
-        <h2>
-            <input type="checkbox" class="script_check" id="highlight_users" />
-            <label for="highlight_users">Highlight Users</label>
-        </h2>
-        <div id="highlight_users_settings">
-            <div id="highlight_groups"></div>
-            <a href="#" onclick="addHighlightGroup(); return false;">Add</a>
-        </div>
-        <h2>
-            <input type="checkbox" class="script_check" id="new_comment_highlighter" />
-            <label for="new_comment_highlighter">New Comments Highlighter</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="category_banners" />
-            <label for="category_banners">Category Banners</label>
-        </h2>
-        <div id="category_banners_settings">
-            Show banners for:<br />
-            <input type="checkbox" class="category_banner" id="offtopic"/><label for="offtopic">Off topic</label><br />
-            <input type="checkbox" class="category_banner" id="political"/><label for="political">Political</label><br />
-            <input type="checkbox" class="category_banner" id="stupid"/><label for="stupid">Stupid</label><br />
-        </div>
-        <h2>
-            <input type="checkbox" class="script_check" id="image_loader" />
-            <label for="image_loader">Image Loader</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="video_loader" />
-            <label for="video_loader">Video Loader</label>
-        </h2>
-        <div id="video_loader_settings">
-            <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
-        </div>
-        <h2>
-            <input type="checkbox" class="script_check" id="collapse_threads" />
-            <label for="collapse_threads">Collapse Threads</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="winchatty_comments_search" />
-            <label for="winchatty_comments_search">Use WinChatty Search on profile page</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="sfw" />
-            <label for="sfw">Safe For Work (white shack)</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="dinogegtik" />
-            <label for="dinogegtik">Dino Gegtik</label>
-        </h2>
-        <h2>
-            <input type="checkbox" class="script_check" id="sparkly_comic" />
-            <label for="sparkly_comic">Sparkly Comic</label>
-        </h2>
-        <div>
-            <button onclick="saveOptions()">Save</button>
-            <button onclick="loadOptions()">Reset</button>
-            <br/>
+        <div id="buttons">
             <span id="status"> </span>
         </div>
     </body>

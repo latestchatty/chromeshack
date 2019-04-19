@@ -15,60 +15,98 @@ settingsLoadedEvent.addHandler(function()
             built_in_groups: {
                 "Mods":
                 [
-                    "3259"  , // degenerate
-                    "10028" , // drucifer
-                    "168479", // ajax
-                    "5334"  , // dante
-                    "7438"  , // enigmatic
-                    "169489", // s[genjuro]s
-                    "8105"  , // hirez
-                    "5278"  , // lacker
-                    "6674"  , // pupismyname
-                    "32016" , // thekidd
-                    "1194"  , // zakk
-                    "171402", // brickmatt
-                    "6585"  , // carnivac
-                    "168256", // edgewise
-                    "169197", // filtersweep
-                    "9980"  , // haiku
-                    "44583" , // jokemon
-                    "3243"  , // p[multisync]p
-                    "169049", // rauol duke
-                    "8349"  , // sexninja!!!!
-                    "194196", // ninjase
-                    "6933"  , // tomservo
-                    "9085"  , // busdriver3030
-                    "8048"  , // cygnus x-1
-                    "6380"  , // dognose
-                    "167953", // edlin
-                    "12398" , // geedeck
-                    "171127", // helvetica
-                    "7570"  , // kaiser
-                    "8316"  , // paranoid android
-                    "9031"  , // portax
-                    "9211"  , // redfive
-                    "7660"  , // sexpansion pack
-                    "169927", // sgtsanity
-                    "15130" , // utilitymaximizer
-                    "169942", // mikecyb - not listed on mods page
-                    "185650"  // Dave-A - not listed on mods page
+                    // Head Mods
+                    //"12398" , // geedeck (status unknown post modpocopalypse)
+                    //"171127", // helvetica (status unknown post modpocopalypse)
+                    //"174581", // Frozen Pixel (promoted to head mod Aug 8 2014) (status unknown post modpocopalypse)
+                    // Pleb Mods
+                    //"168479", // ajax (status unknown post modpocopalypse)
+                    //"228129", // bitchesbecrazy (status unknown post modpocopalypse)
+                    //"9085"  , // busdriver3030 (status unknown post modpocopalypse)
+                    //"5334"  , // dante (status unknown post modpocopalypse)
+                    //"185650", // Dave-A (status unknown post modpocopalypse)
+                    //"9509"  , // Deathlove (status unknown post modpocopalypse)
+                    //"3259"  , // degenerate (status unknown post modpocopalypse)
+                    //"168256", // edgewise (status unknown post modpocopalypse)
+                    //"172215", // electroly (status unknown post modpocopalypse)
+                    //"169197", // filtersweep (status unknown post modpocopalypse)
+                    //"8105"  , // hirez (status unknown post modpocopalypse)
+                    //"7570"  , // kaiser (status unknown post modpocopalypse)
+                    //"169887", // Megara9 (status unknown post modpocopalypse)
+                    //"44566" , // Morgin (status unknown post modpocopalypse)
+                    //"3243"  , // p[multisync]p (status unknown post modpocopalypse)
+                    //"194196", // ninjase (status unknown post modpocopalypse)
+                    //"8316"  , // paranoid android (status unknown post modpocopalypse)
+                    //"9031"  , // portax (status unknown post modpocopalypse)
+                    //"9211"  , // redfive (status unknown post modpocopalypse)
+                    //"16880" , // Serpico74 (status unknown post modpocopalypse)
+                    //"7660"  , // sexpansion pack (status unknown post modpocopalypse)
+                    //"208786", // squigiliwams  (status unknown post modpocopalypse)
+                    //"2650"  , // thaperfectdrug (aka Dave-A) (status unknown post modpocopalypse)
+                    //"32016" , // thekidd (status unknown post modpocopalypse)
+                    //"1194"  , // zakk (status unknown post modpocopalypse)
+                    //"14628" , // EvilDolemite (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"169401", // LoioshDwaggie (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"175142", // eonix (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    //"126826"  // woddemandred (became mod Aug 8 2014) (status unknown post modpocopalypse)
+                    
+                    // Dead mods                
+                    //"7438"  , // enigmatic (service ended Aug 01 2012?)
+                    //"169489", // s[genjuro]s (service ended Feb 02 2012)
+                    //"5278"  , // lacker (service ended Feb 02 2012)
+                    //"6674"  , // pupismyname (service ended Feb 02 2012)
+                    //"171402", // brickmatt (service ended Aug 01 2012)
+                    //"6585"  , // carnivac (service ended Aug 01 2012?)
+                    //"9980"  , // haiku (service ended Aug 01 2012?)
+                    //"44583" , // jokemon (service ended Aug 01 2012?)
+                    //"8349"  , // sexninja!!!! (service ended Aug 01 2012?)
+                    //"6933"  , // tomservo (service ended Feb 02 2012)
+                    //"8048"  , // cygnus x-1 (service ended Aug 01 2012?)
+                    //"167953", // edlin (service ended Feb 02 2012)
+                    //"15130" , // utilitymaximizer (service ended Feb 02 2012)
+                    //"16880" , // serpico74 (service ended Aug 01 2012?)
+                    //"10028" , // drucifer (service ended Jan 10 2014)
+                    //"6380"  , // dognose (service ended Jan 10 2014)
+                    //"169927", // sgtsanity (service ended Jan 10 2014)
+                    //"169942", // mikecyb (service ended Jan 10 2014)
+                    //"169049", // rauol duke (resigned from head mod status Aug 8 2014, turned in badge and gun on ??)
                 ],
 
                 "Employees":
                 [
-                    "4",      // Steve Gibson
-                    "43653",  // Maarten Goldstein
-                    "175043", // Chris Faylor
-                    "175046", // Nick Breckon
-                    "188134", // Aaron Linde
-                    "204735", // Alice O'Connor
-                    "213066", // Jeff Mattas
-                    "212323", // Garnett Lee
-                    "217677", // Brian Leahy
-                    "227220", // Ackbar2020
-                    "203311", // greg-m
-                    "223050", // XAVdeMATOS
-                    "44124"  // sHugamom
+                    "4"       , // Steve Gibson
+                    "43653"   , // Maarten Goldstein
+                    "175043"  , // Chris Faylor
+                    "175046"  , // Nick Breckon
+                    "188134"  , // Aaron Linde
+                    "204735"  , // Alice O'Connor
+                    "213066"  , // Jeff Mattas
+                    "212323"  , // Garnett Lee
+                    "217677"  , // Brian Leahy
+                    "227220"  , // Ackbar2020
+                    "203311"  , // greg-m
+                    "223050"  , // XAVdeMATOS
+                    "14475"   , // Shacknews
+                    "44124"   , // sHugamom
+                    "172752"  , // Chris Remo
+                    "232839"  , // TylerJSmith
+                    "10011901", // OzzieMejia
+                    "10024812", // John Keefer (Keefinator)
+                    "10005228", // Andrew Yoon
+                    "10186691", // the man with the briefcase
+                    "10187365", // staymighty
+                    "10187465", // xosammyjoe
+                    "3014718" , // hammersuit
+                    "226769"  , // Steve Watts (SporkyReeve)
+                    "10187754", // Daniel Perez (Daniel_Perez)
+                    "10187639", // Greg Burke (GBurke59)
+                    "10187730", // joshua hawkins
+                    "10187323", // steven wong
+                    "10187419", // squid wizard
+                    "10187781", // beardedaxe
+                    "209604"  , // Crabs Jarrard
+                    "173110"  , // David Craddock
+                    "10194943"  // Charles Singletary Jr
                 ],
 
                 "Game Devs":
@@ -90,8 +128,9 @@ settingsLoadedEvent.addHandler(function()
                     '175192',//Free Radical Design  jbury
                     '186653',//Flagship Studios  Ivan Sulic
                     '7466','173003','172749',//GarageGames  d3tached - (Torque X), sullisnack - Sean Sullivan, timaste - Tim Aste
+                    '10187646',//Full time indie contractor / developer now, timmytaste - Tim Aste (timaste line above)
                     '4605',//Gas Powered Games  hellchick - Caryn Law
-                    '3829','169955','171337','6020','168552','172976','166528','4178',//Gearbox Software  rickmus, byorn, DaMojo - Pat Krefting, duvalmagic - Randy Pitchford, kungfusquirrel, MADMikeDavis, mikeyzilla - Mike Neumann, wieder - Charlie Wiederhold
+                    '3829','169955','171337','6020','168552','172976','166528','4178','2236',//Gearbox Software  rickmus, byorn, DaMojo - Pat Krefting, duvalmagic - Randy Pitchford, kungfusquirrel, MADMikeDavis, mikeyzilla - Mike Neumann, wieder - Charlie Wiederhold, dopefish
                     '172526',//hb-studios  threeup
                     '171752','19054',//Human Head  lvlmaster, zeroprey
                     '170311','3982','4916',//Id Software  patd - Patrick Duffy, toddh - Todd Hollenshead, xian - Christian Antkow
@@ -101,6 +140,7 @@ settingsLoadedEvent.addHandler(function()
                     '183170','172349',//Naughty Dog  Cowbs (previously known as cpnkegel)
                     '1347',//NCSoft  Zoid - Dave Kirsch
                     '12631',//Nerve Software  Normality - Joel Martin
+                    '3750',//Obsidian Entertainment - Adam Brennecke (Jabby)
                     '12963','6507','27483','169925','11816','4257',//Pandemic Studios  darweidu, Freshview, gndagger, Rampancy, sammyl, tostador
                     '170163',//Piranha Games  Buckyfg1
                     '4262',//Planet Moon  cheshirecat
@@ -120,9 +160,13 @@ settingsLoadedEvent.addHandler(function()
                     '170414','9172',//Vivendi Universal  ColoradoCNC, Pezman
                     '12656',//Zemnott  KnyteHawkk - Jared Larsen
                     '170084', // deveus1 (Activision)
-                    '139966', // lord cecil
+                    '139966', // lord cecil (Uber Entertainment)
                     '175142', // eonix (Relic)
-                    '49660','169993','174785'//Former Game Indusrty People     Omning, robingchyo, Romsteady
+                    '171493', // whippedcracker (Vigil Games)
+                    '11544', //Fred Garvin (formerly of BioWare, currently does sound direction for games)
+                    '49660','169993','174785',//Former Game Indusrty People     Omning, robingchyo, Romsteady
+                    '173472', // drhazard (Volition)
+                    '171424' // freakynipples69 indie game dev, MindShaft Games
                 ]
             },
 
@@ -173,7 +217,7 @@ settingsLoadedEvent.addHandler(function()
                     if (fpauthor)
                     {
                         var authorId = fpauthor[1];
-                        HighlightUsers.originalPosterSelectors.push("div#root_" + id + " div.olauthor_" + authorId + " a.oneline_user ");
+                        HighlightUsers.originalPosterSelectors.push("div#root_" + id + " div.olauthor_" + authorId + " .oneline_user ");
                     }
                 }
             },
