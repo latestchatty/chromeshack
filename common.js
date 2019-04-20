@@ -169,7 +169,7 @@ function generatePreview(text) {
     var preview = removeUtf16SurrogatePairs(text);
 
     // simple replacements
-    preview = preview.replace(/&/g, "&amp;");
+    //preview = preview.replace(/&/g, "&amp;"); //Shacknews doesn't encode amperstand, which is what allows html entities of emojis to work
     preview = preview.replace(/</g, "&lt;");
     preview = preview.replace(/>/g, "&gt;");
     preview = preview.replace(/\r\n/g, "<br>");

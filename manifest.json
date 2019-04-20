@@ -63,7 +63,8 @@
             "scripts/highlight_pending_new_posts.js",
             "scripts/options_link.js",
             "scripts/post_length_counter.js",
-            "scripts/thread_pane.js"
+            "scripts/thread_pane.js",
+            "scripts/smiley.js"
         ],
         "css": [
             "styles/chromeshack.css",
@@ -109,6 +110,8 @@
         "ext/basiclightbox/basicLightbox.min.js",
         "ext/swiper/swiper.min.css",
         "ext/swiper/swiper.min.js",
+        "fonts/Gardiner.ttf",
+        "fonts/Symbola.ttf",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",

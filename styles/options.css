@@ -93,6 +93,24 @@ div#live_preview_checkbox {
     justify-content: center;
 }
 
+div#post_emoji_settings > * { 
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-items: center;
+    align-items: center;
+    padding: 0;
+}
+div#post_emoji_settings > ul > span {
+    align-self: center;
+    justify-self: center;
+}
+div#post_emoji_settings > ul {
+    list-style: none;
+}
+div#post_emoji_settings > li {
+    display: inline-block;
+}
+
 div#buttons { position: fixed; bottom: 0px; left: 0px; width: 175px; padding: 10px; }
 div#buttons button { width: 83px; }
 span#status { 
