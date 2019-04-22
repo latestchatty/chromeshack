@@ -19,3 +19,7 @@ https://github.com/nolimits4web/swiper/releases/tag/v4.4.6
 # webextension-polyfill 0.3.1
 
 https://github.com/mozilla/webextension-polyfill/releases/tag/0.3.1
+
+# Unicode Fonts for Ancient Scripts (Symbola v12.0, Gardiner v5.01)
+
+http://users.teilar.gr/~g1951d/

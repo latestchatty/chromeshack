@@ -1,6 +1,5 @@
 /*!
 * Smiley.js (c) 2013, 2019 Brian Risinger
-* Except where noted.
 */
 /*
 If I don't do the things that aren't worth doing, who will?
@@ -12,24 +11,6 @@ settingsLoadedEvent.addHandler(function()
 {
     if (getSetting("enabled_scripts").contains("post_emoji_button"))
     {
-
-		if (!String.fromCodePoint) {
-			/*!
-			* ES6 Unicode Shims 0.1
-			* (c) 2012 Steven Levithan <http://slevithan.com/>
-			* MIT License
-			*/
-			String.fromCodePoint = function fromCodePoint () {
-				var chars = [], point, offset, units, i;
-				for (i = 0; i < arguments.length; ++i) {
-					point = arguments[i];
-					offset = point - 0x10000;
-					units = point > 0xFFFF ? [0xD800 + (offset >> 10), 0xDC00 + (offset & 0x3FF)] : [point];
-					chars.push(String.fromCharCode.apply(null, units));
-				}
-				return chars.join("");
-			}
-		}
 
 		Smiley = {
 			
@@ -101,17 +82,17 @@ settingsLoadedEvent.addHandler(function()
 		@font-face
 		{
 			font-family:symbola;
-			src: url("${browser.runtime.getURL("../fonts/Symbola.ttf")}")
+			src: url("${browser.runtime.getURL("../ext/unicodefonts/Symbola.ttf")}")
 		}
 		@font-face
 		{
 			font-family:heiroglyph;
-			url("${browser.runtime.getURL("../fonts/Gardiner.ttf")}")
+			url("${browser.runtime.getURL("../ext/unicodefonts/Gardiner.ttf")}")
 		}
 		/*@font-face
 		{
 			font-family:aegean;
-			url("${browser.runtime.getURL("../fonts/Aegean.ttf")}")
+			url("${browser.runtime.getURL("../ext/unicodefonts/Aegean.ttf")}")
 		}*/
 		#smileycontainer{
 			z-index: 2100;
@@ -1419,30 +1400,6 @@ settingsLoadedEvent.addHandler(function()
 			escapeRegex: function(str) {
 				return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 			},
-			fixedCharCodeAt: function(str, idx) {
-			/*! From https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/String/charCodeAt */
-				// ex. fixedCharCodeAt ('\uD800\uDC00', 0); // 65536
-				// ex. fixedCharCodeAt ('\uD800\uDC00', 1); // 65536
-				idx = idx || 0;
-				var code = str.charCodeAt(idx);
-				var hi, low;
-				if (0xD800 <= code && code <= 0xDBFF) { // High surrogate (could change last hex to 0xDB7F to treat high private surrogates as single characters)
-					hi = code;
-					low = str.charCodeAt(idx+1);
-					if (isNaN(low)) {
-						throw 'High surrogate not followed by low surrogate in fixedCharCodeAt()';
-					}
-					return ((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000;
-				}
-				if (0xDC00 <= code && code <= 0xDFFF) { // Low surrogate
-					// We return false to allow loops to skip this iteration since should have already handled high surrogate above in the previous iteration
-					return false;
-					/*hi = str.charCodeAt(idx-1);
-					low = code;
-					return ((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000;*/
-				}
-				return code;
-			},
 			//dragable div code
 			titleClick: function(e){
 				if(e==null){
@@ -2414,11 +2371,40 @@ settingsLoadedEvent.addHandler(function()
 		entry which specifies the class to use for the characters on that tab (needed
 		if a special font needs to be used for them).
 		All the other entries are characters on the tab. The unicode value followed by
-		the name.  A special case is if the value is 0, which ends the current row, 
-		and if the string isn't empty, optionally adds a title before the next row.
-		Additionally, these title rows can have a third parameter that if true will
-		start a new table. This is usefull for sections with wide characters that
-		would throw off the spaceing of the rest of the buttons (see Long Arrows).
+		the name.  Instead of a unicode value, an array of unicode values can be 
+		specified if more than one codepoint is needed to represent the character.
+		There are a few special cases if the value is < 1:
+		0: This ends the current row, and if the string isn't empty, optionally adds 
+		a title before the next row. Additionally, these title rows can have a third 
+		parameter that if true will start a new table. This is usefull for sections 
+		with wide characters that would throw off the spaceing of the rest of the 
+		buttons (see Long Arrows). For these, a fourth parameter can specify the new
+		number of characters per line.
+		-1: This adds a selecter for emoji fitzpatrick selection. The modifier for 
+		skin tone will be attempted to be added to all buttons in the current table, 
+		but will be removed if this results in the button getting bigger (ie. not 
+		supported for that character).
+		-2: This adds a selecter for emoji hair type modifier. It is attempted to be
+		added to all buttons in the current table, but removed if it makes the button
+		bigger. In Windows, this appears only to effect two emoji.
+		-3: This adds a selector that allows gender to be specified for certain emoji.
+		The modifier for gender will be attempted to be added to all buttons in the 
+		current table, but will be removed if this results in the button getting bigger 
+		(ie. not supported for that character).
+		-10: This adds a control that allows a 'family' emoji to be build with a 
+		combination of man, woman, girl and boy emoji with different skin tones applied
+		to each. Clicking the buttons of this control will add family members to the 
+		'main' button on the right, while clicking the main button will output the 
+		codepoints for that family. Pressing reset will clear the current family to build
+		a new one.  Typically, 1-2 parents are specified followed by 1-2 children; other
+		orders / amounts of people may not be supported by the OS, but should render 
+		somewhat sensabily.  This does contain commented out code for hair style support,
+		but this does not currently work correctly on windows as it doesn't support
+		hair style for the characters that make up a family.
+		-20: This add a control to build a custom love / kiss emoji, allowing specifying
+		the skin tones for any combination of men or women with a heart between them, 
+		with either normal faces or kissing faces. There is commented out code for
+		specifying hair colors, but this is currently not support by window's renderer.
 
 		To add a new tab, the loadedLocalization() method needs to be modified. This 
 		is called at the bottom of this file, after all the strings are set, and it
