@@ -3,7 +3,7 @@ function loadOptions()
     showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showPostPreviewLive(getOption("post_preview_live"));
-    showEmojiKeyboardLocation(getOption("post_emoji_location"));
+    showEmojiOptions(getOption("post_emoji_button"),getOption("post_emoji_location"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showImageLoaderNewTab(getOption("image_loader_newtab"));
@@ -229,8 +229,10 @@ function getPostPreviewLive()
     return live.checked;
 }
 
-function showEmojiKeyboardLocation(position)
+function showEmojiOptions(showbutton, position)
 {
+	var but = document.getElementById("post_emoji_button");
+	but.selected = (showbutton == true);
     var left = document.getElementById("post_emoji_left");
     var right = document.getElementById("post_emoji_right");
     left.checked = (position == "Left");
@@ -243,6 +245,12 @@ function getEmojiKeyboardLocation()
     if (left.checked)
         return "Left";
     return "Right";
+}
+
+function getEmojiKeyboardEnabled()
+{
+    var but = document.getElementById("post_emoji_button");
+	return but.selected;
 }
 
 function showExpirationWatcherStyle(style)
@@ -548,6 +556,7 @@ function saveOptions()
         saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("post_preview_live", getPostPreviewLive());
+		saveOption("post_emoji_button", getEmojiKeyboardEnabled());
         saveOption("post_emoji_location", getEmojiKeyboardLocation());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());

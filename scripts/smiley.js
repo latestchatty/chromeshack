@@ -3,13 +3,11 @@
 */
 /*
 If I don't do the things that aren't worth doing, who will?
-
-Fonts used are from http://users.teilar.gr/~g1951d/
 */
 
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("post_emoji_button"))
+    if (getSetting("enabled_scripts").contains("post_emoji"))
     {
 
 		Smiley = {
@@ -26,15 +24,42 @@ settingsLoadedEvent.addHandler(function()
                 var postButton = document.getElementById("frm_submit");
                 if (postButton ){
                     // don't add click handlers here, because these elements get cloned into the page later
-                    var emojiButton = document.createElement("button");
-                    emojiButton.id = "emojiButton";
-                    emojiButton.setAttribute("type", "button");
-                    emojiButton.innerHTML = "Emoji &#x1f600;";
-                    if (getSetting("post_emoji_location") == "Left")
-                        postButton.parentNode.insertBefore(emojiButton, postButton.parentNode.firstChild);
-                    else
-                        postButton.parentNode.appendChild(emojiButton);
+					if(getSetting("post_emoji_button")){
+						var emojiButton = document.createElement("button");
+						emojiButton.id = "emojiButton";
+						emojiButton.setAttribute("type", "button");
+						emojiButton.innerHTML = "Emoji &#x1f600;";
+						if (getSetting("post_emoji_location") == "Left")
+							postButton.parentNode.insertBefore(emojiButton, postButton.parentNode.firstChild);
+						else
+							postButton.parentNode.appendChild(emojiButton);
+					}
+					postButton.removeAttribute("onclick");
+					
+					var postform = document.getElementById("postform");
+					if(postform){
+						var rulesline = postform.querySelectorAll("p.rules");
+						if(rulesline != null && rulesline.length > 0){
+							var spacer = document.createElement("span");
+							spacer.className = "postbox_rules_divider";
+							spacer.innerHTML = " &#x2022; ";
+							rulesline[0].append(spacer);
+							
+							var emoji  = document.createElement("span");
+							if(navigator.appVersion.indexOf("Mac")!=-1){
+								emoji.innerText = "CTRL + &#x2318; + Space for Emoji";
+							} else {
+								emoji.innerText = "Win + : for Emoji";
+							}
+							rulesline[0].append(emoji);
+						}
+					}
                 }
+				
+				//update preview to not remove emoji
+				removeUtf16SurrogatePairs = function(str){ return str; }
+				
+				processPostBoxEvent.addHandler(Smiley.installClickEvent);
             },
 			
 			installClickEvent: function(postbox) {
@@ -42,12 +67,11 @@ settingsLoadedEvent.addHandler(function()
                 emojiButton.addEventListener("click", Smiley.showWindow, true);
 				//hide emoji window when a post is made.
 				var postButton = document.getElementById("frm_submit");
-				postButton.addEventListener("click",Smiley.hidePicker, true);
+				postButton.addEventListener("click",Smiley.doPost, true);
 				
             },
 			
 			showWindow: function(event) {
-				Smiley.setCallbackEntities(true);
 				Smiley.showPicker(Smiley.shackCallback,event);
 			},
 			
@@ -74,26 +98,39 @@ settingsLoadedEvent.addHandler(function()
 				var e = document.createEvent('HTMLEvents');
 				e.initEvent('input', false, true);
 				myField.dispatchEvent(e);
+				myField.focus();
 			},
-			
+			doPost: function(){
+				Smiley.hidePicker();
+				
+				var textArea = document.getElementById("frm_body");
+				if(textArea){
+					textArea.value = Smiley.convertToHtmlEntities(textArea.value);
+				}
+				
+				//normal post action
+				$('#frm_submit').attr('disabled', 'disabled').css('color', '#E9E9DE'); 
+				$('#postform').submit(); 
+				return false;
+			},
+			convertToHtmlEntities: function(text){
+				//encodes characters outside the basic multilingual plane to html entities. Doesn't convert normal problematic characters such as <, >, or quotes.
+				var ret = "";
+				for(var i=0;i<text.length;i++){
+					var val = text.codePointAt(i);
+					if(val > 0xFFFF){
+						//convert to html entity as Shacknews DB only supports the Basic Multilingual Plane
+						ret += "&#"+val+";";
+						i++;//code points above this value are two (UTF-16) characters long, so need to move one additional character;
+					} else {
+						ret += text.charAt(i);
+					}
+				}
+				return ret;
+			},
 			
 			//properties
 			css: `
-		@font-face
-		{
-			font-family:symbola;
-			src: url("${browser.runtime.getURL("../ext/unicodefonts/Symbola.ttf")}")
-		}
-		@font-face
-		{
-			font-family:heiroglyph;
-			url("${browser.runtime.getURL("../ext/unicodefonts/Gardiner.ttf")}")
-		}
-		/*@font-face
-		{
-			font-family:aegean;
-			url("${browser.runtime.getURL("../ext/unicodefonts/Aegean.ttf")}")
-		}*/
 		#smileycontainer{
 			z-index: 2100;
 		}
@@ -137,7 +174,7 @@ settingsLoadedEvent.addHandler(function()
 			overflow: hidden;
 			padding-top: 4px;
 			background: lightgray;
-			line-height: 18px;
+			line-height: 24px;
 		}
 		#smileycontentholder{
 			position: relative;
@@ -148,6 +185,7 @@ settingsLoadedEvent.addHandler(function()
 			background: white;
 			overflow-y: scroll;
 			height: 250px;
+			padding: 3px;
 			/*
 			position: absolute;
 			width: 100%;
@@ -188,6 +226,10 @@ settingsLoadedEvent.addHandler(function()
 			border-top-left-radius: 4px;
 			border-top-right-radius: 4px;
 			font-size: 15px;
+			
+			height: 25px;
+			margin-top 2px;
+			display: inline-block;
 		}
 		#smileytabholder span.smileytabspacer{
 			width: 12px;
@@ -196,7 +238,10 @@ settingsLoadedEvent.addHandler(function()
 		#smileytabholder span.smileytabselected{
 			background: white; /* same as #smileycontent */
 			border-bottom: none;
-			padding: 3px;
+			padding: 0 3px 3px 3px;
+			font-size: 18px;
+			height: 28px;
+			margin-top: 0px;
 		}
 		.smiley, #smileywindowclose{
 			font-family: symbola,aegean,Segoe UI Symbol;
@@ -214,182 +259,6 @@ settingsLoadedEvent.addHandler(function()
 		#smileycontent button.buttonemoji{
 			line-height: 2em;
 			padding: 1px;
-		}
-		@-moz-keyframes rotate {
-			from {   -moz-transform: rotate(0deg); }
-			25% {  -moz-transform: rotate(90deg); }
-			50% {  -moz-transform: rotate(180deg); }
-			75% {  -moz-transform: rotate(270deg); }
-			to { -moz-transform:rotate(360deg); }
-			}
-		@-webkit-keyframes rotate {
-			from { -webkit-transform: rotate(0deg); }
-			25% {  -webkit-transform: rotate(90deg); }
-			50% {  -webkit-transform: rotate(180deg); }
-			75% {  -webkit-transform: rotate(270deg); }
-			to {   -webkit-transform: rotate(360deg); }
-			}
-		.rotate {
-			-moz-animation-name: rotate;
-			-moz-animation-duration: 4s;
-			-moz-animation-iteration-count: infinite;
-			-moz-animation-timing-function: linear;
-			-webkit-animation-name: rotate;
-			-webkit-animation-duration: 4s;
-			-webkit-animation-iteration-count: infinite;
-			-webkit-animation-timing-function: linear;
-			display: inline-block;
-			border: 1px solid cyan; border-radius: 50%;
-		}
-		@-moz-keyframes flip {
-			from {   -moz-transform: scaleX(1); }
-			49% {  -moz-transform: scaleX(1); }
-			50% {  -moz-transform: scaleX(-1); }
-			99% {  -moz-transform: scaleX(-1); }
-			to { -moz-transform: scaleX(1); }
-			}
-		@-webkit-keyframes flip {
-			from {   -webkit-transform: scaleX(1); }
-			49% {  -webkit-transform: scaleX(1); }
-			50% {  -webkit-transform: scaleX(-1); }
-			99% {  -webkit-transform: scaleX(-1); }
-			to { -webkit-transform: scaleX(1); }
-			}
-		.flip {
-			-moz-animation-name: flip;
-			-moz-animation-duration: 500ms;
-			-moz-animation-iteration-count: infinite;
-			-moz-animation-timing-function: linear;
-			-webkit-animation-name: flip;
-			-webkit-animation-duration: 500ms;
-			-webkit-animation-iteration-count: infinite;
-			-webkit-animation-timing-function: linear;
-			display: inline-block;
-		}
-		.flip1 {
-			-moz-animation-name: flip;
-			-moz-animation-duration: 4s;
-			-moz-animation-iteration-count: infinite;
-			-moz-animation-timing-function: linear;
-			-webkit-animation-name: flip;
-			-webkit-animation-duration: 4s;
-			-webkit-animation-iteration-count: infinite;
-			-webkit-animation-timing-function: linear;
-			display: inline-block;
-		}
-		.flip2 {
-			-moz-animation-name: flip;
-			-moz-animation-duration: 200ms;
-			-moz-animation-iteration-count: infinite;
-			-moz-animation-timing-function: linear;
-			-webkit-animation-name: flip;
-			-webkit-animation-duration: 200ms;
-			-webkit-animation-iteration-count: infinite;
-			-webkit-animation-timing-function: linear;
-			display: inline-block;
-		}
-		.smileyemoji{
-			color: black;
-			background: gold;
-			background: -webkit-radial-gradient( circle closest-side, gold 0%, gold 80%, rgba(255,255,255,0) 100%);
-			background: radial-gradient( circle closest-side, gold 0%, gold 80%, rgba(255,255,255,0) 100%);
-			border: 0px;
-			border-radius: 50%
-		}
-		.smileyemojicat{
-			color: black;
-			background: lightgray;
-			background: -webkit-radial-gradient( 50% 55%, circle closest-side, lightgray 0%, lightgray 80%, rgba(255,255,255,0) 100%);
-			background: radial-gradient(circle closest-side at  50% 55%, lightgray 0%, lightgray 80%, rgba(255,255,255,0) 100%);
-			border: 0px;
-			border-radius: 50%
-		}
-		.outfill {
-			display: inline-block;
-			position: relative;
-			z-index: 2;
-		}
-		.outfill:before, .outfill:after {
-			content: attr(character);
-			color: gold;
-			color: attr(value);
-			position: absolute;
-			z-index: -1;
-		}
-		.outfill:before { top: -1px; left: -1px }
-		.outfill:after  { top: 1px; left: 1px }
-		.shadowfill{
-			text-shadow: gold 0 0 10px;
-		}
-		.double {
-			display: inline-block;
-			position: relative;
-			z-index: 2;
-		}
-		.double:after {
-			content: attr(character);
-			position: absolute;
-			z-index: -1;
-			top: -2px; left: .3em }
-		}
-		.bowtie {
-			display: inline-block;
-			position: relative;
-		}
-		.bowtie:after {
-			font-family: symbola,Segoe UI Symbol;
-			content: attr(value);
-			position: absolute;
-			z-index: -1;
-			color: brown;
-			top: 30%; left: .09em;
-		}
-		.bluebox{
-			background: -webkit-linear-gradient( top, RoyalBlue , mediumblue 70%, blue);
-			background: linear-gradient( to bottom, RoyalBlue , mediumblue 70%, blue);
-			border: 1px solid mediumblue;
-		}
-		.slatebox{
-			background: -webkit-linear-gradient( top, LightSteelBlue 0%  , SlateGray 70%, LightSlateGray 100%);
-			background: linear-gradient( to bottom, LightSteelBlue 0% , SlateGray 70%, LightSlateGray 100%);
-			border: 1px solid gray;
-		}
-		.magbox{
-			background: -webkit-linear-gradient( top, hotpink 0%  , deeppink 70%, mediumvioletred 100%);
-			background: linear-gradient( to bottom, hotpink 0% , deeppink 70%, mediumvioletred 100%);
-			border: 1px solid magenta;
-		}
-		.redbox{
-			background: -webkit-linear-gradient( top, crimson 0% , red 70%, darkred 100%);
-			background: linear-gradient( to bottom, crimson 0% , red 70%, darkred 100%);
-			border: 1px solid maroon;
-		}
-		.orangebox{
-			background: -webkit-linear-gradient( top, LightSalmon  0%, orange 70%, orangered 100%);
-			background: linear-gradient( to bottom, LightSalmon 0% , orange 70%, orangered 100%);
-			border: 1px solid Chocolate ;
-		}
-		.greenbox{
-			background: -webkit-linear-gradient( top, Chartreuse   0%, LimeGreen 70%, DarkGreen  100%);
-			background: linear-gradient( to bottom, Chartreuse  0% , LimeGreen 70%, DarkGreen  100%);
-			border: 1px solid ForestGreen ;
-		}
-		.purplebox{
-			background: -webkit-linear-gradient( top, BlueViolet    0%, DarkMagenta 70%, Indigo    100%);
-			background: linear-gradient( to bottom, BlueViolet   0% , DarkMagenta 70%, Indigo  100%);
-			border: 1px solid Purple  ;
-		}
-		.bluebox, .slatebox, .magbox, .redbox, .orangebox, .greenbox, .purplebox{
-			border-radius: 20%;
-			color: white;
-			display: inline-block;
-			min-width: 1.2em;
-			text-align: center;
-			margin: 1px;
-			vertical-align: top;
-		}
-		.outline{
-			text-shadow: black -1px -1px, black -1px 1px, black 1px 1px, black 1px -1px;
 		}
 		`,	
 			CHARSPERLINE: 12,
@@ -1293,28 +1162,6 @@ settingsLoadedEvent.addHandler(function()
 					btn.innerHTML = str;
 				}
 			},
-			showTabEmoji: function(tab){
-				var content = "";
-				var cnt=0;
-				
-				for(var i=0;i<Smiley.emoji.length;i++){
-					var c = Smiley.emoji[i];
-				
-					if(cnt%Smiley.EMOJICHARSPERLINE==0)
-						content += "<tr>";
-				
-					content += "<td><button title='"+c[1]+"' class='buttonemoji'>";
-					content += Smiley.getEmojiHtml(c);
-					content +="</button></td>";
-					
-					if(cnt%Smiley.EMOJICHARSPERLINE==(Smiley.EMOJICHARSPERLINE-1))
-						content += "</tr>\n";
-					
-					cnt++;
-				}
-				
-				return content;
-			},
 			insertEmoji: function(event){
 				var str;
 				var ele = null;
@@ -1437,934 +1284,6 @@ settingsLoadedEvent.addHandler(function()
 		
 		//unicode 6.0
 		/*
-			Special table of emoji characters
-			Col		Description
-			0		Unicode character [Characters Array], -1 if no unicode character or is duplicate
-			1		Character's forum name
-			2		Character[s] to use for stlyed version
-			3		Style to apply to styled version
-			4		Classes to apply to styled version
-			5		Value attribute to apply (rarely used)
-		*/
-		Smiley.emoji = new Array(
-			[-1      , "bowtie" , 		0x1F600 , "position: relative;","smiley smileyemoji bowtie","&#x29D3;"],  //not a good match
-			[0x1F601 , "smile" , 		0x1F601 , "","smiley smileyemoji"],
-			[0x1F606 , "laughing" , 	0x1F606 , "","smiley smileyemoji"],
-			[0x1F60A , "blush" , 		0x1F60A , "","smiley smileyemoji"],
-			[0x1F604 , "smiley" , 		0x1F604 , "","smiley smileyemoji"],
-			[0x1F60C , "relaxed" , 	0x1F60C , "","smiley smileyemoji"],
-			[0x1F60F , "smirk" , 		0x1F60F , "","smiley smileyemoji"],
-			[0x1F60D , "heart_eyes" , 	0x1F60D , "","smiley smileyemoji"],
-			[0x1F618 , "kissing_heart",0x1F618 , "","smiley smileyemoji"],
-			[0x1F61A , "kissing_closed_eyes" ,	0x1F61A , "","smiley smileyemoji"],
-			[0x1F633 , "flushed" , 	0x1F633 , "","smiley smileyemoji"],
-			[0x1F60C , "relieved" , 	0x1F60C , "","smiley smileyemoji"],
-			[0x1F606 , "satisfied" , 	0x1F606 , "","smiley smileyemoji"],
-			[0x1F604 , "grin" , 		0x1F604 , "","smiley smileyemoji"],	// ok match
-			[0x1F609 , "wink" , 		0x1F609 , "","smiley smileyemoji"],
-			[0x1F61C , "stuck_out_tongue_winking_eye" , 		0x1F61C , "","smiley smileyemoji"],
-			[0x1F61D , "stuck_out_tongue_closed_eyes" , 		0x1F61D , "","smiley smileyemoji"],
-			[0x1F600 , "grinning" , 	0x1F600 , "","smiley smileyemoji"],
-			[0x1F617 , "kissing" , 	0x1F617 , "","smiley smileyemoji"],
-			[0x1F619 , "kissing_smiling_eyes" , 	0x1F619 , "","smiley smileyemoji"],
-			[0x1F61B , "stuck_out_tongue" , 		0x1F61B , "","smiley smileyemoji"],
-			[0x1F634 , "sleeping" , 	0x1F634 , "","smiley smileyemoji"],
-			[0x1F61F , "worried" , 	0x1F61F , "","smiley smileyemoji"],
-			[0x2639 ,  "frowning" , 	0x2639 , "","smiley smileyemoji"],
-			[0x1F627 , "anguished" , 	0x1F627 , "","smiley smileyemoji"],
-			[0x1F62E , "open_mouth" , 	0x1F62E , "","smiley smileyemoji"],
-			[0x1F62C , "grimacing" , 	0x1F62C , "","smiley smileyemoji"],
-			[0x1F615 , "confused" , 	0x1F615 , "","smiley smileyemoji"],
-			[0x1F62F , "hushed" , 		0x1F62F , "","smiley smileyemoji"],
-			[0x1F62F , "expressionless",0x1F62F , "","smiley smileyemoji"],
-			[0x1F612 , "unamused" , 	0x1F612 , "","smiley smileyemoji"],
-			[0x1F605 , "sweat_smile" , 0x1F605 , "","smiley smileyemoji"],
-			[0x1F613 , "sweat" , 		0x1F613 , "","smiley smileyemoji"],
-			[0x1F625 ,	"disappointed_relieved" , 0x1F625 , "","smiley smileyemoji"],
-			[0x1F629 , "weary" , 		0x1F629 , "","smiley smileyemoji"],
-			[0x1F614 , "pensive" , 	0x1F614 , "","smiley smileyemoji"],
-			[0x1F61E , "disappointed" ,0x1F61E , "","smiley smileyemoji"],
-			[0x1F616 , "confounded" , 	0x1F616 , "","smiley smileyemoji"],
-			[0x1F628 , "fearful" , 	0x1F628 , "","smiley smileyemoji"],
-			[0x1F630 , "cold_sweat" , 	0x1F630 , "","smiley smileyemoji"],
-			[0x1F623 , "persevere" , 	0x1F623 , "","smiley smileyemoji"],
-			[0x1F622 , "cry" , 		0x1F622 , "","smiley smileyemoji"],
-			[0x1F62D , "sob" , 		0x1F62D , "","smiley smileyemoji"],
-			[0x1F602 , "joy" , 		0x1F602 , "","smiley smileyemoji"],
-			[0x1F632 , "astonished" , 	0x1F632 , "","smiley smileyemoji"],
-			[0x1F631 , "scream" , 		0x1F631 , "","smiley smileyemoji"],
-			[-1 , 		"neckbeard" , 	0x1F479 , "","smiley smileyemoji"],  //not a good match
-			[0x1F62B , "tired_face" , 	0x1F62B , "","smiley smileyemoji"],
-			[0x1F620 , "angry" , 		0x1F620 , "","smiley smileyemoji"],
-			[0x1F620 , "rage" , 		0x1F620 , "background: red; background: -webkit-radial-gradient( circle closest-side, gold 0%, red 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, gold 0%, red 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F624 , "triumph" , 	0x1F624 , "","smiley smileyemoji"],
-			[0x1F62A , "sleepy" , 		0x1F62A , "","smiley smileyemoji"],
-			[0x1F60B , "yum" , 		0x1F60B , "","smiley smileyemoji"],
-			[0x1F637 , "mask" , 		0x1F637 , "","smiley smileyemoji"],
-			[0x1F60E , "sunglasses" , 	0x1F60E , "","smiley smileyemoji"],
-			[0x1F635 , "dizzy_face" , 	0x1F635 , "","smiley smileyemoji"],
-			[0x1F47F , "imp" , 		0x1F47F , "background: #9932CC; background: -webkit-radial-gradient(50% 70%, circle closest-side, #9932CC 0%, #9932CC 90%, rgba(255,255,255,0) 100%); background: radial-gradient(circle closest-side at 50% 70%, #9932CC 0%, #9932CC 90%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F608 , "smiling_imp" , 0x1F608 , "background: #9932CC; background: -webkit-radial-gradient(50% 55%, circle closest-side, #9932CC 0%, #9932CC 90%, rgba(255,255,255,0) 100%); background: radial-gradient(circle closest-side at 50% 55%, #9932CC 0%, #9932CC 90%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F610 , "neutral_face" ,0x1F610 , "","smiley smileyemoji"],
-			[0x1F636 , "no_mouth" , 	0x1F636 , "","smiley smileyemoji"],
-			[0x1F607 , "innocent" , 	0x1F607 , "background: gold; background: -webkit-radial-gradient(50% 55%, circle closest-side, gold 0%, gold 90%, rgba(255,255,255,0) 100%); background: radial-gradient(circle closest-side at 50% 55%, gold 0%, gold 90%, rgba(255,255,255,0) 100%);","smiley smileyemoji"],
-			[0x1F47D , "alien" , 		0x1F47D , "background: gray; background: -webkit-radial-gradient( circle closest-side, lightgray 0%, gray 88%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, lightgray 0%, gray 88%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			
-			[0x1F49B , "yellow_heart" , 	0x1F49B , "color: gold"],
-			[0x1F499 , "blue_heart" , 		0x1F499 , "color: blue"],
-			[0x1F49C , "purple_heart" , 	0x1F49C , "color: purple"],
-			[0x2764 , "heart" , 			0x2764 , "color: red"],
-			[0x1F49A , "green_heart" , 		0x1F49A , "color: green"],
-			[0x1F494 , "broken_heart" , 	0x1F494 , "color: red"],
-			[0x1F493 , "heartbeat" , 		0x1F493 , "color: red"],
-			[0x1F497 , "heartpulse" , 		0x1F497 , "color: red"],
-			[0x1F495 , "two_hearts" , 		0x1F495 , "color: red"],
-			[0x1F49E , "revolving_hearts" , 0x1F49E , "color: red", "rotate smiley"],
-			[0x1F498 , "cupid" , 			0x1F498 , "color: red"],
-			[0x1F496 , "sparkling_heart" , 	0x1F496 , "color: red", "smiley flip"],
-			
-			[0x2728, 	"sparkles" , 	0x2728, "", "smiley outfill flip", "gold"],
-			[0x2729, 	"star" , 		0x2729, "","smiley smileyemoji"],
-			[0x1F31F, 	"star2" , 		0x1F31F, "","smiley smileyemoji"],
-			[0x1F4AB, 	"dizzy" , 		0x1F4AB],
-			[0x1F4A5, 	"boom" , 		0x1F4A5, "background: red; background: -webkit-radial-gradient( circle closest-side, gold 0%, red 60%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, gold 0%, red 60%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[-1, 		"collision" , 	0x1F4A5, "background: red; background: -webkit-radial-gradient( circle closest-side, gold 0%, red 60%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, gold 0%, red 60%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F4A2, 	"anger" , 		0x1F4A2, "color: red"],
-			[0x2757, 	"exclamation" , 0x2757, "color: red"],
-			[0x2753, 	"question" , 	0x2753, "color: red"],
-			[0x2755, 	"grey_exclamation" ,0x2755, "color: grey"],
-			[0x2754, 	"grey_question" , 	0x2754, "color: grey"],
-			[0x1F4A4, 	"zzz" , 		0x1F4A4],
-			[0x1F4A8, 	"dash" , 		0x1F4A8],
-			[0x1F4A6, 	"sweat_drops" , 0x1F4A6, "color: blue"],
-			[0x1F3B6, 	"notes" , 		0x1F3B6],
-			[0x1F3B5, 	"musical_note" ,0x1F3B5],
-			[0x1F525, 	"fire" , 		0x1F525, "color: red", "smiley flip2"],
-			[-1, 		"hankey" , 		0x1F4A9, "color: brown"],
-			[0x1F4A9, 	"poop" , 		0x1F4A9, "color: brown"],
-			[-1, 		"shit" , 		0x1F4A9, "color: brown"],
-			
-			[-1, 		"+1" , 				0x1F44D],
-			[0x1F44D , "thumbsup" , 		0x1F44D],
-			[-1, 		"-1" , 				0x1F44E],
-			[0x1F44E , "thumbsdown" , 		0x1F44E],
-			[0x1F44C , "ok_hand" , 		0x1F44C],
-			[0x1F44A , "punch" , 			0x1F44A],
-			[-1 , 		"facepunch" , 		0x1F44A],
-			[0x270A , 	"fist" , 			0x270A],
-			[0x270C , 	"v" , 				0x270C],
-			[0x1F44B , "wave" , 			0x1F44B],
-			[0x270B ,  "hand" , 			0x270B],
-			[-1 , 		"raised_hand" , 	0x270B],
-			[0x1F450 , "open_hands" , 		0x1F450],
-			[0x1F446 , "point_up" , 		0x1F446],
-			[0x1F447 , "point_down" , 		0x1F447],
-			[0x1F448 , "point_left" , 		0x1F448],
-			[0x1F449 , "point_right" , 	0x1F449],
-			[0x1F64C , "raised_hands" , 	0x1F64C],
-			[0x1F64F , "pray" , 			0x1F64F],
-			[0x261D , 	"point_up_2" , 		0x261D],
-			[0x261F , 	"point_down_2" , 	0x261F],
-			[0x261C , 	"point_left_2" , 	0x261C],
-			[0x261E , 	"point_right_2" , 	0x261E],
-			[0x1F44F , "clap" , 			0x1F44F],
-			[0x1F4AA , "muscle" , 			0x1F4AA],
-			[-1 , 		"metal" , 			0x1F64B, "color: silver"],// bad match
-			[-1 , 		"fu" , 				0x1F446, "color: red"],// bad match
-			
-			[0x1F6B6 , "walking" , 		0x1F6B6],
-			[-1 , 		"runner" , 			0x1F3C3],
-			[0x1F3C3 , "running" , 		0x1F3C3],
-			[0x1F46B , "couple" , 			0x1F46B],
-			[0x1F46A , "family" , 			0x1F46A],
-			[0x1F46C , "two_men_holding_hands" , 	0x1F46C],
-			[0x1F46D , "two_women_holding_hands" , 0x1F46D],
-			[0x1F483 , "dancer" , 			0x1F483,"", "smiley flip1"],
-			[-1, 		"dancers" , 		0x1F483,"", "smiley flip1 double", "inherit"],   // bad match
-			[0x1F646 , "ok_woman" , 		0x1F646],
-			[0x1F645 , "no_good" , 		0x1F645],
-			[0x1F481 , "information_desk_person" , 0x1F481],
-			[0x1F64B , "raising_hand" , 	0x1F64B],
-			[0x1F470 , "bride_with_veil" , 0x1F470],
-			[0x1F64E , "person_with_pouting_face" , 0x1F64E],
-			[0x1F64D , "person_frowning" , 		0x1F64D],
-			[0x1F647 , "bow" , 			0x1F647],
-			[0x1F48F , "couplekiss" , 		0x1F48F],
-			[0x1F491 , "couple_with_heart",0x1F491],
-			[0x1F486 , "massage" , 		0x1F486],
-			[0x1F487 , "haircut" , 		0x1F487],
-			[0x1F485 , "nail_care" , 		0x1F485],
-			[0x1F466 , "boy" , 			0x1F466],
-			[0x1F467 , "girl" , 			0x1F467],
-			[0x1F469 , "woman" , 			0x1F469],
-			[0x1F468 , "man" , 			0x1F468],
-			[0x1F476 , "baby" , 			0x1F476],
-			[0x1F475 , "older_woman" , 	0x1F475],
-			[0x1F474 , "older_man" , 		0x1F474],
-			[0x1F471 , "person_with_blond_hair" , 	0x1F471],
-			[0x1F472 , "man_with_gua_pi_mao" , 	0x1F472],
-			[0x1F473 , "man_with_turban" , 		0x1F473],
-			[0x1F477 , "construction_worker" , 	0x1F477],
-			[0x1F46E , "cop" , 			0x1F46E],
-			[0x1F47C , "angel" , 			0x1F47C],
-			[0x1F478 , "princess" , 		0x1F478],
-			
-			[0x1F63A , "smiley_cat" , 		0x1F63A,"", "smiley smileyemojicat"],
-			[0x1F638 , "smile_cat" , 		0x1F638,"", "smiley smileyemojicat"],
-			[0x1F63B , "heart_eyes_cat" , 	0x1F63B,"", "smiley smileyemojicat"],
-			[0x1F63D , "kissing_cat" , 	0x1F63D,"", "smiley smileyemojicat"],
-			[0x1F63C , "smirk_cat" , 		0x1F63C,"", "smiley smileyemojicat"],
-			[0x1F640 , "scream_cat" , 		0x1F640,"", "smiley smileyemojicat"],
-			[0x1F63F , "crying_cat_face" , 0x1F63F,"", "smiley smileyemojicat"],
-			[0x1F639 , "joy_cat" , 		0x1F639,"", "smiley smileyemojicat"],
-			[0x1F63E , "pouting_cat" , 	0x1F63E,"", "smiley smileyemojicat"],
-			
-			[0x1F479 , "japanese_ogre" , 	0x1F479,"background: red; background: -webkit-radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F47A , "japanese_goblin" , 0x1F47A,"background: red; background: -webkit-radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F648 , "see_no_evil" , 	0x1F648, "color: brown"],
-			[0x1F649 , "hear_no_evil" , 	0x1F649, "color: brown"],
-			[0x1F64A , "speak_no_evil" , 	0x1F64A, "color: brown"],
-			[0x1F482 , "guardsman" , 		0x1F482],
-			[0x1F480 , "skull" , 			0x1F480],
-			[0x1F463 , "feet" , 			0x1F463],
-			[0x1F444 , "lips" , 			0x1F444],
-			[0x1F48B , "kiss" , 			0x1F48B, "color: red"],
-			[0x1F4A7 , "droplet" , 		0x1F4A7, "color: blue"],
-			[0x1F442 , "ear" , 			0x1F442],
-			[0x1F440 , "eyes" , 			0x1F440],
-			[0x1F443 , "nose" , 			0x1F443],
-			[0x1F445 , "tongue" , 			0x1F445],
-			[0x1F48C , "love_letter" , 	0x1F48C],
-			[0x1F464 , "bust_in_silhouette",0x1F464],
-			[0x1F465 , "busts_in_silhouette",0x1F465],
-			[0x1F4AC , "speech_balloon" , 	0x1F4AC],
-			[0x1F4AD , "thought_balloon" , 0x1F4AD],
-		/* not equivelant in unicode - doom faces, troll face
-		:feelsgood:
-		:finnadie:
-		:goberserk:
-		:godmode:
-		:hurtrealbad:
-		:rage1:
-		:rage2:
-		:rage3:
-		:rage4:
-		:suspect:
-		:trollface:    //may be able to may a 1/2 decent trollface with a few transforms to a simley face
-		*/
-			
-			
-			[0x2600 , 	"sunny" , 		0x2600, "color: gold"],
-			[0x2614 , 	"umbrella" , 	0x2614, "color: blue"],
-			[0x2601 , 	"cloud" , 		0x2601],
-			[0x2744 , 	"snowflake" , 	0x2744, "color: aqua"],
-			[0x2603 , 	"snowman" , 	0x2603],
-			[0x26A1 , 	"zap" , 		0x26A1],  // 26c8
-			[0x1F300 , "cyclone" , 	0x1F300, "color: blue"],
-			[0x1F301 , "foggy" , 		0x1F301],
-			[0x1F30A , "ocean" , 		0x1F30A, "color: blue"],
-			
-			[0x1F431 , "cat" , 		0x1F431, "color: goldenrod"],
-			[0x1F436 , "dog" , 		0x1F436, "color: brown"],
-			[0x1F42D , "mouse" , 		0x1F42D, "color: grey"],
-			[0x1F439 , "hamster" , 	0x1F439, "color: goldenrod"],
-			[0x1F430 , "rabbit" , 		0x1F430],
-			[0x1F43A , "wolf" , 		0x1F43A],
-			[0x1F438 , "frog" , 		0x1F438, "color: green"],
-			[0x1F42F , "tiger" , 		0x1F42F, "background: orange; background: -webkit-radial-gradient( 50% 45%, circle closest-side, orange 0%, orange 80%, rgba(255,255,255,0) 95%); background: radial-gradient( circle closest-side at 50% 45%, orange 0%, orange 80%, rgba(255,255,255,0) 95%);", "smiley smileyemoji"],
-			[0x1F428 , "koala" , 		0x1F428, "color: darkgrey"],  
-			[0x1F43B , "bear" , 		0x1F43B, "color: brown"],
-			[0x1F437 , "pig" , 		0x1F437, "color: LightCoral"],
-			[0x1F43D , "pig_nose" ,	0x1F43D, "color: LightCoral"],
-			[0x1F42E , "cow" , 		0x1F42E],
-			[0x1F417 , "boar" , 		0x1F417, "color: brown"],
-			[0x1F435 , "monkey_face",	0x1F435, "color: brown"],
-			[0x1F412 , "monkey" , 		0x1F412, "color: brown"],
-			[0x1F434 , "horse" , 		0x1F434, "color: brown"],
-			[0x1F3C7 , "racehorse", 	0x1F3C7],
-			[0x1F42B , "camel" , 		0x1F42B, "color: gold"],
-			[0x1F411 , "sheep" , 		0x1F411],
-			[0x1F418 , "elephant" , 	0x1F418, "color: grey"],
-			[0x1F43C , "panda_face",	0x1F43C],
-			[0x1F40D , "snake" , 		0x1F40D, "color: green"],
-			[0x1F426 , "bird" , 		0x1F426],
-			[0x1F424 , "baby_chick",	0x1F424, "color: gold"],
-			[0x1F425 , "hatched_chick",0x1F425, "color: gold"],
-			[0x1F423 , "hatching_chick",0x1F423, "color: gold"],
-			[0x1F414 , "chicken" , 	0x1F414],
-			[0x1F427 , "penguin" , 	0x1F427],
-			[0x1F422 , "turtle" , 		0x1F422, "color: green"],
-			[0x1F41B , "bug" , 		0x1F41B],
-			[0x1F41D , "honeybee" , 	0x1F41D],
-			[0x1F41C , "ant" , 		0x1F41C],
-			[0x1F41E , "beetle" , 		0x1F41E,"background: red; background: -webkit-radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 80%); background: radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 80%);", "smiley smileyemoji"],
-			[0x1F40C , "snail" , 		0x1F40C,"background: brown; background: -webkit-radial-gradient( 55% 55%, circle closest-side, brown 0%, brown 50%, rgba(255,255,255,0) 70%); background: radial-gradient( circle closest-side at 55% 55%, brown 0%, brown 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F419 , "octopus" , 	0x1F419],
-			[0x1F420 , "tropical_fish",0x1F420],
-			[0x1F41F , "fish" , 		0x1F41F, "color: blue"],
-			[0x1F433 , "whale" , 		0x1F433, "color: blue"],
-			[0x1F40B , "whale2" , 		0x1F40B],
-			[0x1F42C , "dolphin" , 	0x1F42C, "color: grey"],
-			[0x1F404 , "cow2" , 		0x1F404, "color: brown"],
-			[0x1F40F , "ram" , 		0x1F40F],
-			[0x1F400 , "rat" , 		0x1F400, "color: grey"],
-			[0x1F403 , "water_buffalo",0x1F403, "color: dimgrey"],
-			[0x1F405 , "tiger2" , 		0x1F405],
-			[0x1F407 , "rabbit2" , 	0x1F407],
-			[0x1F409 , "dragon" , 		0x1F409, "color: green"],
-			[0x1F410 , "goat" , 		0x1F410],
-			[0x1F413 , "rooster" , 	0x1F413],
-			[0x1F415 , "dog2" , 		0x1F415, "color: brown"],
-			[0x1F416 , "pig2" , 		0x1F416, "color: LightCoral"],
-			[0x1F401 , "mouse2" , 		0x1F401],
-			[0x1F402 , "ox" , 			0x1F402, "color: brown"],
-			[0x1F432 , "dragon_face",	0x1F432, "color: green;background: red; background: -webkit-radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 80%); background: radial-gradient( circle closest-side, red 0%, red 50%, rgba(255,255,255,0) 80%);", "smiley smileyemoji"],
-			[0x1F421 , "blowfish" , 	0x1F421],
-			[0x1F40A , "crocodile", 	0x1F40A, "color: green"],
-			[0x1F42A , "dromedary_camel",0x1F42A, "color: gold"],
-			[0x1F406 , "leopard" , 	0x1F406, "color: gold"],
-			[0x1F408 , "cat2" , 		0x1F408],
-			[0x1F429 , "poodle" , 		0x1F429],
-			[0x1F43E , "paw_prints",	0x1F43E],
-			
-			[0x1F490 , "bouquet",			0x1F490],
-			[0x1F338 , "cherry_blossom",	0x1F338,"background: LightCoral; background: -webkit-radial-gradient( circle closest-side, LightCoral 0%, LightCoral 50%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, LightCoral 0%, LightCoral 50%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F337 , "tulip",			0x1F337],
-			[0x1F340 , "four_leaf_clover",	0x1F340, "color: green"],
-			[0x1F339 , "rose",				0x1F339, "color: red"],
-			[0x1F33B , "sunflower",		0x1F33B,"background: yellow; background: -webkit-radial-gradient( circle closest-side, brown 0%, brown 50%, yellow 55%, yellow 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, brown 0%, brown 50%, yellow 55%, yellow 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F33A , "hibiscus",			0x1F33A, "color: LightCoral"],
-			[0x1F341 , "maple_leaf",		0x1F341, "color: orangered"],
-			[0x1F343 , "leaves",			0x1F343, "color: LawnGreen"],
-			[0x1F342 , "fallen_leaf",		0x1F342, "color: Peru"],
-			[0x1F33F , "herb",				0x1F33F, "color: green"],
-			[0x1F344 , "mushroom",			0x1F344],
-			[0x1F335 , "cactus",			0x1F335, "color: green"],
-			[0x1F334 , "palm_tree",		0x1F334],
-			[0x1F332 , "evergreen_tree",	0x1F332, "color: darkgreen"],
-			[0x1F333 , "deciduous_tree",	0x1F333],
-			[0x1F330 , "chestnut",			0x1F330,"background: brown; background: -webkit-radial-gradient( 50% 55%, circle closest-side, brown 0%, brown 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side at 50% 55%, brown 0%, brown 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F331 , "seedling",			0x1F331, "color: lightgreen"],
-			[0x1F33C , "blossom",			0x1F33C,"background: yellow; background: -webkit-radial-gradient( circle closest-side, orange 0%, orange 20%, yellow 25%, yellow 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, orange 0%, orange 20%, yellow 25%, yellow 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F33E , "ear_of_rice",		0x1F33E],
-			[0x1F41A , "shell",			0x1F41A],
-			[0x1F310 , "globe_with_meridians",0x1F310,"color: blue;"],
-			[0x1F31E , "sun_with_face",	0x1F31E,"color: goldenrod; background: yellow; background: -webkit-radial-gradient( circle closest-side, yellow 0%, yellow 50%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, yellow 0%, yellow 50%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F31D , "full_moon_with_face",0x1F31D,"background: yellow; background: -webkit-radial-gradient( circle closest-side, yellow 0%, yellow 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, yellow 0%, yellow 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F31A , "new_moon_with_face",0x1F31A],
-			[0x1F311 , "new_moon",			0x1F311],
-			[0x1F312 , "waxing_crescent_moon",0x1F312],
-			[0x1F313 , "first_quarter_moon",0x1F313],
-			[0x1F314 , "waxing_gibbous_moon",0x1F314],
-			[0x1F315 , "full_moon",		0x1F315],
-			[0x1F316 , "waning_gibbous_moon",0x1F316],
-			[0x1F317 , "last_quarter_moon",0x1F317],
-			[0x1F318 , "waning_crescent_moon",0x1F318],
-			[0x1F31C , "last_quarter_moon_with_face",0x1F31C],
-			[0x1F31B , "first_quarter_moon_with_face",0x1F31B],
-			[0x1F319 , "moon",				0x1F319],
-			[0x1F30D , "earth_africa",		0x1F30D,"color: green; background: blue; background: -webkit-radial-gradient( 50% 51%, circle closest-side, blue 0%, blue 98%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, blue 0%, blue 95%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F30E , "earth_americas",	0x1F30E,"color: green; background: blue; background: -webkit-radial-gradient( 50% 51%, circle closest-side, blue 0%, blue 98%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, blue 0%, blue 95%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F30F , "earth_asia",		0x1F30F,"color: green; background: blue; background: -webkit-radial-gradient( 50% 51%, circle closest-side, blue 0%, blue 98%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, blue 0%, blue 95%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F30B , "volcano",			0x1F30B, "background: red; background: -webkit-radial-gradient( circle closest-side, red 0%, red 50%, yellow 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, red 0%, red 50%, yellow 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F30C , "milky_way",		0x1F30C],
-			[0x26C5 , 	"partly_sunny",		0x26C5],
-			/*new Array( "octocat",		0x1F43E),
-			[ "squirrel",		0x1F43E],
-		*/
-			
-			[0x1F024 , "bamboo",			0x1F024],
-			[0x1F49D , "gift_heart",		0x1F49D],
-			[0x1F38E , "dolls",			0x1F38E],
-			[0x1F392 , "school_satchel",	0x1F392],
-			[0x1F393 , "mortar_board",		0x1F393],
-			[0x1F38F , "flags",			0x1F38F],
-			[0x1F386 , "fireworks",		0x1F386],
-			[0x1F387 , "sparkler",			0x1F387],
-			[0x1F390 , "wind_chime",		0x1F390],
-			[0x1F391 , "rice_scene",		0x1F391],
-			[0x1F383 , "jack_o_lantern",	0x1F383],
-			[0x1F47B , "ghost",			0x1F47B],
-			[0x1F385 , "santa",			0x1F385],
-			[0x1F384 , "christmas_tree",	0x1F384],
-			[0x1F381 , "gift",				0x1F381],
-			[0x1F514 , "bell",				0x1F514],
-			[0x1F515 , "no_bell",			0x1F515],
-			[0x1F38B , "tanabata_tree",	0x1F38B],
-			[0x1F389 , "tada",				0x1F389],
-			[0x1F38A , "confetti_ball",	0x1F38A],
-			[0x1F388 , "balloon",			0x1F388],
-			[0x1F52E , "crystal_ball",		0x1F52E],
-			[0x1F4BF , "cd",				0x1F4BF],
-			[0x1F4C0 , "dvd",				0x1F4C0],
-			[0x1F4BE , "floppy_disk",		0x1F4BE],
-			[0x1F4F7 , "camera",			0x1F4F7],
-			[0x1F4F9 , "video_camera",		0x1F4F9],
-			[0x1F3A5 , "movie_camera",		0x1F3A5],
-			[0x1F4BB , "computer",			0x1F4BB],
-			[0x1F4FA , "tv",				0x1F4FA],
-			[-1, 		"iphone",			0x1F4F1],
-			[-1, 		"smartphone",		0x1F4F1],
-			[0x1F4F1 , "mobilephone",		0x1F4F1],
-			[0x260E , 	"phone",			0x260E],
-			[-1 , 		"telephone",		0x260F],
-			[0x1F4DE , "telephone_receiver",	0x1F4DE],
-			[0x1F4DF , "pager",			0x1F4DF],
-			[0x1F4E0 , "fax",				0x1F4E0],
-			[0x1F4BD , "minidisc",			0x1F4BD],
-			[0x1F4FC , "vhs",				0x1F4FC],
-			[0x1F508 , "sound",			0x1F508],
-			[0x1F509 , "speaker",			0x1F509],
-			[0x1F507 , "mute",				0x1F507],
-			[0x1F4E2 , "loudspeaker",		0x1F4E2], //0x1F50A],
-			[0x1F4E3 , "mega",				0x1F4E3],
-			[0x231B , 	"hourglass",		0x231B],
-			[0x23F3 , 	"hourglass_flowing_sand",	0x23F3],
-			[0x23F0 , 	"alarm_clock",		0x23F0],
-			[0x231A , 	"watch",			0x231A],
-			[0x1F4FB , "radio",			0x1F4FB],
-			[0x1F4E1 , "satellite",		0x1F4E1],
-			[0x27BF , 	"loop",				0x27BF,"","smiley bluebox"],
-			[0x1F50D , "mag",				0x1F50D],
-			[0x1F50E , "mag_right",		0x1F50E],
-			[0x1F513 , "unlock",			0x1F513],
-			[0x1F512 , "lock",				0x1F512],
-			[0x1F50F , "lock_with_ink_pen",	0x1F50F],
-			[0x1F510 , "closed_lock_with_key",	0x1F510],
-			[0x1F511 , "key",				0x1F511],
-			[0x1F4A1 , "bulb",				0x1F4A1],
-			[0x1F526 , "flashlight",		0x1F526],
-			[0x1F506 , "high_brightness",	0x1F506, "color: gold"],
-			[0x1F505 , "low_brightness",	0x1F505, "color: goldenrod"],
-			[0x1F50C , "electric_plug",	0x1F50C],
-			[0x1F50B , "battery",			0x1F50B],
-			[0x1F4F2 , "calling",			0x1F4F2],
-			[0x1F4E9 , "email",			0x1F4E9],
-			[0x1F4EB , "mailbox",			0x1F4EB],
-			[0x1F4EE , "postbox",			0x1F4EE],
-			[0x1F6C0 , "bath",				0x1F6C0],
-			[0x1F6C1 , "bathtub",			0x1F6C1],
-			[0x1F6BF , "shower",			0x1F6BF],
-			[0x1F6BD , "toilet",			0x1F6BD],
-			[0x1F527 , "wrench",			0x1F527],
-			[0x1F529 , "nut_and_bolt",		0x1F529],
-			[0x1F528 , "hammer",			0x1F528],
-			[0x1F4BA , "seat",				0x1F4BA],
-			[0x1F4B0 , "moneybag",			0x1F4B0],
-			[0x1F4B4 , "yen",				0x1F4B4],
-			[0x1F4B5 , "dollar",			0x1F4B5],
-			[0x1F4B7 , "pound",			0x1F4B7],
-			[0x1F4B6 , "euro",				0x1F4B6],
-			[0x1F4B3 , "credit_card",		0x1F4B3],
-			[0x1F4B8 , "money_with_wings",	0x1F4B8],
-			[0x1F4E7 , "e-mail",			0x1F4E7],
-			[0x1F4E5 , "inbox_tray",		0x1F4E5],
-			[0x1F4E4 , "outbox_tray",		0x1F4E4],
-			[0x2709 , 	"envelope",			0x2709],
-			[0x1F4E8 , "incoming_envelope",0x1F4E8],
-			[0x1F4EF , "postal_horn",		0x1F4EF],
-			[0x1F4EA , "mailbox_closed",	0x1F4EA],
-			[0x1F4EC , "mailbox_with_mail",	0x1F4EC],
-			[0x1F4ED , "mailbox_with_no_mail",	0x1F4ED],
-			[0x1F6AA , "door",				0x1F6AA],
-			[0x1F6AC , "smoking",			0x1F6AC],
-			[0x1F4A3 , "bomb",				0x1F4A3],
-			[0x1F52B , "gun",				0x1F52B],
-			[0x1F52A , "hocho",			0x1F52A],
-			[0x1F48A , "pill",				0x1F48A],
-			[0x1F489 , "syringe",			0x1F489],
-			[0x1F4C4 , "page_facing_up",	0x1F4C4],
-			[0x1F4C3 , "page_with_curl",	0x1F4C3],
-			[0x1F4D1 , "bookmark_tabs",	0x1F4D1],
-			
-			[0x1F4CA , "bar_chart" , 		0x1F4CA ],
-			[0x1F4C8 , "chart_with_upwards_trend" , 		0x1F4C8 ],
-			[0x1F4C9 , "chart_with_downwards_trend" , 		0x1F4C9 ],
-			[0x1F4DC , "scroll" , 			0x1F4DC ],
-			[0x1F4CB , "clipboard" , 		0x1F4CB ],
-			[0x1F4C5 , "calendar" , 		0x1F4C5 ],
-			[0x1F4C6 , "date" , 			0x1F4C6 ],
-			[0x1F4C7 , "card_index" , 		0x1F4C7 ],
-			[0x1F4C1 , "file_folder" , 	0x1F4C1 ],
-			[0x1F4C2 , "open_file_folder" ,0x1F4C2 ],
-			[0x2704 , 	"scissors" , 		0x2704 ],
-			[0x1F4CC , "pushpin" , 		0x1F4CC ],
-			[0x1F4CE , "paperclip" , 		0x1F4CE ],
-			[0x2712 , 	"black_nib" , 		0x2712 ],
-			[0x270E  ,	"pencil2" , 		0x270E ],
-			[0x1F4CF , "straight_ruler" , 	0x1F4CF ],
-			[0x1F4D0 , "triangular_ruler" ,0x1F4D0 ],
-			[0x1F4D5 , "closed_book" , 	0x1F4D5, "color: red;" ],
-			[0x1F4D7 , "green_book" , 		0x1F4D7, "color: green;" ],
-			[0x1F4D8 , "blue_book" , 		0x1F4D8, "color: blue;" ],
-			[0x1F4D9 , "orange_book" , 	0x1F4D9, "color: orange;" ],
-			[0x1F4D3 , "notebook" , 		0x1F4D3 ],
-			[0x1F4D4 , "notebook_with_decorative_cover" , 		0x1F4D4 ],
-			[0x1F4D2 , "ledger" , 			0x1F4D2 ],
-			[0x1F4DA , "books" , 			0x1F4DA ],
-			[0x1F516 , "bookmark" , 		0x1F516 ],
-			[0x1F4DB , "name_badge" , 		0x1F4DB ],
-			[0x1F52C , "microscope" , 		0x1F52C ],
-			[0x1F52D , "telescope" , 		0x1F52D ],
-			[0x1F4F0 , "newspaper" , 		0x1F4F0 ],
-			[0x1F3C8 , "football" , 		0x1F3C8 ],
-			[0x1F3C0 , "basketball" , 		0x1F3C0 ],
-			[0x26BD , 	"soccer" , 			0x26BD ],
-			[0x26BE , 	"baseball" , 		0x26BE ],
-			[0x1F3BE , "tennis" , 			0x1F3BE ],
-			[-1 , 		"8ball" , 			0x2791 ], //
-			[0x1F3C9 , "rugby_football" , 	0x1F3C9 ],
-			[0x1F3B3 , "bowling" , 		0x1F3B3 ],
-			[0x26F3 , 	"golf" , 			0x26F3 ],
-			[0x1F6B5 , "mountain_bicyclist" , 		0x1F6B5 ],
-			[0x1F6B4 , "bicyclist" , 		0x1F6B4 ],
-			[0x1F3C7 , "horse_racing" , 	0x1F3C7 ],
-			[0x1F3C2 , "snowboarder" , 	0x1F3C2 ],
-			[0x1F3CA , "swimmer" , 		0x1F3CA ],
-			[0x1F3C4 , "surfer" , 			0x1F3C4 ],
-			[0x1F3BF , "ski" , 			0x1F3BF ],
-			[0x2660 , 	"spades" , 			0x2660, "color: black; background: white; border: 1px solid black; border-radius: 10%;" ],
-			[0x2665 , 	"hearts" , 			0x2665, "color: red;   background: white; border: 1px solid black; border-radius: 10%;" ],
-			[0x2663 , 	"clubs" , 			0x2663, "color: black; background: white; border: 1px solid black; border-radius: 10%;" ],
-			[0x2666 , 	"diamonds" , 		0x2666, "color: red;   background: white; border: 1px solid black; border-radius: 10%;" ],
-			[0x1F48E , "gem" , 			0x1F48E ],
-			[0x1F48D , "ring" , 			0x1F48D ],
-			[0x1F3C6 , "trophy" , 			0x1F3C6 ],
-			[0x1F3BC , "musical_score" , 	0x1F3BC ],
-			[0x1F3B9 , "musical_keyboard" , 0x1F3B9 ],
-			[0x1F3BB , "violin" , 			0x1F3BB ],
-		//	new Array( "space_invader" , 		0x1F47D ),
-			[0x1F3AE , "video_game" , 		0x1F3AE ],
-			[0x1F0CF , "black_joker" , 	0x1F0CF ],
-			[0x1F3B4 , "flower_playing_cards" , 	0x1F3B4 ],
-			[0x1F3B2 , "game_die" , 		0x1F3B2 ],
-			[0x1F3AF , "dart" , 			0x1F3AF ],
-			[0x1F004 , "mahjong" , 		0x1F004, "color: red;" ],
-			[0x1F3AC , "clapper" , 		0x1F3AC ],
-			[0x1F4DD , "memo" , 			0x1F4DD ],
-			[0x1F4DD , "pencil" , 			0x1F4DD ],
-			[0x1F4D6 , "book" , 			0x1F4D6 ],
-			[0x1F3A8 , "art" , 			0x1F3A8 ],
-			[0x1F3A4 , "microphone" , 		0x1F3A4 ],
-			[0x1F3A7 , "headphones" , 		0x1F3A7 ],
-			[0x1F3BA , "trumpet" , 		0x1F3BA ],
-			[0x1F3B7 , "saxophone" , 		0x1F3B7 ],
-			[0x1F3B8 , "guitar" , 			0x1F3B8 ],
-			[0x1F45F , "shoe" , 			0x1F45F ],
-			[0x1F461 , "sandal" , 			0x1F461 ],
-			[0x1F460 , "high_heel" , 		0x1F460 ],
-			[0x1F484 , "lipstick" , 		0x1F484 ],
-			[0x1F462 , "boot" , 			0x1F462 ],
-			[-1, 		"shirt" , 			0x1F455 ],
-			[0x1F455 , "tshirt" , 			0x1F455 ],
-			[0x1F454 , "necktie" , 		0x1F454 ],
-			[0x1F45A , "womans_clothes" , 	0x1F45A ],
-			[0x1F457 , "dress" , 			0x1F457 ],
-			[0x1F3BD , "running_shirt_with_sash" , 		0x1F3BD ],
-			[0x1F456 , "jeans" , 			0x1F456 ],
-			[0x1F458 , "kimono" , 			0x1F458 ],
-			[0x1F459 , "bikini" , 			0x1F459 ],
-			[0x1F380 , "ribbon" , 			0x1F380 ],
-			[0x1F3A9 , "tophat" , 			0x1F3A9 ],
-			[0x1F451 , "crown" , 			0x1F451 ],
-			[0x1F452 , "womans_hat" , 		0x1F452 ],
-			[0x1F45E , "mans_shoe" , 		0x1F45E ],
-			[0x1F302 , "closed_umbrella" , 0x1F302 ],
-			[0x1F4BC , "briefcase" , 		0x1F4BC ],
-			[0x1F45C , "handbag" , 		0x1F45C ],
-			[0x1F45D , "pouch" , 			0x1F45D ],
-			[0x1F45B , "purse" , 			0x1F45B ],
-			[0x1F453 , "eyeglasses" , 		0x1F453 ],
-			[0x1F3A3 , "fishing_pole_and_fish" , 		0x1F3A3 ],
-
-			[0x2615 , 	"coffee" , 			0x2615 , "color: brown"], //[0x2615, 0xFE0F]
-			[0x1F375 , "tea" , 			0x1F375 , "color: olivedrab"],
-			[0x1F376 , "sake" , 			0x1F376 ],
-			[0x1F37C , "baby_bottle" , 	0x1F37C ],
-			[0x1F37A , "beer" , 			0x1F37A , "background: -webkit-radial-gradient( 60% 55%, circle closest-side, goldenrod 0%, darkgoldenrod 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side at 60% 55%, goldenrod 0%, darkgoldenrod 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F37B , "beers" , 			0x1F37B ],
-			[0x1F378 , "cocktail" , 		0x1F378 ],
-			[0x1F379 , "tropical_drink" , 	0x1F379 , "color: greenyellow"],
-			[0x1F377 , "wine_glass" , 		0x1F377 , "color: maroon"],
-			[0x1F374 , "fork_and_knife" , 	0x1F374 ],
-			[0x1F355 , "pizza" , 			0x1F355 ],
-			[0x1F354 , "hamburger" , 		0x1F354 ],
-			[0x1F35F , "fries" , 			0x1F35F ],
-			[0x1F357 , "poultry_leg" , 	0x1F357 ],
-			[0x1F356 , "meat_on_bone" , 	0x1F356 ],
-			[0x1F35D , "spaghetti" , 		0x1F35D , "background: -webkit-radial-gradient( 50% 70%, ellipse closest-side, darkred 0%, red 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%); background: radial-gradient( ellipse closest-side at 50% 70%, darkred 0%,  red 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F35B , "curry" , 			0x1F35B ],
-			[0x1F364 , "fried_shrimp" , 	0x1F364 ],
-			[0x1F371 , "bento" , 			0x1F371 ],
-			[0x1F363 , "sushi" , 			0x1F363 ],
-			[0x1F365 , "fish_cake" , 		0x1F365 , "color: pink"],
-			[0x1F359 , "rice_ball" , 		0x1F359 ],
-			[0x1F358 , "rice_cracker" , 	0x1F358, "background: -webkit-radial-gradient( circle closest-side, peru 0%, chocolate 80%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, peru 0%, chocolate 80%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F35A , "rice" , 			0x1F35A ],
-			[0x1F35C , "ramen" , 			0x1F35C ],
-			[0x1F372 , "stew" , 			0x1F372 ],
-			[0x1F362 , "oden" , 			0x1F362 ],
-			[0x1F361 , "dango" , 			0x1F361 ],
-			[0x1F373 , "egg" , 			0x1F373 , "background: -webkit-radial-gradient( circle closest-side, yellow 0%, yellow 15%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, yellow 0%, yellow 15%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F35E , "bread" , 			0x1F35E ],
-			[0x1F369 , "doughnut" , 		0x1F369 ],
-			[0x1F36E , "custard" , 		0x1F36E ,"background: -webkit-radial-gradient( circle closest-side, yellow 0%, yellow 50%, rgba(255,255,255,0) 60%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, yellow 0%, yellow 50%, rgba(255,255,255,0) 60%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F366 , "icecream" , 		0x1F366 ],
-			[0x1F368 , "ice_cream" , 		0x1F368 ],
-			[0x1F367 , "shaved_ice" , 		0x1F367 ,"background: -webkit-radial-gradient( 60% 30%, circle closest-side, red 0%, red 35%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side at 60% 30% , red 0%, red 35%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F382 , "birthday" , 		0x1F382 ],
-			[0x1F370 , "cake" , 			0x1F370 ],
-			[0x1F36A , "cookie" , 			0x1F36A , "background: -webkit-radial-gradient( circle closest-side, chocolate 0%, chocolate 75%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side, chocolate 0%, chocolate 75%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			[0x1F36B , "chocolate_bar" , 	0x1F36B , "color: saddlebrown"],
-			[0x1F36C , "candy" , 			0x1F36C , "color: goldenrod"],
-			[0x1F36D , "lollipop" , 		0x1F36D , "color: lightgrey; background: -webkit-radial-gradient(50% 35%, circle closest-side, red 0%, orange 15%, yellow 30%, green 45%, blue 60%, Violet 75%,red 90%, rgba(255,255,255,0) 100%); background: -webkit-radial-gradient( circle closest-side at 50% 35%, red 0%, orange 15%, yellow 30%, green 45%, blue 60%, Violet 75%,red 90%, rgba(255,255,255,0) 100%);","smiley smileyemoji"],
-			[0x1F36F , "honey_pot" , 		0x1F36F , ""],
-			[0x1F34E , "apple" , 			0x1F34E , "color: red"],
-			[0x1F34F , "green_apple" , 	0x1F34F , "color: yellowgreen"],
-			[0x1F34A , "tangerine" , 		0x1F34A , "color: orange"],
-			[0x1F34B , "lemon" , 			0x1F34B , "color: yellow", "smiley outline"],
-			[0x1F352 , "cherries" , 		0x1F352 , "color: darkred"],
-			[0x1F347 , "grapes" , 			0x1F347 , "color: purple"],
-			[0x1F349 , "watermelon" , 		0x1F349 , ""],
-			[0x1F353 , "strawberry" , 		0x1F353 , "color: red"],
-			[0x1F351 , "peach" , 			0x1F351 , "color: peach"],
-			[0x1F348 , "melon" , 			0x1F348 , ""],
-			[0x1F34C , "banana" , 			0x1F34C , "color: yellow", "smiley outline"],
-			[0x1F350 , "pear" , 			0x1F350 , "color: yellowgreen"],
-			[0x1F34D , "pineapple" , 		0x1F34D , ""],
-			[0x1F360 , "sweet_potato" , 	0x1F360 , "color: peru"],
-			[0x1F346 , "eggplant" , 		0x1F346 , "color: indigo"],
-			[0x1F345 , "tomato" , 			0x1F345 , "color: tomato"],
-			[0x1F33D , "corn" , 			0x1F33D , "color: green; background: -webkit-radial-gradient(40% 60%, circle closest-side, yellow 0%, yellow 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side at 40% 60%, yellow 0%, yellow 50%, rgba(255,255,255,0) 70%, rgba(255,255,255,0) 100%);", "smiley smileyemoji"],
-			
-			[0x1F3E0 , "house" , 				0x1F3E0 ],
-			[0x1F3E1 , "house_with_garden", 	0x1F3E1 ],
-			[0x1F3EB , "school" , 				0x1F3EB ],
-			[0x1F3E2 , "office" , 				0x1F3E2 ],
-			[0x1F3E3 , "post_office" , 		0x1F3E3 ],
-			[0x1F3E5 , "hospital" , 			0x1F3E5 ],
-			[0x1F3E6 , "bank", 				0x1F3E6 ],
-			[0x1F3EA , "convenience_store", 	0x1F3EA ],
-			[0x1F3E9 , "love_hotel" , 			0x1F3E9 ],
-			[0x1F3E8 , "hotel" , 				0x1F3E8 ],
-			[0x1F492 , "wedding" , 			0x1F492 ],
-			[0x26EA , 	"church" , 				0x26EA ],
-			[0x1F3EC , "department_store" , 	0x1F3EC ],
-			[0x1F3E4 , "european_post_office",	0x1F3E4 ],
-			[0x1F307 , "city_sunrise" , 		0x1F307 ],
-			[0x1F306 , "city_sunset" , 		0x1F306 ],
-			[0x1F3EF , "japanese_castle" , 	0x1F3EF ],
-			[0x1F3F0 , "european_castle" , 	0x1F3F0 ],
-			[0x26FA , 	"tent" , 				0x26FA ],
-			[0x1F3ED , "factory" , 			0x1F3ED ],
-			[0x1F5FC , "tokyo_tower" , 		0x1F5FC ],
-			[0x1F5FE , "japan" , 				0x1F5FE ],
-			[0x1F5FB , "mount_fuji" , 			0x1F5FB ],
-			[0x1F304 , "sunrise_over_mountains",0x1F304 ],
-			[0x1F305 , "sunrise" , 			0x1F305 ],
-			[0x1F320 , "stars" , 				0x1F320 ],
-			[0x1F5FD , "statue_of_liberty", 	0x1F5FD ],
-			[0x1F309 , "bridge_at_night" , 	0x1F309 ],
-			[0x1F3A0 , "carousel_horse" , 		0x1F3A0 ],
-			[0x1F308 , "rainbow" , 			0x1F308 ],
-			[0x1F3A1 , "ferris_wheel" , 		0x1F3A1 ],
-			[0x26F2 , 	"fountain" , 			0x26F2 ],
-			[0x1F3A2 , "roller_coaster" , 		0x1F3A2 ],
-			[0x1F6A2 , "ship" , 				0x1F6A2 ],
-			[0x1F6A4 , "speedboat" , 			0x1F6A4 ],
-			[-1 , 		"boat" , 				0x26F5 ],
-			[0x26F5 , 	"sailboat" , 			0x26F5 ],
-			[0x1F6A3 , "rowboat" , 			0x1F6A3 ],
-			[0x2693 , 	"anchor" , 				0x2693 ],
-			[0x1F680 , "rocket" , 				0x1F680 ],
-			[0x2708 , 	"airplane" , 			0x2708 ],
-			[0x1F681 , "helicopter" , 			0x1F681 ],
-			[0x1F682 , "steam_locomotive" , 	0x1F682 ],
-			[0x1F68A , "tram" , 				0x1F68A ],
-			[0x1F69E , "mountain_railway" , 	0x1F69E ],
-			[0x1F6B2 , "bike" , 				0x1F6B2 ],
-			[0x1F6A1 , "aerial_tramway" , 		0x1F6A1 ],
-			[0x1F69F , "suspension_railway",	0x1F69F ],
-			[0x1F6A0 , "mountain_cableway", 	0x1F6A0 ],
-			[0x1F69C , "tractor" , 			0x1F69C ],
-			[-1 , 		"blue_car" , 			0x1F697, "color: blue" ],
-			[0x1F698 , "oncoming_automobile",	0x1F698, "color: blue" ],
-			[0x1F697 , "car" , 				0x1F697, "color: red" ],
-			[-1 , 		"red_car" , 			0x1F697, "color: red" ],
-			[0x1F695 , "taxi" , 				0x1F695 ],
-			[0x1F696 , "oncoming_taxi" , 		0x1F696 ],
-			[0x1F69B , "articulated_lorry", 	0x1F69B ],
-			[0x1F68C , "bus" , 				0x1F68C ],
-			[0x1F68D , "oncoming_bus" , 		0x1F68D ],
-			[0x1F6A8 , "rotating_light" , 		0x1F6A8,"background: -webkit-radial-gradient( 25% 40%, circle closest-side, yellow 0%, yellow 75%, rgba(255,255,255,0) 100%); background: radial-gradient( circle closest-side at 25% 40%, yellow 0%, yellow 75%, rgba(255,255,255,0) 100%);", "smiley flip" ],
-			[0x1F693 , "police_car" , 			0x1F693 ],
-			[0x1F694 , "oncoming_police_car",	0x1F694 ],
-			[0x1F692 , "fire_engine" , 		0x1F692 ],
-			[0x1F691 , "ambulance" , 			0x1F691 ],
-			[0x1F690 , "minibus" , 			0x1F690 ],
-			[0x1F69A , "truck" , 				0x1F69A ],
-			[0x1F686 , "train" , 				0x1F686 ],
-			[0x1F689 , "station" , 			0x1F689 ],
-			[-1 , 		"train2" , 				0x1F684 ],
-			[0x1F684 , "bullettrain_front", 	0x1F684 ],
-			[0x1F685 , "bullettrain_side" , 	0x1F685 ],
-			[0x1F688 , "light_rail" , 			0x1F688 ],
-			[0x1F69D , "monorail" , 			0x1F69D ],
-			[0x1F683 , "railway_car" , 		0x1F683 ],
-			[0x1F68E , "trolleybus" , 			0x1F68E ],
-			[0x1F3AB , "ticket" , 				0x1F3AB ],
-			[0x26FD , 	"fuelpump" , 			0x26FD ],
-			[0x1F6A6 , "vertical_traffic_light",0x1F6A6 ],
-			[0x1F6A5 , "traffic_light" , 		0x1F6A5 ],
-			[0x26A0 , 	"warning" , 			0x26A0 , "color: yellow", "smiley outline"],
-			[0x1F6A7 , "construction" , 		0x1F6A7 ],
-			[0x1F530 , "beginner" , 			0x1F530 ],
-			[0x1F3E7 , "atm" , 				0x1F3E7 ],
-			[0x1F3B0 , "slot_machine" , 		0x1F3B0 ],
-			[0x1F68F , "busstop" , 			0x1F68F ],
-			[0x1F488 , "barber" , 				0x1F488 ],
-			[0x2668 , 	"hotsprings" , 			0x2668 , "color: red"],
-			[0x1F3C1 , "checkered_flag" , 		0x1F3C1 ],
-			[0x1F38C , "crossed_flags" , 		0x1F38C ],
-			[0x1F3EE , "izakaya_lantern" , 	0x1F3EE ],
-			[0x1F5FF , "moyai" , 				0x1F5FF ],
-			[0x1F3AA , "circus_tent" , 		0x1F3AA ],
-			[0x1F3AD , "performing_arts" , 	0x1F3AD ],
-			[0x1F4CD , "round_pushpin" , 		0x1F4CD, "color: red" ],
-			[0x1F6A9 , "triangular_flag_on_post",0x1F6A9 ],
-			
-			
-			[[0x1F1EF,0x1F1F5], "jp" , 		[0x1F1EF,0x1F1F5] ],
-			[[0x1F1F0,0x1F1F7], "kr" , 		[0x1F1F0,0x1F1F7] ],
-			[[0x1F1E8,0x1F1F3], "cn" , 		[0x1F1E8,0x1F1F3] ],
-			[[0x1F1FA,0x1F1F8], "us" , 		[0x1F1FA,0x1F1F8] ],
-			[[0x1F1EB,0x1F1F7], "fr" , 		[0x1F1EB,0x1F1F7] ],
-			[[0x1F1EA,0x1F1F8], "es" , 		[0x1F1EA,0x1F1F8] ],
-			[[0x1F1EE,0x1F1F9], "it" , 		[0x1F1EE,0x1F1F9] ],
-			[[0x1F1F7,0x1F1FA], "ru" , 		[0x1F1F7,0x1F1FA] ],
-			[[0x1F1EC,0x1F1E7], "gb" , 		[0x1F1EC,0x1F1E7] ],
-			[[0x1F1FA,0x1F1F0], "uk" , 		[0x1F1FA,0x1F1F0] ],
-			[[0x1F1E9,0x1F1EA], "de" , 		[0x1F1E9,0x1F1EA] ],
-			
-			
-			
-			[[0x31,0x20E3], 		"one" , 		0x31, "", "smiley slatebox" ],  //[0x31,0x20e3]  [0x31,0x20de]  with no slatebox
-			[[0x32,0x20E3], 		"two" , 		0x32, "", "smiley slatebox" ],
-			[[0x33,0x20E3], 		"three" , 		0x33, "", "smiley slatebox" ],
-			[[0x34,0x20E3], 		"four" , 		0x34, "", "smiley slatebox" ],
-			[[0x35,0x20E3], 		"five" , 		0x35, "", "smiley slatebox" ],
-			[[0x36,0x20E3], 		"six" , 		0x36, "", "smiley slatebox" ],
-			[[0x37,0x20E3], 		"seven" , 		0x37, "", "smiley slatebox" ],
-			[[0x38,0x20E3], 		"eight" , 		0x38, "", "smiley slatebox" ],
-			[[0x39,0x20E3], 		"nine" , 		0x39, "", "smiley slatebox" ],
-			[-1, 	"keycap_ten",	[0x31,0x30], "", "smiley slatebox" ],
-			[[0x1F51F], 	"ten",			[0x31,0x30], "", "smiley slatebox" ],
-			[[0x30,0x20E3], 		"zero" , 		0x30, "", "smiley slatebox" ],
-			
-			[0x1F522 , "1234" , 			0x1F522, "", "smiley slatebox" ],
-			[0x1F523 , "symbols" , 		0x1F523, "", "smiley slatebox" ],
-			[0x1F520 , "capital_abcd", 	0x1F520, "", "smiley slatebox" ],
-			[0x1F521 , "abcd" , 			0x1F521, "", "smiley slatebox" ],
-			[0x1F524 , "abc" , 			0x1F524, "", "smiley slatebox" ],
-			
-			[[0x23,0x20E3],  "hash" , 				0x23, "font-weight: bold;", "smiley slatebox" ],
-			
-			[0x25C0 , 	"arrow_backward" , 		0x25C0, "", "smiley slatebox" ],
-			[0x2B07 , 	"arrow_down" , 			0x2B07, "", "smiley slatebox" ],
-			[0x25B6 , 	"arrow_forward" , 		0x25B6, "", "smiley slatebox" ],
-			[0x2B05 , 	"arrow_left" , 			0x2B05, "", "smiley slatebox" ],
-			[0x2B0B , 	"arrow_lower_left" , 	0x2B0B, "", "smiley slatebox" ],
-			[0x2B0A , 	"arrow_lower_right" , 	0x2B0A, "", "smiley slatebox" ],
-			[0x279E , 	"arrow_right" , 		0x279E, "", "smiley slatebox" ], //0x27A1 0x279E are close but not exact matches to the other arrows
-			[0x2B06 , 	"arrow_up" , 			0x2B06, "", "smiley slatebox" ],
-			[0x2B09 , 	"arrow_upper_left" , 	0x2B09, "", "smiley slatebox" ],
-			[0x2B08 , 	"arrow_upper_right" , 	0x2B08, "", "smiley slatebox" ],
-			[0x23EC , 	"arrow_double_down" , 	0x23EC, "", "smiley slatebox" ],
-			[0x23EB , 	"arrow_double_up" , 	0x23EB, "", "smiley slatebox" ],
-			[0x25BC , 	"arrow_down_small" , 	0x25BC, "", "smiley slatebox" ],
-			[0x2935 , 	"arrow_heading_down" , 	0x2935, "", "smiley slatebox" ],
-			[0x2934 , 	"arrow_heading_up" , 	0x2934, "", "smiley slatebox" ],
-			[-1 , 		"leftwards_arrow_with_hook",0x21A9, "", "smiley slatebox" ],
-			[-1 , 		"rightwards_arrow_with_hook",0x21AA, "", "smiley slatebox" ],
-			[0x21AA , 	"arrow_right_hook" , 	0x21AA, "", "smiley slatebox" ],
-			[0x21A9 , 	"arrow_left_hook" , 	0x21A9, "", "smiley slatebox" ],
-			[0x2B0C , 	"left_right_arrow" , 	0x2B0C, "", "smiley slatebox" ],
-			[0x2B0D , 	"arrow_up_down" , 		0x2B0D, "", "smiley slatebox" ],
-			[0x25B2 , 	"arrow_up_small" , 		0x25B2, "", "smiley slatebox" ],
-			[0x1F503 , "arrows_clockwise" , 	0x1F503, "", "smiley slatebox" ],
-			[0x1F504 , "arrows_counterclockwise",0x1F504, "", "smiley slatebox" ],
-			[0x23EA , 	"rewind" , 				0x23EA, "", "smiley slatebox" ],
-			[0x23E9 , 	"fast_forward" , 		0x23E9, "", "smiley slatebox" ],
-			[0x2139 , 	"information_source" , 	0x2139, "", "smiley slatebox" ],
-			[0x1F197 , "ok" , 					[0x1D5AE,0x1D5AA], "font-size: 80%; width: 2.5em", "smiley slatebox" ],  //0x1F197 [0x4F,0x4B]
-			[0x1F500 , "twisted_rightwards_arrows",0x1F500, "", "smiley slatebox" ],
-			[0x1F501 , "repeat" , 				0x1F501, "", "smiley slatebox" ],
-			[0x1F502 , "repeat_one" , 			0x1F502, "", "smiley slatebox" ],
-			[0x1F195 , "new" , 				[0x1D5AD,0x1D5A4,0x1D5B6], "font-size: 70%; width: 3em", "smiley slatebox" ],  //0x1F195 [0x4E,0x45,0x57]
-			[0x1F51D , "top" , 				[0x1D5B3,0x1D5AE,0x1D5AF], "font-size: 70%; width: 3em", "smiley slatebox" ], //0x1F51D [0x54,0x4F,0x50]
-			[0x1F199 , "up" , 					[0x1D5B4,0x1D5AF,0x21], "font-size: 80%; width: 2.5em", "smiley slatebox" ], //0x1F199 [0x55,0x50,0x21]
-			[0x1F192 , "cool" , 				[0x1D5A2,0x1D5AE,0x1D5AE,0x1D5AB], "font-size: 60%; width: 3.5em", "smiley slatebox" ], //0x1F192 [0x43,0x4F,0x4F,0x4C]
-			[0x1F193 , "free" , 				[0x1D5A5,0x1D5B1,0x1D5A4,0x1D5A4], "font-size: 60%; width: 3.5em", "smiley slatebox" ], //0x1F193 [0x46,0x52,0x45,0x45]
-			[0x1F196 , "ng" , 					[0x1D5AD,0x1D5A6], "font-size: 80%; width: 2.5em", "smiley slatebox" ], //0x1F196 [0x4E,0x47]
-			[0x1F3A5 , "cinema" , 				0x1F3A5, "", "smiley slatebox" ],
-			[0x1F201 , "koko" , 				[0x30B3,0x30B3], "font-size: 90%; width: 2em", "smiley slatebox" ],  //0x1F201 [0x30B3,0x30B3]
-			[0x1F4F6 , "signal_strength" , 	0x1F4F6, "", "smiley slatebox" ],
-			
-			[0x1F239 , "u5272" , 			0x5272, "", "smiley magbox" ],
-			[0x1F234 , "u5408" , 			0x5408, "", "smiley redbox" ],
-			[0x1F23A , "u55b6" , 			0x55b6, "", "smiley orangebox" ],
-			[0x1F22F , "u6307" , 			0x6307, "", "smiley greenbox" ],
-			[0x1F237 , "u6708" , 			0x6708, "", "smiley orangebox" ],
-			[0x1F236 , "u6709" , 			0x6709, "", "smiley orangebox" ],
-			[0x1F235 , "u6e80" , 			0x6e80, "", "smiley redbox" ],
-			[0x1F21A , "u7121" , 			0x7121, "", "smiley orangebox" ],
-			[0x1F238 , "u7533" , 			0x7533, "", "smiley orangebox" ],
-			[0x1F233 , "u7a7a" , 			0x7a7a, "", "smiley purplebox" ],
-			[0x1F232 , "u7981" , 			0x7981, "", "smiley redbox" ],
-			[0x1F202 , "sa" , 				0x30b5, "", "smiley bluebox" ],
-			[0x1F6BB , "restroom" , 		0x1F6BB, "", "smiley slatebox" ],
-			[0x1F6B9 , "mens" , 			0x1F6B9, "", "smiley bluebox" ],
-			[0x1F6BA , "womens" , 			0x1F6BA, "", "smiley magbox" ],
-			[0x1F6BC , "baby_symbol" , 		0x1F6BC, "", "smiley orangebox" ],
-			[0x1F6AD , "no_smoking" , 		0x1F6AD, "", "smiley bluebox" ],
-			[0x1F17F , "parking" , 			0x1D5E3, "", "smiley bluebox" ],  //0x50
-			[0x1F18A , "no_parking" , 		[0x1D5E3,0x20E0], "", "smiley bluebox" ],
-			[0x267F , 	"wheelchair" , 		0x267F, "", "smiley bluebox" ],
-			[0x1F687 , "metro" , 			0x1F687, "", "smiley bluebox" ],
-			[0x1F6C4 , "baggage_claim" , 	0x1F6C4, "", "smiley bluebox" ],
-			[0x1F251 , "accept" , 			0x5272, "border-radius: 50%; width: 1.5em", "smiley orangebox" ],
-			[0x1F6BE , "wc" , 				0x1F6BE, "", "smiley bluebox" ],
-			[0x1F6B0 , "potable_water" , 	0x1F6B0, "", "smiley bluebox" ],
-			[0x1F6AE , "put_litter_in_its_place",0x1F6AE, "", "smiley slatebox" ],
-			[0x3299 , 	"secret" , 			0x79D8, "border-radius: 50%; width: 1.5em", "smiley redbox" ],
-			[0x3297 , 	"congratulations" , 	0x795D, "border-radius: 50%; width: 1.5em", "smiley redbox" ],
-			[0x1F15C , "m" , 				0x1D5E0, "border-radius: 50%; width: 1.5em", "smiley bluebox" ],
-			[0x1F6C2 , "passport_control" , 0x1F6C2, "", "smiley bluebox" ],
-			[0x1F6C5 , "left_luggage" , 	0x1F6C5, "", "smiley bluebox" ],
-			[0x1F6C3 , "customs" , 			0x1F6C3, "", "smiley bluebox" ],
-			[0x1F250 , "ideograph_advantage",0x5F97, "color: red; display: inline-block; width: 1.5em; text-align: center; border: 1px solid red; border-radius: 50%" ],
-			[0x1F191 , "cl" , 				[0x1D5A2,0x1D5AB], "font-size: 80%; width: 2.5em", "smiley redbox" ],
-			[0x1F198 , "sos" , 				[0x1D5B2,0x1D5AE,0x1D5B2], "font-size: 70%; width: 3em", "smiley redbox" ],
-			[0x1F194 , "id" , 				[0x1D5A8,0x1D5A3], "font-size: 80%; width: 2.5em", "smiley purplebox" ],
-			[0x1F6AB , "no_entry_sign" , 	0x1F6AB, "color: red; font-weight: bold"  ],
-			[0x1F51E , "underage" , 		0x1F51E ],
-			[0x1F4F5 , "no_mobile_phones" , 0x1F4F5 ],
-			[0x1F6AF , "do_not_litter" , 	0x1F6AF ],
-			[0x1F6B1 , "non-potable_water", 0x1F6B1 ],
-			[0x1F6B3 , "no_bicycles" , 		0x1F6B3 ],
-			[0x1F6B7 , "no_pedestrians" , 	0x1F6B7 ],
-			[0x1F6B8 , "children_crossing", 0x1F6B8 ],
-			[0x26D4 , 	"no_entry" , 		0x26D4, "color: red;" ],
-			[0x2733 , 	"eight_spoked_asterisk",0x2733, "", "smiley greenbox" ],
-			[0x2734 , 	"eight_pointed_black_star",0x2734, "", "smiley orangebox" ],
-			[-1,  		"heart_decoration" , 0x2764, "", "smiley magbox" ],//0x1F49F
-			[0x1F19A , "vs" , 				[0x1D5B5,0x1D5B2], "font-size: 90%; width: 2em", "smiley orangebox" ],
-			[0x1F4F3 , "vibration_mode" , 	0x1F4F3, "", "smiley orangebox" ],
-			[0x1F4F4 , "mobile_phone_off" , 0x1F4F4, "", "smiley orangebox" ],
-			[0x1F4B9 , "chart" , 			0x1F4B9, "", "smiley greenbox" ],
-			[0x1F4B1 , "currency_exchange", 0x1F4B1 ],
-			[0x2648 , 	"aries" , 			0x2648, "", "smiley purplebox" ],
-			[0x2649 , 	"taurus" , 			0x2649, "", "smiley purplebox" ],
-			[0x264A , 	"gemini" , 			0x264A, "", "smiley purplebox" ],
-			[0x264B , 	"cancer" , 			0x264B, "", "smiley purplebox" ],
-			[0x264C , 	"leo" , 				0x264C, "", "smiley purplebox" ],
-			[0x264D , 	"virgo" , 			0x264D, "", "smiley purplebox" ],
-			[0x264E , 	"libra" , 			0x264E, "", "smiley purplebox" ],
-			[0x264F , 	"scorpius" , 		0x264F, "", "smiley purplebox" ],
-			[0x2650 , 	"sagittarius" , 		0x2650, "", "smiley purplebox" ],
-			[0x2651 , 	"capricorn" , 		0x2651, "", "smiley purplebox" ],
-			[0x2652 , 	"aquarius" , 		0x2652, "", "smiley purplebox" ],
-			[0x2653 , 	"pisces" , 			0x2653, "", "smiley purplebox" ],
-			[0x26CE , 	"ophiuchus" , 		0x26CE, "", "smiley purplebox" ],
-			[0x1F52F , "six_pointed_star" , 0x1F52F, "", "smiley purplebox" ],
-			[0x274E , 	"negative_squared_cross_mark",0x274C, "", "smiley greenbox" ],
-			[0x1F170 , "a" , 				0x1D5A0, "width: 1.5em", "smiley redbox" ],
-			[0x1F171 , "b" , 				0x1D5A1, "width: 1.5em", "smiley redbox" ],
-			[0x1F18E , "ab" , 				[0x1D5A0,0x1D5A1], "width: 1.5em", "smiley redbox" ],
-			[0x1F17E , "o2" , 				0x1D5AE, "width: 1.5em", "smiley redbox" ],
-			[0x1F4A0 , "diamond_shape_with_a_dot_inside",0x1F4A0 ], //0x27D0
-			
-			[0x267B , 	"recycle" , 			0x267B, "color: green" ],
-			[0x1F51A , "end" , 				0x1F51A ],
-			[0x1F51B , "on" , 				0x1F51B ],
-			[0x1F51C , "soon" , 			0x1F51C ],
-			[0x1F550 , "clock1" , 			0x1F550 ],
-			[0x1F55C , "clock130" , 		0x1F55C ],
-			[0x1F551 , "clock2" , 			0x1F551 ],
-			[0x1F55D , "clock230" , 		0x1F55D ],
-			[0x1F552 , "clock3" , 			0x1F552 ],
-			[0x1F55E , "clock330" , 		0x1F55E ],
-			[0x1F553 , "clock4" , 			0x1F553 ],
-			[0x1F55F , "clock430" , 		0x1F55F ],
-			[0x1F554 , "clock5" , 			0x1F554 ],
-			[0x1F560 , "clock530" , 		0x1F560 ],
-			[0x1F555 , "clock6" , 			0x1F555 ],
-			[0x1F561 , "clock630" , 		0x1F561 ],
-			[0x1F556 , "clock7" , 			0x1F556 ],
-			[0x1F562 , "clock730" , 		0x1F562 ],
-			[0x1F557 , "clock8" , 			0x1F557 ],
-			[0x1F563 , "clock830" , 		0x1F563 ],
-			[0x1F558 , "clock9" , 			0x1F558 ],
-			[0x1F564 , "clock930" , 		0x1F564 ],
-			[0x1F559 , "clock10" , 			0x1F559 ],
-			[0x1F565 , "clock1030" , 		0x1F565 ],
-			[0x1F55A , "clock11" , 			0x1F55A ],
-			[0x1F566 , "clock1130" , 		0x1F566 ],
-			[0x1F55B , "clock12" , 			0x1F55B ],
-			[0x1F567 , "clock1230" , 		0x1F567 ],
-			
-			
-			[0x1F4B2 , "heavy_dollar_sign", 	0x1F4B2 ],
-			[0xA9 , 	"copyright" , 			0xA9, "font-weight: bold" ],
-			[0xAE , 	"registered" , 			0xAE, "font-weight: bold" ],
-			[0x2122 , 	"tm" , 					0x2122, "font-weight: bold" ],
-			[0x2715 , 	"x" , 					0x2715, "color: red" ], //2715 0x274C
-			[-1 , 		"heavy_exclamation_mark",0x2757, "color: red" ],
-			[0x203C , 	"bangbang" , 			0x203C, "color: red; font-weight: bold;" ],
-			[0x2049 , 	"interrobang" , 		0x2049, "color: red; font-weight: bold;" ],
-			[0x2B55 , 	"o" , 					0x2B55, "color: red" ],
-			[0x274C , 	"heavy_multiplication_x",0x274C ], //0x2716
-			[0x2795 , 	"heavy_plus_sign" , 	0x2795 ],
-			[0x2796 , 	"heavy_minus_sign" , 	0x2796 ],
-			[0x2797 , 	"heavy_division_sign",	0x2797 ],
-			[0x1F4AE , "white_flower", 		0x1F4AE, "color: red" ],
-			[0x1F4AF , "100" , 				0x1F4AF, "color: red" ],
-			[0x2714 , 	"heavy_check_mark" , 	0x2714 ],
-			[0x2611 , 	"ballot_box_with_check",0x2611 ],
-			[0x1F518 , "radio_button" , 		0x1F518 ],
-			[0x1F517 , "link" , 				0x1F517 ],
-			[0x27B0 , 	"curly_loop" , 			0x27B0 ],
-			[0x3030 , 	"wavy_dash" , 			0x3030 ],
-			[0x303D , 	"part_alternation_mark",0x303D ],
-			[0x1F531 , "trident" , 			0x1F531 ],
-			[0x25A0 , 	"black_square" , 		0x25A0 ],
-			[0x25A1 , 	"white_square" , 		0x25A1 ],
-			[-1, 		"white_check_mark" , 	0x2714, "", "smiley greenbox" ], //0x2705
-			[0x1F532 , "black_square_button",	0x1F532 ],
-			[0x1F533 , "white_square_button",	0x1F533 ],
-			[0x2B24 , 	"black_circle" , 		0x2B24 ],
-			[0x25EF , 	"white_circle" , 		0x25EF ],
-			[0x1F534 , "red_circle" , 			0x2B24, "color: red" ],
-			[0x1F535 , "large_blue_circle", 	0x2B24, "color: blue" ],
-			[0x1F537 , "large_blue_diamond",	0x25C6, "color: blue" ],
-			[0x1F536 , "large_orange_diamond",	0x25C6, "color: darkorange" ],
-			[0x1F539 , "small_blue_diamond",	0x2B29, "color: blue" ],
-			[0x1F538 , "small_orange_diamond",	0x2B29, "color: darkorange" ],
-			[0x1F53C , "small_red_triangle",	0x25B4, "color: red" ],
-			[0x1F53D , "small_red_triangle_down",0x25BE, "color: red" ],
-			//new Array( "shipit" , 		0x1F567 ),
-			
-			
-			[0x2002 , "en_space",			0x2002 ],
-			[0x2003 , "em_space",			0x2003 ],
-			[0x2005 , "for-per-em_space",	0x2005 ],
-
-			
-		);
-
-
-
-		/*
 		Explaination of below:
 		Each array represents one tab in the picker. 
 		The first line is the character and name of the tab. This can have a third
@@ -2410,7 +1329,6 @@ settingsLoadedEvent.addHandler(function()
 		is called at the bottom of this file, after all the strings are set, and it
 		actually builds the final array that is used to make the smiley window.
 
-		font from: http://users.teilar.gr/~g1951d/
 		*/
 
 		Smiley.alltabs.Smileys = new Array(
@@ -3569,20 +2487,20 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x231A , "WATCH"],
 			[ 0x231B , "HOURGLASS"],
 			[ 0 , "Keyboard Key Symbols" ],
-			[ 0x1F519 , "BACK WITH LEFTWARDS ARROW ABOVE"],
-			[ 0x1F51A , "END WITH LEFTWARDS ARROW ABOVE"],
-			[ 0x1F51B , "ON WITH EXCLAMATION MARK WITH LEFT RIGHT ARROW ABOVE"],
-			[ 0x1F51C , "SOON WITH RIGHTWARDS ARROW ABOVE"],
-			[ 0x1F51D , "TOP WITH UPWARDS ARROW ABOVE"],
-			[ 0x1F51E , "NO ONE UNDER EIGHTEEN SYMBOL"],
-			[ 0x1F51F , "KEYCAP TEN"],
+			[ [0x1F519,0x0FE0E] , "BACK WITH LEFTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51A,0x0FE0E] , "END WITH LEFTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51B,0x0FE0E] , "ON WITH EXCLAMATION MARK WITH LEFT RIGHT ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51C,0x0FE0E] , "SOON WITH RIGHTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51D,0x0FE0E] , "TOP WITH UPWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51E,0x0FE0E] , "NO ONE UNDER EIGHTEEN SYMBOL","font-family: inherit;"],
+			[ [0x1F51F,0x0FE0E] , "KEYCAP TEN","font-family: inherit;"],
 			[ 0x2318 , "COMMAND KEY"],
 			[ 0x2324 , "UP ARROWHEAD BETWEEN TWO HORIZONTAL BARS"],
 			[ 0x2325 , "OPTION KEY"],
 			[ 0x2326 , "ERASE TO THE RIGHT"],
 			[ 0x232B , "ERASE TO THE LEFT"],
 			[ 0x2327 , "X IN A RECTANGLE BOX"],
-			[ 0x2328 , "KEYBOARD"],
+			[ [0x2328,0x0FE0E] , "KEYBOARD","font-family: inherit;"],
 			[ 0x2380 , "INSERTION SYMBOL"],
 			[ 0x2381 , "CONTINOUOS UNDERLINE SYMBOL"],
 			[ 0x2382 , "DISCONTINOUOS UNDERLINE SYMBOL"],
@@ -3602,21 +2520,21 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x2399 , "PRINT SCREEN SYMBOL"],
 			[ 0x239A , "CLEAR SCREEN SYMBOL"],
 			[ 0x23CE , "RETURN SYMBOL"],
-			[ 0x23CF , "EJECT SYMBOL"],
-			[ 0x23E9 , "BLACK RIGHT-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EA , "BLACK LEFT-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EB , "BLACK UP-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EC , "BLACK DOWN-POINTING DOUBLE TRIANGLE"],
-			[ 0x23ED , "BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR"],
-			[ 0x23EE , "BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR"],
-			[ 0x23EF , "BLACK RIGHT-POINTING TRIANGLE WITH DOUBLE VERTICAL BAR"],
+			[ [0x23CF,0x0FE0E] , "EJECT SYMBOL","font-family: inherit;"],
+			[ [0x23E9,0x0FE0E] , "BLACK RIGHT-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EA,0x0FE0E] , "BLACK LEFT-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EB,0x0FE0E] , "BLACK UP-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EC,0x0FE0E] , "BLACK DOWN-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23ED,0x0FE0E] , "BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR","font-family: inherit;"],
+			[ [0x23EE,0x0FE0E] , "BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR","font-family: inherit;"],
+			[ [0x23EF,0x0FE0E] , "BLACK RIGHT-POINTING TRIANGLE WITH DOUBLE VERTICAL BAR","font-family: inherit;"],
 			
 			[ 0 , "Input Type Symbols" ],
-			[ 0x1F520 , "INPUT SYMBOL FOR LATIN CAPITAL LETTERS"],
-			[ 0x1F521 , "INPUT SYMBOL FOR LATIN SMALL LETTERS"],
-			[ 0x1F522 , "INPUT SYMBOL FOR NUMBERS"],
-			[ 0x1F523 , "INPUT SYMBOL FOR SYMBOLS"],
-			[ 0x1F524 , "INPUT SYMBOL FOR LATIN LETTERS"],
+			[ [0x1F520,0x0FE0E] , "INPUT SYMBOL FOR LATIN CAPITAL LETTERS","font-family: inherit;"],
+			[ [0x1F521,0x0FE0E] , "INPUT SYMBOL FOR LATIN SMALL LETTERS","font-family: inherit;"],
+			[ [0x1F522,0x0FE0E] , "INPUT SYMBOL FOR NUMBERS","font-family: inherit;"],
+			[ [0x1F523,0x0FE0E] , "INPUT SYMBOL FOR SYMBOLS","font-family: inherit;"],
+			[ [0x1F524,0x0FE0E] , "INPUT SYMBOL FOR LATIN LETTERS","font-family: inherit;"],
 			  
 		);	  
 
@@ -4198,6 +3116,12 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x2758 , "LIGHT VERTICAL BAR"],
 			[ 0x2759 , "MEDIUM VERTICAL BAR"],
 			[ 0x275A , "HEAVY VERTICAL BAR"],
+			
+			[0, "Spaces"],
+			[32 , "Normal Space" ],
+			[0x2002 , "en_space" ],
+			[0x2003 , "em_space" ],
+			[0x2005 , "for-per-em_space" ],
 			
 		);
 
@@ -6121,24 +5045,9 @@ settingsLoadedEvent.addHandler(function()
 			var str = "EGYPTIAN HIEROGLYPH "+(i+1);
 			Smiley.alltabs.Egyptian[i+1] = new Array( 0x13000+i , str);
 		}
-
-		Smiley.alltabs.Emoji = new Array();
-		Smiley.alltabs.Emoji[0] = new Array(0x3297,"Emoji Characters");
-		for(var i=0;i<Smiley.emoji.length;i++){
-			if(Smiley.emoji[i][0]>0 || Smiley.emoji[i][0].constructor === Array){
 				
-				Smiley.alltabs.Emoji.push(new Array(Smiley.emoji[i][0],Smiley.emoji[i][1]));
-			}
-
-		}
-
-		Smiley.alltabs.EmojiStyle = new Array();
-		Smiley.alltabs.EmojiStyle[0] = new Array(0x3299,"Styled Emoji Characters", null, Smiley.showTabEmoji);// 0x3299  0x1F250
-
-
-				
-				//Android
-				Smiley.alltabs.AND_Smileys = new Array(
+		//Android
+		Smiley.alltabs.AND_Smileys = new Array(
 			[ 0x1F600 , "Smileys and Emotions"],
 				
 			[ 0x1F600 , "GRINNING FACE"],
@@ -6306,8 +5215,8 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x1F49A , "GREEN HEART"],
 			[ 0x1F49C , "PURPLE HEART"],
 			[ 0x1F5A4 , "BLACK HEART"],
-			[ 0x1F90D , "WHITE HEART"],
-			[ 0x1F90E , "BROWN HEART"],
+//			[ 0x1F90D , "WHITE HEART"],
+//			[ 0x1F90E , "BROWN HEART"],
 			[ [0x2767,0xFE0F] , "ROTATED FLORAL HEART BULLET"],
 			
 			
@@ -7250,9 +6159,9 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x1F458 , "Kimono"],
 			[ 0x1F3A9 , "Top Hat"],
 			[ 0x1F393 , "Graduation Cap"],
-			[ 0x1F452 , "Woman’s Hat"],
+			[ 0x1F452 , "Woman's Hat"],
 			[ 0x1F9E2 , "Billed Cap"],
-			[ [0x26D1,0xFE0F] , "Rescue Worker’s Helmet"],
+			[ [0x26D1,0xFE0F] , "Rescue Worker's Helmet"],
 			[ 0x1F451 , "Crown"],
 			
 			[ [0x2602,0xFE0F] , "Umbrella"],
@@ -8853,20 +7762,20 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x231A , "WATCH"],
 			[ 0x231B , "HOURGLASS"],
 			[ 0 , "Keyboard Key Symbols" ],
-			[ 0x1F519 , "BACK WITH LEFTWARDS ARROW ABOVE"],
-			[ 0x1F51A , "END WITH LEFTWARDS ARROW ABOVE"],
-			[ 0x1F51B , "ON WITH EXCLAMATION MARK WITH LEFT RIGHT ARROW ABOVE"],
-			[ 0x1F51C , "SOON WITH RIGHTWARDS ARROW ABOVE"],
-			[ 0x1F51D , "TOP WITH UPWARDS ARROW ABOVE"],
-			[ 0x1F51E , "NO ONE UNDER EIGHTEEN SYMBOL"],
-			[ 0x1F51F , "KEYCAP TEN"],
+			[ [0x1F519,0x0FE0E] , "BACK WITH LEFTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51A,0x0FE0E] , "END WITH LEFTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51B,0x0FE0E] , "ON WITH EXCLAMATION MARK WITH LEFT RIGHT ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51C,0x0FE0E] , "SOON WITH RIGHTWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51D,0x0FE0E] , "TOP WITH UPWARDS ARROW ABOVE","font-family: inherit;"],
+			[ [0x1F51E,0x0FE0E] , "NO ONE UNDER EIGHTEEN SYMBOL","font-family: inherit;"],
+			[ [0x1F51F,0x0FE0E] , "KEYCAP TEN","font-family: inherit;"],
 			[ 0x2318 , "COMMAND KEY"],
 			[ 0x2324 , "UP ARROWHEAD BETWEEN TWO HORIZONTAL BARS"],
 			[ 0x2325 , "OPTION KEY"],
 			[ 0x2326 , "ERASE TO THE RIGHT"],
 			[ 0x232B , "ERASE TO THE LEFT"],
 			[ 0x2327 , "X IN A RECTANGLE BOX"],
-			[ 0x2328 , "KEYBOARD"],
+			[ [0x2328,0xFE0E] , "KEYBOARD","font-family: inherit;"],
 			[ 0x2380 , "INSERTION SYMBOL"],
 			[ 0x2381 , "CONTINOUOS UNDERLINE SYMBOL"],
 			[ 0x2382 , "DISCONTINOUOS UNDERLINE SYMBOL"],
@@ -8886,21 +7795,21 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x2399 , "PRINT SCREEN SYMBOL"],
 			[ 0x239A , "CLEAR SCREEN SYMBOL"],
 			[ 0x23CE , "RETURN SYMBOL"],
-			[ 0x23CF , "EJECT SYMBOL"],
-			[ 0x23E9 , "BLACK RIGHT-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EA , "BLACK LEFT-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EB , "BLACK UP-POINTING DOUBLE TRIANGLE"],
-			[ 0x23EC , "BLACK DOWN-POINTING DOUBLE TRIANGLE"],
-			[ 0x23ED , "BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR"],
-			[ 0x23EE , "BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR"],
-			[ 0x23EF , "BLACK RIGHT-POINTING TRIANGLE WITH DOUBLE VERTICAL BAR"],
+			[ [0x23CF,0x0FE0E] , "EJECT SYMBOL","font-family: inherit;"],
+			[ [0x23E9,0x0FE0E] , "BLACK RIGHT-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EA,0x0FE0E] , "BLACK LEFT-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EB,0x0FE0E] , "BLACK UP-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23EC,0x0FE0E] , "BLACK DOWN-POINTING DOUBLE TRIANGLE","font-family: inherit;"],
+			[ [0x23ED,0x0FE0E] , "BLACK RIGHT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR","font-family: inherit;"],
+			[ [0x23EE,0x0FE0E] , "BLACK LEFT-POINTING DOUBLE TRIANGLE WITH VERTICAL BAR","font-family: inherit;"],
+			[ [0x23EF,0x0FE0E] , "BLACK RIGHT-POINTING TRIANGLE WITH DOUBLE VERTICAL BAR","font-family: inherit;"],
 			
 			[ 0 , "Input Type Symbols" ],
-			[ 0x1F520 , "INPUT SYMBOL FOR LATIN CAPITAL LETTERS"],
-			[ 0x1F521 , "INPUT SYMBOL FOR LATIN SMALL LETTERS"],
-			[ 0x1F522 , "INPUT SYMBOL FOR NUMBERS"],
-			[ 0x1F523 , "INPUT SYMBOL FOR SYMBOLS"],
-			[ 0x1F524 , "INPUT SYMBOL FOR LATIN LETTERS"],
+			[ [0x1F520,0x0FE0E] , "INPUT SYMBOL FOR LATIN CAPITAL LETTERS","font-family: inherit;"],
+			[ [0x1F521,0x0FE0E] , "INPUT SYMBOL FOR LATIN SMALL LETTERS","font-family: inherit;"],
+			[ [0x1F522,0x0FE0E] , "INPUT SYMBOL FOR NUMBERS","font-family: inherit;"],
+			[ [0x1F523,0x0FE0E] , "INPUT SYMBOL FOR SYMBOLS","font-family: inherit;"],
+			[ [0x1F524,0x0FE0E] , "INPUT SYMBOL FOR LATIN LETTERS","font-family: inherit;"],
 
 			
 			[ 0 , "Technical Symbols"],
@@ -8913,7 +7822,7 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x2305 , "PROJECTIVE"],
 			[ 0x2306 , "PERSPECTIVE"],
 			[ 0x2307 , "WAVY LINE"],
-			[ 0x3030 , "WAVY DASH"],
+			[ [0x3030,0x0FE0E] , "WAVY DASH","font-family: inherit;"],
 			
 			[ 0x230C , "BOTTOM RIGHT CROP"],
 			[ 0x230D , "BOTTOM LEFT CROP"],
@@ -9464,6 +8373,12 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x2758 , "LIGHT VERTICAL BAR"],
 			[ 0x2759 , "MEDIUM VERTICAL BAR"],
 			[ 0x275A , "HEAVY VERTICAL BAR"],
+			
+			[0, "Spaces"],
+			[32 , "Normal Space" ],
+			[0x2002 , "en_space" ],
+			[0x2003 , "em_space" ],
+			[0x2005 , "for-per-em_space" ],
 			
 			
 			[ 0 , "Dingbats"],	 
@@ -10278,7 +9193,7 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x13FB , "CHEROKEE SMALL LETTER YU"],
 			[ 0x13FC , "CHEROKEE SMALL LETTER YV"],
 			[ 0x13FD , "CHEROKEE SMALL LETTER MV"],
-
+/*  not currently supported by a default windows font
 			[ 0 , "Phaistos Disc"],
 			
 			[ 0x101D0 , "PEDESTRIAN"],
@@ -10329,7 +9244,7 @@ settingsLoadedEvent.addHandler(function()
 			[ 0x101FB , "SMALL AXE"],
 			[ 0x101FC , "WAVY BAND"],
 			[ 0x101FD , "PHAISTOS DISC SIGN COMBINING OBLIQUE STROKE"],
-
+*/
 		);
 
 		/*
@@ -10342,6 +9257,7 @@ settingsLoadedEvent.addHandler(function()
 		};
 		*/
 
+		/* not currently supported by a default windows font
 		Smiley.alltabs.OlderScripts.push( new Array( 0 , "Linear B Syllabary (Not correct character names)") );
 		for(i=0;i<0x5D;i++){
 			if( i==0xC || i==0x27 || i==0x3B || i==0x3E ||  (i>0x4D && i<0x50) )
@@ -10419,7 +9335,7 @@ settingsLoadedEvent.addHandler(function()
 		Smiley.alltabs.OlderScripts.push( new Array( 0x1013D , "AEGEAN LIQUID MEASURE FIRST SUBUNIT") );
 		Smiley.alltabs.OlderScripts.push( new Array( 0x1013E , "AEGEAN MEASURE SECOND SUBUNIT") );
 		Smiley.alltabs.OlderScripts.push( new Array( 0x1013F , "AEGEAN MEASURE THIRD SUBUNIT") );
-
+*/
 
 
 		Smiley.alltabs.Cuneiform = new Array();
@@ -10467,8 +9383,6 @@ settingsLoadedEvent.addHandler(function()
 					Smiley.alltabs.Egyptian,
 					Smiley.alltabs.Cuneiform,
 					Smiley.alltabs.OlderScripts,
-					Smiley.alltabs.Emoji,
-					Smiley.alltabs.EmojiStyle
 				),
 			name: "Unicode 6.0"}
 		);
@@ -10496,10 +9410,6 @@ settingsLoadedEvent.addHandler(function()
 				Smiley.alltabs.Egyptian,
 				Smiley.alltabs.Cuneiform,
 				Smiley.alltabs.OlderScripts,
-				/*
-				Smiley.alltabs.Emoji,
-				Smiley.alltabs.EmojiStyle
-				*/
 			),
 			name: "Android Emoji" }
 		);
@@ -10509,6 +9419,6 @@ settingsLoadedEvent.addHandler(function()
 				
 		
 		Smiley.install();
-        processPostBoxEvent.addHandler(Smiley.installClickEvent);
+        
 	}
 });

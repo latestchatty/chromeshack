@@ -263,12 +263,18 @@
             <p class="info">Show a live count of characters left before the post preview gets truncated.</p>
 
 			<h2>
-                <input type="checkbox" class="script_check" id="post_emoji_button" />
-                <label for="post_emoji_button">Emoji Keyboard</label>
+                <input type="checkbox" class="script_check" id="post_emoji" />
+                <label for="post_emoji">Emoji Processing</label>
             </h2>
-            <p class="info">Adds a button to the post form that opens an emoji keyboard, allowing easy selection of emoji and other special characters.</p>
+            <p class="info">Processes emoji in the post form so that they are posted correctly, and adds a message below the post form to remind the user how to open the system emoji chooser.  Optionally adds a button to the post form that opens an emoji keyboard, allowing easy selection of emoji and other special characters.</p>
             <div id="post_emoji_settings">
                 <ul>
+					<span>
+						<input type="checkbox" class="script_check" id="post_emoji_button" />
+						<label for="post_emoji_button">Emoji Keyboard</label>
+					</span>
+					<span></span>
+					<span></span>
                     <span>Button location:</span>
                     <li><input type="radio" name="post_emoji_location" id="post_emoji_left"/><label for="post_emoji_left">Left of post button</label></li>
                     <li><input type="radio" name="post_emoji_location" id="post_emoji_right"/><label for="post_emoji_right">Right of post button</label></li>
