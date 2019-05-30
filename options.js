@@ -231,12 +231,13 @@ function getPostPreviewLive()
 
 function showEmojiOptions(showbutton, position)
 {
-	var but = document.getElementById("post_emoji_button");
-	but.selected = (showbutton == true);
+    var but = document.getElementById("post_emoji_button");
+    but.checked = (showbutton == true);
     var left = document.getElementById("post_emoji_left");
     var right = document.getElementById("post_emoji_right");
     left.checked = (position == "Left");
     right.checked = (position == "Right");
+    left.disabled = right.disabled = (but.checked == false);
 }
 
 function getEmojiKeyboardLocation()
@@ -250,7 +251,14 @@ function getEmojiKeyboardLocation()
 function getEmojiKeyboardEnabled()
 {
     var but = document.getElementById("post_emoji_button");
-	return but.selected;
+    return but.checked;
+}
+
+function updateEmojiKeyboardPositionRadio(){
+    var but = document.getElementById("post_emoji_button");
+    var left = document.getElementById("post_emoji_left");
+    var right = document.getElementById("post_emoji_right");
+    left.disabled = right.disabled = (but.checked == false);
 }
 
 function showExpirationWatcherStyle(style)
@@ -556,7 +564,7 @@ function saveOptions()
         saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("post_preview_live", getPostPreviewLive());
-		saveOption("post_emoji_button", getEmojiKeyboardEnabled());
+        saveOption("post_emoji_button", getEmojiKeyboardEnabled());
         saveOption("post_emoji_location", getEmojiKeyboardLocation());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
@@ -591,6 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
     document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);
     document.getElementById('remove_user_filter_btn').addEventListener('click', removeUserFilter);
+    document.getElementById('post_emoji_button').addEventListener('click',updateEmojiKeyboardPositionRadio);
 });
 
 function trackChanges() {

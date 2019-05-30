@@ -48,8 +48,8 @@ settingsLoadedEvent.addHandler(function()
 							var emoji  = document.createElement("span");
 							if(navigator.appVersion.indexOf("Mac")!=-1){
 								emoji.innerText = "CTRL + &#x2318; + Space for Emoji";
-							} else {
-								emoji.innerText = "Win + : for Emoji";
+							} else if(navigator.appVersion.indexOf("Win")!=-1){
+								emoji.innerText = "Win + . for Emoji";
 							}
 							rulesline[0].append(emoji);
 						}
