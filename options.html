@@ -277,6 +277,33 @@
             </h2>
             <p class="info">Use WinChatty NuSearch instead of the Shacknews comment search when using the search box and the search links in the user dropdown menu.</p>
 
+            <h2>
+                <input type="checkbox" class="script_check" id="chatty_news">
+                <label for="enable_notifications">Chatty News Headlines</label>
+            </h2>
+            <p class="info">
+                Uses the Shack RSS feed to show the latest article headline at the top of the Chatty. Optionally adds descriptions to article posts. Optionally adds a dimmed 'wallpaper' to the background of the chatty, based on the top article (which when it changes, you know there has been a new article posted).
+            </p>
+            <div id="enable_chatty_news_settings">
+                <div id="chatty_news_article_count">
+                    <label for="chatty_news_article_count_input">Number of headlines:</label>
+                    <input type="number" min="1" max="10" id="chatty_news_article_count_input" />
+                </div>
+				<div id="chatty_news_article_settings">
+                    <input type="checkbox" id="chatty_news_article_desc" />
+                    <label for="chatty_news_article_desc">Add descriptions to article posts</label>
+                    <br>
+                    <input type="checkbox" id="chatty_news_article_highlight" />
+                    <label for="chatty_news_article_highlight">Highlight article posts</label>
+                </div>
+                <div id="chatty_news_wallpaper_settings">
+                    <input type="checkbox" id="chatty_news_wallpaper" />
+                    <label for="chatty_news_wallpaper">Add a background wallpaper base on top article</label>
+                    <br>
+                    <input type="checkbox" id="chatty_news_wallpaper_brighten" />
+                    <label for="chatty_news_wallpaper_brighten">Brighten wallpaper at top and bottom of chatty</label>
+                </div>
+            </div>
 
             <h2 class="group">Settings</h2>
 

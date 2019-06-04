@@ -63,7 +63,8 @@
             "scripts/highlight_pending_new_posts.js",
             "scripts/options_link.js",
             "scripts/post_length_counter.js",
-            "scripts/thread_pane.js"
+            "scripts/thread_pane.js",
+            "scripts/chatty_news.js"
         ],
         "css": [
             "styles/chromeshack.css",

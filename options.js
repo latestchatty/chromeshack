@@ -13,6 +13,7 @@ function loadOptions()
     showUserFilters(getOption("user_filters"));
     showEmbedSocials(getOption("embed_socials"));
     showAlternateEmbedStyle(getOption("alternate_embed_style"));
+    showChattyNewsSettings();
     showEnabledScripts();
     trackChanges();
 }
@@ -519,6 +520,59 @@ function removeUserFilter(event) {
     }
 }
 
+function getChattyNewsArticleCount() {
+    var ele = document.getElementById('chatty_news_article_count_input');
+    var count = Number(ele.value);
+    if( count < 1 ){
+        count = 7;
+    }
+    return count;
+}
+
+function getChattyNewsArticleNews() {
+    var ele = document.getElementById('chatty_news_article_desc');
+    return ele.checked;
+}
+
+function getChattyNewsArticlePosts() {
+    var ele = document.getElementById('chatty_news_article_highlight');
+    return ele.checked;
+}
+
+function getChattyNewsWallpaper() {
+    var ele = document.getElementById('chatty_news_wallpaper');
+    return ele.checked;
+}
+
+function getChattyNewsWallpaperBrighten() {
+    var ele = document.getElementById('chatty_news_wallpaper_brighten');
+    return ele.checked;
+}
+
+function showChattyNewsSettings(){
+    var ele = document.getElementById('chatty_news_article_count_input');
+    var val = getOption("chatty_news_article_count");
+    val = Number(val);
+    if( val < 1 ){
+        //we were never initialised, set defaults
+        val = 7;
+        setOption("chatty_news_article_count","7");
+        setOption("chatty_news_article_news","true");
+        setOption("chatty_news_highlight_article_posts","true");
+        setOption("chatty_news_show_image","true");
+        setOption("chatty_news_brighten_image","true");
+    }
+    ele.value = val;
+    ele = document.getElementById('chatty_news_article_desc')
+    ele.checked = getOption("chatty_news_article_news");
+    ele = document.getElementById('chatty_news_article_highlight')
+    ele.checked = getOption("chatty_news_highlight_article_posts");
+    ele = document.getElementById('chatty_news_wallpaper')
+    ele.checked = getOption("chatty_news_show_image");
+    ele = document.getElementById('chatty_news_wallpaper_brighten')
+    ele.checked = getOption("chatty_news_brighten_image");
+}
+
 function saveOptions()
 {
     // Update status to let the user know options were saved
@@ -543,6 +597,12 @@ function saveOptions()
         saveOption("user_filters", getUserFilters());
         saveOption("embed_socials", showEmbedSocials());
         saveOption("alternate_embed_style", showAlternateEmbedStyle());
+
+        saveOption("chatty_news_article_count", getChattyNewsArticleCount());
+        saveOption("chatty_news_article_news", getChattyNewsArticleNews());
+        saveOption("chatty_news_highlight_article_posts", getChattyNewsArticlePosts());
+        saveOption("chatty_news_show_image", getChattyNewsWallpaper());
+        saveOption("chatty_news_brighten_image", getChattyNewsWallpaperBrighten());
     }
     catch (err)
     {
