@@ -101,7 +101,7 @@ settingsLoadedEvent.addHandler(function()
                     }
 
                     if(getSetting("chatty_news_highlight_article_posts")){
-                        styletext+="div.fpauthor_14475 { background-color: #068 !important; border: 1px solid white !important; }\n";
+                        styletext+="div.fpauthor_14475 { background-color: #41aaaa !important; border: 1px solid white !important; }\n";
                     }
                     
                     if(document.location.href.indexOf("https")>-1){
