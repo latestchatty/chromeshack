@@ -553,14 +553,14 @@ function showChattyNewsSettings(){
     var ele = document.getElementById('chatty_news_article_count_input');
     var val = getOption("chatty_news_article_count");
     val = Number(val);
-    if( val < 1 ){
+    if( val < 1 || isNaN(val)){
         //we were never initialised, set defaults
         val = 7;
-        setOption("chatty_news_article_count","7");
-        setOption("chatty_news_article_news","true");
-        setOption("chatty_news_highlight_article_posts","true");
-        setOption("chatty_news_show_image","true");
-        setOption("chatty_news_brighten_image","true");
+        saveOption("chatty_news_article_count","7");
+        saveOption("chatty_news_article_news","true");
+        saveOption("chatty_news_highlight_article_posts","true");
+        saveOption("chatty_news_show_image","true");
+        saveOption("chatty_news_brighten_image","true");
     }
     ele.value = val;
     ele = document.getElementById('chatty_news_article_desc')
@@ -569,6 +569,11 @@ function showChattyNewsSettings(){
     ele.checked = getOption("chatty_news_highlight_article_posts");
     ele = document.getElementById('chatty_news_wallpaper')
     ele.checked = getOption("chatty_news_show_image");
+    var scrollPref = getOption("enabled_scripts").contains("scrolling_performance_hack");
+    if(scrollPref){
+        ele.disabled = true;
+        setOption("chatty_news_brighten_image","false");
+    }
     ele = document.getElementById('chatty_news_wallpaper_brighten')
     ele.checked = getOption("chatty_news_brighten_image");
 }

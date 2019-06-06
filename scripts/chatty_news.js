@@ -280,7 +280,7 @@ settingsLoadedEvent.addHandler(function()
                         }
                     }
                     
-                    document.addEventListener("scroll", scroll);
+                    document.addEventListener("scroll", scroll,false);
                     scroll();
                 }
             },
