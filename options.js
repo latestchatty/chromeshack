@@ -1,6 +1,5 @@
 function loadOptions()
 {
-    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
     showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
@@ -247,95 +246,6 @@ function getExpirationWatcherStyle()
 	}
 }
 
-function showLolTags(tags, show_counts, ugh_threshold)
-{
-    // Set the selected item
-    lol_show_counts = document.getElementById("lol_show_counts");
-    for (var i = 0; i < lol_show_counts.options.length; i++)
-    {
-        if (lol_show_counts.options[i].value == show_counts)
-        {
-            lol_show_counts.options[i].selected = true;
-            break;
-        }
-    }
-
-    lol_ugh_threshold = document.getElementById('lol_ugh_threshold');
-    for (var i = 0; i < lol_ugh_threshold.options.length; i++)
-    {
-        if (lol_ugh_threshold.options[i].value == ugh_threshold)
-        {
-            lol_ugh_threshold.options[i].selected = true;
-            break;
-        }
-    }
-
-    var lol_div = document.getElementById("lol_tags");
-    lol_div.removeChildren();
-
-    for (var i = 0; i < tags.length; i++)
-    {
-        addTag(null, tags[i]);
-    }
-}
-
-function removeTag(node)
-{
-    var tag_row = node.parentNode;
-    tag_row.parentNode.removeChild(tag_row);
-}
-
-function addTag(event, tag)
-{
-    if(event)
-        event.preventDefault();
-
-    if(!tag)
-        tag = {name:'', color: ''};
-
-    var lol_div = document.getElementById("lol_tags");
-
-    var tag_row = document.createElement("div");
-    tag_row.innerHTML = `Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`;
-
-    var remove_link = document.createElement("a");
-    remove_link.href = "#";
-    remove_link.className = "remove";
-    remove_link.appendChild(document.createTextNode(" (remove)"));
-    remove_link.addEventListener('click', function(event) {
-        event.preventDefault();
-        lol_div.removeChild(this.parentNode);
-    });
-    tag_row.appendChild(remove_link);
-
-    lol_div.appendChild(tag_row);
-
-    trackChanges();
-}
-
-function getLolTagValues()
-{
-    var tags = [];
-    var lol_div = document.getElementById("lol_tags");
-    for (var i = 0; i < lol_div.children.length; i++)
-    {
-        var tag_name = getDescendentByTagAndClassName(lol_div.children[i], "input", "name").value;
-        var tag_color = getDescendentByTagAndClassName(lol_div.children[i], "input", "color").value;
-        tags[i] = {name: tag_name, color: tag_color};
-    }
-    return tags;
-}
-
-function getLolShowCounts()
-{
-    return document.getElementById("lol_show_counts").value;
-}
-
-function getLolUghThreshhold()
-{
-    return document.getElementById('lol_ugh_threshold').value;
-}
-
 function showEnabledScripts()
 {
     var enabled = getOption("enabled_scripts");
@@ -526,9 +436,6 @@ function saveOptions()
 
     try
     {
-        saveOption("lol_tags", getLolTagValues());
-        saveOption("lol_show_counts", getLolShowCounts());
-        saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
         saveOption("post_preview_live", getPostPreviewLive());
         saveOption("enabled_scripts", getEnabledScripts());
@@ -559,7 +466,6 @@ function saveOptions()
 
 document.addEventListener('DOMContentLoaded', function() {
     loadOptions();
-    document.getElementById('add_tag').addEventListener('click', addTag);
     document.getElementById('clear_settings').addEventListener('click', clearSettings);
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
     document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);

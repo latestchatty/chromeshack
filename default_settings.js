@@ -1,7 +1,6 @@
 DefaultSettings = {
 
     enabled_scripts: [
-        "lol",
         "getpost",
         "comment_tags",
         "post_preview",
