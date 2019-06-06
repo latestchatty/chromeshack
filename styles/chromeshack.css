@@ -378,3 +378,32 @@ a.refresh_pending {
     width: 14px !important;
     height: 15px !important;
 }
+
+/* temporary hacks */
+
+img.chatty-user-icons {
+    width: 10px;
+    height: 10px;
+    vertical-align: text-top;
+    opacity: 0.5;
+    filter: grayscale(100%);
+}
+
+a:hover > img.chatty-user-icons {
+    opacity: 1;
+    filter: none;
+}
+
+.lol-tags {
+    font-size: 10px !important;
+}
+
+/* this is for the comments under news posts */
+.lol-tags > .tag-container.lol {
+    display: none;
+}
+
+/* the envelope next to the author's name in an expanded post */
+span.author > a.shackmsg > img {
+    display: none;
+}
