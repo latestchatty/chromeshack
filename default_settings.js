@@ -6,7 +6,6 @@ DefaultSettings = {
         "post_preview",
         "dinogegtik",
         "sparkly_comic",
-        "winchatty_comments_search",
         "expiration_watcher",
         "nws_incognito",
         "category_banners",
