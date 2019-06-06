@@ -14,8 +14,9 @@ Gain the ability to publish new releases to the Chrome and Firefox web stores.
 # Release procedure
 
 - Update `release_notes.html` and `manifest.json` so they have the same new version number.
-- Tag a release on GitHub.
 - Zip the Git repo from INSIDE, don't zip the folder, the files should be at the root of the zip.  Also don't include the .git folder.
+- Tag a release on GitHub.
+- Add the zip to the release.
 - Release to the Chrome Web Store.
     - Log into the [Developer Dashboard](https://chrome.google.com/u/2/webstore/devconsole/).
     - Click on Chrome Shack in the list.
