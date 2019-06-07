@@ -394,11 +394,12 @@ a:hover > img.chatty-user-icons {
     filter: none;
 }
 
-.lol-tags {
-    font-size: 10px !important;
+div.fullpost .lol-tags {
+    height: 18px !important; /* ensure the pop-in of the lol tags doesn't cause the post to get taller */
+    margin-top: -5px !important;
 }
 
-/* the envelope next to the author's name in an expanded post */
+/* hide the envelope next to the author's name in an expanded post; it doesn't work */
 span.author > a.shackmsg > img {
     display: none;
 }
