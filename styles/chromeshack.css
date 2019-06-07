@@ -398,11 +398,6 @@ a:hover > img.chatty-user-icons {
     font-size: 10px !important;
 }
 
-/* this is for the comments under news posts */
-.lol-tags > .tag-container.lol {
-    display: none;
-}
-
 /* the envelope next to the author's name in an expanded post */
 span.author > a.shackmsg > img {
     display: none;
