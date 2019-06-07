@@ -217,6 +217,7 @@ div.threads ul ul li span.author li {
 .user a .userDropdown {
     top: 1.5em;
     left: 0;
+    -webkit-text-fill-color: #ddd;
 }
 .userDropdown li {
     overflow: hidden;

@@ -13,6 +13,7 @@ function loadOptions()
     showUserFilters(getOption("user_filters"));
     showEmbedSocials(getOption("embed_socials"));
     showAlternateEmbedStyle(getOption("alternate_embed_style"));
+    showColorStyleUsernamesType();
     showEnabledScripts();
     trackChanges();
 }
@@ -109,12 +110,23 @@ function showHighlightUsers(groups)
 {
     var highlightGroups = document.getElementById("highlight_groups");
     highlightGroups.removeChildren();
+    
+    if(groups.length == 0)
+    {
+        groups = DefaultSettings.highlight_users;
+    }
 
     for (var i = 0; i < groups.length; i++)
     {
         var group = groups[i];
         addHighlightGroup(null, group);
     }
+}
+
+function htmlDecode(input)
+{
+    var doc = new DOMParser().parseFromString(input, "text/html");
+    return doc.documentElement.textContent;
 }
 
 function addHighlightGroup(event, group)
@@ -137,7 +149,7 @@ function addHighlightGroup(event, group)
     var name_box = document.createElement("input");
     name_box.type = "text";
     name_box.className = "group_name";
-    name_box.value = group.name;
+    name_box.value = htmlDecode(group.name);
     div.appendChild(name_box);
 
     if (group.built_in)
@@ -160,17 +172,26 @@ function addHighlightGroup(event, group)
         });
         remove.appendChild(document.createTextNode("(remove)"));
         div.appendChild(remove);
+        
+        if(group.image != null)
+        {
+            name_box.readOnly = true;
+            name_box.setAttribute("image",group.image);
+        }
     }
 
-    div.appendChild(document.createElement("br"));
+    if (group.image == null)
+    {
+        div.appendChild(document.createElement("br"));
 
-    css = document.createElement("textarea");
-    css.className = "group_css";
-    css.rows = "2";
-    css.cols = "25";
-    css.value = group.css;
-    div.appendChild(css);
-
+        css = document.createElement("textarea");
+        css.className = "group_css";
+        css.rows = "2";
+        css.cols = "25";
+        css.value = group.css;
+        div.appendChild(css);
+    }
+    
     settings.appendChild(div);
 
     trackChanges();
@@ -187,12 +208,30 @@ function getHighlightGroups()
         var group = {};
         var input_name = getDescendentByTagAndClassName(group_divs[i], "input", "group_name");
         group.name = input_name.value;
-        group.built_in = input_name.readOnly;
+        group.built_in = input_name.classList.contains('built_in');
         group.enabled = getDescendentByTagAndClassName(group_divs[i], "input", "group_enabled").checked;
-        group.css = getDescendentByTagAndClassName(group_divs[i], "textarea", "group_css").value;
+        var css = getDescendentByTagAndClassName(group_divs[i], "textarea", "group_css");
+        if( css != null)
+        {
+            group.css = css.value;
+        }
         if (!group.built_in)
         {
             group.users = JSON.parse(getDescendentByTagAndClassName(group_divs[i], "input", "group_users").value);
+        }
+        var image = input_name.getAttribute("image");
+        if(image != null )
+        {
+            image = Number(image);
+            if(!isNaN(image)) group.image = image;
+        }
+        if(group.name.lenght = 2 && group.css == "")
+        {
+            if(group.name.codePointAt(0) > 0x2000)
+            {
+                group.image = group.name.codePointAt(0);
+                group.name = "&#"+group.image+";";
+            }
         }
         groups.push(group);
     }
@@ -519,6 +558,74 @@ function removeUserFilter(event) {
     }
 }
 
+function showColorStyleUsernamesType()
+{
+    var type = Number(getOption("color_style_usernames_type"));
+    if( isNaN(type) ) type = 1;
+    var names = ["color_style_usernames_solid","color_style_usernames_solidall","color_style_usernames_gradient","color_style_usernames_gradientall"]
+    var name = names[type-1];
+    var elm = document.getElementById(name);
+    if( elm != null )
+    {
+        elm.selected = 'selected';
+    }
+    
+    if(getOption("enabled_scripts").contains("highlight_users"))
+    {
+        //add controls to update group styles from coloring names to coloring borders / underlines
+        elm = document.getElementById("color_style_usernames_groupstyles");
+        elm.style = "";
+        elm = document.getElementById("color_style_username_updatestyles");
+        elm.addEventListener('click', colorNamesGroupStyleUpdate);
+        elm = document.getElementById("color_style_username_resetstyles");
+        elm.addEventListener('click', colorNamesGroupStyleReset);
+    }
+}
+
+function colorNamesGroupStyleUpdate()
+{
+    var updates = { 
+        "Mods": "border-bottom: 2px solid red;",
+        "Employees": "border-bottom: 2px solid green;",
+        "Original Poster": "border: 1px solid #888; border-radius: 18px; padding: 1px 7px;",
+        "Game Devs": "border-bottom: 2px solid purple;"
+    };
+    var groups = getOption("highlight_users");
+    for(var i = 0; i < groups.length ; i++){
+        var name = groups[i].name;
+        if(updates[name] != null){
+            groups[i].css = updates[name];
+        }
+    }
+    
+    saveOption("highlight_users",groups);
+    showHighlightUsers(groups)
+}
+
+function colorNamesGroupStyleReset()
+{
+    var groups = getOption("highlight_users");
+    var defaults = DefaultSettings.highlight_users;
+    for(var i = 0; i < groups.length ; i++){
+        for(var j = 0; j < defaults.length ; j++){
+            if(groups[i].name == defaults[j].name){
+                groups[i].css = defaults[j].css;
+            }
+        }
+    }
+    
+    saveOption("highlight_users",groups);
+    showHighlightUsers(groups)
+}
+
+
+function getColorStyleUsernamesType()
+{
+    var elm = document.getElementById('color_style_usernames_type');
+    if( elm != null ) return elm.value;
+    return 1;
+}
+
 function saveOptions()
 {
     // Update status to let the user know options were saved
@@ -543,6 +650,7 @@ function saveOptions()
         saveOption("user_filters", getUserFilters());
         saveOption("embed_socials", showEmbedSocials());
         saveOption("alternate_embed_style", showAlternateEmbedStyle());
+        saveOption("color_style_usernames_type", getColorStyleUsernamesType());
     }
     catch (err)
     {

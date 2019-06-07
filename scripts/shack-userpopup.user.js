@@ -243,6 +243,7 @@
         return li;
     }
 
+
     function displayUserMenu(parentObj, username, friendlyName)
     {
         // Create the dropdown menu if it doesn't already exist
@@ -305,6 +306,79 @@
             var liPostCount = document.createElement('li');
             liPostCount.appendChild(aPostCount);
             ulUser.appendChild(liPostCount);
+            
+            var fullpost = parentObj;
+            while(fullpost.nodename != 'li' && !fullpost.classList.contains('fullpost'))
+            {
+                fullpost = fullpost.parentElement;
+            }
+            var regex = /author_\d+/g
+            var matches = (fullpost.className).match(regex);
+            if(getSetting("enabled_scripts").contains("highlight_users") && matches != null && matches.length>0)
+            {
+                var userid = Number(matches[0].split('_')[1]);
+                liPostCount.classList.add("userDropdown-separator");
+                
+                //Create menu item for adding / removing user from varions highlight groups
+                var highlightDiv = document.createElement("div");
+                var highlightText = document.createElement("span");
+                highlightText.innerText = "Add or Remove user from group:";
+                highlightDiv.appendChild(highlightText);
+                highlightDiv.appendChild(document.createElement('br'));
+                
+                var addRemoveGroup = function (event){
+                    event.preventDefault();
+                    event.stopPropagation();
+                    var elm = event.currentTarget;
+                    var group = elm.getAttribute("group");
+                    if(group != null){
+                        var groupCheck = elm.firstElementChild;
+                        var add = (groupCheck.innerHTML.codePointAt(0) == 9744);
+                        if(add){
+                            HighlightUsers.groups[group].users.push(userid);
+                        }
+                        else
+                        {
+                            //remove
+                            var index = HighlightUsers.groups[group].users.indexOf(userid);
+                            if (index !== -1) HighlightUsers.groups[group].users.splice(index, 1);
+                        }
+                        groupCheck.innerHTML = HighlightUsers.groups[group].users.includes(userid) ? "&#x1f5f9;" : "&#x2610;";
+                        setSetting("highlight_users",HighlightUsers.groups);
+                    }
+                }
+                
+                var count = 0;
+                for(var i=0;i<HighlightUsers.groups.length;i++)
+                {
+                    //don't show built in groups
+                    if(HighlightUsers.groups[i].built_in) continue; 
+                    
+                    //TODO: possibly indicate disabled groups somehow, but still allow adding
+                    
+                    var groupDiv = document.createElement("span");
+                    var groupCheck = document.createElement("span");
+                    var groupName = document.createElement("span");
+                    
+                    groupDiv.setAttribute('group',i);
+                    groupCheck.innerHTML = HighlightUsers.groups[i].users.includes(userid) ? "&#x1f5f9;" : "&#x2610;";
+                    groupName.innerHTML = HighlightUsers.groups[i].name;
+                    
+                    groupDiv.appendChild(groupCheck);
+                    groupDiv.appendChild(groupName);
+                    groupDiv.style = "padding-right: 5px; cursor: pointer";
+                    
+                    groupDiv.addEventListener('click',addRemoveGroup);
+                    highlightDiv.appendChild(groupDiv);
+                    count++;
+                    if(count%4 == 0)
+                    {
+                        highlightDiv.appendChild(document.createElement('br'));
+                    }
+                }
+                
+                ulUser.appendChild(highlightDiv);
+            }
 
             // Add ulUser to the page
             parentObj.appendChild(ulUser);

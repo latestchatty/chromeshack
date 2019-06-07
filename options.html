@@ -198,7 +198,28 @@
                 <p class="indent info">Highlight usernames in various colors to indicate their membership in user-specified groups.</p>
                 <div id="highlight_users_settings">
                     <div id="highlight_groups"></div>
-                    <a href="#" id="add_highlight_group">Add</a>
+                    <a href="#" id="add_highlight_group">Add</a> Adding a group without CSS and using only an emoji as the name will use that emoji as an after name image
+                </div>
+            </div>
+            
+            <h2>
+                <input type="checkbox" class="script_check" id="color_style_usernames" />
+                <label for="color_style_usernames">Color Usernames</label>
+            </h2>
+            <p class="info">Colors usernames (based upon user id, a name is always the same color for the same coloring method) so that it is easier to pick out a particular poster is a large thread or across several threads.</p>
+            <div id="color_style_usernames_settings">
+                <p>
+                    <label for="color_style_usernames_type">Color type:</label>
+                    <select id="color_style_usernames_type" size="1">
+                    <option id="color_style_usernames_solid" value="1">Solid Color Good Contrast</option>
+                    <option id="color_style_usernames_solidall" value="2">Solid Color All Colors</option>
+                    <option id="color_style_usernames_gradient" value="3">Gradient Color Good Contrast (Webkit Only)</option>
+                    <option id="color_style_usernames_gradientall" value="4">Gradient Color All Colors (Webkit Only)</option>
+                    </select>
+                </p>
+                <div id="color_style_usernames_groupstyles" style="display:none">
+                    <button id="color_style_username_updatestyles">Update Highlight Users styles to work better with color names</button>
+                    <button id="color_style_username_resetstyles">Reset Hightlight Users styles to default</button>
                 </div>
             </div>
 
