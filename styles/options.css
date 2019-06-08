@@ -11,7 +11,7 @@ body {
 h2 {
     width: 100%;
     background-color: #F0F7F9; font-size: 14pt;
-    border-top: 1px solid #6B90DA;
+    padding: 2px;
 }
 a.remove { font-size: 12px; }
 input.name { width: 50px; }

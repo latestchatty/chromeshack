@@ -5,13 +5,11 @@ function loadOptions()
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showImageLoaderNewTab(getOption("image_loader_newtab"));
-    showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
     showEmbedSocials(getOption("embed_socials"));
-    showAlternateEmbedStyle(getOption("alternate_embed_style"));
     showEnabledScripts();
     trackChanges();
 }
@@ -41,13 +39,6 @@ function showEmbedSocials(enabled) {
     if (enabled)
         embeds.checked = enabled;
     return embeds.checked;
-}
-
-function showAlternateEmbedStyle(enabled) {
-    var embedStyle = document.getElementById("alternate_embed_style");
-    if (enabled)
-        embedStyle.checked = enabled;
-    return embedStyle.checked;
 }
 
 function showImageLoaderNewTab(enabled)
@@ -225,25 +216,6 @@ function getPostPreviewLive()
 {
     var live = document.getElementById("post_preview_live");
     return live.checked;
-}
-
-function showExpirationWatcherStyle(style)
-{
-	document.getElementById('expiration_watcher_bar').checked = (style === 'Bar');
-	document.getElementById('expiration_watcher_doom').checked = (style === 'Doom');
-}
-
-function getExpirationWatcherStyle()
-{
-	var bar = document.getElementById('expiration_watcher_bar');
-	if (bar.checked)
-	{
-		return 'Bar';
-	}
-	else
-	{
-		return 'Doom';
-	}
 }
 
 function showEnabledScripts()
@@ -442,14 +414,12 @@ function saveOptions()
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
         saveOption("image_loader_newtab", getImageLoaderNewTab());
-        saveOption("expiration_watcher_style", getExpirationWatcherStyle());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
         saveOption("embed_socials", showEmbedSocials());
-        saveOption("alternate_embed_style", showAlternateEmbedStyle());
     }
     catch (err)
     {

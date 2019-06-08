@@ -23,25 +23,26 @@ a.pin_button {
     width: 570px;
     overflow: auto;
 }
-body.show_banners div.fpmod_offtopic {
+
+div.fpmod_offtopic {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #7D7D7D !important;
 }
 
-body.show_banners div.fpmod_political {
+div.fpmod_political {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #F8A500 !important;
 }
 
-body.show_banners div.fpmod_stupid {
+div.fpmod_stupid {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
 }
 
-body.show_banners div.fpmod_informative {
+div.fpmod_informative {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #00bff3 !important;
@@ -60,12 +61,7 @@ span.newcommenthighlighter {
     right: 55px !important;
 }
 
-.expiration-watcher-doom .fullpost .postdate {
-    right: 35px !important;
-}
-
-.expiration-watcher-bar .capcontainer .fullpost .postdate,
-.expiration-watcher-doom .capcontainer .fullpost .postdate {
+.expiration-watcher-bar .capcontainer .fullpost .postdate {
     right: 0px !important;
 }
 
@@ -379,14 +375,40 @@ a.refresh_pending {
     height: 15px !important;
 }
 
-/* temporary hacks */
+/* various hacks */
 
-img.chatty-user-icons {
+/* ensure the pop-in of the lol tags doesn't cause the post to get taller */
+div.fullpost .lol-tags {
+    height: 18px !important;
+    margin-top: -5px !important;
+}
+
+/* hide the envelope next to the author's name in an expanded post; it doesn't work */
+span.author > a.shackmsg > img {
+    display: none;
+}
+
+body.hide_tagging_buttons .lol-tags {
+    display: none !important;
+}
+
+body.hide_tag_counts div.read-only-tags {
+    display: none !important;
+}
+
+/* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
+will un-shrink it if the shrink setting is not enabled */
+body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
+    opacity: 0.75;
     width: 10px;
     height: 10px;
     vertical-align: text-top;
-    opacity: 0.5;
-    filter: grayscale(100%);
+}
+
+/* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
+only for users who want to see bright colors. */
+body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
+    filter: grayscale(75%);
 }
 
 a:hover > img.chatty-user-icons {
@@ -394,12 +416,12 @@ a:hover > img.chatty-user-icons {
     filter: none;
 }
 
-div.fullpost .lol-tags {
-    height: 18px !important; /* ensure the pop-in of the lol tags doesn't cause the post to get taller */
-    margin-top: -5px !important;
+/* on the comments below articles the lol tag buttons are ridiculous */
+div.article-chatty span.lol-tags {
+    display: none !important;
 }
 
-/* hide the envelope next to the author's name in an expanded post; it doesn't work */
-span.author > a.shackmsg > img {
-    display: none;
+/* don't let the lol counts cause the oneline to get taller */
+div.read-only-tags {
+    height: 1px;
 }

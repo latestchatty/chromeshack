@@ -2,6 +2,8 @@
 *   Originally authored by indosaurus, re-written for chromeshack.
 */
 
+const ENABLE_SCROLLING_PERFORMANCE_HACK = true;
+
 ElderScroll =
 {
     pxToLoadNew: 500,
@@ -13,7 +15,7 @@ ElderScroll =
     {
         var perfHack = false, enableHandler = false;
         // the following abstraction for handlers is pretty messy but should work okay
-        if (getSetting("enabled_scripts").contains("scrolling_performance_hack")) {
+        if (ENABLE_SCROLLING_PERFORMANCE_HACK) {
             perfHack = true;
             // force the top bar to be collapsed to keep common styling
             $('body').removeClass('scrolling_performance_hack').addClass('scrolling_performance_hack');

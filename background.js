@@ -379,7 +379,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
                     }
                 }
             };
-            if (${getSetting("alternate_embed_style")} === true) { carouselOpts.autoHeight = false; }
+            carouselOpts.autoHeight = false;
             var swiper = new Swiper(container, carouselOpts);
         `;
         browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })

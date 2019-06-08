@@ -53,7 +53,7 @@ function getIframeDimensions(elem) {
 
 function locateContainer(link, postId, index) {
     // resolve our link container for media embedding (or create one)
-    var _isAlternateStyle = getSetting("enabled_scripts").contains("alternate_embed_style");
+    var _isAlternateStyle = true; //getSetting("enabled_scripts").contains("alternate_embed_style");
     var container = _isAlternateStyle ?
         link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
         link.parentNode.querySelector("div.media-container");
@@ -82,7 +82,7 @@ function toggleMediaItem(link, postId, index) {
     var encapMediaObj = getIframeDimensions(_embed);
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
-        var altContainer = getSetting("enabled_scripts").contains("alternate_embed_style") && container.parentNode;
+        var altContainer = true /*getSetting("enabled_scripts").contains("alternate_embed_style")*/ && container.parentNode;
         var embed = (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
                     encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container")) ?
                     encapMediaObj.ref.parentNode.parentNode : encapMediaObj.ref;
@@ -166,7 +166,7 @@ function mediaContainerInsert(elem, link, id, index) {
     // don't put click events on the carousel
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
-    if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
+    if (true /*getSetting("enabled_scripts").contains("alternate_embed_style")*/ && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
     } else if (!_hasMedia) {

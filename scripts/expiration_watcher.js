@@ -1,127 +1,96 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("expiration_watcher"))
+    ExpirationWatcher =
     {
-        ExpirationWatcher =
+        // 1000ms * 60s * 60m * 18hr
+        post_ttl: 1000 * 60 * 60 * 18,
+
+        bar_colors: new Array('#00C300' ,'#00C800' ,'#00D800' ,'#00DF00' ,'#00ED00' ,'#00F500' ,'#00FE00' ,'#2AFF00' ,'#D4FF00' ,'#FEFF00' ,'#FFEE00' ,'#FFCF00' ,'#FF9900' ,'#FF9900' ,'#FF8000' ,'#FF4B00' ,'#FF1A00' ,'#FF0000'),
+
+        install: function()
         {
-            // 1000ms * 60s * 60m * 18hr
-            post_ttl: 1000 * 60 * 60 * 18,
+            document.body.className += ' expiration-watcher-bar';
+        },
 
-            bar_colors: new Array('#00C300' ,'#00C800' ,'#00D800' ,'#00DF00' ,'#00ED00' ,'#00F500' ,'#00FE00' ,'#2AFF00' ,'#D4FF00' ,'#FEFF00' ,'#FFEE00' ,'#FFCF00' ,'#FF9900' ,'#FF9900' ,'#FF8000' ,'#FF4B00' ,'#FF1A00' ,'#FF0000'),
+        showExpiration: function(item, id, is_root_post)
+        {
+            var style = getSetting("expiration_watcher_style");
 
-			install: function()
-			{
-                document.body.className += ' expiration-watcher-' + getSetting("expiration_watcher_style").toLowerCase();
-			},
+            if (!is_root_post) return;
 
-            showExpiration: function(item, id, is_root_post)
+            var postdate = getDescendentByTagAndClassName(item, "div", "postdate");
+            var expiration_time = ExpirationWatcher.calculateExpirationTime(postdate);
+            var now = Date.now();
+
+            var time_left = expiration_time - now;
+
+            var wrap = document.createElement("div");
+            //Give it a different style if it's expired so that it's easier to tell that it's done for good.
+            wrap.className = (time_left > 0) ? "countdown-wrap" : "expired-wrap";
+
+            var value = wrap.appendChild(document.createElement("div"));
+            value.className = (time_left > 0) ? "countdown-value" : "expired-value";
+
+            ExpirationWatcher.updateExpirationTime(time_left, wrap, value);
+            postdate.parentNode.insertBefore(wrap, postdate);
+        },
+
+        updateExpirationTime: function(time_left, wrap, value)
+        {
+            var percent = 100;
+            var color = ExpirationWatcher.bar_colors[17];
+
+            var desc = ExpirationWatcher.getExpirationTimeDescription(time_left);
+
+            if (time_left > 0)
             {
-                var style = getSetting("expiration_watcher_style");
+                percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
 
-                if (!is_root_post) return;
-
-                var postdate = getDescendentByTagAndClassName(item, "div", "postdate");
-                var expiration_time = ExpirationWatcher.calculateExpirationTime(postdate);
-                var now = Date.now();
-
-                var time_left = expiration_time - now;
-
-                if (style === "Bar")
-                {
-                    var wrap = document.createElement("div");
-                    //Give it a different style if it's expired so that it's easier to tell that it's done for good.
-                    wrap.className = (time_left > 0) ? "countdown-wrap" : "expired-wrap";
-
-                    var value = wrap.appendChild(document.createElement("div"));
-                    value.className = (time_left > 0) ? "countdown-value" : "expired-value";
-
-                    ExpirationWatcher.updateExpirationTime(time_left, wrap, value);
-                    postdate.parentNode.insertBefore(wrap, postdate);
-                }
-                else if (style === "Doom")
-                {
-                    var value = document.createElement("div");
-                    var _url = `url("${browser.runtime.getURL("../images/doom_health.png")}")`;
-                    value.className = "countdown-doom";
-                    value.style.backgroundImage = _url;
-
-                    // Calculate amount of time left and shift background image to display correct cel
-                    var hours_left = time_left / 3600000;
-                    if (hours_left <= 1)
-                    {
-                        value.style.backgroundPosition = "0 -60px";
-                    }
-                    else if (hours_left <= 4)
-                    {
-                        value.style.backgroundPosition = "0 -30px";
-                    }
-
-                    // Title contains readable time left
-                    value.title = ExpirationWatcher.getExpirationTimeDescription(time_left);
-
-                    // Insert div
-                    postdate.parentNode.insertBefore(value, postdate);
-                }
-
-            },
-
-            updateExpirationTime: function(time_left, wrap, value)
-            {
-                var percent = 100;
-                var color = ExpirationWatcher.bar_colors[17];
-
-			    var desc = ExpirationWatcher.getExpirationTimeDescription(time_left);
-
-                if (time_left > 0)
-                {
-                    percent = 100 - Math.floor(100 * time_left / ExpirationWatcher.post_ttl);
-
-                    var total_hours = Math.floor(time_left / 3600000 );
-                    color = ExpirationWatcher.bar_colors[17 - total_hours];
-                }
-
-                wrap.title = desc;
-                value.style.backgroundColor = color;
-                value.style.width = percent + "%";
-            },
-
-            getExpirationTimeDescription: function(time_left)
-            {
-                if (time_left > 0)
-                {
-                    var total_seconds = Math.round(time_left / 1000);
-                    var total_minutes = Math.floor(total_seconds / 60);
-                    var total_hours = Math.floor(total_minutes / 60);
-
-                    var minutes = total_minutes % 60;
-                    var seconds = total_seconds % 60;
-
-                    return "Expires in " + total_hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.";
-                }
-                else
-                {
-                	return "Expired";
-                }
-            },
-
-            calculateExpirationTime: function(postdate_element)
-            {
-                // put space between time and AM/PM so it will parse correctly
-                var raw_time_string = postdate_element.innerHTML.toUpperCase();
-                var pos = raw_time_string.indexOf("AM") + raw_time_string.indexOf("PM")+1;
-                raw_time_string = raw_time_string.substring(0,pos) + " " + raw_time_string.substr(pos);
-
-                 // timezone needs to be in parentheses
-                var zone = raw_time_string.substring(pos+4).trim();
-                raw_time_string = raw_time_string.substring(0,pos+4) + "(" + zone + ")";
-
-
-                var post_time = Date.parse(raw_time_string);
-                return post_time + ExpirationWatcher.post_ttl;
+                var total_hours = Math.floor(time_left / 3600000 );
+                color = ExpirationWatcher.bar_colors[17 - total_hours];
             }
-        };
 
-        ExpirationWatcher.install();
-        processPostEvent.addHandler(ExpirationWatcher.showExpiration);
-    }
+            wrap.title = desc;
+            value.style.backgroundColor = color;
+            value.style.width = percent + "%";
+        },
+
+        getExpirationTimeDescription: function(time_left)
+        {
+            if (time_left > 0)
+            {
+                var total_seconds = Math.round(time_left / 1000);
+                var total_minutes = Math.floor(total_seconds / 60);
+                var total_hours = Math.floor(total_minutes / 60);
+
+                var minutes = total_minutes % 60;
+                var seconds = total_seconds % 60;
+
+                return "Expires in " + total_hours + " hours, " + minutes + " minutes, and " + seconds + " seconds.";
+            }
+            else
+            {
+                return "Expired";
+            }
+        },
+
+        calculateExpirationTime: function(postdate_element)
+        {
+            // put space between time and AM/PM so it will parse correctly
+            var raw_time_string = postdate_element.innerHTML.toUpperCase();
+            var pos = raw_time_string.indexOf("AM") + raw_time_string.indexOf("PM")+1;
+            raw_time_string = raw_time_string.substring(0,pos) + " " + raw_time_string.substr(pos);
+
+                // timezone needs to be in parentheses
+            var zone = raw_time_string.substring(pos+4).trim();
+            raw_time_string = raw_time_string.substring(0,pos+4) + "(" + zone + ")";
+
+
+            var post_time = Date.parse(raw_time_string);
+            return post_time + ExpirationWatcher.post_ttl;
+        }
+    };
+
+    ExpirationWatcher.install();
+    processPostEvent.addHandler(ExpirationWatcher.showExpiration);
 });

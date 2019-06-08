@@ -2,15 +2,13 @@ DefaultSettings = {
 
     enabled_scripts: [
         "getpost",
-        "comment_tags",
         "post_preview",
         "dinogegtik",
         "sparkly_comic",
-        "expiration_watcher",
         "nws_incognito",
-        "category_banners",
         "new_comment_highlighter",
-        "scrolling_performance_hack"
+        "shrink_user_icons",
+        "reduced_color_user_icons"
     ],
 
     lol_tags: [

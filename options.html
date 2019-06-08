@@ -15,25 +15,16 @@
     </head>
     <body>
         <div id="content">
-            <h2 class="group">Viewing Posts</h2>
+            <h2><label>[lol] Tags</label></h2>
+            <div>
+                <p><label><input type="checkbox" class="script_check" id="hide_tagging_buttons"> Hide tagging buttons</label></p>
+                <p><label><input type="checkbox" class="script_check" id="hide_tag_counts"> Hide tag counts</label></p>
+            </div>
 
-            <h2>
-                <input type="checkbox" class="script_check" id="category_banners" />
-                <label for="category_banners">Moderation Banners</label>
-            </h2>
-            <p class="info">Show a banner at the top of each post indicating its moderation flag.</p>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="expiration_watcher" />
-                <label for="expiration_watcher">Expiration Meters</label>
-            </h2>
-            <p class="info">Show a meter that indicates how close a thread is to expiring.</p>
-            <div id="expiration_watcher_settings">
-                <ul>
-                    <span>Style:</span>
-                    <li><input type="radio" name="expiration_watcher_style" id="expiration_watcher_bar"/><label for="expiration_watcher_bar">Bar</label></li>
-                    <li><input type="radio" name="expiration_watcher_style" id="expiration_watcher_doom"/><label for="expiration_watcher_doom">Doom</label></li>
-                </ul>
+            <h2><label>User Flair</label></h2>
+            <div>
+                <p><label><input type="checkbox" class="script_check" id="shrink_user_icons"> Shrink user icons</label></p>
+                <p><label><input type="checkbox" class="script_check" id="reduced_color_user_icons"> Reduced color user icons</label></p>
             </div>
 
             <h2>
@@ -41,11 +32,6 @@
             </h2>
             <p class="info">Show multimedia links inline when clicked.</p>
             <div>
-            <p>
-                <input type="checkbox" class="script_check" id="alternate_embed_style" />
-                <label for="alternate_embed_style">Alternate embedding style</label>
-            </p>
-            <p class="indent info">Embed media items (images, videos, and socials) near their associated link.</p>
 
             <p>
                 <input type="checkbox" id="image_loader_newtab"/>
@@ -103,10 +89,10 @@
                 </p>
                 <p class="indent info">Replace sparkly posts with a comic strip.</p>
                 <p>
-                    <input type="checkbox" class="script_check" id="scrolling_performance_hack" />
-                    <label for="scrolling_performance_hack">Scrolling performance hack</label>
+                    <input type="checkbox" class="script_check" id="switchers" />
+                    <label for="switchers">Shame Switchers</label>
                 </p>
-                <p class="indent info">Work around slow scrolling performance</p>
+                <p class="indent info">Show the original username of shackers who changed names.</p>
             </div>
 
             <h2>
@@ -121,15 +107,6 @@
                     <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank">Change notification options...</a>
                 </p>
             </div>
-
-
-            <h2 class="group">Viewing Threads</h2>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="thread_pane" />
-                <label for="thread_pane">Two-Pane Layout</label>
-            </h2>
-            <p class="info">Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet modes in the mobile clients.</p>
 
             <h2>
                 <label>Highlighting</label>
@@ -158,6 +135,12 @@
             </div>
 
             <h2>
+                <input type="checkbox" class="script_check" id="thread_pane" />
+                <label for="thread_pane">Two-Pane Layout</label>
+            </h2>
+            <p class="info">Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet modes in the mobile clients.</p>
+
+            <h2>
                 <input type="checkbox" class="script_check" id="custom_user_filters" />
                 <label for="custom_user_filters">Custom User Filters</label>
             </h2>
@@ -172,21 +155,6 @@
                     <button id="add_user_filter_btn">Add</button>
                 </p>
             </div>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="switchers" />
-                <label for="switchers">Shame Switchers</label>
-            </h2>
-            <p class="info">Show the original username of shackers who changed names.</p>
-
-
-            <h2 class="group">Composing Posts</h2>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="comment_tags" />
-                <label for="comment_tags">Shacktag Legend</label>
-            </h2>
-            <p class="info">Show an improved Shacktag legend next to the post box.</p>
 
             <h2>
                 <input type="checkbox" class="script_check" id="post_preview" />
@@ -206,27 +174,10 @@
             </div>
 
             <h2>
-                <input type="checkbox" class="script_check" id="image_upload" />
-                <label for="image_upload">Image Upload</label>
-            </h2>
-            <p class="info">Allow uploading images to Imgur or Chattypics directly from the post box.</p>
-
-            <h2>
-                <input type="checkbox" class="script_check" id="post_length_counter" />
-                <label for="post_length_counter">Post Length Counter</label>
-            </h2>
-            <p class="info">Show a live count of characters left before the post preview gets truncated.</p>
-
-
-            <h2 class="group">Chatty</h2>
-
-            <h2>
                 <input type="checkbox" class="script_check" id="elder_scroll" />
                 <label for="elder_scroll">Infinite Scrolling</label>
             </h2>
             <p class="info">Use infinite scrolling instead of explicit previous/next page buttons.</p>
-
-            <h2 class="group">Settings</h2>
 
             <h2>
                 <label>Reset to Default</label>
