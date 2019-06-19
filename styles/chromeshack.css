@@ -219,38 +219,6 @@ div.threads ul ul li span.author li {
     text-align: center;
 }
 
-/* elder scroll */
-
-#elderscroll-message {
-    border-radius: 5px;
-    color: #000 !important;
-    background: #FFF !important;
-    font-size: 1.5em !important;
-    height: 25px;
-    width: 300px;
-    text-align: center;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-top: 5px !important;
-}
-
-#shackLogo {
-    width: 18px;
-    height: 18px;
-    margin-left: 10px;
-    display: inline-block !important;
-    animation-name: elderscroll-rotate;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-duration: 1.5s;
-}
-
-@keyframes elderscroll-rotate {
-    0% { -webkit-transform: rotate(-20deg); }
-    50% { -webkit-transform: rotate(20deg); }
-    100% { -webkit-transform: rotate(-20deg); }
-}
-
 /* fix for shack legends being cut off */
 
 p.rules { margin: 3px; }

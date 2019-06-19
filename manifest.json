@@ -45,7 +45,6 @@
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
             "scripts/embed_socials.js",
-            "scripts/elder_scroll.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
             "chromeshack_posts.js",
