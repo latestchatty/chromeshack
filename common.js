@@ -314,3 +314,11 @@ function stringToUtf8ByteArray(text) {
     }
     return textArr;
 }
+
+function purify(html) {
+    return (DOMPurify.sanitize(html, {WHOLE_DOCUMENT: true}) + '');
+}
+
+function purifyFragment(html) {
+    return DOMPurify.sanitize(html, {RETURN_DOM_FRAGMENT: true});
+}
