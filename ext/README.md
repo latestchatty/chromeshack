@@ -8,10 +8,6 @@ https://github.com/google/closure-library/releases/tag/v20180910
 
 Using `crypt.js`: https://github.com/google/closure-library/blob/npm-v20180910.0.0/closure/goog/crypt/crypt.js
 
-# papaparse v5.0.0-beta.0
-
-https://github.com/mholt/PapaParse/releases/tag/5.0.0-beta.0
-
 # swiper v4.4.6
 
 https://github.com/nolimits4web/swiper/releases/tag/v4.4.6

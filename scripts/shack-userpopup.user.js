@@ -101,43 +101,6 @@
         }
     }
 
-    function getPostCount(username)
-    {
-        displayWorkingBar('Retrieving post counts...');
-
-        const usernameLowercase = username.toLowerCase();
-
-        xhrRequest("https://shackstats.com/data/users_info.csv").then(async res => {
-            var response = await res.text();
-            // papa parse is too slow to parse this whole csv file so filter it down to likely lines using a fast
-            // method and then use papa parse to parse that vastly shortened csv file
-            const csvLines = response.split('\n');
-            const filteredCsvLines = [];
-            for (const csvLine of csvLines) {
-                if (filteredCsvLines.length === 0 || csvLine.toLowerCase().includes(usernameLowercase)) {
-                    filteredCsvLines.push(csvLine);
-                }
-            }
-
-            const csv = Papa.parse(filteredCsvLines.join('\n'), { header: true });
-
-            hideWorkingBar();
-
-            var count = 0;
-            for (const row of csv.data) {
-                if (row.username.toLowerCase() === usernameLowercase) {
-                    count = row.post_count;
-                }
-            }
-
-            // use setTimeout so that the loading bar disappears before we show the modal alert
-            setTimeout(() => alert(username + ' has ' + addCommas(count) + ' posts'), 0);
-        }).catch(err => {
-            console.log(err);
-            alert('Unable to load the post counts.');
-        });
-    }
-
     function createListItem(text, url, className, target)
     {
         var a = document.createElement('a');
@@ -195,15 +158,7 @@
             var repliesUrl = 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
             ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
-            ulUser.appendChild(createListItem('[lol] : Stuff About ' + friendlyName, 'https://www.shacknews.com/tags-user?user=' + username, 'userDropdown-lol userDropdown-separator'));
-
-            // Create menu item for reading post count
-            var aPostCount = document.createElement('a');
-            aPostCount.appendChild(document.createTextNode('Get ' + your + ' Post Count'));
-            aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(decodeURIComponent(username)) }, false);
-            var liPostCount = document.createElement('li');
-            liPostCount.appendChild(aPostCount);
-            ulUser.appendChild(liPostCount);
+            ulUser.appendChild(createListItem('[lol] : Stuff About ' + friendlyName, 'https://www.shacknews.com/tags-user?user=' + username, 'userDropdown-lol'));
 
             // Add ulUser to the page
             parentObj.appendChild(ulUser);
