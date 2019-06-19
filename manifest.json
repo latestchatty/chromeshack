@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.59",
+    "version": "1.60",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -10,7 +10,7 @@
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "background": {
         "scripts": [
-            "ext/webextension-polyfill/browser-polyfill.min.js",
+            "ext/webextension-polyfill/browser-polyfill-0.4.0.min.js",
             "common.js",
             "background.js"
         ]
@@ -26,9 +26,9 @@
     },
     "content_scripts": [{
         "js": [
-            "ext/closure-library/crypt.js",
-            "ext/papaparse/papaparse.min.js",
-            "ext/webextension-polyfill/browser-polyfill.min.js",
+            "ext/dompurify/purify-1.0.11.min.js",
+            "ext/papaparse/papaparse-5.0.0.min.js",
+            "ext/webextension-polyfill/browser-polyfill-0.4.0.min.js",
             "common.js",
             "sentence_parser.js",
             "init_events.js",
@@ -97,19 +97,16 @@
         "https://shackstats.com/data/users_info.csv",
         "https://embed.twitch.tv/embed/*",
         "https://www.instagram.com/p/*",
-        "https://cors.io/?*",
         "https://publish.twitter.com/*",
         "https://*.youtube.com/embed/*",
         "https://api.streamable.com/videos/*",
-        "*://*.shacknews.com/*",
-        "*://*.bit-shift.com/*"
+        "*://*.shacknews.com/*"
     ],
     "web_accessible_resources": [
-        "ext/webextension-polyfill/browser-polyfill.min.js.map",
-        "ext/basiclightbox/basicLightbox.min.css",
-        "ext/basiclightbox/basicLightbox.min.js",
-        "ext/swiper/swiper.min.css",
-        "ext/swiper/swiper.min.js",
+        "ext/basiclightbox/basicLightbox-5.0.2.min.css",
+        "ext/basiclightbox/basicLightbox-5.0.2.min.js",
+        "ext/swiper/swiper-4.5.0.min.css",
+        "ext/swiper/swiper-4.5.0.min.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",
