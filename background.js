@@ -303,10 +303,9 @@ browser.runtime.onMessage.addListener(function(request, sender)
                     scrollToElement(b);
                 }
             }
-            var monkeyPatchCVF = \`\$\{clickItem.toString()\}\$\{show_item_fullpost.toString()\}\$\{scrollToItem.toString()\}\$\{scrollToElement.toString()\}\$\{elementIsVisible.toString()\}\`;
             var chatViewFixElem = document.createElement("script");
             chatViewFixElem.id = "chatviewfix-wjs";
-            chatViewFixElem.innerHTML = monkeyPatchCVF;
+            chatViewFixElem.textContent = \`\$\{clickItem.toString()\}\$\{show_item_fullpost.toString()\}\$\{scrollToItem.toString()\}\$\{scrollToElement.toString()\}\$\{elementIsVisible.toString()\}\`;
             var bodyRef = document.getElementsByTagName("body")[0];
             bodyRef.appendChild(chatViewFixElem);
             undefined;` }); } });
