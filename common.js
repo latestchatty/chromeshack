@@ -314,7 +314,3 @@ function stringToUtf8ByteArray(text) {
     }
     return textArr;
 }
-
-function purify(html) {
-    return (DOMPurify.sanitize(html, {WHOLE_DOCUMENT: true}) + '');
-}
