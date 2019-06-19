@@ -305,3 +305,12 @@ function closestParent(elem, { cssSelector, indexSelector }) {
         }
     }
 }
+
+function stringToUtf8ByteArray(text) {
+    var utf8 = unescape(encodeURIComponent(text));
+    var textArr = [];
+    for (var i = 0; i < utf8.length; i++) {
+        textArr.push(utf8.charCodeAt(i));
+    }
+    return textArr;
+}
