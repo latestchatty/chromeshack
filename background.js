@@ -201,47 +201,6 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
-
-var allowedIncognito = browser.extension.isAllowedIncognitoAccess();
-var lastOpenedIncognito = -1;
-
-function openIncognito(newUrl)
-{
-    var windowInfo = browser.windows.getAll();
-
-    var incognitoId = -1;
-    if(windowInfo != null)
-    {
-        for(var i = 0; i<windowInfo.length; i++)
-        {
-            var w = windowInfo[i];
-            if(w.incognito)
-            {
-
-                incognitoId = w.id;
-                if(incognitoId === lastOpenedIncognito)
-                {
-                    //If we found the last id we opened with, use that.
-                    break;
-                }
-            }
-        }
-    }
-
-    if(incognitoId >= 0)
-    {
-        browser.tabs.create({url:newUrl, windowId: incognitoId, active: false});
-        lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
-    }
-    else
-    {
-        //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-        try {
-            browser.windows.create({url:newUrl, incognito:true, type: 'normal'});
-        } catch (err) { console.log(err); }
-    }
-}
-
 browser.runtime.onMessage.addListener(function(request, sender)
 {
     if (request.name == "getSettings")
@@ -258,9 +217,10 @@ browser.runtime.onMessage.addListener(function(request, sender)
     else if (request.name === "unCollapseThread")
         return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
-        return Promise.resolve(openIncognito(request.value));
-    else if (request.name === "allowedIncognitoAccess")
-        return Promise.resolve(allowedIncognito);
+        return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
+    else if (request.name === "allowedIncognitoAccess") {
+        return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
+    }
     else if (request.name === "chatViewFix") {
         // inject CVF monkey patch once upon page load to fix scroll bugs
         browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
