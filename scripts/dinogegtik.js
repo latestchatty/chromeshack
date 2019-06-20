@@ -18,7 +18,7 @@ settingsLoadedEvent.addHandler(function()
                 var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
 
                 // we have a fullpost, and its className contains gegtik's user id
-                if (fullpost && fullpost.className.indexOf("fpauthor_174527") >= 0)
+                if (fullpost && fullpost.className.indexOf("fpauthor_174527") >= 0 || fullpost.className.indexOf("fpauthor_9995") >= 0)
                 {
                     var comic_id = "dinogegtik_" + id;
 
