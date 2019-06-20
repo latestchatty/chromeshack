@@ -191,14 +191,11 @@ settingsLoadedEvent.addHandler(function()
                 var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/.exec(_link);
                 // we can match against both direct and indirect links
                 var gfycat_id = _match && _match[1] || _match[2];
-                var gfycatKey = await getGfycatCredentials();
 
                 if (gfycat_id) {
                     var url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
                     if (!!window.chrome) {
-                        xhrRequest(url, {
-                            headers: new Map().set("Authorization", gfycatKey)
-                        }).then(async res => {
+                        xhrRequest(url).then(async res => {
                             var json = await res.json();
                             if (json && json.gfyItem.mobileUrl != null) {
                                 appendMedia(json.gfyItem.mobileUrl, link, postId, index);
@@ -206,9 +203,7 @@ settingsLoadedEvent.addHandler(function()
                         }).catch(err => { console.log(err); });
                     } else {
                         // fallback to older XHR method for Firefox for this endpoint
-                        xhrRequestLegacy(url, {
-                            headers: new Map().set("Authorization", gfycatKey)
-                        }).then(res => {
+                        xhrRequestLegacy(url).then(res => {
                             var json = JSON.parse(res);
                             if (json && json.gfyItem.mobileUrl != null) {
                                 appendMedia(json.gfyItem.mobileUrl, link, postId, index);
@@ -216,29 +211,6 @@ settingsLoadedEvent.addHandler(function()
                         }).catch(err => { console.log(err); });
                     }
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }
-
-                function getGfycatCredentials() {
-                    var sessionKey = sessionStorage.getItem("gfycatKey");
-                    if (!sessionKey) {
-                        var __obf = {
-                            "grant_type": "client_credentials",
-                            "client_secret": atob("OERaNnZUeURMZWUzWk5pR3B3Snd0aXV4NnJNYVlWQXF4OFV2N0Y4c01NUjBla1NlUXdNWGNuWTF5MGdNSVk1Sg=="),
-                            "client_id": atob("Ml9nV3Nkb0s=")
-                        };
-                        return new Promise(resolve => {
-                            postXHR("https://api.gfycat.com/v1/oauth/token", JSON.stringify(__obf))
-                            .then(async res => {
-                                var json = await res.json();
-                                if (json.access_token != null && json.access_token.length > 0) {
-                                    sessionStorage.setItem("gfycatKey", json.access_token);
-                                    resolve(json.access_token);
-                                } else
-                                    resolve();
-                            });
-                        }).catch(err => { console.log(err); });
-                    }
-                    return sessionKey;
-                }
             },
 
             createGiphy: function(link, postId, index)
