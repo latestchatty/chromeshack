@@ -352,6 +352,41 @@ browser.runtime.onMessage.addListener(function(request, sender)
             }
         });
     }
+    else if (request.name === "refreshPostByClick") {
+        browser.tabs.executeScript(null, { code: `
+            function chat_onkeypress(b) {
+                if (!b) {
+                    b = window.event;
+                }
+                var a = String.fromCharCode(b.keyCode);
+                if (sLastClickedItem != -1 && sLastClickedRoot != -1 && check_event_target(b)) {
+                    if (a == "Z") {
+                        id = get_item_number_from_item_string(get_next_item_for_root(sLastClickedRoot, sLastClickedItem));
+                        if (id != false) {
+                            clickItem(sLastClickedRoot, id);
+                            var elem = document.querySelector(\`li#item_\$\{id\} span.oneline_body\`);
+                            elem.click();
+                        }
+                    }
+                    if (a == "A") {
+                        id = get_item_number_from_item_string(get_prior_item_for_root(sLastClickedRoot, sLastClickedItem));
+                        if (id != false) {
+                            clickItem(sLastClickedRoot, id);
+                            var elem = document.querySelector(\`li#item_\$\{id\} span.oneline_body\`);
+                            elem.click();
+                        }
+                    }
+                }
+                return true;
+            }
+
+            var refreshPostFixElem = document.createElement("script");
+            refreshPostFixElem.id = "refreshpostfix-wjs";
+            refreshPostFixElem.textContent = \`\$\{chat_onkeypress.toString()\}\`;
+            var bodyRef = document.getElementsByTagName("body")[0];
+            bodyRef.appendChild(refreshPostFixElem);
+            undefined;`});
+    }
 
     return Promise.resolve();
 });
