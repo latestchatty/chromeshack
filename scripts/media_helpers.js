@@ -257,12 +257,12 @@ function insertExpandoButton(link, postId, index) {
 
 function insertCarousel(elem) {
     var head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("swiper.min.css") == -1) {
+    if (head.innerHTML.indexOf("swiper-4.5.0.min.css") == -1) {
         // make sure we have necessary css injected
         var carouselCSS = document.createElement("link");
         carouselCSS.rel = "stylesheet";
         carouselCSS.type = "text/css";
-        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper.min.css");
+        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper-4.5.0.min.css");
         head.appendChild(carouselCSS);
     }
     var carouselContainer = document.createElement("div");
@@ -295,12 +295,12 @@ function insertCarousel(elem) {
 
 function insertLightbox(elem) {
     var head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("basicLightbox.min.css") == -1) {
+    if (head.innerHTML.indexOf("basicLightbox-5.0.2.min.css") == -1) {
         // make sure we have necessary css injected
         var lightboxCSS = document.createElement("link");
         lightboxCSS.rel = "stylesheet";
         lightboxCSS.type = "text/css";
-        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox.min.css");
+        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox-5.0.2.min.css");
         head.appendChild(lightboxCSS);
     }
     browser.runtime.sendMessage({ name: 'lightbox', elemText: elem.outerHTML });
