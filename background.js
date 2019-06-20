@@ -278,7 +278,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
         .then((res) => {
             if (res) {
-                browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox.min.js" }).then(() => {
+                browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" }).then(() => {
                     browser.tabs.executeScript(null, { code: `${commonCode}` });
                 });
             } else {
@@ -344,7 +344,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
         .then((res) => {
             if (res) {
-                browser.tabs.executeScript(null, { file: "ext/swiper/swiper.min.js" }).then(() => {
+                browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" }).then(() => {
                     browser.tabs.executeScript(null, { code: `${commonCode}` });
                 });
             } else {
@@ -387,6 +387,12 @@ browser.runtime.onMessage.addListener(function(request, sender)
             bodyRef.appendChild(refreshPostFixElem);
             undefined;`});
     }
+    else if (request.name === "oEmbedRequest")
+        return xhrRequest(request.url).then(response => {
+            var data = response.json();
+            return Promise.resolve(data);
+        }
+        ).catch(err => console.log(err));
 
     return Promise.resolve();
 });
