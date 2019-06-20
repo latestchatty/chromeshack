@@ -89,18 +89,14 @@
         "https://api.gfycat.com/v1/gfycats/*",
         "https://filedrop.gfycat.com/*",
         "https://chattypics.com/*",
-        "https://lol.lmnopc.com/*",
         "https://winchatty.com/v2/*",
-        "https://winchatty.com/nusearch?*",
-        "https://shackstats.com/data/users_info.csv",
         "https://embed.twitch.tv/embed/*",
         "https://www.instagram.com/p/*",
         "https://cors.io/?*",
         "https://publish.twitter.com/*",
         "https://*.youtube.com/embed/*",
         "https://api.streamable.com/videos/*",
-        "*://*.shacknews.com/*",
-        "*://*.bit-shift.com/*"
+        "*://*.shacknews.com/*"
     ],
     "web_accessible_resources": [
         "ext/webextension-polyfill/browser-polyfill.min.js.map",
