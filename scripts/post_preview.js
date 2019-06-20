@@ -20,7 +20,7 @@ settingsLoadedEvent.addHandler(function()
                     var previewButton = document.createElement("button");
                     previewButton.id = "previewButton";
                     previewButton.setAttribute("type", "button");
-                    previewButton.innerHTML = "Preview";
+                    previewButton.textContent = "Preview";
                     if (getSetting("post_preview_location") == "Left")
                         postButton.parentNode.insertBefore(previewButton, postButton);
                     else
@@ -28,56 +28,58 @@ settingsLoadedEvent.addHandler(function()
 
                     var previewArea = document.createElement("div");
                     previewArea.id = "previewArea";
+                    previewArea.style.display = "none";
                     form_body.parentNode.insertBefore(previewArea, form_body);
+
+                    PostPreview.togglePreview(); // show if enabled
                 }
             },
 
-            installClickEvent: function(postbox)
+            installClickEvent: function()
             {
                 var previewButton = document.getElementById("previewButton");
-                var previewArea = document.getElementById("previewArea");
+                var form_body = document.getElementById("frm_body");
 
                 previewButton.addEventListener("click", PostPreview.togglePreview, true);
-                if(getSetting("post_preview_live") === false)
-                    previewArea.addEventListener("click", PostPreview.togglePreview, true);
+                if (getSetting("post_preview_live") === true)
+                    form_body.addEventListener("input", PostPreview.updatePreview, true);
             },
 
             togglePreview: function()
             {
-                if (PostPreview.state == 0)
+                if (PostPreview.state == 0) {
+                    document.getElementById("previewArea").style.display = "block";
+                    PostPreview.state = 1;
                     PostPreview.viewPreview();
-                else
+                }
+                else {
+                    document.getElementById("previewArea").style.display = "none";
+                    PostPreview.state = 0;
                     PostPreview.viewSource();
+                }
             },
 
             viewPreview: function()
             {
-                var previewArea = document.getElementById("previewArea");
                 var form_body = document.getElementById("frm_body");
-                previewArea.innerHTML = generatePreview(form_body.value);
-                previewArea.style.display = "block";
-                if(getSetting("post_preview_live") === false) {
+                PostPreview.updatePreview();
+                if (getSetting("post_preview_live") === false)
                     form_body.style.display = "none";
-                } else {
-                    form_body.addEventListener("input", PostPreview.updatePreview, true)
-                }
-                PostPreview.state = 1;
+                else
+                    form_body.addEventListener("input", PostPreview.updatePreview, true);
             },
 
             viewSource: function()
             {
-                var form_body = document.getElementById("frm_body");
-                if(getSetting("post_preview_live") === true) {
-                    form_body.removeEventListener("input", PostPreview.updatePreview, true)
-                }
-                form_body.style.display = "block";
-                document.getElementById("previewArea").style.display = "none";
-                PostPreview.state = 0;
+                if (getSetting("post_preview_live") === true)
+                    document.getElementById("frm_body").removeEventListener("input", PostPreview.updatePreview, true)
             },
 
             updatePreview: function()
             {
-                document.getElementById("previewArea").innerHTML = generatePreview(document.getElementById("frm_body").value);
+                var form_body = document.getElementById("frm_body");
+                var previewArea = document.getElementById("previewArea");
+                safeInnerHTML(generatePreview(form_body.value), previewArea);
             }
         }
 

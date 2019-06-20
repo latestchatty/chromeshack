@@ -424,13 +424,13 @@ function saveOptions()
     catch (err)
     {
         //alert("There was an error while saving your settings:\n" + err);
-        status.innerHTML = `Error: ${err}`;
+        status.textContent = `Error: ${err}`;
         return;
     }
 
-    status.innerHTML = "Options Saved.";
+    status.textContent = "Options Saved.";
     setTimeout(function() {
-        status.innerHTML = "";
+        status.textContent = "";
     }, 2000);
 }
 

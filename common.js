@@ -221,9 +221,7 @@ function generatePreview(text) {
         }
     }
 
-    preview = convertUrlToLink(preview);
-
-    return preview;
+    return convertUrlToLink(preview);
 }
 
 function debounce(cb, delay)
@@ -313,4 +311,17 @@ function stringToUtf8ByteArray(text) {
         textArr.push(utf8.charCodeAt(i));
     }
     return textArr;
+}
+
+function sanitizeToFragment(html) {
+    return DOMPurify.sanitize(html, {RETURN_DOM_FRAGMENT: true, RETURN_DOM_IMPORT: true});
+}
+
+function safeInnerHTML(text, targetNode) {
+    var sanitizedContent = sanitizeToFragment(text);
+    var targetRange = document.createRange();
+    targetRange.selectNodeContents(targetNode);
+    targetRange.deleteContents();
+    // replace innerHTML assign with sanitized insert
+    targetRange.insertNode(sanitizedContent);
 }

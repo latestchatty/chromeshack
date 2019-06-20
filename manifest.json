@@ -27,7 +27,6 @@
     "content_scripts": [{
         "js": [
             "ext/dompurify/purify-1.0.11.min.js",
-            "ext/papaparse/papaparse-5.0.0.min.js",
             "ext/webextension-polyfill/browser-polyfill-0.4.0.min.js",
             "common.js",
             "sentence_parser.js",
@@ -45,7 +44,6 @@
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
             "scripts/embed_socials.js",
-            "scripts/elder_scroll.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
             "chromeshack_posts.js",

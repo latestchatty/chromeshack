@@ -427,14 +427,14 @@ settingsLoadedEvent.addHandler(function()
             // update our status label
             var label = $("#uploadStatusLabel")[0];
             if (files != null && files.length > 0 && files.length < 2) {
-                label.innerHTML = `${files[0].name}`;
+                label.textContent = `${files[0].name}`;
                 return true;
             } else if (files != null && files.length > 1) {
-                label.innerHTML = `${files.length} items for upload`;
+                label.textContent = `${files.length} items for upload`;
                 return true;
             }
 
-            label.innerHTML = "";
+            label.textContent = "";
             return false;
         },
 

@@ -146,7 +146,7 @@ settingsLoadedEvent.addHandler(function() {
                 container.id = `instgrm-container_${postId}-${index}`;
                 container.setAttribute("class", "instgrm-container hidden");
                 // use a template for html injection
-                container.innerHTML = /*html*/`
+                safeInnerHTML(/*html*/`
                     <div class="instgrm-header">
                         <a href="#" id="instgrm_profile_a">
                             <img id="instgrm_author_pic" class="circle">
@@ -175,7 +175,7 @@ settingsLoadedEvent.addHandler(function() {
                         <span id="instgrm_post_author"></span>
                         <span id="instgrm_post_timestamp"></span>
                     </div>
-                `;
+                `, container);
                 var fragment = document.createDocumentFragment();
                 fragment.appendChild(container);
                 return fragment;

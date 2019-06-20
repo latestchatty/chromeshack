@@ -48,7 +48,7 @@ settingsLoadedEvent.addHandler(function()
                         commentDisplay.childNodes[4].innerText.split(" ")[0];
                     var newComments = `${commentsCount} Comments (${count} New)`;
                     if (commentsCount)
-                        commentDisplay.childNodes[4].innerHTML = newComments;
+                        commentDisplay.childNodes[4].textContent = newComments;
                 }
             },
 

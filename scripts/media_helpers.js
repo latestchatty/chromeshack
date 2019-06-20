@@ -267,10 +267,12 @@ function insertCarousel(elem) {
     }
     var carouselContainer = document.createElement("div");
     carouselContainer.setAttribute("class", "swiper-container");
-    carouselContainer.innerHTML = /*html*/`
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    `;
+    var swiperNextButton = document.createElement("div");
+    swiperNextButton.className("swiper-button-next");
+    var swiperPrevButton = document.createElement("div");
+    swiperPrevButton.className("swiper-button-prev");
+    carouselContainer.appendChild(swiperNextButton);
+    carouselContainer.appendChild(swiperPrevButton);
     // insert our media container into a carousel container
     // ... and rename the media container to be our carousel wrapper
     elem.classList.add("swiper-wrapper");

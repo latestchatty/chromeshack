@@ -42,7 +42,7 @@ settingsLoadedEvent.addHandler(function() {
                         var response = await res.text();
                         var postDiv = document.createElement("div");
                         // hack-ish way of "parsing" string to DOM (sanitize to fragment first!)
-                        const fragment = DOMPurify.sanitize(response, {RETURN_DOM_FRAGMENT: true, RETURN_DOM_IMPORT: true});
+                        const fragment = sanitizeToFragment(response);
                         postDiv.appendChild(fragment);
                         postDiv = postDiv.childNodes[1];
 

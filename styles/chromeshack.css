@@ -15,7 +15,7 @@ a.pin_button {
 /* post preview */
 
 #previewArea {
-    display: none;
+    display: block;
     border: 1px solid #AEAE9B;
     padding: 3px;
     background: #222;
