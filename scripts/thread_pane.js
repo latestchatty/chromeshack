@@ -186,9 +186,15 @@ let refreshThreadPane;
 
     function parseMostRecentPosts($threadDiv, threadId) {
         const mostRecentSubtree = [];
-        const $mostRecentPost = $threadDiv.find('div.oneline0');
+        let $mostRecentPost = [];
+        var onelineNumber = 0;
+        while ($mostRecentPost.length !== 1 && onelineNumber < 10) {
+            $mostRecentPost = $threadDiv.find('div.oneline' + onelineNumber++);
+        }
+
         if ($mostRecentPost.length !== 1) {
-            throw new Error("Can't find the most recent post!");
+            // don't fail, it will cause the entire pane to disappear. better for it to look weird
+            return { parentIsRoot: true, mostRecentSubtree: [] };
         }
 
         let $post = $mostRecentPost;
