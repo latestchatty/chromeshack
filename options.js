@@ -9,7 +9,6 @@ function loadOptions()
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
-    showEmbedSocials(getOption("embed_socials"));
     showEnabledScripts();
     trackChanges();
 }
@@ -32,13 +31,6 @@ function clearSettings()
     localStorage.clear();
     loadOptions();
     saveOptions();
-}
-
-function showEmbedSocials(enabled) {
-    var embeds = document.getElementById("embed_socials");
-    if (enabled)
-        embeds.checked = enabled;
-    return embeds.checked;
 }
 
 function showImageLoaderNewTab(enabled)
@@ -419,7 +411,6 @@ function saveOptions()
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
-        saveOption("embed_socials", showEmbedSocials());
     }
     catch (err)
     {
