@@ -268,7 +268,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
             chatViewFixElem.textContent = \`\$\{clickItem.toString()\}\$\{show_item_fullpost.toString()\}\$\{scrollToItem.toString()\}\$\{scrollToElement.toString()\}\$\{elementIsVisible.toString()\}\`;
             var bodyRef = document.getElementsByTagName("body")[0];
             bodyRef.appendChild(chatViewFixElem);
-            undefined;` }); } });
+            undefined;` }); } })
+            .catch(err => console.log(err));
     }
     else if (request.name === "lightbox") {
         let commonCode = `
@@ -284,7 +285,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
             } else {
                 browser.tabs.executeScript(null, { code: `${commonCode}` });
             }
-        });
+        })
+        .catch(err => console.log(err));
     }
     else if (request.name === "injectCarousel") {
         let commonCode = `
@@ -350,7 +352,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
             } else {
                 browser.tabs.executeScript(null, { code: `${commonCode}` });
             }
-        });
+        })
+        .catch(err => console.log(err));
     }
     else if (request.name === "refreshPostByClick") {
         browser.tabs.executeScript(null, { code: `
@@ -385,7 +388,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
             refreshPostFixElem.textContent = \`\$\{chat_onkeypress.toString()\}\`;
             var bodyRef = document.getElementsByTagName("body")[0];
             bodyRef.appendChild(refreshPostFixElem);
-            undefined;`});
+            undefined;`})
+            .catch(err => console.log(err));
     }
     else if (request.name === "oEmbedRequest")
         return xhrRequest(request.url).then(response => {
