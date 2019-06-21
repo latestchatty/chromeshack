@@ -88,9 +88,6 @@
         "https://filedrop.gfycat.com/*",
         "https://chattypics.com/*",
         "https://winchatty.com/v2/*",
-        "https://embed.twitch.tv/embed/*",
-        "https://www.instagram.com/p/*",
-        "https://publish.twitter.com/*",
         "https://*.youtube.com/embed/*",
         "https://api.streamable.com/videos/*",
         "*://*.shacknews.com/*"
