@@ -19,6 +19,7 @@ Gain the ability to publish new releases to the Chrome and Firefox web stores.
 - Add the zip to the release.
 - Release to the Chrome Web Store.
     - Log into the [Developer Dashboard](https://chrome.google.com/u/2/webstore/devconsole/).
+    - In the upper right corner, click the "Publisher" dropdown and pick "Chrome Shack Publishers".
     - Click on Chrome Shack in the list.
     - Click "Store Listing" in the left pane.
     - If there is a "Why can't I publish?" link at the top near the "Save Draft" and "Publish Item" buttons, then click that link, figure out whatever new rule Google instituted that prevents us from publishing, and fix it.
