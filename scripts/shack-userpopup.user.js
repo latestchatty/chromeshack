@@ -158,7 +158,11 @@
             var repliesUrl = 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
             ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
-            ulUser.appendChild(createListItem('[lol] : Stuff About ' + friendlyName, 'https://www.shacknews.com/tags-user?user=' + username, 'userDropdown-lol'));
+            const wasWere = friendlyName === 'You' ? 'Were' : 'Was';
+            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Wrote', 'https://www.shacknews.com/tags-user?user=' + username + '#authored_by_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Tagged', 'https://www.shacknews.com/tags-user?user=' + username + '#lold_by_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://www.shacknews.com/tags-user?user=' + username + '#fan_club_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : ' + wasWere + ' ' + friendlyName + ' Ever Funny?', 'https://www.shacknews.com/tags-ever-funny?user=' + username, 'userDropdown-lol'));
 
             // Add ulUser to the page
             parentObj.appendChild(ulUser);
