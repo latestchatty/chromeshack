@@ -11,18 +11,6 @@ DefaultSettings = {
         "reduced_color_user_icons"
     ],
 
-    lol_tags: [
-        {name: "lol", color: "#f80"},
-        {name: "inf", color: "#09c"},
-        {name: "unf", color: "#ff0000"},
-        {name: "tag", color: "#77bb22"},
-        {name: "wtf", color: "#c000c0"}
-    ],
-
-    lol_show_counts: 'limited',
-
-    lol_ugh_threshold: '0',
-
     post_preview_location: "Right",
 
     post_preview_live: false,

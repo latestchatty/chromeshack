@@ -26,22 +26,6 @@ select#filtered_users { height: 90px; }
 div#custom_user_filters_settings p button { float: right; width: 75px; }
 
 div#content { justify-items: start; margin: 0em 1em 0.5em 1em; }
-div#lol_tag_countbox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-div#lol_tag_countbox > label {
-    padding-right: 3em;
-}
-div#lol_tags {
-    display: grid;
-    justify-items: center;
-    align-items: center;
-}
-div#lol_tags > div > * {
-    margin: 0.25em 1em 0.25em 1em;
-}
 div#ugh_field {
     display: flex;
     align-items: center;
