@@ -32,7 +32,7 @@ settingsLoadedEvent.addHandler(() => {
                 target: '_blank'
             })
         );
-
+/*
         if (getSetting("enabled_scripts").contains("post_preview")) {
             rules.append(
                 $('<span>', {
@@ -82,6 +82,7 @@ settingsLoadedEvent.addHandler(() => {
                 }
             });
         }
+*/        
     }
 });
 

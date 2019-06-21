@@ -1,6 +1,6 @@
 {
     "name": "Chrome Shack",
-    "version": "1.60",
+    "version": "1.61",
     "manifest_version": 2,
     "description": "Collection of scripts for Shacknews.",
     "update_url": "http://clients2.google.com/service/update2/crx",
@@ -31,7 +31,6 @@
             "common.js",
             "sentence_parser.js",
             "init_events.js",
-            "scripts/post_preview.js",
             "scripts/dinogegtik.js",
             "scripts/image_loader.js",
             "scripts/video_loader.js",
