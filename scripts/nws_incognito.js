@@ -1,3 +1,11 @@
+//
+// A note to reviewers:
+//
+// This script causes hyperlinks to "Not Safe For Work" imagery (e.g. pornographic images) to open automatically in
+// an incognito window when clicked, instead of a normal tab. In Firefox, doing so requires the
+// "allowedIncognitoAccess" permission.
+//
+
 settingsLoadedEvent.addHandler(function() {
     if (getSetting("enabled_scripts").contains("nws_incognito"))
     {
@@ -19,6 +27,7 @@ settingsLoadedEvent.addHandler(function() {
                         //Add href to collection for open all.
                         allLinks.push(cloned.href);
                         $(cloned).click(function(e) {
+                            // Note to reviewers: please refer to the top of this file for explanation
                             browser.runtime.sendMessage({ name: "allowedIncognitoAccess" }).then(result => {
                                 if (!window.chrome && !result)
                                     alert("This feature will not work unless you enable \"Run in Private Windows\" in the Chrome Shack addon settings for Firefox!");
