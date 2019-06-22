@@ -31,6 +31,7 @@
             "common.js",
             "sentence_parser.js",
             "init_events.js",
+            "scripts/post_preview.js",
             "scripts/dinogegtik.js",
             "scripts/image_loader.js",
             "scripts/video_loader.js",

@@ -1,7 +1,7 @@
 function loadOptions()
 {
-    //showPostPreviewLocation(getOption("post_preview_location"));
-    //showPostPreviewLive(getOption("post_preview_live"));
+    showPostPreviewLocation(getOption("post_preview_location"));
+    showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showImageLoaderNewTab(getOption("image_loader_newtab"));
@@ -299,15 +299,13 @@ function updateNotificationOptions() {
     if (getNotifications()) {
         var uid = getOption("notificationuid");
         if (uid === "" || uid === undefined) {
-            xhrRequest("https://winchatty.com/v2/notifications/generateId")
-                .then(async res => {
-                    if (res.ok) {
-                        var data = await res.json();
-                        var notificationUID = data.id;
-                        //console.log("Got notification id of " + notificationUID);
-                        saveOption("notificationuid", notificationUID);
-                        logInForNotifications(notificationUID);
-                    }
+            fetchSafe({ url: "https://winchatty.com/v2/notifications/generateId" })
+                .then(json => {
+                    // sanitized in common.js!
+                    var notificationUID = json.id;
+                    //console.log("Got notification id of " + notificationUID);
+                    saveOption("notificationuid", notificationUID);
+                    logInForNotifications(notificationUID);
                 });
         }
         else {
@@ -400,8 +398,8 @@ function saveOptions()
 
     try
     {
-        //saveOption("post_preview_location", getPostPreviewLocation());
-        //saveOption("post_preview_live", getPostPreviewLive());
+        saveOption("post_preview_location", getPostPreviewLocation());
+        saveOption("post_preview_live", getPostPreviewLive());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
