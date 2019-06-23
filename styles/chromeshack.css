@@ -310,7 +310,7 @@ div.post_length_counter_text {
 #post_highlighter_container.hidden {
     display: none !important;
 }
-#post_highlighter_container a#jump_to_new_post {
+a#jump_to_new_post {
     display: inline-flex;
     position: absolute;
     align-self: center;
@@ -328,8 +328,24 @@ div.post_length_counter_text {
     white-space: nowrap;
     cursor: pointer;
     line-height: 16px;
-    top: -2px;
-    left: 0;
+}
+@media (min-width: 1024px) {
+    /* pinned & unpinned desktop modes */
+    header:not(.pinned) a#jump_to_new_post {
+        top: -9px;
+        left: 70px;
+    }
+    header.pinned a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
+}
+@media (max-width: 1024px) {
+    /* pinned mobile mode */
+    a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
 }
 #post_highlighter_container a#jump_to_new_post:hover {
     background-color: #5c5070;
