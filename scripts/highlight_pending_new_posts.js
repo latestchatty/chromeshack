@@ -90,7 +90,7 @@
                 var offset = $(divPostItem).offset().top;
 
                 // if the element would be elsewhere on the page - scroll to it
-                if (!elementIsVisible(divPostItem) && offset > scroll) {
+                if (!elementIsVisible(divPostItem, true) && offset > scroll) {
                     scrollToElement(divPostItem);
                     return;
                 }
