@@ -403,11 +403,11 @@ settingsLoadedEvent.addHandler(function()
         },
 
         isValidUrl: function(string) {
-            var ip_pattern = /^(?:http:\/\/|https:\/\/)(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png)$/i.exec(string);
-            var url_pattern = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png)$/i.exec(string);
+            var ip_pattern = /^(?:http:\/\/|https:\/\/)(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
+            var url_pattern = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
             // should work for most video hosting sites but still matches false positives due to being generic
             var vid_pattern1 = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(mp4|webm|gifv)$/i.exec(string);
-            var vid_pattern2 = /^(?:http:\/\/|https:\/\/)*?(?:[\w\-\.]+){1,}\/(?:.*?\/)?([\w\-\&\#\@]+(?!\.[\w]))$/i.exec(string);
+            var vid_pattern2 = /^(?:http:\/\/|https:\/\/)(?:.*)?(?:[\w\-]+\.[\w]+)\/(?:.*\/)?((?!.*?\.[\w]+$)[\w\-\&\#\@\/\?\=\.]+)$/i.exec(string);
 
             if (string.length > 7 && string.length < 2048 &&
                 $("#uploadGfycat").is(":checked") &&
