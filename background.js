@@ -136,6 +136,7 @@ function pollNotifications()
         var _dataBody = `clientId=${notificationuid}`;
         postXHR({
             url: "https://winchatty.com/v2/notifications/waitForNotification",
+            header: { "Content-Type": "application/x-www-form-urlencoded" },
             data: _dataBody
         }).then(resp => {
                 var notifications = resp;
