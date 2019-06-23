@@ -76,13 +76,24 @@ String.prototype.trim = function()
     return this.replace(/^\s+|\s+$/g,"");
 }
 
+Object.prototype.isEmpty = function()
+{
+    if (this == null) return true;
+
+    for (var key in this) {
+        if (this.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
 function xhrRequestLegacy(url, optionsObj) {
     // promisified legacy XHR helper using XMLHttpRequest()
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open(optionsObj != null ? optionsObj.method : "GET", url);
-        if (optionsObj != null && optionsObj.hasOwnProperty("headers")) {
-            for (var [key, val] of optionsObj.headers.entries()) {
+        xhr.open(!optionObj.isEmpty() ? optionsObj.method : "GET", url);
+        if (optionsObj && optionsObj.headers && !optionsObj.headers.isEmpty()) {
+            for (var [key, val] of Object.entries(optionsObj.headers)) {
                 xhr.setRequestHeader(key, val);
             }
         }
@@ -98,20 +109,35 @@ function xhrRequestLegacy(url, optionsObj) {
     }).catch(err => { console.log(err); });
 }
 
+function fetchSafeLegacy({ url, optionsObj, type }) {
+    // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
+    return new Promise((resolve, reject) => {
+        return xhrRequestLegacy(url, optionsObj && !optionsObj.isEmpty() ? optionsObj : {})
+            .then(res => {
+                if (res && !type || type == "JSON")
+                    resolve(safeJSON(JSON.parse(res)));
+                else if (res && type == "HTML")
+                    resolve(sanitizeToFragment(res));
+                else
+                    reject(res.statusText || res);
+            });
+    }).catch(err => console.log(err));
+}
+
 function xhrRequest(url, optionsObj) {
     // newer fetch() based promisified XHR helper
     var _headers = new Headers();
-    if (optionsObj && optionsObj.hasOwnProperty("headers")) {
-        for (var [key, val] of optionsObj.headers.entries()) {
+    if (optionsObj && optionsObj.headers && !optionsObj.headers.isEmpty()) {
+        for (var [key, val] of Object.entries(optionsObj.headers)) {
             _headers.append(key, val);
         }
     }
     // set some sane defaults
-    if (optionsObj && !optionsObj.hasOwnProperty("mode"))
+    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("mode"))
         optionsObj.mode = "cors"
-    if (optionsObj && !optionsObj.hasOwnProperty("cache"))
+    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("cache"))
         optionsObj.cache = "no-cache"
-    if (optionsObj && !optionsObj.hasOwnProperty("method"))
+    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("method"))
         optionsObj.method = "GET"
 
     return fetch(url, optionsObj && {
@@ -127,20 +153,50 @@ function xhrRequest(url, optionsObj) {
     });
 }
 
-function postXHR(url, data) {
+function fetchSafe(url, optionsObj) {
+    // used for sanitizing some fetches (tries to auto-detect)
+    // NOTE: HTML type gets sanitized to a document fragment
+    return new Promise((resolve, reject) => {
+        xhrRequest(url, optionsObj && !optionsObj.isEmpty() ? optionsObj : {})
+        .then(res => {
+            if (res && res.ok)
+                return res.text();
+            reject(false);
+        })
+        .then(text => {
+            try {
+                var unsafeJSON = JSON.parse(text);
+                resolve(safeJSON(unsafeJSON));
+            } catch {
+                if (isHTML(text))
+                    resolve(sanitizeToFragment(text));
+                else
+                    resolve(true); // be safe here
+            }
+        });
+    }).catch(err => console.log(err));
+}
+
+function postXHR({ url, data, header, method }) {
+    // used for sanitizing POSTs that return JSON
     return new Promise((resolve, reject) => {
         xhrRequest(url, {
-            method: "POST",
-            headers: new Map().set("Content-type", "application/x-www-form-urlencoded"),
+            method: method || "POST",
+            headers: header,
             body: data
-        }).then(async res => {
-            var response = await res;
-            if (response.ok)
-                resolve(response);
-            else
-                reject(res.status);
-        })
-    }).catch(err => { console.log(err); });
+        }).then(res => {
+            if (res && res.ok)
+                return res.text()
+            reject(false);
+        }).then(text => {
+            try {
+                var _data = JSON.parse(text);
+                resolve(safeJSON(_data));
+            } catch {
+                resolve(true); // be safe here
+            }
+        });
+    }).catch(err => console.log(err));
 }
 
 function getCookieValue(name, defaultValue)
@@ -324,4 +380,41 @@ function safeInnerHTML(text, targetNode) {
     targetRange.deleteContents();
     // replace innerHTML assign with sanitized insert
     targetRange.insertNode(sanitizedContent);
+}
+
+function safeJSON(json) {
+    // deep clean json objects
+    var _json = json && Object.assign(json);
+    if (_json) {
+        Object.keys(_json).forEach(key => {
+            let val = _json[key];
+            if (val && typeof val === 'object' && !Array.isArray(val)) {
+                Object.keys(val).forEach(ikey => {
+                    if (val[ikey] && typeof val[ikey] === 'object')
+                        val[ikey] = safeJSON(val[ikey]);
+                    else if (val[ikey] && Array.isArray(val[ikey]))
+                        val[ikey] = sanitizeArr(val[ikey]);
+                });
+            }
+            else if (val && Array.isArray(val))
+                _json[key] = safeJSON(_json[key]);
+            else if (val && typeof val === 'boolean')
+                _json[key] = _json[key];
+            else if (val)
+                _json[key] = DOMPurify.sanitize(_json[key]);
+        });
+    }
+    return _json;
+
+    function sanitizeArr(arr) {
+        return arr.map(item => {
+            return safeJSON(item);
+        });
+    }
+}
+
+function isHTML(text) {
+    // https://stackoverflow.com/a/15458968
+    var doc = new DOMParser().parseFromString(text, "text/html");
+    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 }

@@ -134,9 +134,11 @@ function pollNotifications()
     //console.log("Notification UID is " + notificationuid);
     if (notificationuid != "" && notificationuid != undefined) {
         var _dataBody = `clientId=${notificationuid}`;
-        postXHR("https://winchatty.com/v2/notifications/waitForNotification", _dataBody)
-            .then(async response => {
-                var notifications = await response.json();
+        postXHR({
+            url: "https://winchatty.com/v2/notifications/waitForNotification",
+            data: _dataBody
+        }).then(resp => {
+                var notifications = resp;
                 if(!notifications.error) {
                     //console.log("notification response text: " + res.responseText);
                     if (notifications.messages) {
@@ -391,12 +393,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
             undefined;`})
             .catch(err => console.log(err));
     }
-    else if (request.name === "oEmbedRequest")
-        return xhrRequest(request.url).then(response => {
-            var data = response.json();
-            return Promise.resolve(data);
-        }
-        ).catch(err => console.log(err));
+    //else if (request.name === "oEmbedRequest")
+        //return fetchSafe(request.url);
 
     return Promise.resolve();
 });

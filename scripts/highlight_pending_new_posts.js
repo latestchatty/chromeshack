@@ -30,12 +30,12 @@
 
     function loop() {
         try {
-            xhrRequest(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
-                .then(async res => {
-                var response = await res.json();
-                if (response && !response.error) {
-                    g_lastEventId = parseInt(response.lastEventId);
-                    processEvents(response.events);
+            fetchSafe(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
+            .then(json => {
+                // sanitized in common.js!
+                if (json) {
+                    g_lastEventId = parseInt(json.lastEventId);
+                    processEvents(json.events);
                 }
                 // Short delay in between loop iterations.
                 setTimeout(loop, 5000);
@@ -168,9 +168,10 @@
         });
 
         // We need to get an initial event ID to start with.
-        xhrRequest("https://winchatty.com/v2/getNewestEventId").then(async res => {
-            var response = await res.json();
-            g_lastEventId = parseInt(response.eventId);
+        fetchSafe("https://winchatty.com/v2/getNewestEventId")
+        .then(json => {
+            // sanitized in common.js!
+            g_lastEventId = parseInt(json.eventId);
             loop();
         });
     }

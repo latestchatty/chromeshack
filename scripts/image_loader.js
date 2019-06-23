@@ -149,12 +149,11 @@ settingsLoadedEvent.addHandler(function()
                     var url = `https://api.imgur.com/3/image/${shortcode}`;
                     return new Promise(resolve => {
                         fetchImgur(url).then(json => {
-                            if (json.status !== 404) {
-                                if (json && json.data.mp4 != null)
-                                    resolve(json.data.mp4);
-                                else if (json && json.data.link != null)
-                                    resolve(json.data.link);
-                            } else { resolve(null); }
+                            if (json && json.data && json.data.mp4)
+                                resolve(json.data.mp4);
+                            else if (json && json.data && json.data.link)
+                                resolve(json.data.link);
+                            resolve(null);
                         });
                     });
                 };
@@ -163,25 +162,23 @@ settingsLoadedEvent.addHandler(function()
                     var url = `https://api.imgur.com/3/album/${shortcode}`;
                     return new Promise(resolve => {
                         fetchImgur(url).then(json => {
-                            if (json.status !== 404) {
-                                var collector = [];
-                                if (json && json.data.images != null && json.data.images.length > 0) {
-                                    json.data.images.forEach(item => {
-                                        if (item.mp4 != null)
-                                            collector.push(item.mp4);
-                                        else if (item.link != null)
-                                            collector.push(item.link);
-                                    });
-                                    resolve(collector);
-                                } else { console.log(`Unable to find any Imgur media items for: ${url}`); }
-                            } else { resolve(null); }
+                            var collector = [];
+                            if (json && json.data && json.data.images && json.data.images.length > 0) {
+                                json.data.images.forEach(item => {
+                                    if (item.mp4 != null)
+                                        collector.push(item.mp4);
+                                    else if (item.link != null)
+                                        collector.push(item.link);
+                                });
+                                resolve(collector);
+                            } else { console.log(`Unable to find any Imgur media items for: ${url}`); }
+                            resolve(null);
                         });
                     });
                 };
                 function fetchImgur(url) {
-                    return xhrRequest(url, { headers: new Map().set("Authorization", authHdr) })
-                        .then(async res => await res.json())
-                        .catch(err => { console.log(err); });
+                    // sanitized in common.js!
+                    return fetchSafe(url, { headers: { "Authorization": authHdr } });
                 }
             },
 
@@ -195,19 +192,23 @@ settingsLoadedEvent.addHandler(function()
                 if (gfycat_id) {
                     var url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
                     if (!!window.chrome) {
-                        xhrRequest(url).then(async res => {
-                            var json = await res.json();
+                        fetchSafe(url).then(json => {
+                            // sanitized in common.js!
                             if (json && json.gfyItem.mobileUrl != null) {
                                 appendMedia(json.gfyItem.mobileUrl, link, postId, index);
-                            } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
-                        }).catch(err => { console.log(err); });
+                            } else {
+                                throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
+                            }
+                        });
                     } else {
                         // fallback to older XHR method for Firefox for this endpoint
-                        xhrRequestLegacy(url).then(res => {
-                            var json = JSON.parse(res);
+                        fetchSafeLegacy({ url }).then(json => {
+                            // sanitized in common.js!
                             if (json && json.gfyItem.mobileUrl != null) {
                                 appendMedia(json.gfyItem.mobileUrl, link, postId, index);
-                            } else { throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`); }
+                            } else {
+                                throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
+                            }
                         }).catch(err => { console.log(err); });
                     }
                 } else { console.log(`An error occurred parsing the Gfycat url: ${link.href}`); }

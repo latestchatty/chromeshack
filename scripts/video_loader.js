@@ -133,7 +133,7 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "iframe-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
+                    iframe.setAttribute("sandbox", "allow-same-origin");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
@@ -148,15 +148,15 @@ settingsLoadedEvent.addHandler(function()
                 function getStreamableLink(shortcode) {
                     var __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
                     return new Promise(resolve => {
-                        xhrRequest(`https://api.streamable.com/videos/${shortcode}`,
-                            { headers: new Map().set("Authorization", __obf) }
-                        ).then(res => {
-                            if (!res.ok)
-                                throw Error(res.statusText);
-                            return res;
+                        fetchSafe(
+                            `https://api.streamable.com/videos/${shortcode}`,
+                            { headers: { "Authorization": __obf } }
+                        ).then(json => {
+                            // sanitized in common.js!
+                            if (json && json.files.mp4.url)
+                                resolve(json.files.mp4.url);
+                            resolve(null);
                         })
-                        .then(res => res.json())
-                        .then(async json => { return resolve(await json.files.mp4.url); })
                         .catch(err => { console.log(err); });
                     });
                 }
@@ -188,7 +188,7 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
+                    iframe.setAttribute("sandbox", "allow-same-origin allow-presentation");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
@@ -230,7 +230,7 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "twitch-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts");
+                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");

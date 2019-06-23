@@ -272,8 +272,11 @@ function toggleSettingsVisible()
 function logInForNotifications(notificationuid)
 {
     var _dataBody = encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`);
-    postXHR("https://winchatty.com/v2/notifications/registerNotifierClient", _dataBody)
-    .then(() => {
+    postXHR({
+        url: "https://winchatty.com/v2/notifications/registerNotifierClient",
+        header: { "Content-type": "application/x-www-form-urlencoded" },
+        data: _dataBody
+    }).then(() => {
         //console.log("Response from register client " + res.responseText);
         browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'})
             .then(tabs => {
@@ -299,7 +302,7 @@ function updateNotificationOptions() {
     if (getNotifications()) {
         var uid = getOption("notificationuid");
         if (uid === "" || uid === undefined) {
-            fetchSafe({ url: "https://winchatty.com/v2/notifications/generateId" })
+            fetchSafe("https://winchatty.com/v2/notifications/generateId")
                 .then(json => {
                     // sanitized in common.js!
                     var notificationUID = json.id;

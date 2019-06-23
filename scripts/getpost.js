@@ -38,11 +38,10 @@ settingsLoadedEvent.addHandler(function() {
                     var chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
                     var singlePost = `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
 
-                    xhrRequest(singlePost).then(async res => {
-                        var response = await res.text();
+                    fetchSafe(singlePost).then(data => {
                         var postDiv = document.createElement("div");
-                        // hack-ish way of "parsing" string to DOM (sanitize to fragment first!)
-                        const fragment = sanitizeToFragment(response);
+                        // hack-ish way of "parsing" string to DOM (sanitized!)
+                        const fragment = data;
                         postDiv.appendChild(fragment);
                         postDiv = postDiv.childNodes[1];
 
@@ -53,7 +52,7 @@ settingsLoadedEvent.addHandler(function() {
                         postDiv.setAttribute("id", `getpost_${_postId}-${index}`);
                         toggleMediaLink(null, link, true);
                         link.parentNode.insertBefore(postDiv, link.nextSibling);
-                    }).catch(err => { console.log(err); });
+                    });
                 }
             }
         }
