@@ -59,6 +59,7 @@ settingsLoadedEvent.addHandler(function()
                 PostPreview.updatePreview();
                 if (getSetting("post_preview_live") === true)
                     form_body.addEventListener("input", PostPreview.updatePreview, true);
+                form_body.focus();
             },
 
             disablePreview: function()
@@ -68,6 +69,7 @@ settingsLoadedEvent.addHandler(function()
                 preview_box.style.display = "none";
                 if (getSetting("post_preview_live") === true)
                     form_body.removeEventListener("input", PostPreview.updatePreview, true)
+                form_body.focus();
             },
 
             updatePreview: function()
