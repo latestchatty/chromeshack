@@ -152,7 +152,7 @@ function xhrRequest(url, optionsObj) {
     });
 }
 
-function fetchSafe(url, optionsObj) {
+function fetchSafe(url, optionsObj, instgrmBool) {
     // used for sanitizing some fetches (tries to auto-detect)
     // NOTE: HTML type gets sanitized to a document fragment
     return new Promise((resolve, reject) => {
@@ -164,8 +164,21 @@ function fetchSafe(url, optionsObj) {
         })
         .then(text => {
             try {
-                var unsafeJSON = JSON.parse(text);
-                resolve(safeJSON(unsafeJSON));
+                if (instgrmBool) {
+                    // special case for instagram graphql parsing
+                    var likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(text);
+                    var instgrmGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(text);
+                    if (instgrmGQL) {
+                        var parsedLikes = likesMatch && likesMatch[1];
+                        var parsedGQL = instgrmGQL && JSON.parse(instgrmGQL[1]);
+                        resolve(safeJSON({ likes: parsedLikes, gqlData: parsedGQL }));
+                    }
+                    reject(false);
+                }
+                else {
+                    var unsafeJSON = JSON.parse(text);
+                    resolve(safeJSON(unsafeJSON));
+                }
             } catch {
                 if (isHTML(text))
                     resolve(sanitizeToFragment(text));

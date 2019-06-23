@@ -394,8 +394,9 @@ browser.runtime.onMessage.addListener(function(request, sender)
             undefined;`})
             .catch(err => console.log(err));
     }
-    //else if (request.name === "oEmbedRequest")
-        //return fetchSafe(request.url);
+    else if (request.name === "corbFetch") {
+        return fetchSafe(request.url, request.optionsObj, request.ovrBool);
+    }
 
     return Promise.resolve();
 });

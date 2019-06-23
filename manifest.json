@@ -47,6 +47,7 @@
             "scripts/local_timestamp.js",
             "scripts/expiration_watcher.js",
             "scripts/getpost.js",
+            "scripts/embed_socials.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
             "chromeshack_posts.js",
@@ -66,6 +67,7 @@
             "styles/chromeshack.css",
             "styles/image_uploader.css",
             "styles/comic_scripts.css",
+            "styles/embed_socials.css",
             "styles/two_pane.css",
             "styles/media.css"
          ],
