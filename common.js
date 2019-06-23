@@ -78,9 +78,9 @@ String.prototype.trim = function()
 
 function isEmpty(obj)
 {
-    if (!obj || obj == null) return true;
+    if (!(obj instanceof Object)) return true;
     for (var key in obj) {
-        if (this.hasOwnProperty(key))
+        if (obj.hasOwnProperty(key))
             return false;
     }
     return true;

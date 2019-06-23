@@ -132,21 +132,23 @@ settingsLoadedEvent.addHandler(function()
                 // gfycat allows video input
                 if ($(this).is("#uploadGfycat")) {
                     $("#fileUploadInput").attr("accept", "image/*,video/*");
+                    var typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
                     if ($("#urlUploadSnippetBox").is(":checked") &&
-                        ImageUpload.isValidUrl(ImageUpload.formFileUrl) == 1) {
+                        typeObj && typeObj.type == 1) {
                         ImageUpload.toggleSnippetControls(1);
                     } else if ($("#urlUploadSnippetBox").is(":checked")) {
                         ImageUpload.toggleSnippetControls(2);
                     } else {
                         ImageUpload.toggleSnippetControls(0);
                     }
+                    ImageUpload.toggleUrlBox(1);
                 }
                 else if ($(this).is("#uploadImgur")) {
                     $("#fileUploadInput").attr("accept", "image/*");
                     ImageUpload.toggleSnippetControls(0);
+                    ImageUpload.toggleUrlBox(0);
                 }
 
-                ImageUpload.toggleUrlBox(1);
                 if (ImageUpload.formFileUrl.length > 7) {
                     // contextually unhide if we have content
                     ImageUpload.toggleDragOver(1);
@@ -298,7 +300,8 @@ settingsLoadedEvent.addHandler(function()
 
         loadFileUrl: function(string) {
             var _isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
-            if (_isGfycat && ImageUpload.isValidUrl(string) == 1) {
+            var typeObj = ImageUpload.isValidUrl(string);
+            if (_isGfycat && typeObj && typeObj.type == 1) {
                 // video hoster url
                 ImageUpload.formFileUrl = string;
                 ImageUpload.toggleDragOver(1);
@@ -309,7 +312,7 @@ settingsLoadedEvent.addHandler(function()
                 // styling to indicate to the user that the url takes priority over files
                 ImageUpload.toggleStatusLabel(1);
                 return true;
-            } else if (ImageUpload.isValidUrl(string) == 0) {
+            } else if (typeObj && typeObj.type == 0) {
                 // normal image url
                 ImageUpload.formFileUrl = string;
                 ImageUpload.toggleDragOver(1);
@@ -338,7 +341,8 @@ settingsLoadedEvent.addHandler(function()
 
         clearFileData: function(soft) {
             // contextually reset our uploader form inputs
-            var _isUrl = ImageUpload.isValidUrl(ImageUpload.formFileUrl) > -1;
+            var typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
+            var _isUrl = typeObj && typeObj.type > -1;
             var _isFiles = ImageUpload.formFiles.length > 0;
             var _isUrlInput = ImageUpload.formFileUrl.length > 7;
 
@@ -399,20 +403,31 @@ settingsLoadedEvent.addHandler(function()
         },
 
         isValidUrl: function(string) {
-            var ip_pattern = /^(?:http:\/\/|https:\/\/)*?(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/[\w\d\-\_\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
-            var url_pattern = /^(?:http:\/\/|https:\/\/)*?([\d\w\-\.]+){1,}\/[\w\d\-\&\#\$\^\?\.\=\,\/\\]+\.(gif|jpg|jpeg|png)$/i;
+            var ip_pattern = /^(?:http:\/\/|https:\/\/)(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png)$/i.exec(string);
+            var url_pattern = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png)$/i.exec(string);
             // should work for most video hosting sites but still matches false positives due to being generic
-            var vidsite_pattern = /^(?:http:\/\/|https:\/\/)(?:[\d\w\-]+\.){1,}[\d\w\-]+\/[\w\d\-\/\?\&\$\%\#\=\.]+$/i;
+            var vid_pattern1 = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(mp4|webm|gifv)$/i.exec(string);
+            var vid_pattern2 = /^(?:http:\/\/|https:\/\/)*?(?:[\w\-\.]+){1,}\/(?:.*?\/)?([\w\-\&\#\@]+(?!\.[\w]))$/i.exec(string);
 
-            if ($("#uploadGfycat").is(":checked") &&
-                string.length > 7 && string.length < 2048 &&
-                vidsite_pattern.test(string)) {
-                return 1;
+            if (string.length > 7 && string.length < 2048 &&
+                $("#uploadGfycat").is(":checked") &&
+                vid_pattern1 && vid_pattern1.length > 0 ||
+                vid_pattern2 && vid_pattern2.length > 0) {
+                return {
+                    type: 1,
+                    filename: vid_pattern1 && vid_pattern1[1] ||
+                        vid_pattern2 && vid_pattern2[1]
+                    };
             } else if (string.length > 7 && string.length < 2048 &&
-                ip_pattern.test(string) || url_pattern.test(string)) {
-                return 0;
+                url_pattern && url_pattern.length > 0 ||
+                ip_pattern && ip_pattern.length > 0) {
+                return {
+                    type: 0,
+                    filename: url_pattern && url_pattern[1] ||
+                        ip_pattern && ip_pattern[1]
+                    };
             }
-            return -1;
+            return null;
         },
 
         isValidNumber: function(number, min, max) {
@@ -449,7 +464,9 @@ settingsLoadedEvent.addHandler(function()
                 if (_isSnip && snipStart > -1 && snipDuration > 0)
                     fileObj = { "cut": { "start": snipStart, "duration": snipDuration } };
 
-                fileObj = fileObj && Object.assign({}, fileObj, { "fetchUrl": url });
+                var typeObj = ImageUpload.isValidUrl(url);
+                var urlObj = { "fetchUrl": url, "title": typeObj && typeObj.filename };
+                fileObj = fileObj ? Object.assign({}, fileObj, urlObj) : urlObj;
 
                 // could be video or image
                 ImageUpload.doGfycatUpload(fileObj);
@@ -571,25 +588,31 @@ settingsLoadedEvent.addHandler(function()
                     ImageUpload.delayedRemoveUploadMessage(
                         "red", "Failure:", `${err.code} = ${err.description}`, 5000
                     );
+                } else if (json.task == 'NotFoundo') {
+                    ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 3000);
                 }
-                console.log(`Gfycat endpoint error: ${errDetail}`);
+                console.log(`Gfycat endpoint error: ${json}`);
                 return true;
             }
         },
 
         doGfycatUpload: function(fileObj) {
             ImageUpload.removeUploadMessage();
-            var dataBody = fileObj.fetchUrl && JSON.stringify({ "fetchUrl": fetchUrl });
+            var dataBody = !isEmpty(fileObj) ? JSON.stringify(fileObj) : null;
             // keep track of how long we take
             ImageUpload.doFormTimer();
 
             postXHR({
                 url: ImageUpload.gfycatApiUrl,
-                header: { "Content-Type": "application/json" },
+                header: !dataBody.fetchUrl && { "Content-Type": "application/json" },
                 data: dataBody
             }).then(key_resp => {
+                if (!key_resp) {
+                    ImageUpload.handleGfycatUploadStatus(key_resp); // fail?!
+                    return;
+                }
+
                 var key = key_resp.gfyname;
-                var secret = key_resp.secret;
                 var dropUrl = key_resp.uploadType;
                 if (fileObj.fetchUrl) {
                     // if we used 'fetchUrl' the server will report back a key
