@@ -147,7 +147,7 @@ settingsLoadedEvent.addHandler(function()
 
                 function getStreamableLink(shortcode) {
                     var __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-                    return new Promise(resolve => {
+                    return new Promise((resolve, reject) => {
                         fetchSafe(
                             `https://api.streamable.com/videos/${shortcode}`,
                             { headers: { "Authorization": __obf } }
@@ -155,9 +155,8 @@ settingsLoadedEvent.addHandler(function()
                             // sanitized in common.js!
                             if (json && json.files.mp4.url)
                                 resolve(json.files.mp4.url);
-                            resolve(null);
-                        })
-                        .catch(err => { console.log(err); });
+                            reject(false);
+                        }).catch(err => { console.log(err); });
                     });
                 }
             },
@@ -188,7 +187,7 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-presentation");
+                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
