@@ -76,11 +76,10 @@ String.prototype.trim = function()
     return this.replace(/^\s+|\s+$/g,"");
 }
 
-Object.prototype.isEmpty = function()
+function isEmpty(obj)
 {
-    if (this == null) return true;
-
-    for (var key in this) {
+    if (!obj || obj == null) return true;
+    for (var key in obj) {
         if (this.hasOwnProperty(key))
             return false;
     }
@@ -91,8 +90,8 @@ function xhrRequestLegacy(url, optionsObj) {
     // promisified legacy XHR helper using XMLHttpRequest()
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open(!optionObj.isEmpty() ? optionsObj.method : "GET", url);
-        if (optionsObj && optionsObj.headers && !optionsObj.headers.isEmpty()) {
+        xhr.open(!isEmpty(optionObj) ? optionsObj.method : "GET", url);
+        if (optionsObj && !isEmpty(optionsObj.headers)) {
             for (var [key, val] of Object.entries(optionsObj.headers)) {
                 xhr.setRequestHeader(key, val);
             }
@@ -112,7 +111,7 @@ function xhrRequestLegacy(url, optionsObj) {
 function fetchSafeLegacy({ url, optionsObj, type }) {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
-        return xhrRequestLegacy(url, optionsObj && !optionsObj.isEmpty() ? optionsObj : {})
+        return xhrRequestLegacy(url, !isEmpty(optionsObj) ? optionsObj : {})
             .then(res => {
                 if (res && !type || type == "JSON")
                     resolve(safeJSON(JSON.parse(res)));
@@ -127,17 +126,17 @@ function fetchSafeLegacy({ url, optionsObj, type }) {
 function xhrRequest(url, optionsObj) {
     // newer fetch() based promisified XHR helper
     var _headers = new Headers();
-    if (optionsObj && optionsObj.headers && !optionsObj.headers.isEmpty()) {
+    if (optionsObj && !isEmpty(optionsObj.headers)) {
         for (var [key, val] of Object.entries(optionsObj.headers)) {
             _headers.append(key, val);
         }
     }
     // set some sane defaults
-    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("mode"))
+    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("mode"))
         optionsObj.mode = "cors"
-    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("cache"))
+    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("cache"))
         optionsObj.cache = "no-cache"
-    if (!optionsObj.isEmpty() && !optionsObj.hasOwnProperty("method"))
+    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("method"))
         optionsObj.method = "GET"
 
     return fetch(url, optionsObj && {
@@ -157,7 +156,7 @@ function fetchSafe(url, optionsObj) {
     // used for sanitizing some fetches (tries to auto-detect)
     // NOTE: HTML type gets sanitized to a document fragment
     return new Promise((resolve, reject) => {
-        xhrRequest(url, optionsObj && !optionsObj.isEmpty() ? optionsObj : {})
+        xhrRequest(url, !isEmpty(optionsObj) ? optionsObj : {})
         .then(res => {
             if (res && res.ok)
                 return res.text();
