@@ -74,15 +74,10 @@ settingsLoadedEvent.addHandler(function() {
             },
 
             fetchTweetData: async function (tweetId) {
-                //let _link = "https://twitter.com/AOC/status/1143590995122171905";
-                //let _link = "https://twitter.com/ieytd/status/1144334920493518848";
-                //let _link = "https://twitter.com/NWSBoulder/status/1144670726173134848";
-                //let _link = "https://twitter.com/strongblacklead/status/1144652411602186241";
-                //let _link = "https://twitter.com/Karckade/status/1144657968820080640";
-                //let _link = "https://twitter.com/donoteat1/status/1145358207126257665";
-                let _link = "https://twitter.com/Mike_Laidlaw/status/1145488331071004678";
-                let linkMatch = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i.exec(_link);
-                tweetId = linkMatch && linkMatch[1];
+                //let _link = "https://twitter.com/Mike_Laidlaw/status/1145488331071004678";
+                //let linkMatch = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i.exec(_link);
+                //tweetId = linkMatch && linkMatch[1];
+                // ^ for debugging purposes
 
                 let _reqUrl = `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`;
                 let _token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
