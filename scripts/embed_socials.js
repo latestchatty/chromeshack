@@ -77,9 +77,10 @@ settingsLoadedEvent.addHandler(function() {
                 //let _link = "https://twitter.com/AOC/status/1143590995122171905";
                 //let _link = "https://twitter.com/ieytd/status/1144334920493518848";
                 //let _link = "https://twitter.com/NWSBoulder/status/1144670726173134848";
-                let _link = "https://twitter.com/strongblacklead/status/1144652411602186241";
+                //let _link = "https://twitter.com/strongblacklead/status/1144652411602186241";
                 //let _link = "https://twitter.com/Karckade/status/1144657968820080640";
                 //let _link = "https://twitter.com/donoteat1/status/1145358207126257665";
+                let _link = "https://twitter.com/Mike_Laidlaw/status/1145488331071004678";
                 let linkMatch = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i.exec(_link);
                 tweetId = linkMatch && linkMatch[1];
 
@@ -213,12 +214,11 @@ settingsLoadedEvent.addHandler(function() {
                     mediaParent.classList.remove("hidden");
                 } else if (!!tweetObj.tweetQuoted && Object.entries(tweetObj.tweetQuoted.quotedMediaItems).length > 0) {
                     // include media items inside quoted tweets (if available)
-                    let mediaItems = parseMedia(tweetObj.tweetQuoted.quotedMediaItems);
+                    let quotedMediaItems = parseMedia(tweetObj.tweetQuoted.quotedMediaItems);
                     templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
                     let quotedMediaParent = templateElem.querySelector("#twitter-quote-media-content");
-                    let mediaContainer = appendMedia(mediaItems, parentLink, postId, index, null, true);
-                    mediaParent.appendChild(mediaContainer);
-                    mediaParent.classList.remove("hidden");
+                    let mediaContainer = appendMedia(quotedMediaItems, parentLink, postId, index, null, true);
+                    quotedMediaParent.appendChild(mediaContainer);
                     quotedMediaParent.classList.remove("hidden");
                 } else if (!!tweetObj.tweetQuoted) {
                     templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
