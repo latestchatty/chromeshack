@@ -367,11 +367,6 @@ div.fullpost .lol-tags {
     margin-top: -5px !important;
 }
 
-/* hide the envelope next to the author's name in an expanded post; it doesn't work */
-span.author > a.shackmsg > img {
-    display: none;
-}
-
 body.hide_tagging_buttons .lol-tags {
     display: none !important;
 }
