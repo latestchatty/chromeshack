@@ -113,7 +113,7 @@ settingsLoadedEvent.addHandler(function() {
                     let result = [];
                     Object.values(tweetMediaObj).forEach(item => {
                         if (item.type === "video" && item.video_info.variants) {
-                            let _sorted = sortByBitrate(item.video_info.variants);
+                            let _sorted = sortByBitrate(item.video_info.variants.filter(x => x.content_type === "video/mp4"));
                             for (let vidItem of _sorted) {
                                 let _vidDimensionsMatch = /vid\/(\d+)x(\d+)\//i.exec(vidItem.url);
                                 let _ratio = _vidDimensionsMatch ? (1 / (_vidDimensionsMatch[1] / _vidDimensionsMatch[2])) * 100 : 56.25;
