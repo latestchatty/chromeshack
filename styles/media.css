@@ -25,14 +25,6 @@
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    /* specific to twitter styling */
-    --twttr-bg-color: #15202b;
-    --twttr-bg-color2: #202224;
-    --twttr-fg-color: #ffffff;
-    --twttr-fg-link-color: #1d9ceb;
-    --twttr-bg-link-color: #8899a6;
-    --twttr-fg-border-color: #38444d;
-    --twttr-bg-border-color: #6b7d8c;
 }
 
 .media-container.responsive {
@@ -43,11 +35,6 @@
     grid-auto-flow: row dense;
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
-}
-.media-container:not(.responsive),
-.media-container:not(.responsive) img,
-.media-container:not(.responsive) video {
-    max-height: unset !important;
 }
 .medialoader {
     height: 100%;
