@@ -101,7 +101,7 @@ settingsLoadedEvent.addHandler(function() {
                                 quotedRealName: tweetObj.quoted_status.user.screen_name,
                                 quotedText: tagifyTweetText(tweetObj.quoted_status.full_text).outerHTML,
                                 quotedMediaItems: !!tweetObj.quoted_status.extended_entities ? collectTweetMedia(tweetObj.quoted_status.extended_entities.media) : []
-                            }) || {},
+                            }) || null,
                             timestamp: new Date(Date.parse(tweetObj.created_at)).toLocaleString(),
                             userVerified: tweetObj.user.verified
                         };
@@ -113,19 +113,29 @@ settingsLoadedEvent.addHandler(function() {
                     let result = [];
                     Object.values(tweetMediaObj).forEach(item => {
                         if (item.type === "video" && item.video_info.variants) {
-                            for (let vidItem of item.video_info.variants) {
-                                if (vidItem.content_type === "video/mp4") {
-                                    let _vidDimensionsMatch = /vid\/(\d+)x(\d+)\//i.exec(vidItem.url);
-                                    let _ratio = _vidDimensionsMatch ? (1 / (_vidDimensionsMatch[1] / _vidDimensionsMatch[2])) * 100 : 56.25;
-                                    result.push({type: "video", url: vidItem.url, ratio: _ratio});
-                                    break; // bail on the first match (highest res)
-                                }
+                            let _sorted = sortByBitrate(item.video_info.variants);
+                            for (let vidItem of _sorted) {
+                                let _vidDimensionsMatch = /vid\/(\d+)x(\d+)\//i.exec(vidItem.url);
+                                let _ratio = _vidDimensionsMatch ? (1 / (_vidDimensionsMatch[1] / _vidDimensionsMatch[2])) * 100 : 56.25;
+                                result.push({type: "video", url: vidItem.url, ratio: _ratio});
+                                break; // bail on the first match (highest res)
                             }
                         } else if (item.type === "photo" && item.media_url_https) {
                             result.push({type: "photo", url: item.media_url_https});
                         }
                     });
                     return result;
+
+                    function sortByBitrate(mediaArr) {
+                        let result = mediaArr.sort((a, b) => {
+                            if (a.bitrate < b.bitrate)
+                                return 1;
+                            else if (a.bitrate > b.bitrate)
+                                return -1;
+                            return 0;
+                        });
+                        return result;
+                    }
                 }
                 function tagifyTweetText(text) {
                     // try to parse our tags and text content into a DOM fragment
@@ -201,18 +211,18 @@ settingsLoadedEvent.addHandler(function() {
 
             compileTwitterMedia: function(parentLink, templateElem, tweetObj, postId, index) {
                 let mediaParent = templateElem.querySelector("#twitter-media-content");
-                if (!!tweetObj.tweetMediaItems && tweetObj.tweetMediaItems.length > 0) {
+                if (!isEmpty(tweetObj.tweetMediaItems) && tweetObj.tweetMediaItems.length > 0) {
                     // let appendMedia decide if a carousel is necessary and return an element
                     let mediaItems = parseMedia(tweetObj.tweetMediaItems);
-                    let mediaContainer = appendMedia(mediaItems, parentLink, postId, index, null, true);
+                    let mediaContainer = appendMedia(mediaItems, parentLink, postId, index, null, { twttrEmbed: true });
                     mediaParent.appendChild(mediaContainer);
                     mediaParent.classList.remove("hidden");
-                } else if (!!tweetObj.tweetQuoted && Object.entries(tweetObj.tweetQuoted.quotedMediaItems).length > 0) {
+                } else if (!isEmpty(tweetObj.tweetQuoted) && Object.entries(tweetObj.tweetQuoted.quotedMediaItems).length > 0) {
                     // include media items inside quoted tweets (if available)
                     let quotedMediaItems = parseMedia(tweetObj.tweetQuoted.quotedMediaItems);
                     templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
                     let quotedMediaParent = templateElem.querySelector("#twitter-quote-media-content");
-                    let mediaContainer = appendMedia(quotedMediaItems, parentLink, postId, index, null, true);
+                    let mediaContainer = appendMedia(quotedMediaItems, parentLink, postId, index, null, { twttrEmbed: true });
                     quotedMediaParent.appendChild(mediaContainer);
                     quotedMediaParent.classList.remove("hidden");
                 } else if (!!tweetObj.tweetQuoted) {
@@ -306,7 +316,7 @@ settingsLoadedEvent.addHandler(function() {
                             // detected media also gets included in the template
                             let _postMediaUrls = collectInstgrmMedia(_matchGQL);
                             let embedTarget = _template.querySelector("#instgrm_embed");
-                            let mediaContainer = appendMedia(_postMediaUrls, parentLink, postId, index, null, true);
+                            let mediaContainer = appendMedia(_postMediaUrls, parentLink, postId, index, null, { instgrmEmbed: true });
                             mediaContainer.classList.add("instgrm-embed");
                             // compile everything into our template and append to DOM once
                             embedTarget.appendChild(mediaContainer);

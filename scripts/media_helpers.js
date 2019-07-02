@@ -181,14 +181,16 @@ function mediaContainerInsert(elem, link, id, index) {
     toggleMediaLink(elem, link);
 }
 
-function appendMedia(src, link, postId, index, container, override) {
+function appendMedia(src, link, postId, index, container, overrides) {
     // compile our media items into a given container element
+    // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     var mediaElem = container != null ? container : document.createElement("div");
+    var { forceAppend, twttrEmbed, instgrmEmbed } = overrides;
     if (Array.isArray(src)) {
         var nodeList = [];
         for (var item of src) {
             // let collator know we're working on an Instagram post
-            if (container) { nodeList.push(createMediaElem(item, postId, index, true)); }
+            if (instgrmEmbed || twttrEmbed || container) { nodeList.push(createMediaElem(item, postId, index, true)); }
             else { nodeList.push(createMediaElem(item, postId, index)); }
         }
         for (var node of nodeList) {
@@ -203,7 +205,7 @@ function appendMedia(src, link, postId, index, container, override) {
         mediaElem.appendChild(createMediaElem(src, postId, index));
     }
     // only append if we're not being called to return an element
-    if (!override) {
+    if (forceAppend) {
         mediaElem.classList.add("medialoader", "hidden");
         mediaContainerInsert(mediaElem, link, postId, index);
     } else { return mediaElem; }
@@ -219,7 +221,7 @@ function appendMedia(src, link, postId, index, container, override) {
                 _elem.setAttribute("muted", "");
                 _elem.setAttribute("loop", "");
             } else {
-                _elem.setAttribute("controls", ""); // for Instagram
+                _elem.setAttribute("controls", ""); // for Instagram/Twitter
             }
         }
         else if (_staticExt)
