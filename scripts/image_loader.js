@@ -45,7 +45,7 @@ settingsLoadedEvent.addHandler(function()
                     /https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
                     return true;
 
-                return ImageLoader.getImageUrl(href).match(/\/[^:?]+\.(jpg|jpeg|png|gif|bmp|svg)$/i);
+                return ImageLoader.getImageUrl(href).match(/https?\:\/\/.*?\/.*?\.(?:jpe?g|webp|png|gif|bmp|svg)/i);
             },
 
             getImageUrl: function(href)
@@ -90,7 +90,8 @@ settingsLoadedEvent.addHandler(function()
                     return href.replace("?dl=0","") + "?dl=1";
 
                 // not a special case, just use the link's href
-                return href;
+                let _match = /https?\:\/\/(?:.*\.[\w]{2,})\/.*\/((?!.*\/)[\w\_\&]+\.(?:jpe?g|png|gif|webp)+)/i.exec(href);
+                return _match ? _match[0] : href;
             },
 
             toggleImage: function(e, index)
