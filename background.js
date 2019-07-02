@@ -226,8 +226,8 @@ browser.runtime.onMessage.addListener(function(request, sender)
     }
     else if (request.name === "chatViewFix") {
         // inject CVF monkey patch once upon page load to fix scroll bugs
-        browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
-        .then(res => { if (res) { browser.tabs.executeScript({ code: `
+        return browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
+        .then(res => { if (res) { browser.tabs.executeScript({ code: /*javascript*/`
             function clickItem(b, f) {
                 var d = window.frames.dom_iframe;
                 var e = d.document.getElementById("item_" + f);
@@ -279,7 +279,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
             var lightbox = window.basicLightbox.create('${request.elemText}');
             lightbox.show();
         `;
-        browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
+        return browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
         .then((res) => {
             if (res) {
                 browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" }).then(() => {
@@ -292,7 +292,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         .catch(err => console.log(err));
     }
     else if (request.name === "injectCarousel") {
-        let commonCode = `
+        let commonCode = /*javascript*/`
             var container = document.querySelector("${request.select}");
             var carouselOpts = {
                 autoHeight: true,
@@ -346,7 +346,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
             carouselOpts.autoHeight = false;
             var swiper = new Swiper(container, carouselOpts);
         `;
-        browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
+        return browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
         .then((res) => {
             if (res) {
                 browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" }).then(() => {
@@ -359,7 +359,7 @@ browser.runtime.onMessage.addListener(function(request, sender)
         .catch(err => console.log(err));
     }
     else if (request.name === "refreshPostByClick") {
-        browser.tabs.executeScript(null, { code: `
+        return browser.tabs.executeScript(null, { code: `
             function chat_onkeypress(b) {
                 if (!b) {
                     b = window.event;
@@ -400,6 +400,22 @@ browser.runtime.onMessage.addListener(function(request, sender)
 
     return Promise.resolve();
 });
+
+/*
+    Workaround for Twitter API's lack of support for cross-domain JSON fetch.
+    NOTE: we override only responses from "api.twitter.com" and sanitize the fetch result
+        with a fetch() helper in common.js so only non-HTML containing JSON is ever used.
+*/
+function responseListener(details) {
+    details.responseHeaders.push({ "name": "Access-Control-Allow-Headers", "value": "*" });
+    details.responseHeaders.push({ "name": "Access-Control-Allow-Methods", "value": "GET" });
+    return { responseHeaders: details.responseHeaders };
+}
+browser.webRequest.onHeadersReceived.removeListener(responseListener);
+browser.webRequest.onHeadersReceived.addListener(
+    responseListener,
+    { urls: [ "https://api.twitter.com/*" ] }, [ "blocking", "responseHeaders" ]
+);
 
 addContextMenus();
 

@@ -25,6 +25,14 @@
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    /* specific to twitter styling */
+    --twttr-bg-color: #15202b;
+    --twttr-bg-color2: #202224;
+    --twttr-fg-color: #ffffff;
+    --twttr-fg-link-color: #1d9ceb;
+    --twttr-bg-link-color: #8899a6;
+    --twttr-fg-border-color: #38444d;
+    --twttr-bg-border-color: #6b7d8c;
 }
 
 .media-container.responsive {

@@ -90,8 +90,8 @@ function xhrRequestLegacy(url, optionsObj) {
     // promisified legacy XHR helper using XMLHttpRequest()
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        xhr.open(!isEmpty(optionObj) ? optionsObj.method : "GET", url);
-        if (optionsObj && !isEmpty(optionsObj.headers)) {
+        xhr.open(!isEmpty(optionsObj) ? optionsObj.method : "GET", url);
+        if (!isEmpty(optionsObj) && optionsObj.headers) {
             for (var [key, val] of Object.entries(optionsObj.headers)) {
                 xhr.setRequestHeader(key, val);
             }
@@ -152,9 +152,10 @@ function xhrRequest(url, optionsObj) {
     });
 }
 
-function fetchSafe(url, optionsObj, instgrmBool) {
+function fetchSafe(url, optionsObj, modeObj) {
     // used for sanitizing some fetches (tries to auto-detect)
     // NOTE: HTML type gets sanitized to a document fragment
+    let { instgrmBool, htmlBool } = modeObj || {};
     return new Promise((resolve, reject) => {
         xhrRequest(url, !isEmpty(optionsObj) ? optionsObj : {})
         .then(res => {
@@ -166,21 +167,23 @@ function fetchSafe(url, optionsObj, instgrmBool) {
             try {
                 if (instgrmBool) {
                     // special case for instagram graphql parsing
-                    var likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(text);
-                    var instgrmGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(text);
+                    let likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(text);
+                    let instgrmGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(text);
                     if (instgrmGQL) {
-                        var parsedLikes = likesMatch && likesMatch[1];
-                        var parsedGQL = instgrmGQL && JSON.parse(instgrmGQL[1]);
+                        let parsedLikes = likesMatch && likesMatch[1];
+                        let parsedGQL = instgrmGQL && JSON.parse(instgrmGQL[1]);
                         resolve(safeJSON({ likes: parsedLikes, gqlData: parsedGQL }));
                     }
                     reject(false);
                 }
                 else {
-                    var unsafeJSON = JSON.parse(text);
+                    let unsafeJSON = JSON.parse(text);
                     resolve(safeJSON(unsafeJSON));
                 }
             } catch {
-                if (isHTML(text))
+                if (htmlBool && text)
+                    resolve(DOMPurify.sanitize(text)); // caution!
+                else if (isHTML(text))
                     resolve(sanitizeToFragment(text));
                 else
                     resolve(true); // be safe here

@@ -43,8 +43,7 @@ function getIframeDimensions(elem) {
     var _ref = elem.querySelector(".iframe-container iframe") ||
                     elem.querySelector(".yt-container iframe") ||
                     elem.querySelector(".twitch-container iframe") ||
-                    elem.querySelector(".instgrm-container") ||
-                    (elem.classList != null && elem.classList.contains("tweet-container") && elem);
+                    elem.querySelector(".instgrm-container");
     var _width = _ref && _ref.width != null && _ref.width;
     var _height = _ref && _ref.height != null && _ref.height;
     return { width: _width, height: _height, ref: _ref };
@@ -80,12 +79,16 @@ function toggleMediaItem(link, postId, index) {
 
     // pretty aggressive way to handle stopping an iframe player when toggling the container
     var encapMediaObj = getIframeDimensions(_embed);
+    var embedContainer = null;
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
         var altContainer = true /*getSetting("enabled_scripts").contains("alternate_embed_style")*/ && container.parentNode;
-        var embed = (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
-                    encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container")) ?
-                    encapMediaObj.ref.parentNode.parentNode : encapMediaObj.ref;
+        if (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
+            encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container"))
+            embedContainer = encapMediaObj.ref.parentNode.parentNode;
+        else
+            embedContainer = encapMediaObj.ref;
+
         if (!!altContainer)
             altContainer.removeChild(container);
         else
@@ -233,16 +236,23 @@ function appendMedia(src, link, postId, index, container, override) {
  *  Misc. Functions
  */
 
-function insertCommand(elem, injectable, id, override) {
+function insertScript(elem, { filePath, code }, id, overwrite) {
+    // insert a script that executes synchronously (caution!)
+    var _elem = elem ? elem : document.getElementsByTagName("head")[0];
     var _script = document.getElementById(id);
-    if (!!id && !override && document.getElementById(id) != null) { return; }
-    else if (override && !!_script) { _script.parentNode.removeChild(_script); }
-    // insert a one-way script that executes synchronously (caution!)
-    var _script = document.createElement("script");
-    if (!!id) { _script.setAttribute("id", id); }
-    _script.textContent = `${injectable}`;
-    elem.appendChild(_script);
+    if (id && !overwrite && document.getElementById(id) != null) { return; }
+    else if (overwrite && _script) { _script.parentNode.removeChild(_script); }
+    _script = document.createElement("script");
+    if (id) { _script.setAttribute("id", id); }
+    if (code && code.length > 0)
+        _script.textContent = code;
+    else if (filePath && filePath.length > 0)
+        _script.setAttribute("src", filePath);
+    else
+        throw Error("Must pass a file path or code content in string format!");
+    _elem.appendChild(_script);
 }
+
 function insertExpandoButton(link, postId, index) {
     // abstracted helper for appending an expando button to a link in a post
     if (link.querySelector("div.expando") != null) { return; }
@@ -316,6 +326,7 @@ function attachChildEvents(elem, id, index) {
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
         var swiperEl = closestParent(childElems[0], { cssSelector: ".swiper-wrapper" });
         var instgrmEl = closestParent(childElems[0], { cssSelector: ".instgrm-embed" });
+        var twttrEl = closestParent(childElems[0], { cssSelector: ".twitter-container" });
         childElems.forEach(item => {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
@@ -337,7 +348,7 @@ function attachChildEvents(elem, id, index) {
                 }
 
                 // don't attach click-to-hide events to swiper slides
-                ((swiperEl, instgrmEl) => {
+                ((swiperEl, instgrmEl, twttrEl) => {
                     item.addEventListener('mousedown', e => {
                         var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         var link = getLinkRef(embed);
@@ -347,13 +358,13 @@ function attachChildEvents(elem, id, index) {
                             if (e.target.nodeName === "VIDEO") { e.target.pause(); }
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
-                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null) {
+                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null || twttrEl == null) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);
                         }
                     });
-                })(swiperEl, instgrmEl);
+                })(swiperEl, instgrmEl, twttrEl);
             }
         });
     }
@@ -363,6 +374,11 @@ function triggerReflow(elem) {
     $(elem).ready(function() {
         // trigger a resize via jQuery ready() to recalc the carousel
         var body = document.getElementsByTagName("body")[0];
-        insertCommand(body, `window.dispatchEvent(new Event('resize'));`, "reflow-wjs", true);
+        insertScript(
+            body,
+            { code: "window.dispatchEvent(new Event('resize'));" },
+            "reflow-wjs",
+            true
+        );
     });
 }
