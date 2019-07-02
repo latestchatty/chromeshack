@@ -13,7 +13,7 @@ ChromeShack =
                             var source_id = (!!elem && elem.id != null) && elem.id;
 
                             // starts with "root", they probably refreshed the thread
-                            if (node.classList != null && node.classList.contains("root"))
+                            if (node.classList != null && objContains("root", node.classList))
                                 ChromeShack.processFullPosts(elem);
 
                             // starts with "item_", they probably clicked on a reply

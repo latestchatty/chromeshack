@@ -52,7 +52,7 @@ function getIframeDimensions(elem) {
 
 function locateContainer(link, postId, index) {
     // resolve our link container for media embedding (or create one)
-    var _isAlternateStyle = true; //getSetting("enabled_scripts").contains("alternate_embed_style");
+    var _isAlternateStyle = true; //objContains("alternate_embed_style", getSetting("enabled_scripts"));
     var container = _isAlternateStyle ?
         link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
         link.parentNode.querySelector("div.media-container");
@@ -82,9 +82,9 @@ function toggleMediaItem(link, postId, index) {
     var embedContainer = null;
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
-        var altContainer = true /*getSetting("enabled_scripts").contains("alternate_embed_style")*/ && container.parentNode;
-        if (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
-            encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container"))
+        var altContainer = true /*objContains("alternate_embed_style", getSetting("enabled_scripts"))*/ && container.parentNode;
+        if (objContains("iframe-spacer", encapMediaObj.ref.parentNode.parentNode.classList) ||
+            objContains("instgrm-container", encapMediaObj.ref.parentNode.parentNode.classList))
             embedContainer = encapMediaObj.ref.parentNode.parentNode;
         else
             embedContainer = encapMediaObj.ref;
@@ -111,9 +111,9 @@ function toggleMediaLink(embedElem, link, override) {
     }
     else if (embedElem) {
         if (embedElem.nodeName === "IMG" || embedElem.nodeName === "VIDEO" ||
-            embedElem.classList.contains("yt-container") ||
-            embedElem.classList.contains("twitch-container") ||
-            embedElem.classList.contains("iframe-container"))
+            objContains("yt-container", embedElem.classList) ||
+            objContains("twitch-container", embedElem.classList) ||
+            objContains("iframe-container", embedElem.classList))
             embedElem.parentNode.classList.toggle("hidden");
         else
             embedElem.classList.toggle("hidden");
@@ -131,7 +131,7 @@ function toggleVideoState(elem, override) {
     if (elem == null) return;
     // ignore carousel children when autoplaying
     var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video:not(.swiper-slide)");
-    if (override || video && !video.classList.contains("hidden")) {
+    if (override || video && !objContains("hidden", video.classList)) {
        if (video.paused || override) {
             video.currentTime = 0;
             video.play();
@@ -144,7 +144,7 @@ function toggleVideoState(elem, override) {
 
 function toggleExpandoButton(expando) {
     // abstracted helper for toggling the state of a link-expando button from a post
-    if (expando && !expando.classList.contains("collapso")) {
+    if (expando && !objContains("collapso", expando.classList)) {
         // override is the expando 'button' element
         expando.innerText = "\ue90d"; // circle-arrow-down
         return expando.classList.add("collapso");
@@ -162,14 +162,14 @@ function mediaContainerInsert(elem, link, id, index) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = locateContainer(link, id, index);
     var _hasMedia = container != null && getEmbedRef(link);
-    var _isExpando = link.classList != null && link.classList.contains("expando");
+    var _isExpando = link.classList != null && objContains("expando", link.classList);
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
 
     // don't put click events on the carousel
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
-    if (true /*getSetting("enabled_scripts").contains("alternate_embed_style")*/ && !_hasMedia) {
+    if (true /*objContains("alternate_embed_style", getSetting("enabled_scripts"))*/ && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
     } else if (!_hasMedia) {
@@ -324,9 +324,11 @@ function attachChildEvents(elem, id, index) {
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
-        var swiperEl = closestParent(childElems[0], { cssSelector: ".swiper-wrapper" });
-        var instgrmEl = closestParent(childElems[0], { cssSelector: ".instgrm-embed" });
-        var twttrEl = closestParent(childElems[0], { cssSelector: ".twitter-container" });
+        // list of excluded containers
+        var swiperEl = childElems[0].closest(".swiper-wrapper");
+        var instgrmEl = childElems[0].closest(".instgrm-embed");
+        var twttrEl = childElems[0].closest(".twitter-container");
+
         childElems.forEach(item => {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
@@ -347,7 +349,7 @@ function attachChildEvents(elem, id, index) {
                     });
                 }
 
-                // don't attach click-to-hide events to swiper slides
+                // don't attach click-to-hide events to excluded containers
                 ((swiperEl, instgrmEl, twttrEl) => {
                     item.addEventListener('mousedown', e => {
                         var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
@@ -358,7 +360,7 @@ function attachChildEvents(elem, id, index) {
                             if (e.target.nodeName === "VIDEO") { e.target.pause(); }
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
-                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null || twttrEl == null) {
+                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null && twttrEl == null) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);

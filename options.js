@@ -98,7 +98,7 @@ function showNotifications(enabled)
 function showHighlightUsers(groups)
 {
     var highlightGroups = document.getElementById("highlight_groups");
-    highlightGroups.removeChildren();
+    removeChildren(highlightGroups);
 
     for (var i = 0; i < groups.length; i++)
     {
@@ -368,7 +368,7 @@ function addUserFilter(event) {
     event.preventDefault();
     var usernameTxt = document.getElementById('new_user_filter_text');
     var usersLst = document.getElementById('filtered_users');
-    var username = usernameTxt.value.trim().toLowerCase();
+    var username = superTrim(usernameTxt.value).toLowerCase();
     if (username == '') {
         alert('Please enter a username to filter.');
         return;

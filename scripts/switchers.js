@@ -2,7 +2,7 @@
  * Created by wzutz on 12/9/13.
  */
 settingsLoadedEvent.addHandler(function () {
-    if (getSetting("enabled_scripts").contains("switchers")) {
+    if (objContains("switchers", getSetting("enabled_scripts"))) {
         Switchers =
         {
             offenders: [

@@ -177,7 +177,7 @@
     }
 
     settingsLoadedEvent.addHandler(function() {
-        if (getSetting("enabled_scripts").contains("highlight_pending_new_posts")) {
+        if (objContains("highlight_pending_new_posts", getSetting("enabled_scripts"))) {
             install();
         }
     });

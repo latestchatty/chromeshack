@@ -1,6 +1,6 @@
 // Twitter and Instagram embedding support (WombatFromHell)
 settingsLoadedEvent.addHandler(function() {
-    if (getSetting("enabled_scripts").contains("embed_socials")) {
+    if (objContains("embed_socials", getSetting("enabled_scripts"))) {
         EmbedSocials = {
             getLinks: function(item) {
                 // don't retrace our DOM nodes (use relative positions of event items)
@@ -48,7 +48,7 @@ settingsLoadedEvent.addHandler(function() {
                     let socialId = parsedPost.id;
                     let userName = parsedPost.user;
                     // adjust relative node position based on expando state
-                    let _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
                     let link = _expandoClicked ? e.target.parentNode : e.target;
                     let _postBody = link.parentNode;
                     let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");

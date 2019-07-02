@@ -82,7 +82,7 @@ settingsLoadedEvent.addHandler(function()
             raw_time_string = raw_time_string.substring(0,pos) + " " + raw_time_string.substr(pos);
 
                 // timezone needs to be in parentheses
-            var zone = raw_time_string.substring(pos+4).trim();
+            var zone = superTrim(raw_time_string.substring(pos+4));
             raw_time_string = raw_time_string.substring(0,pos+4) + "(" + zone + ")";
 
 

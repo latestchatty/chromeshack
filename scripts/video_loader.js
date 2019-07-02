@@ -1,6 +1,6 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("video_loader"))
+    if (objContains("video_loader", getSetting("enabled_scripts")))
     {
         VideoLoader =
         {
@@ -93,7 +93,7 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
-                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");

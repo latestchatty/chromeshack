@@ -1,7 +1,7 @@
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("new_comment_highlighter"))
+    if (objContains("new_comment_highlighter", getSetting("enabled_scripts")))
     {
         NewCommentHighlighter =
         {

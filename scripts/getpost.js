@@ -1,6 +1,6 @@
 // Inspired by dodob's old postget script.
 settingsLoadedEvent.addHandler(function() {
-    if (getSetting("enabled_scripts").contains("getpost")) {
+    if (objContains("getpost", getSetting("enabled_scripts"))) {
         GetPost = {
             getLinks: function(item) {
                 var links = item.querySelectorAll(".sel .postbody > a");
@@ -29,7 +29,7 @@ settingsLoadedEvent.addHandler(function() {
             getPost: function(e, index) {
                 if (e.button == 0) {
                     e.preventDefault();
-                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");

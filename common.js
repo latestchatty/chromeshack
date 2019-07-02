@@ -60,20 +60,19 @@ function insertStyle(css, containerName)
     document.getElementsByTagName("head")[0].appendChild(style);
 }
 
-Array.prototype.contains = function(obj)
+function objContains(needle, haystack)
 {
-    var i = this.length;
+    var i = haystack.length;
     while (i--)
     {
-        if (this[i] == obj)
+        if (haystack[i] == needle)
             return true;
     }
     return false;
 }
 
-String.prototype.trim = function()
-{
-    return this.replace(/^\s+|\s+$/g,"");
+function superTrim(string) {
+    return string.replace(/^\s+|\s+$/g,"");
 }
 
 function isEmpty(obj)
@@ -220,7 +219,7 @@ function getCookieValue(name, defaultValue)
     var cookies = document.cookie.split(';');
     for (var i = 0; i < cookies.length; i++)
     {
-        var cookie = cookies[i].trim().split('=');
+        var cookie = superTrim(cookies[i]).split('=');
         if (cookie[0] == name)
         {
             ret = cookie[1];
@@ -340,39 +339,9 @@ function convertUrlToLink(text)
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target=\"_blank\">$1</a>');
 }
 
-HTMLElement.prototype.removeChildren = function()
-{
-    // https://stackoverflow.com/a/42658543
-    while (this.hasChildNodes()) this.removeChild(this.lastChild);
-}
-
-function closestParent(elem, { cssSelector, indexSelector }) {
-    if (typeof jQuery === "function" && elem instanceof jQuery) { elem = elem[0]; }
-    if (!!elem.parentNode && !!elem.parentNode.attributes) {
-        // search backwards in the DOM for the closest parent whose attributes match a selector
-        for(; elem && elem !== document; elem = elem.parentNode) {
-            for (var attrChild of Array.from(elem.attributes || {})) {
-                if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
-                    return elem;
-                else if (cssSelector && !!elem) {
-                    // slower css regex selector method (can match the elem as well)
-                    var match = elem.querySelector(`:scope ${cssSelector}`);
-                    if (!!match) return match;
-                }
-            }
-        }
-    } else if (!!elem.attributes) {
-        // this is a top level node, check it anyway
-        for (var attrChild of Array.from(elem.attributes)) {
-            if (indexSelector && !!elem && attrChild.nodeValue.indexOf(indexSelector) > -1)
-                return elem;
-            else if (cssSelector && !!elem) {
-                // slower css regex selector method (can match the elem as well)
-                var match = elem.querySelector(`:scope ${cssSelector}`);
-                if (!!match) return match;
-            }
-        }
-    }
+function removeChildren(elem)
+{// https://stackoverflow.com/a/42658543
+    while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 }
 
 function stringToUtf8ByteArray(text) {

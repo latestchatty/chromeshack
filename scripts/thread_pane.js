@@ -2,7 +2,7 @@ let refreshThreadPane;
 
 (() => {
     refreshThreadPane = () => {
-        if (getSetting('enabled_scripts').contains('thread_pane')) {
+        if (objContains('thread_pane', getSetting('enabled_scripts'))) {
             try {
                 install();
             } catch (e) {
@@ -116,7 +116,7 @@ let refreshThreadPane;
 
             $cardDiv.click(() => {
                 const $li = $(`li#item_${mostRecentPostId}`);
-                const li_root = closestParent($li, { indexSelector: "root_" });
+                const li_root = $li.closest("[id^='root_']");
                 uncapThread(threadId);
 
                 $opDiv.removeClass('cs_flash_animation');
@@ -159,7 +159,7 @@ let refreshThreadPane;
         // make sure we only grab the text in the root element, because the user popup menu may be nested
         // there as well
         return $opDiv.find('div.postmeta span.author span.user a').contents().filter(function() {
-            return this.nodeType == 3; 
+            return this.nodeType == 3;
         })[0].nodeValue;
     }
 

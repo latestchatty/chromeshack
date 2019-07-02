@@ -21,7 +21,7 @@ settingsLoadedEvent.addHandler(function()
                     show.addEventListener("click", function() { Collapse.show(id); });
 
                     // this thread should be collapsed
-                    if (Collapse.collapsed.contains(id))
+                    if (objContains(id, Collapse.collapsed))
                     {
                         root.className += " collapsed";
                         show.className = "showpost";

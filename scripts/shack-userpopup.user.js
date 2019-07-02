@@ -228,7 +228,7 @@
     }
 
     settingsLoadedEvent.addHandler(function() {
-        if (getSetting("enabled_scripts").contains("use_winchatty_search")) {
+        if (objContains("use_winchatty_search", getSetting("enabled_scripts"))) {
             $('.tog-search').prop('href', 'https://winchatty.com').prop('target', '_blank');
             $(".modal.search").remove();
         }

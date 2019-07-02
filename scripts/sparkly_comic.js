@@ -1,6 +1,6 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("sparkly_comic"))
+    if (objContains("sparkly_comic", getSetting("enabled_scripts")))
     {
         SparklyComic =
         {

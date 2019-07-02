@@ -7,7 +7,7 @@
 //
 
 settingsLoadedEvent.addHandler(function() {
-    if (getSetting("enabled_scripts").contains("nws_incognito"))
+    if (objContains("nws_incognito", getSetting("enabled_scripts")))
     {
         NwsIncognito =
         {

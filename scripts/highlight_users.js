@@ -1,6 +1,6 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("highlight_users"))
+    if (objContains("highlight_users", getSetting("enabled_scripts")))
     {
         HighlightUsers =
         {
@@ -49,8 +49,8 @@ settingsLoadedEvent.addHandler(function()
                     //"169401", // LoioshDwaggie (became mod Aug 8 2014) (status unknown post modpocopalypse)
                     //"175142", // eonix (became mod Aug 8 2014) (status unknown post modpocopalypse)
                     //"126826"  // woddemandred (became mod Aug 8 2014) (status unknown post modpocopalypse)
-                    
-                    // Dead mods                
+
+                    // Dead mods
                     //"7438"  , // enigmatic (service ended Aug 01 2012?)
                     //"169489", // s[genjuro]s (service ended Feb 02 2012)
                     //"5278"  , // lacker (service ended Feb 02 2012)
@@ -243,7 +243,7 @@ settingsLoadedEvent.addHandler(function()
                 processPostEvent.removeHandler(HighlightUsers.gatherOrignalPosterCss);
                 fullPostsCompletedEvent.removeHandler(HighlightUsers.installCss);
             }
-        }       
+        }
 
         HighlightUsers.install();
         fullPostsCompletedEvent.addHandler(HighlightUsers.installCss);

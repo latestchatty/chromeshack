@@ -10,10 +10,10 @@
     function getUserId(username) {
         // Look for a post on this page from this username.
         var classPrefix = 'olauthor_';
-        username = username.trim().toLowerCase();
+        username = superTrim(username).toLowerCase();
         var userSpans = document.querySelectorAll('span.oneline_user');
         for (var i = 0; i < userSpans.length; i++) {
-            var spanText = userSpans[i].innerHTML.trim().toLowerCase();
+            var spanText = superTrim(userSpans[i].innerHTML).toLowerCase();
             if (username == spanText) {
                 var parentDiv = userSpans[i].parentNode;
                 if (parentDiv.tagName !== 'DIV') {
@@ -79,8 +79,8 @@
     }
 
     settingsLoadedEvent.addHandler(function() {
-        if (getSetting("enabled_scripts").contains("custom_user_filters")) {
+        if (objContains("custom_user_filters", getSetting("enabled_scripts"))) {
             install();
         }
-    });    
+    });
 })();

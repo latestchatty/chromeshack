@@ -1,6 +1,6 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("dinogegtik"))
+    if (objContains("dinogegtik", getSetting("enabled_scripts")))
     {
         DinoGegtik =
         {
