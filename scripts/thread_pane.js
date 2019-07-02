@@ -78,7 +78,15 @@ let refreshThreadPane;
             }
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find('a').replaceWith(function() { return $("<span class=\"cs_thread_pane_link\">" + $(this).html() + "</span>"); });
+            $rootPostBodyDiv.find('a').replaceWith(function() {
+                // exclude expando children
+                return $(`
+                    <span class="cs_thread_pane_link">
+                        <a href="${this.href}">${this.innerText.replace(/[\ue90d\ue907]+/, "")}</a>
+                    </span>`);
+            });
+            // remove media containers from Thread Pane parent
+            $rootPostBodyDiv.find('.media-container').remove();
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
