@@ -238,7 +238,7 @@ function appendMedia(src, link, postId, index, container, overrides) {
  *  Misc. Functions
  */
 
-function insertScript(elem, { filePath, code }, id, overwrite) {
+function insertScript({ elem, filePath, code, id, overwrite}) {
     // insert a script that executes synchronously (caution!)
     var _elem = elem ? elem : document.getElementsByTagName("head")[0];
     var _script = document.getElementById(id);
@@ -249,7 +249,7 @@ function insertScript(elem, { filePath, code }, id, overwrite) {
     if (code && code.length > 0)
         _script.textContent = code;
     else if (filePath && filePath.length > 0)
-        _script.setAttribute("src", filePath);
+        _script.setAttribute("src", browser.runtime.getURL(filePath));
     else
         throw Error("Must pass a file path or code content in string format!");
     _elem.appendChild(_script);
@@ -377,12 +377,11 @@ function attachChildEvents(elem, id, index) {
 function triggerReflow(elem) {
     $(elem).ready(function() {
         // trigger a resize via jQuery ready() to recalc the carousel
-        var body = document.getElementsByTagName("body")[0];
-        insertScript(
-            body,
-            { code: "window.dispatchEvent(new Event('resize'));" },
-            "reflow-wjs",
-            true
-        );
+        insertScript({
+            url: document.getElementsByTagName("body")[0],
+            code: "window.dispatchEvent(new Event('resize'));",
+            id: "reflow-wjs",
+            overwrite: true
+        });
     });
 }

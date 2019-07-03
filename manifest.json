@@ -61,7 +61,8 @@
             "scripts/options_link.js",
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js",
-            "scripts/post_style.js"
+            "scripts/post_style.js",
+            "scripts/emoji_poster.js"
         ],
         "css": [
             "styles/chromeshack.css",

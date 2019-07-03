@@ -404,3 +404,17 @@ div.article-chatty span.lol-tags {
 div.read-only-tags {
     height: 1px;
 }
+
+/* emoji tagline on the postbox form */
+#postform fieldset p.emoji-tagline {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 12px;
+    margin: 0 !important;
+}
+p.emoji-tagline > span {
+    font-weight: bold;
+    font-style: italic;
+    padding: 0 0.5em 0 0.5em;
+}

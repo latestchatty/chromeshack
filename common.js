@@ -229,22 +229,14 @@ function getCookieValue(name, defaultValue)
     return ret;
 }
 
-function removeUtf16SurrogatePairs(str) {
-    // shacknews doesn't support these and will remove them without counting them towards the post preview limit
-    // https://stackoverflow.com/a/22664154
-    return str.replace(/([\uD800-\uDBFF][\uDC00-\uDFFF])/g, '');
-}
-
-function generatePreview(text) {
-    var preview = removeUtf16SurrogatePairs(text);
-
+function generatePreview(postText) {
     // simple replacements
-    preview = preview.replace(/&/g, "&amp;");
-    preview = preview.replace(/</g, "&lt;");
-    preview = preview.replace(/>/g, "&gt;");
-    preview = preview.replace(/\r\n/g, "<br>");
-    preview = preview.replace(/\n/g, "<br>");
-    preview = preview.replace(/\r/g, "<br>");
+    //postText = postText.replace(/&/g, "&amp;"); // breaks Astral encoding
+    postText = postText.replace(/</g, "&lt;");
+    postText = postText.replace(/>/g, "&gt;");
+    postText = postText.replace(/\r\n/g, "<br>");
+    postText = postText.replace(/\n/g, "<br>");
+    postText = postText.replace(/\r/g, "<br>");
 
     var complexReplacements = {
         'red': {'from': ['r{','}r'], 'to': ['<span class="jt_red">','</span>']},
@@ -268,11 +260,11 @@ function generatePreview(text) {
     };
 
     // replace matching pairs first
-    for(var ix in complexReplacements) {
-        if(complexReplacements.hasOwnProperty(ix)) {
+    for (var ix in complexReplacements) {
+        if (complexReplacements.hasOwnProperty(ix)) {
             var rgx = new RegExp(complexReplacements[ix].from[0] + '(.*?)' + complexReplacements[ix].from[1], 'g');
-            while(preview.match(rgx) !== null) {
-                preview = preview.replace(rgx, complexReplacements[ix].to[0] + '$1' + complexReplacements[ix].to[1]);
+            while (postText.match(rgx) !== null) {
+                postText = postText.replace(rgx, complexReplacements[ix].to[0] + '$1' + complexReplacements[ix].to[1]);
             }
         }
     }
@@ -281,17 +273,16 @@ function generatePreview(text) {
     // this still has (at least) one bug, the shack code does care about nested tag order:
     // b[g{bold and green}g]b <-- correct
     // b[g{bold and green]b}g <-- }g is not parsed by the shack code
-    for(var ix in complexReplacements) {
-        if(complexReplacements.hasOwnProperty(ix)) {
+    for (var ix in complexReplacements) {
+        if (complexReplacements.hasOwnProperty(ix)) {
             var rgx = new RegExp(complexReplacements[ix].from[0], 'g');
-            while(preview.match(rgx) !== null) {
-                preview = preview.replace(rgx, complexReplacements[ix].to[0]);
-                preview = preview + complexReplacements[ix].to[1];
+            while (postText.match(rgx) !== null) {
+                postText = postText.replace(rgx, complexReplacements[ix].to[0]);
+                postText = postText + complexReplacements[ix].to[1];
             }
         }
     }
-
-    return convertUrlToLink(preview);
+    return convertUrlToLink(postText);
 }
 
 function debounce(cb, delay)
