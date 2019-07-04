@@ -58,7 +58,7 @@ settingsLoadedEvent.addHandler(function() {
                     if (socialType === 1 && socialId) {
                         EmbedSocials.createTweet(link, socialId, _postId, index);
                     } else if (socialType === 2 && socialId) {
-                        EmbedSocials.parseInstagram(link, socialId, _postId, index);
+                        EmbedSocials.createInstagram(link, socialId, _postId, index);
                     }
                 }
             },
@@ -242,90 +242,49 @@ settingsLoadedEvent.addHandler(function() {
             /*
                 Instagram implementation
             */
-            createInstgrmTemplate: function(instgrmObj, postId, index) {
-                let container = document.createElement("div");
-                container.id = `instgrm-container_${postId}-${index}`;
-                container.setAttribute("class", "instgrm-container hidden");
-                // use a template for html injection
-                if (instgrmObj) {
-                    container.innerHTML = /*html*/`
-                        <div class="instgrm-header">
-                            <a href="https://instagr.am/${instgrmObj.authorName}/" id="instgrm_profile_a">
-                                <img id="instgrm_author_pic" class="circle" src="${instgrmObj.authorPic}">
-                            </a>
-                            <div class="instgrm-postpic-line">
-                                <a href="https://instagr.am/${instgrmObj.authorName}/" id="instgrm_profile_b">
-                                    <span id="instgrm_author_nick">${instgrmObj.authorName}</span>
-                                </a>
-                                <a href="#" id="instgrm_post_link">
-                                    <span id="instgrm_post_details">${instgrmObj.likes}</span>
-                                </a>
-                            </div>
-                            <div class="instgrm-logo">
-                                <a href="http://www.instagram.com/">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                </a>
-                            </div>
-                        </div>
-                        <div id="instgrm_embed"></div>
-                        <div id="instgrm-caption">${instgrmObj.postCaption}</div>
-                        <div class="instgrm-footer">
-                            <span>A post shared by</span>
-                            <a id="instgrm_post_url" href="${instgrmObj.postUrl}">
-                                <span id="instgrm_postlink_name">${instgrmObj.authorFullName}</span>
-                            </a>
-                            <span id="instgrm_post_author">(@${instgrmObj.authorName})</span>
-                            <span id="instgrm_post_timestamp">on ${instgrmObj.postTimestamp}</span>
-                        </div>
-                    `;
-                    let fragment = document.createDocumentFragment();
-                    fragment.appendChild(container);
-                    return fragment;
-                }
-                return null;
-            },
-
-            parseInstagram: function(parentLink, socialId, postId, index) {
-                let postUrl = `https://www.instagram.com/p/${socialId}/`;
+            createInstagram: async function(parentLink, socialId, postId, index) {
                 // if we have an instagram postId use it to toggle our element rather than query
                 let _target = parentLink.parentNode.querySelector(`#instgrm-container_${postId}-${index}`);
                 if (_target) { return _target.classList.toggle("hidden"); }
 
-                browser.runtime.sendMessage({ name: "corbFetch", url: postUrl, ovrBool: { instgrmBool: true } })
-                .then(response => {
-                    // sanitized in common.js!
-                    let _matchGQL = response && response.gqlData.shortcode_media;
-                    let _likes = response && response.likes;
-                    // let _isPrivate = _matchGQL && _matchGQL.owner.is_private;
-                    if (_matchGQL) {
-                        let instgrmObj = {
-                            likes: _likes,
-                            authorPic: _matchGQL.owner.profile_pic_url,
-                            authorName: _matchGQL.owner.username,
-                            authorFullName: _matchGQL.owner.full_name,
-                            postTimestamp: getDate(_matchGQL.taken_at_timestamp),
-                            postUrl: `https://instagr.am/p/${_matchGQL.shortcode}/`,
-                            postCaption: tagifyInstgrmContent(
-                                !!_matchGQL.edge_media_to_caption.edges[0] ?
-                                _matchGQL.edge_media_to_caption.edges[0].node.text :
-                                _matchGQL.edge_media_to_caption
-                            ).outerHTML
-                        };
-                        let _template = EmbedSocials.createInstgrmTemplate(instgrmObj, postId, index);
-                        if (!!_template) {
-                            // detected media also gets included in the template
-                            let _postMediaUrls = collectInstgrmMedia(_matchGQL);
-                            let embedTarget = _template.querySelector("#instgrm_embed");
-                            let mediaContainer = appendMedia(_postMediaUrls, parentLink, postId, index, null, { instgrmEmbed: true });
-                            mediaContainer.classList.add("instgrm-embed");
-                            // compile everything into our template and append to DOM once
-                            embedTarget.appendChild(mediaContainer);
-                            mediaContainerInsert(_template, parentLink, postId, index);
-                        } else {
-                            throw Error(`Something went wrong when constructing Instagram template for: ${parentLink}`);
+                let _instgrmObj = await EmbedSocials.fetchInstagramData(socialId);
+                let _template = EmbedSocials.renderInstagram(_instgrmObj, parentLink, postId, index);
+                mediaContainerInsert(_template, parentLink, postId, index);
+            },
+
+            fetchInstagramData: async function(socialId) {
+                let postUrl = `https://www.instagram.com/p/${socialId}/`;
+                let result = await new Promise((resolve, reject) =>
+                    browser.runtime.sendMessage({ name: "corbFetch", url: postUrl, ovrBool: { instgrmBool: true } })
+                        .then(response => {
+                            // sanitized in common.js!
+                            let _matchGQL = response && response.gqlData.shortcode_media;
+                            let _metaViews = response && response.metaViews;
+                            // let _isPrivate = _matchGQL && _matchGQL.owner.is_private;
+                            if (_matchGQL) {
+                                let instgrmObj = {
+                                    metaViews: _metaViews,
+                                    authorPic: _matchGQL.owner.profile_pic_url,
+                                    authorName: _matchGQL.owner.username,
+                                    authorFullName: _matchGQL.owner.full_name,
+                                    postTimestamp: getDate(_matchGQL.taken_at_timestamp),
+                                    postUrl: `https://instagr.am/p/${_matchGQL.shortcode}/`,
+                                    postCaption: tagifyInstgrmContent(
+                                        !!_matchGQL.edge_media_to_caption.edges[0] ?
+                                        _matchGQL.edge_media_to_caption.edges[0].node.text :
+                                        _matchGQL.edge_media_to_caption
+                                    ).outerHTML,
+                                    postMedia: collectInstgrmMedia(_matchGQL)
+                                };
+                                resolve(instgrmObj);
+                            } else {
+                                alert("This account or post has been made private or cannot be found!");
+                                reject(false);
+                            }
                         }
-                    } else { return alert("This account or post has been made private or cannot be found!"); }
-                });
+                ));
+                return result;
+
                 /* support funcs for Instagram element construction */
                 function collectInstgrmMedia(parsedGQL) {
                     let collector = [];
@@ -364,6 +323,53 @@ settingsLoadedEvent.addHandler(function() {
                     _date.setUTCSeconds(timestamp);
                     // we should have our relative local time now
                     return `${_date.toLocaleString().split(',')[0]} ${_date.toLocaleTimeString()}`;
+                }
+            },
+
+            renderInstagram: function(instgrmObj, parentLink, postId, index) {
+                let fragment = document.createDocumentFragment();
+                let container = document.createElement("div");
+                container.id = `instgrm-container_${postId}-${index}`;
+                container.setAttribute("class", "instgrm-container hidden");
+                if (instgrmObj) {
+                    container.innerHTML = /*html*/`
+                        <div class="instgrm-header">
+                            <a href="https://instagr.am/${instgrmObj.authorName}/" id="instgrm_profile_a">
+                                <img id="instgrm_author_pic" class="circle" src="${instgrmObj.authorPic}">
+                            </a>
+                            <div class="instgrm-postpic-line">
+                                <a href="https://instagr.am/${instgrmObj.authorName}/" id="instgrm_profile_b">
+                                    <span id="instgrm_author_nick">${instgrmObj.authorName}</span>
+                                </a>
+                                <span id="instgrm_post_details">${instgrmObj.metaViews || ""}</span>
+                            </div>
+                            <div class="instgrm-logo">
+                                <a href="${instgrmObj.postUrl}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                        <div id="instgrm_embed"></div>
+                        <div id="instgrm-caption">${instgrmObj.postCaption}</div>
+                        <div class="instgrm-footer">
+                            <span>A post shared by</span>
+                            <a id="instgrm_post_url" href="${instgrmObj.postUrl}">
+                                <span id="instgrm_postlink_name">${instgrmObj.authorFullName}</span>
+                            </a>
+                            <span id="instgrm_post_author">(@${instgrmObj.authorName})</span>
+                            <span id="instgrm_post_timestamp">on ${instgrmObj.postTimestamp}</span>
+                        </div>
+                    `;
+
+                    fragment.appendChild(container);
+                    // detected media also gets included in the template
+                    let _embedTarget = fragment.querySelector("#instgrm_embed");
+                    let _mediaContainer = appendMedia(instgrmObj.postMedia, parentLink, postId, index, null, { instgrmEmbed: true });
+                    _mediaContainer.classList.add("instgrm-embed");
+                    _embedTarget.appendChild(_mediaContainer);
+                    return fragment;
+                } else {
+                    throw Error(`Something went wrong when constructing Instagram template for: ${parentLink}`);
                 }
             },
         }

@@ -186,7 +186,7 @@ function appendMedia(src, link, postId, index, container, overrides) {
     // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     var mediaElem = container != null ? container : document.createElement("div");
     var { forceAppend, twttrEmbed, instgrmEmbed } = overrides;
-    if (Array.isArray(src)) {
+    if (Array.isArray(src) && src.length > 0) {
         var nodeList = [];
         for (var item of src) {
             // let collator know we're working on an Instagram post
@@ -201,9 +201,11 @@ function appendMedia(src, link, postId, index, container, overrides) {
             mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
             mediaElem = insertCarousel(mediaElem);
         }
-    } else if (src != null && src.length > 0) {
-        mediaElem.appendChild(createMediaElem(src, postId, index));
     }
+    else {
+        throw Error("Media array must contain at least one item!");
+    }
+
     // only append if we're not being called to return an element
     if (forceAppend) {
         mediaElem.classList.add("medialoader", "hidden");
@@ -321,7 +323,7 @@ function insertLightbox(elem) {
 function attachChildEvents(elem, id, index) {
     var childElems = [].concat(
         Array.from(elem.querySelectorAll("video")),
-        Array.from(elem.querySelectorAll("img"))
+        Array.from(elem.querySelectorAll("img[id*='loader']"))
     );
     var iframeElem = getIframeDimensions(elem);
 
@@ -336,9 +338,11 @@ function attachChildEvents(elem, id, index) {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
                     item.addEventListener("canplaythrough", e => {
-                        // autoplay videos (muted) when shown
-                        if (e.target.paused) { toggleVideoState(e.target, 1); }
-                        if (!e.target.muted) { e.target.muted = true; }
+                        // autoplay videos (muted) when shown (except for social embeds)
+                        if (!e.target.closest(".twitter-container, .instgrm-embed")) {
+                            if (e.target.paused) { toggleVideoState(e.target, 1); }
+                            if (!e.target.muted) { e.target.muted = true; }
+                        }
                     });
                 }
                 else {
@@ -362,7 +366,7 @@ function attachChildEvents(elem, id, index) {
                             if (e.target.nodeName === "VIDEO") { e.target.pause(); }
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
-                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null && twttrEl == null) {
+                        } else if (e.which === 1 && !swiperEl && !instgrmEl && !twttrEl) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);
@@ -375,13 +379,17 @@ function attachChildEvents(elem, id, index) {
 }
 
 function triggerReflow(elem) {
-    $(elem).ready(function() {
-        // trigger a resize via jQuery ready() to recalc the carousel
-        insertScript({
-            url: document.getElementsByTagName("body")[0],
-            code: "window.dispatchEvent(new Event('resize'));",
-            id: "reflow-wjs",
-            overwrite: true
-        });
-    });
+    // workaround to fix Swiper not properly tracking onload events of children
+    let _embeds = elem.querySelectorAll(".swiper-wrapper video[id^='loader_'], img[id^='loader_']");
+    for (let i of _embeds || []) {
+        $(i).ready(() => {
+            // trigger a resize via jQuery ready() to recalc the carousel
+            insertScript({
+                elem: document.getElementsByTagName("body")[0],
+                code: "window.dispatchEvent(new Event('resize'));",
+                id: "reflow-wjs",
+                overwrite: true
+            });
+        })
+    }
 }

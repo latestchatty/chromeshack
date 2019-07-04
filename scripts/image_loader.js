@@ -121,7 +121,7 @@ settingsLoadedEvent.addHandler(function()
                         // NOTE: ShackPics needs SSL fixes before uncommenting this!
                         // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
                         var src = ImageLoader.getImageUrl(link.href);
-                        appendMedia(src, link, _postId, index, null, { forceAppend: true });
+                        appendMedia([ src ], link, _postId, index, null, { forceAppend: true });
                     }
                 }
             },
@@ -141,7 +141,7 @@ settingsLoadedEvent.addHandler(function()
                     if (imgurAlbum != null && imgurAlbum.length > 0)
                         appendMedia(imgurAlbum, link, postId, index, null, { forceAppend: true });
                     else if (imgurImage != null)
-                        appendMedia(imgurImage, link, postId, index, null, { forceAppend: true });
+                        appendMedia([ imgurImage ], link, postId, index, null, { forceAppend: true });
                     else
                         throw new Error(`Could not resolve Imgur shortcode from: ${_link}`);
                 }
@@ -196,7 +196,7 @@ settingsLoadedEvent.addHandler(function()
                         fetchSafe(url).then(json => {
                             // sanitized in common.js!
                             if (json && json.gfyItem.mobileUrl != null) {
-                                appendMedia(json.gfyItem.mobileUrl, link, postId, index, null, { forceAppend: true });
+                                appendMedia([ json.gfyItem.mobileUrl ], link, postId, index, null, { forceAppend: true });
                             } else {
                                 throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
                             }
@@ -206,7 +206,7 @@ settingsLoadedEvent.addHandler(function()
                         fetchSafeLegacy({ url }).then(json => {
                             // sanitized in common.js!
                             if (json && json.gfyItem.mobileUrl != null) {
-                                appendMedia(json.gfyItem.mobileUrl, link, postId, index, null, { forceAppend: true });
+                                appendMedia([ json.gfyItem.mobileUrl ], link, postId, index, null, { forceAppend: true });
                             } else {
                                 throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
                             }
@@ -223,7 +223,7 @@ settingsLoadedEvent.addHandler(function()
 
                 if (_giphyId) {
                     var src = `https://media.giphy.com/media/${_giphyId}/giphy.mp4`;
-                    appendMedia(src, link, postId, index, null, { forceAppend: true });
+                    appendMedia([ src ], link, postId, index, null, { forceAppend: true });
                 } else { console.log(`An error occurred parsing the Giphy url: ${link.href}`); }
             },
         }

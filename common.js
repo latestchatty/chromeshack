@@ -166,12 +166,13 @@ function fetchSafe(url, optionsObj, modeObj) {
             try {
                 if (instgrmBool) {
                     // special case for instagram graphql parsing
-                    let likesMatch = /<meta content="([\d\,km]+ Likes, [\d\,km]+ Comments|[\d\,km]+ Likes,?|[\d\,km]+ Comments)/i.exec(text);
-                    let instgrmGQL = /\:\{"PostPage":\[\{"graphql":(.*)\}\]\}/gm.exec(text);
+                    let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+                    let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
                     if (instgrmGQL) {
-                        let parsedLikes = likesMatch && likesMatch[1];
-                        let parsedGQL = instgrmGQL && JSON.parse(instgrmGQL[1]);
-                        resolve(safeJSON({ likes: parsedLikes, gqlData: parsedGQL }));
+                        resolve(safeJSON({
+                            metaViews: metaMatch && metaMatch[1],
+                            gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
+                        }));
                     }
                     reject(false);
                 }
@@ -184,8 +185,7 @@ function fetchSafe(url, optionsObj, modeObj) {
                     resolve(DOMPurify.sanitize(text)); // caution!
                 else if (isHTML(text))
                     resolve(sanitizeToFragment(text));
-                else
-                    resolve(true); // be safe here
+                reject(false); // reject for safety if parse fails
             }
         });
     }).catch(err => console.log(err));
