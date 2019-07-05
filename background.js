@@ -343,7 +343,6 @@ browser.runtime.onMessage.addListener(function(request, sender)
                     }
                 }
             };
-            carouselOpts.autoHeight = false;
             var swiper = new Swiper(container, carouselOpts);
         `;
         return browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
