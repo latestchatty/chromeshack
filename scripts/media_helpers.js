@@ -380,7 +380,7 @@ function attachChildEvents(elem, id, index) {
 
 function triggerReflow(elem) {
     // workaround to fix Swiper not properly tracking onload events of children
-    let _embeds = elem.querySelectorAll(".swiper-wrapper video[id^='loader_'], img[id^='loader_']");
+    let _embeds = elem && elem.querySelectorAll(".swiper-wrapper video[id^='loader_'], img[id^='loader_']");
     for (let i of _embeds || []) {
         $(i).ready(() => {
             // trigger a resize via jQuery ready() to recalc the carousel
