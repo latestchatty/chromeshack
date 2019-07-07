@@ -58,7 +58,7 @@ ChromeShack =
         // monkey patch the 'clickItem()' method on Chatty once we're done loading
         browser.runtime.sendMessage({ name: 'chatViewFix' });
         // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
-        browser.runtime.sendMessage({ name: 'refreshPostByClick' });
+        browser.runtime.sendMessage({ name: 'scrollByKeyFix' });
     },
 
     processPost: function(item, root_id)

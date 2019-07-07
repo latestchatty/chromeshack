@@ -220,182 +220,60 @@ browser.runtime.onMessage.addListener(function(request, sender)
     else if (request.name === "unCollapseThread")
         return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
+        // necessary for opening nsfw links in an incognito window
         return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
-    else if (request.name === "allowedIncognitoAccess") {
+    else if (request.name === "allowedIncognitoAccess")
+        // necessary for knowing when to open nsfw media in an incognito window
         return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
-    }
     else if (request.name === "chatViewFix") {
-        // inject CVF monkey patch once upon page load to fix scroll bugs
+        // scroll-to-post fix for Chatty
         return browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
-        .then(res => { if (res) { browser.tabs.executeScript({ code: /*javascript*/`
-            function clickItem(b, f) {
-                var d = window.frames.dom_iframe;
-                var e = d.document.getElementById("item_" + f);
-                if (uncap_thread(b)) {
-                    elem_position = $("#item_" + f).position();
-                    scrollToItem($("li#item_" + f).get(0));
-                }
-                sLastClickedItem = f;
-                sLastClickedRoot = b;
-                if (d.document.getElementById("items_complete") && e) {
-                    var c = find_element(e, "DIV", "fullpost");
-                    var a = import_node(document, c);
-                    show_item_fullpost(b, f, a);
-                    return false
-                } else {
-                    path_pieces = document.location.pathname.split("?");
-                    parent_url = path_pieces[0];
-                    navigate_page_no_history(d, "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url);
-                    return false
-                }
-            }
-
-            function show_item_fullpost(f, h, b) {
-                remove_old_fullpost(f, h, parent.document);
-                var k = parent.document.getElementById("root_" + f);
-                var e = parent.document.getElementById("item_" + h);
-                push_front_element(e, b);
-                scrollToItem(e);
-                e.className = add_to_className(e.className, "sel");
-                var c = find_element(e, "DIV", "oneline");
-                c.className = add_to_className(c.className, "hidden")
-            }
-
-            function scrollToItem(b) {
-                if (!elementIsVisible(b)) {
-                    scrollToElement(b);
-                }
-            }
-            var chatViewFixElem = document.createElement("script");
-            chatViewFixElem.id = "chatviewfix-wjs";
-            chatViewFixElem.textContent = \`\$\{clickItem.toString()\}\$\{show_item_fullpost.toString()\}\$\{scrollToItem.toString()\}\$\{scrollToElement.toString()\}\$\{elementIsVisible.toString()\}\`;
-            var bodyRef = document.getElementsByTagName("body")[0];
-            bodyRef.appendChild(chatViewFixElem);
-            undefined;` }); } })
+            .then(res => {
+                if (res) { browser.tabs.executeScript({ file: "int/chatViewFix.js" }); }
+            })
             .catch(err => console.log(err));
     }
     else if (request.name === "lightbox") {
+        // an element's css selector is passed into basicLightbox for instantiation here
         let commonCode = `
             var lightbox = window.basicLightbox.create('${request.elemText}');
             lightbox.show();
         `;
         return browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
-        .then((res) => {
-            if (res) {
-                browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" }).then(() => {
+            .then((res) => {
+                if (res) {
+                    browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" })
+                    .then(() => {
+                        browser.tabs.executeScript(null, { code: `${commonCode}` });
+                    });
+                } else {
                     browser.tabs.executeScript(null, { code: `${commonCode}` });
-                });
-            } else {
-                browser.tabs.executeScript(null, { code: `${commonCode}` });
-            }
-        })
-        .catch(err => console.log(err));
-    }
-    else if (request.name === "injectCarousel") {
-        let commonCode = /*javascript*/`
-            var container = document.querySelector("${request.select}");
-            var carouselOpts = {
-                autoHeight: true,
-                centeredSlides: true,
-                slidesPerView: 'auto',
-                navigation: {
-                  nextEl: '.swiper-button-next',
-                  prevEl: '.swiper-button-prev',
-                },
-                on: {
-                    init: function() {
-                        var swiperEl = this;
-                        var wrapper = container.querySelector(".swiper-wrapper");
-                        var mediaSlideFirstIndex = function(elem) {
-                            var iter = Array.from(elem.children);
-                            for (var i=0; i<iter.length-1; i++) {
-                                if (iter[i].nodeName === "VIDEO")
-                                    return i;
-                            }
-                            return -1;
-                        };
-
-                        // if video is first then recalc the carousel height once loaded
-                        var firstSlide = wrapper.children[0];
-                        if (firstSlide.nodeName === "VIDEO") {
-                            firstSlide.addEventListener("loadedmetadata", function() {
-                                swiperEl.update();
-                            });
-                        }
-                        // autoplay only if video is the first slide
-                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
-                        if (swiperEl.realIndex === videoSlideIndex)
-                            wrapper.children[videoSlideIndex].play();
-                    },
-                    transitionEnd: function() {
-                        // toggle autoplay on slides as we transition to/from them
-                        var slides = container.querySelectorAll('video');
-                        slides.forEach(function(x) {
-                            if (x.className.indexOf("swiper-slide-active") > -1) {
-                                x.play();
-                                x.muted = false;
-                            }
-                            else {
-                                x.muted = true;
-                                x.pause();
-                            }
-                        });
-                    }
                 }
-            };
-            var swiper = new Swiper(container, carouselOpts);
-        `;
-        return browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
-        .then((res) => {
-            if (res) {
-                browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" }).then(() => {
-                    browser.tabs.executeScript(null, { code: `${commonCode}` });
-                });
-            } else {
-                browser.tabs.executeScript(null, { code: `${commonCode}` });
-            }
-        })
-        .catch(err => console.log(err));
-    }
-    else if (request.name === "refreshPostByClick") {
-        return browser.tabs.executeScript(null, { code: `
-            function chat_onkeypress(b) {
-                if (!b) {
-                    b = window.event;
-                }
-                var a = String.fromCharCode(b.keyCode);
-                if (sLastClickedItem != -1 && sLastClickedRoot != -1 && check_event_target(b)) {
-                    if (a == "Z") {
-                        id = get_item_number_from_item_string(get_next_item_for_root(sLastClickedRoot, sLastClickedItem));
-                        if (id != false) {
-                            clickItem(sLastClickedRoot, id);
-                            var elem = document.querySelector(\`li#item_\$\{id\} span.oneline_body\`);
-                            elem.click();
-                        }
-                    }
-                    if (a == "A") {
-                        id = get_item_number_from_item_string(get_prior_item_for_root(sLastClickedRoot, sLastClickedItem));
-                        if (id != false) {
-                            clickItem(sLastClickedRoot, id);
-                            var elem = document.querySelector(\`li#item_\$\{id\} span.oneline_body\`);
-                            elem.click();
-                        }
-                    }
-                }
-                return true;
-            }
-
-            var refreshPostFixElem = document.createElement("script");
-            refreshPostFixElem.id = "refreshpostfix-wjs";
-            refreshPostFixElem.textContent = \`\$\{chat_onkeypress.toString()\}\`;
-            var bodyRef = document.getElementsByTagName("body")[0];
-            bodyRef.appendChild(refreshPostFixElem);
-            undefined;`})
+            })
             .catch(err => console.log(err));
     }
-    else if (request.name === "corbFetch") {
-        return fetchSafe(request.url, request.optionsObj, request.ovrBool);
+    else if (request.name === "injectCarousel") {
+        // we pass an element's css selector into Swiper for carousel injection here
+        return browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
+            .then((res) => {
+                if (res) {
+                    browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" })
+                    .then(() => browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";`})
+                    .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" })));
+                } else {
+                    browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";`})
+                    .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
+                }
+            })
+            .catch(err => console.log(err));
     }
+    else if (request.name === "scrollByKeyFix") {
+        // scroll-by-key fix for Chatty
+        return browser.tabs.executeScript(null, { file: "int/scrollByKeyFix.js" })
+            .catch(err => console.log(err));
+    }
+    else if (request.name === "corbFetch")
+        return fetchSafe(request.url, request.optionsObj, request.ovrBool);
 
     return Promise.resolve();
 });
