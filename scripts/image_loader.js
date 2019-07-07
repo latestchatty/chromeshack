@@ -8,7 +8,7 @@ settingsLoadedEvent.addHandler(function()
             imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
             vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
             // common media host patterns
-            imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)?([\w\-]+)/i,
+            imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)?([\w\-]+)(?:#([\w\-]+))?/i,
             gfycatRegex: /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/i,
             giphyRegex: /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?([\w\-]+)/i,
             dropboxImgRegex: /https?\:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gif|webp)\\?/i,
@@ -133,7 +133,7 @@ settingsLoadedEvent.addHandler(function()
                     return; // we don't need to resolve if the url looks good
                 }
 
-                let _matchShortcode = ImageLoader.imgurRegex.exec(link);
+                let _matchShortcode = ImageLoader.imgurRegex.exec(link.href);
                 let _shortcodes = {
                     albumHash: _matchShortcode && _matchShortcode[1],
                     imageHash: _matchShortcode && _matchShortcode[2]
@@ -192,7 +192,7 @@ settingsLoadedEvent.addHandler(function()
 
             createGfycat: async function(link, postId, index)
             {
-                var _match = ImageLoader.gfycatRegex.exec(link);
+                var _match = ImageLoader.gfycatRegex.exec(link.href);
                 // we can match against both direct and indirect links
                 var gfycat_id = _match && _match[1] || _match[2];
 
