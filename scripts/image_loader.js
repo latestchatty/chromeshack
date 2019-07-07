@@ -4,9 +4,22 @@ settingsLoadedEvent.addHandler(function()
     {
         ImageLoader =
         {
+            // general media detection patterns
+            imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
+            vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
+            // common media host patterns
+            imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)?([\w\-]+)/i,
+            gfycatRegex: /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/i,
+            giphyRegex: /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?([\w\-]+)/i,
+            dropboxImgRegex: /https?\:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gif|webp)\\?/i,
+            dropboxVidRegex: /https?\:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:mp4|gifv|webm)\\?/i,
+            // common image host patterns
+            chattypicsRegex: /https?\/:\/\/(?:.*?\.)?chattypics\.com\/viewer\.php/i,
+            twimgRegex: /(https?\:\/\/pbs\.twimg\.com\/media\/)(?:([\w\-]+)\?format=([\w]+)\&|([\w\-\.]+))?/i,
+
             loadImages: function(item)
             {
-                var links = item.querySelectorAll(".sel .postbody a");
+                var links = item.querySelectorAll(".sel .postbody > a");
                 for (var i = 0; i < links.length; i++) {
                     if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
                         // pass our loop position and add an expando button for every hooked link
@@ -26,26 +39,22 @@ settingsLoadedEvent.addHandler(function()
 
             isVideo: function(href)
             {
-                if (/https?\:\/\/(?:.*?\.)?imgur.com\/(?:.+?\/.+?\/|.+?\/)?[\w\d\-]+/.test(href) ||
-                    /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/[\w]+|[\w]+|[\w]+\-.*?)/.test(href) ||
-                    /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?[\w\-]+/i.test(href))
+                if (ImageLoader.imgurRegex.test(href) ||
+                    ImageLoader.gfycatRegex.test(href) ||
+                    ImageLoader.giphyRegex.test(href) ||
+                    ImageLoader.dropboxVidRegex.test(href))
                     return true;
-
                 return false;
             },
 
             isImage: function(href)
             {
                 // some urls don't end in jpeg/png/etc so the normal test won't work
-                if (/https?\:\/\/picasaweb\.google\.com\/\w+\/.*#\d+$/.test(href) ||
-                    /https?\:\/\/yfrog.com\/\w+$/.test(href) ||
-                    /https?\:\/\/twitpic.com\/\w+$/.test(href) ||
-                    /https?\:\/\/pbs\.twimg\.com\/media\/[\w\-\.]+/.test(href) ||
-                    /https?\:\/\/pichars.org\/\w+$/.test(href) ||
-                    /https?\:\/\/www.dropbox.com\/s\/.+/.test(href))
+                if (ImageLoader.twimgRegex.test(href) ||
+                    ImageLoader.dropboxImgRegex.test(href))
                     return true;
 
-                return ImageLoader.getImageUrl(href).match(/https?\:\/\/.*?\/.*?\.(?:jpe?g|webp|png|gif|bmp|svg)/i);
+                return ImageLoader.getImageUrl(href).match(ImageLoader.imgRegex);
             },
 
             getImageUrl: function(href)
@@ -59,38 +68,20 @@ settingsLoadedEvent.addHandler(function()
                 }
 
                 // change shackpics image page into image
-                if (/chattypics\.com\/viewer\.php/.test(href))
+                if (ImageLoader.chattypicsRegex.test(href))
                     return href.replace(/viewer\.php\?file=/, 'files/');
 
-                // change fukung image page into image
-                if (/https?\:\/\/(www\.)?fukung\.net\/v\/\d+\//.test(href))
-                    return href.replace(/(www\.)?fukung\.net\/v\/\d+\//, 'media.fukung.net/imgs/');
-
-                if (/https?\:\/\/yfrog.com\/\w+$/.test(href))
-                    return href + ":iphone";
-
-                // no way to get the full image for twitpic, just how a thumbnail
-                if ((m = /https?\:\/\/twitpic.com\/(\w+)$/.exec(href)) != null)
-                    return "https://twitpic.com/show/thumb/" + m[1];
-                else if ((m = /(https?\:\/\/pbs\.twimg\.com\/media\/)(?:([\w\-]+)\?format=([\w]+)\&|([\w\-\.]+))?/.exec(href)) != null) {
+                if ((m = ImageLoader.twimgRegex.exec(href)) != null) {
                     if (m[3] != null) { return `${m[1]}${m[4] || m[2]}\.${m[3]}` }
                     else { return `${m[1]}${m[4] || m[2]}`; }
                 }
 
-                // grab the username and the photo id
-                if ((m = /https?\:\/\/picasaweb\.google\.com\/(\w+)\/.*#(\d+)$/.exec(href)) != null)
-                    return "https://picasaweb.google.com/data/media/api/user/" + m[1] + "/photoid/" + m[2];
-
-                // pichars images are in the in the /store/ directory with the same name
-                if (/https?\:\/\/pichars.org\/\w+$/.test(href) && !/https\:\/\/pichars.org\/store\/\w+$/.test(href))
-                    return href.replace(/org/, 'org/store');
-
-                // new dropbox sharing links can be viewed directly by setting the "dl" flag
-                if (/https?\:\/\/www.dropbox.com\/s\/.+/.test(href) && !/dl=1$/.test(href))
-                    return href.replace("?dl=0","") + "?dl=1";
+                // dropbox sharing links can be viewed directly by setting the "raw" flag
+                if (ImageLoader.dropboxImgRegex.test(href) && !/raw=1$/.test(href))
+                    return href.replace(/\?dl=0/i,"") + "?raw=1";
 
                 // not a special case, just use the link's href
-                let _match = /https?\:\/\/(?:.*\.[\w]{2,})\/.*\/((?!.*\/)[\w\_\&]+\.(?:jpe?g|png|gif|webp)+)/i.exec(href);
+                let _match = ImageLoader.imgRegex.exec(href);
                 return _match ? _match[0] : href;
             },
 
@@ -114,6 +105,8 @@ settingsLoadedEvent.addHandler(function()
                             ImageLoader.createGfycat(link, _postId ,index);
                         else if (link.href.match(/giphy/))
                             ImageLoader.createGiphy(link, _postId, index);
+                        else if (ImageLoader.dropboxVidRegex.test(link.href) && !/raw=1$/.test(link.href))
+                            ImageLoader.createDropboxVid(link, _postId, index);
                     }
                     else
                     {
@@ -126,67 +119,80 @@ settingsLoadedEvent.addHandler(function()
                 }
             },
 
+            createDropboxVid: function(link, postId, index) {
+                appendMedia(
+                    [ link.href.replace(/\?dl=0/i,"") + "?raw=1" ],
+                    link, postId, index, null, { forceAppend: true }
+                );
+            },
+
             createImgur: async function(link, postId, index)
             {
-                var authHdr = "Client-ID c045579f61fc802";
-                var _link = link.href.replace(/http\:\/\//, "https://");
-                var _matchShortcode = /https?\:\/\/(?:.+?\.)?imgur.com\/(?:r\/.*?\/(\w+)|a\/(\w+)|t\/.+?\/(\w+)|gallery\/(\w+))?(\w+)?/i.exec(_link);
-                var albumShortcode = _matchShortcode[2] || _matchShortcode[3] || _matchShortcode[4];
-                var imageShortcode = _matchShortcode[1] || _matchShortcode[3] || _matchShortcode[5];
-
-                if (_link.length > 0 && _matchShortcode != null) {
-                    // resolve by album otherwise fallback to resolving by image
-                    var imgurAlbum = albumShortcode != null && await resolveImgurAlbum(albumShortcode);
-                    var imgurImage = imageShortcode != null && await resolveImgur(imageShortcode);
-                    if (imgurAlbum != null && imgurAlbum.length > 0)
-                        appendMedia(imgurAlbum, link, postId, index, null, { forceAppend: true });
-                    else if (imgurImage != null)
-                        appendMedia([ imgurImage ], link, postId, index, null, { forceAppend: true });
-                    else
-                        throw new Error(`Could not resolve Imgur shortcode from: ${_link}`);
+                if (link.href.match(/\.(jpe?g|png|web(p|m)|gifv?|mp4)$/i)) {
+                    appendMedia([ link ], link, postId, index, null, { forceAppend: true });
+                    return; // we don't need to resolve if the url looks good
                 }
 
-                function resolveImgur(shortcode) {
-                    var url = `https://api.imgur.com/3/image/${shortcode}`;
-                    return new Promise(resolve => {
-                        fetchImgur(url).then(json => {
-                            if (json && json.data && json.data.mp4)
-                                resolve(json.data.mp4);
-                            else if (json && json.data && json.data.link)
-                                resolve(json.data.link);
-                            resolve(null);
-                        });
-                    });
+                let _matchShortcode = ImageLoader.imgurRegex.exec(link);
+                let _shortcodes = {
+                    albumHash: _matchShortcode && _matchShortcode[1],
+                    imageHash: _matchShortcode && _matchShortcode[2]
                 };
-                function resolveImgurAlbum(shortcode) {
-                    //var shortcode = "oo0Ptek"; // multi-item test
-                    var url = `https://api.imgur.com/3/album/${shortcode}`;
-                    return new Promise(resolve => {
-                        fetchImgur(url).then(json => {
-                            var collector = [];
-                            if (json && json.data && json.data.images && json.data.images.length > 0) {
-                                json.data.images.forEach(item => {
-                                    if (item.mp4 != null)
-                                        collector.push(item.mp4);
-                                    else if (item.link != null)
-                                        collector.push(item.link);
-                                });
-                                resolve(collector);
-                            } else { console.log(`Unable to find any Imgur media items for: ${url}`); }
-                            resolve(null);
-                        });
-                    });
-                };
+                let _imageUrl = _shortcodes.albumHash && !_shortcodes.imageHash &&
+                    `https://api.imgur.com/3/image/${_shortcodes.albumHash}`;
+                let _albumUrl = _imageUrl && _imageUrl.replace(/\/image\//, "\/album\/");
+                let _albumImageUrl = _shortcodes.imageHash && _shortcodes.albumHash &&
+                    `https://api.imgur.com/3/album/${_shortcodes.albumHash}/image/${_shortcodes.imageHash}`;
+
+                if (_matchShortcode) {
+                    // resolver priority: album-image > image > album
+                    let _image = _imageUrl && await fetchImgur(_imageUrl);
+                    let _album = _albumUrl && await fetchImgur(_albumUrl);
+                    let _albumImage = _albumImageUrl && await fetchImgur(_albumImageUrl);
+                    if (_albumImage && _albumImage.length > 0 ||
+                        _image && _image.length > 0 ||
+                        _album && _album.length > 0) {
+                        appendMedia(
+                            _albumImage || _image || _album,
+                            link, postId, index, null, { forceAppend: true }
+                        );
+                    }
+                    else {
+                        throw new Error(`Could not resolve Imgur shortcode from: ${link}`);
+                    }
+                }
+                /* support funcs */
                 function fetchImgur(url) {
                     // sanitized in common.js!
-                    return fetchSafe(url, { headers: { "Authorization": authHdr } });
-                }
+                    return fetchSafe(url,
+                        { headers: { "Authorization": "Client-ID c045579f61fc802" }
+                    }).then(formatImgur);
+                };
+                function formatImgur(response) {
+                    try {
+                        let _items = response &&
+                            Array.isArray(response.data.images || response.data) ?
+                                response.data.images :
+                                response.data.mp4 || response.data.link;
+                        if (Array.isArray(_items) && _items.length > 0) {
+                            let _media = [];
+                            for (let i of _items || []) {
+                                if (!!i.mp4 || !!i.link)
+                                    _media.push(i.mp4 || i.link);
+                            }
+                            return _media;
+                        } else if (_items) {
+                            return [ _items ];
+                        }
+                    } catch {
+                        return null;
+                    }
+                };
             },
 
             createGfycat: async function(link, postId, index)
             {
-                var _link = link.href.replace(/http\:\/\//, "https://");
-                var _match = /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/.exec(_link);
+                var _match = ImageLoader.gfycatRegex.exec(link);
                 // we can match against both direct and indirect links
                 var gfycat_id = _match && _match[1] || _match[2];
 
@@ -218,7 +224,7 @@ settingsLoadedEvent.addHandler(function()
             createGiphy: function(link, postId, index)
             {
                 // only use the alphanumeric id without the label
-                var _matchGiphy = /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?([\w\-]+)/i.exec(link.href);
+                var _matchGiphy = ImageLoader.giphyRegex.exec(link.href);
                 var _giphyId = _matchGiphy && _matchGiphy[1];
 
                 if (_giphyId) {
