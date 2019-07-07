@@ -233,21 +233,20 @@ browser.runtime.onMessage.addListener(function(request, sender)
             })
             .catch(err => console.log(err));
     }
-    else if (request.name === "lightbox") {
-        // an element's css selector is passed into basicLightbox for instantiation here
-        let commonCode = `
-            var lightbox = window.basicLightbox.create('${request.elemText}');
-            lightbox.show();
-        `;
+    else if (request.name === "injectLightbox") {
+        // a media element's HTML is passed into the to-be-injected lightbox instantiator here
         return browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
-            .then((res) => {
+            .then(res => {
+                const injectLightboxFunc = () => {
+                    browser.tabs.executeScript(null, { code: `var _mediaHTML = \`${request.elemText}\`;` })
+                        .then(() => browser.tabs.executeScript(null, { file: "int/injectLightbox.js" }));
+                };
+
                 if (res) {
-                    browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" })
-                    .then(() => {
-                        browser.tabs.executeScript(null, { code: `${commonCode}` });
-                    });
+                    browser.tabs.executeScript(null,
+                        { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" }).then(injectLightboxFunc);
                 } else {
-                    browser.tabs.executeScript(null, { code: `${commonCode}` });
+                    injectLightboxFunc();
                 }
             })
             .catch(err => console.log(err));
@@ -258,11 +257,12 @@ browser.runtime.onMessage.addListener(function(request, sender)
             .then((res) => {
                 if (res) {
                     browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" })
-                    .then(() => browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";`})
-                    .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" })));
+                        .then(() => browser.tabs.executeScript(null,
+                            { code: `var _carouselSelect = "${request.select}";` })
+                            .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" })));
                 } else {
-                    browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";`})
-                    .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
+                    browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";` })
+                        .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
                 }
             })
             .catch(err => console.log(err));
