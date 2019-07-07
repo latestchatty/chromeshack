@@ -6,7 +6,7 @@ settingsLoadedEvent.addHandler(function()
         {
             loadVideos: function(item)
             {
-                var links = item.querySelectorAll(".sel .postbody a");
+                var links = item.querySelectorAll(".sel .postbody > a");
                 for (var i = 0; i < links.length; i++) {
                     var parsedVideo = VideoLoader.getVideoType(links[i].href);
                     if (parsedVideo != null) {

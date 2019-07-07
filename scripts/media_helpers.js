@@ -52,17 +52,20 @@ function getIframeDimensions(elem) {
 
 function locateContainer(link, postId, index) {
     // resolve our link container for media embedding (or create one)
-    var _isAlternateStyle = true; //objContains("alternate_embed_style", getSetting("enabled_scripts"));
+    /*var _isAlternateStyle = true; //objContains("alternate_embed_style", getSetting("enabled_scripts"));
     var container = _isAlternateStyle ?
         link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
-        link.parentNode.querySelector("div.media-container");
-    if (container != null) {
+        link.parentNode.querySelector("div.media-container"); */
+    var container = link.parentNode &&
+        link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`);
+    if (container) {
         return container; // return the existing container
     } else {
         container = document.createElement("div");
         container.setAttribute("class", "media-container");
         // flag the container so we know we have an embed child
-        if (_isAlternateStyle) { container.setAttribute("id", `link_${postId}-${index}`); }
+        /* if (_isAlternateStyle) { container.setAttribute("id", `link_${postId}-${index}`); } */
+        container.setAttribute("id", `link_${postId}-${index}`);
         return container;
     }
 }
@@ -117,6 +120,7 @@ function toggleMediaLink(embedElem, link, override) {
             embedElem.parentNode.classList.toggle("hidden");
         else
             embedElem.classList.toggle("hidden");
+
         toggleVideoState(embedElem);
         link.classList.toggle("embedded");
         toggleExpandoButton(_expando);
@@ -126,19 +130,43 @@ function toggleMediaLink(embedElem, link, override) {
     return false;
 }
 
-function toggleVideoState(elem, override) {
-    // abstracted helper for toggling html5 video embed pause state (based on audio)
+function toggleVideoState(elem, stateObj) {
+    let { state, mute } = stateObj || {};
     if (elem == null) return;
-    // ignore carousel children when autoplaying
-    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video:not(.swiper-slide)");
-    if (override || video && !objContains("hidden", video.classList)) {
-       if (video.paused || override) {
-            video.currentTime = 0;
-            video.play();
-        } else {
-            video.pause();
-            video.currentTime = 0;
+    let video = elem.matches("video[id^='loader_']") ?
+        elem : elem.querySelector("video[id^='loader_']");
+
+    // if forced then play and avoid social embeds
+    let excludedParent = video && video.closest(`
+        .swiper-wrapper,
+        .instgrm-embed,
+        #twitter-media-content,
+        #twitter-quote-media-content
+    `);
+
+    if (video && (state || mute) ||
+        video && !objContains("hidden", video.classList)) {
+        if (state)
+            play();
+        else if (!excludedParent && video.paused) {
+            play();
         }
+        else
+            pause();
+
+        if (!mute || video.muted)
+            video.muted = false;
+        else
+            video.muted = true;
+    }
+
+    function play() {
+        video.currentTime = 0;
+        video.play();
+    }
+    function pause() {
+        video.pause();
+        video.currentTime = 0;
     }
 }
 
@@ -190,8 +218,10 @@ function appendMedia(src, link, postId, index, container, overrides) {
         var nodeList = [];
         for (var item of src) {
             // let collator know we're working on an Instagram post
-            if (instgrmEmbed || twttrEmbed || container) { nodeList.push(createMediaElem(item, postId, index, true)); }
-            else { nodeList.push(createMediaElem(item, postId, index)); }
+            if (instgrmEmbed || twttrEmbed || container)
+                nodeList.push(createMediaElem(item, postId, index, true));
+            else
+                nodeList.push(createMediaElem(item, postId, index));
         }
         for (var node of nodeList) {
             mediaElem.appendChild(node);
@@ -210,8 +240,10 @@ function appendMedia(src, link, postId, index, container, overrides) {
     if (forceAppend) {
         mediaElem.classList.add("medialoader", "hidden");
         mediaContainerInsert(mediaElem, link, postId, index);
-    } else { return mediaElem; }
+    }
+    return mediaElem;
 
+    /* support funcs */
     function createMediaElem(href, postId, index, override) {
         var _animExt = /\.(mp4|gifv|webm)/i.test(href);
         var _staticExt = /\.(jpe?g|gif|png)/i.test(href);
@@ -219,8 +251,6 @@ function appendMedia(src, link, postId, index, container, overrides) {
         if (_animExt) {
             _elem = document.createElement("video");
             if (!override) {
-                _elem.setAttribute("autoplay", "");
-                _elem.setAttribute("muted", "");
                 _elem.setAttribute("loop", "");
             } else {
                 _elem.setAttribute("controls", ""); // for Instagram/Twitter
@@ -317,14 +347,11 @@ function insertLightbox(elem) {
         lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox-5.0.2.min.css");
         head.appendChild(lightboxCSS);
     }
-    browser.runtime.sendMessage({ name: 'lightbox', elemText: elem.outerHTML });
+    browser.runtime.sendMessage({ name: 'injectLightbox', elemText: elem.outerHTML });
 }
 
 function attachChildEvents(elem, id, index) {
-    var childElems = [].concat(
-        Array.from(elem.querySelectorAll("video")),
-        Array.from(elem.querySelectorAll("img[id*='loader']"))
-    );
+    var childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
@@ -337,21 +364,23 @@ function attachChildEvents(elem, id, index) {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
-                    item.addEventListener("canplaythrough", e => {
+                    let canPlayCallback = (e) => {
                         // autoplay videos (muted) when shown (except for social embeds)
-                        if (!e.target.closest(".twitter-container, .instgrm-embed")) {
-                            if (e.target.paused) { toggleVideoState(e.target, 1); }
-                            if (!e.target.muted) { e.target.muted = true; }
+                        if (!e.target.hasAttribute("initialPlay") &&
+                            !e.target.closest(".twitter-container, .instgrm-embed")) {
+                            e.target.setAttribute("initialPlay", "");
+                            toggleVideoState(e.target, { state: true, mute: true });
+                            // unsubscribe to avoid retriggering after video loads
+                            e.target.removeEventListener("canplaythrough", canPlayCallback);
                         }
-                    });
+                    };
+                    item.addEventListener("canplaythrough", canPlayCallback);
                 }
                 else {
                     item.addEventListener('click', e => {
                     // allow toggling play state by clicking the carousel video
-                        if (e.target.nodeName === "VIDEO" && !e.target.hasAttribute("controls")) {
-                            if (e.target.paused) { e.target.play(); }
-                            else { e.target.pause(); }
-                        }
+                        if (e.target.nodeName === "VIDEO" && !e.target.hasAttribute("controls"))
+                            toggleVideoState(e.target);
                     });
                 }
 
@@ -363,7 +392,8 @@ function attachChildEvents(elem, id, index) {
                         if (e.which === 2 && getSetting("image_loader_newtab")) {
                             e.preventDefault();
                             // pause our current video before re-opening it
-                            if (e.target.nodeName === "VIDEO") { e.target.pause(); }
+                            if (e.target.nodeName === "VIDEO")
+                                toggleVideoState(e.target, { state: false });
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
                         } else if (e.which === 1 && !swiperEl && !instgrmEl && !twttrEl) {
@@ -380,16 +410,12 @@ function attachChildEvents(elem, id, index) {
 
 function triggerReflow(elem) {
     // workaround to fix Swiper not properly tracking onload events of children
-    let _embeds = elem && elem.querySelectorAll(".swiper-wrapper video[id^='loader_'], img[id^='loader_']");
-    for (let i of _embeds || []) {
-        $(i).ready(() => {
-            // trigger a resize via jQuery ready() to recalc the carousel
-            insertScript({
-                elem: document.getElementsByTagName("body")[0],
-                code: "window.dispatchEvent(new Event('resize'));",
-                id: "reflow-wjs",
-                overwrite: true
-            });
-        })
+    if (elem) {
+        insertScript({
+            elem: document.getElementsByTagName("body")[0],
+            code: "window.dispatchEvent(new Event('resize'));",
+            id: "reflow-wjs",
+            overwrite: true
+        });
     }
 }
