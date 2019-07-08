@@ -166,7 +166,10 @@ let refreshThreadPane;
         // https://stackoverflow.com/a/14755309
         // make sure we only grab the text in the root element, because the user popup menu may be nested
         // there as well
-        return $opDiv.find('div.postmeta span.author span.user a').contents().filter(function() {
+        const $rootAuthor = $opDiv.find(`
+            div.postmeta span.author span.user a,
+            div.postmeta span.author span.user`);
+        return $rootAuthor.contents().filter(function() {
             return this.nodeType == 3;
         })[0].nodeValue;
     }
