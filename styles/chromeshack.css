@@ -17,11 +17,11 @@ a.pin_button {
 #previewArea {
     display: block;
     border: 1px solid #AEAE9B;
-    padding: 3px;
+    padding: 5px 0 5px 5px;
     background: #222;
     height: 200px;
-    width: 570px;
-    overflow: auto;
+    width: 99%;
+    overflow: wrap;
 }
 
 div.fpmod_offtopic {

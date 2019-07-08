@@ -1,7 +1,6 @@
 function loadOptions()
 {
     showPostPreviewLocation(getOption("post_preview_location"));
-    showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showImageLoaderNewTab(getOption("image_loader_newtab"));
@@ -212,12 +211,6 @@ function showPostPreviewLive(enabled)
     live.checked = enabled;
 }
 
-function getPostPreviewLive()
-{
-    var live = document.getElementById("post_preview_live");
-    return live.checked;
-}
-
 function showEnabledScripts()
 {
     var enabled = getOption("enabled_scripts");
@@ -410,7 +403,6 @@ function saveOptions()
     try
     {
         saveOption("post_preview_location", getPostPreviewLocation());
-        saveOption("post_preview_live", getPostPreviewLive());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());

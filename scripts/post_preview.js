@@ -6,18 +6,22 @@ settingsLoadedEvent.addHandler(function()
         {
             state: 0, // 0 = insert mode, 1 = preview mode
 
+            debouncedPreview: debounce((text, target) => {
+                safeInnerHTML(generatePreview(text), target);
+            }, 200),
+
             install: function()
             {
                 // script is already injected
                 if (document.getElementById("previewButton") != null)
                     return;
 
-                var postButton = document.getElementById("frm_submit");
-                var form_body = document.getElementById("frm_body");
+                let postButton = document.getElementById("frm_submit");
+                let form_body = document.getElementById("frm_body");
                 if (postButton && form_body)
                 {
                     // don't add click handlers here, because these elements get cloned into the page later
-                    var previewButton = document.createElement("button");
+                    let previewButton = document.createElement("button");
                     previewButton.id = "previewButton";
                     previewButton.setAttribute("type", "button");
                     previewButton.textContent = "Preview";
@@ -26,7 +30,7 @@ settingsLoadedEvent.addHandler(function()
                     else
                         postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
 
-                    var previewArea = document.createElement("div");
+                    let previewArea = document.createElement("div");
                     previewArea.id = "previewArea";
                     previewArea.style.display = "none";
                     form_body.parentNode.insertBefore(previewArea, form_body);
@@ -35,7 +39,7 @@ settingsLoadedEvent.addHandler(function()
 
             installClickEvent: function()
             {
-                var previewButton = document.getElementById("previewButton");
+                let previewButton = document.getElementById("previewButton");
                 previewButton.addEventListener("click", PostPreview.togglePreview, true);
             },
 
@@ -53,30 +57,28 @@ settingsLoadedEvent.addHandler(function()
 
             enablePreview: function()
             {
-                var form_body = document.getElementById("frm_body");
-                var preview_box = document.getElementById("previewArea");
+                let form_body = document.getElementById("frm_body");
+                let preview_box = document.getElementById("previewArea");
                 preview_box.style.display = "block";
                 PostPreview.updatePreview();
-                if (getSetting("post_preview_live") === true)
-                    form_body.addEventListener("input", PostPreview.updatePreview, true);
+                form_body.addEventListener("input", PostPreview.updatePreview, true);
                 form_body.focus();
             },
 
             disablePreview: function()
             {
-                var form_body = document.getElementById("frm_body");
-                var preview_box = document.getElementById("previewArea");
+                let form_body = document.getElementById("frm_body");
+                let preview_box = document.getElementById("previewArea");
                 preview_box.style.display = "none";
-                if (getSetting("post_preview_live") === true)
-                    form_body.removeEventListener("input", PostPreview.updatePreview, true)
+                form_body.removeEventListener("input", PostPreview.updatePreview, true)
                 form_body.focus();
             },
 
             updatePreview: function()
             {
-                var form_body = document.getElementById("frm_body");
-                var previewArea = document.getElementById("previewArea");
-                safeInnerHTML(generatePreview(form_body.value), previewArea);
+                let form_body = document.getElementById("frm_body");
+                let previewArea = document.getElementById("previewArea");
+                PostPreview.debouncedPreview(form_body.value, previewArea);
             }
         }
 
