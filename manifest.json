@@ -45,7 +45,6 @@
             "scripts/new_comment_highlighter.js",
             "scripts/highlight_users.js",
             "scripts/local_timestamp.js",
-            "scripts/expiration_watcher.js",
             "scripts/getpost.js",
             "scripts/embed_socials.js",
             "scripts/nws_incognito.js",
