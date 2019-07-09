@@ -102,13 +102,11 @@ a:hover#twitter-quote-displayname {
 #twitter-media-content img,
 #twitter-media-content video,
 #twitter-quote-media-content img,
-#twitter-quote-media-content video,
-#twitter-media-content .swiper-wrapper img,
-#twitter-quote-media-content .swiper-wrapper img {
+#twitter-quote-media-content video {
     border: 1px solid var(--twttr-fg-border-color);
     border-radius: 8px;
-    width: 100%;
-    height: 100%;
+    width: 100% !important;
+    height: 100% !important;
     max-height: var(--twttr-media-item-max-height);
     outline: none !important;
     margin: 0;
