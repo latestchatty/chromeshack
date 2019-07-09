@@ -49,7 +49,6 @@
             "scripts/embed_socials.js",
             "scripts/nws_incognito.js",
             "scripts/switchers.js",
-            "chromeshack_posts.js",
             "default_settings.js",
             "settings.js",
             "scripts/media_helpers.js",
@@ -61,7 +60,9 @@
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js",
             "scripts/post_style.js",
-            "scripts/emoji_poster.js"
+            "scripts/emoji_poster.js",
+            "scripts/mod_banners.js",
+            "chromeshack_posts.js"
         ],
         "css": [
             "styles/chromeshack.css",
