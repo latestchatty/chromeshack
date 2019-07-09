@@ -5,8 +5,8 @@ settingsLoadedEvent.addHandler(function()
         ImageLoader =
         {
             // general media detection patterns
-            imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
-            vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
+            imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
+            vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
             // common media host patterns
             imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)?([\w\-]+)(?:#([\w\-]+))?/i,
             gfycatRegex: /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/i,
