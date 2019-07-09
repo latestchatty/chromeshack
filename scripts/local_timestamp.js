@@ -45,12 +45,14 @@ LocalTimeStamp =
         }
 
 		let timestamp = document.createElement("span");
+		timestamp.id = "local-time";
 		timestamp.innerText = `${dd} ${dt} ${tz}`;
 		// remove only text child of postdate
 		for (let c of elm.childNodes) {
 			if (c.nodeType === 3) { c.remove(); }
 		}
-		elm.appendChild(timestamp);
+		if (!elm.querySelector("#local-time"))
+			elm.appendChild(timestamp);
     },
 
     formatTimezone: function(tz)
