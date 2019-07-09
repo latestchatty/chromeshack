@@ -41,8 +41,8 @@ settingsLoadedEvent.addHandler(function() {
         },
 
         handleSubmit: function(postText) {
-            if (EmojiPoster.countEntities(postText) > 5) {
-                // normal post
+            if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText) > 0) {
+                // normal post (either a single astral or some text)
                 $('#frm_submit').attr('disabled', 'disabled').css('color', '#E9E9DE');
                 $('#postform').submit();
                 $('body').trigger(
@@ -61,8 +61,8 @@ settingsLoadedEvent.addHandler(function() {
             // credit: Mathias Bynens (https://github.com/mathiasbynens/he)
             let _matchAstrals = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
             let _matchBMPs = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-            let escapeBmp = symbol => escapeCodePoint(symbol.charCodeAt(0));
             let escapeCP = codePoint => `&#x${codePoint.toString(16).toUpperCase()};`;
+            let escapeBmp = symbol => escapeCP(symbol.charCodeAt(0));
             return text.replace(_matchAstrals, $0 => {
                 let _high = $0.charCodeAt(0);
                 let _low = $0.charCodeAt(1);
@@ -71,14 +71,16 @@ settingsLoadedEvent.addHandler(function() {
             }).replace(_matchBMPs, escapeBmp);
         },
 
-        countEntities: function(text) {
+        countText: function(text) {
             // sums to the real length of text containing astrals
-            let _astrals = text.match(/(&#x[A-Fa-f0-9]+;)/igm);
-            let _astralsLen = _astrals ? _astrals.reduce((t, v) => t + v.length, 0) : 0;
-            let _count = _astrals ?
-                (text.length - _astralsLen + _astrals.length) :
-                text.length;
+            let _astralsCount = EmojiPoster.countAstrals(text);
+            let _count = _astralsCount ? (text.length - _astralsCount) : text.length;
             return _count;
+        },
+
+        countAstrals: function(text) {
+            let _astrals = text.match(/(&#x[A-Fa-f0-9]+;)/igm);
+            return _astrals ? _astrals.reduce((t, v) => t + v.length, 0) : 0;
         }
     };
 
