@@ -335,15 +335,6 @@ function removeChildren(elem)
     while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 }
 
-function stringToUtf8ByteArray(text) {
-    var utf8 = unescape(encodeURIComponent(text));
-    var textArr = [];
-    for (var i = 0; i < utf8.length; i++) {
-        textArr.push(utf8.charCodeAt(i));
-    }
-    return textArr;
-}
-
 function sanitizeToFragment(html) {
     return DOMPurify.sanitize(html, {RETURN_DOM_FRAGMENT: true, RETURN_DOM_IMPORT: true});
 }

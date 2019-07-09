@@ -30,11 +30,15 @@ settingsLoadedEvent.addHandler(() => {
             const rawPostText = textarea.val();
             const postHtml = generatePreview(rawPostText);
             const postText = $('<span>' + postHtml + '</span>').text();
-            const byteCount = stringToUtf8ByteArray(postText).length;
+            // encode and count text just as submit() would
+            const encodedText = EmojiPoster.handleEncoding(postText);
+            const textCount = EmojiPoster.countText(encodedText);
+            const astralCount = EmojiPoster.countAstrals(encodedText).astralsCount;
+            const charCount = astralCount ? textCount + astralCount : textCount;
             counter.text(
-                byteCount > MAX_POST_BYTES
+                charCount > MAX_POST_BYTES
                 ? 'The post preview will be truncated.'
-                : 'Characters remaining in post preview: ' + (MAX_POST_BYTES - byteCount)
+                : 'Characters remaining in post preview: ' + (MAX_POST_BYTES - charCount)
             );
         }
     });

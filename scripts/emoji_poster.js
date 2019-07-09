@@ -41,7 +41,7 @@ settingsLoadedEvent.addHandler(function() {
         },
 
         handleSubmit: function(postText) {
-            if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText) > 0) {
+            if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText).astralsCount > 0) {
                 // normal post (either a single astral or some text)
                 $('#frm_submit').attr('disabled', 'disabled').css('color', '#E9E9DE');
                 $('#postform').submit();
@@ -73,14 +73,18 @@ settingsLoadedEvent.addHandler(function() {
 
         countText: function(text) {
             // sums to the real length of text containing astrals
-            let _astralsCount = EmojiPoster.countAstrals(text);
+            let _astralsCount = EmojiPoster.countAstrals(text).astralsLen;
             let _count = _astralsCount ? (text.length - _astralsCount) : text.length;
+            // should return true length of text minus encoded entities
             return _count;
         },
 
         countAstrals: function(text) {
             let _astrals = text.match(/(&#x[A-Fa-f0-9]+;)/igm);
-            return _astrals ? _astrals.reduce((t, v) => t + v.length, 0) : 0;
+            let _astralCount = _astrals ? _astrals.length : 0;
+            let _astralTextLen = _astrals ? _astrals.reduce((t, v) => t + v.length, 0) : 0;
+            // should return true text length of encoded entities with padding
+            return { astralsLen: _astralTextLen, astralsCount: _astralCount };
         }
     };
 
