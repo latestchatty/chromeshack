@@ -191,7 +191,7 @@ function fetchSafe(url, optionsObj, modeObj) {
     }).catch(err => console.log(err));
 }
 
-function postXHR({ url, data, header, method }) {
+function postXHR({ url, data, header, method, override }) {
     // used for sanitizing POSTs that return JSON
     return new Promise((resolve, reject) => {
         xhrRequest(url, {
@@ -204,8 +204,17 @@ function postXHR({ url, data, header, method }) {
             reject(false);
         }).then(text => {
             try {
-                var _data = JSON.parse(text);
-                resolve(safeJSON(_data));
+                let { chattypics } = override || {};
+                if (chattypics) {
+                    let _resFragment = sanitizeToFragment(text);
+                    let _resElemVal = _resFragment.querySelector("#link11").value;
+                    if (_resElemVal)
+                        resolve(_resElemVal)
+                    reject(false);
+                } else {
+                    var _data = JSON.parse(text);
+                    resolve(safeJSON(_data));
+                }
             } catch {
                 resolve(true); // be safe here
             }
@@ -383,4 +392,58 @@ function isHTML(text) {
     // https://stackoverflow.com/a/15458968
     var doc = new DOMParser().parseFromString(text, "text/html");
     return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+}
+
+async function FormDataToJSON(fd) {
+    // https://stackoverflow.com/a/48892941
+    let _fd = [];
+    for (let [k, v] of fd.entries()) {
+        _fd.push({ key: k, filename: v.name, data: await FileToObject(v) });
+    }
+    return JSON.stringify(_fd);
+    /* support func */
+    function FileToObject(fileData) {
+        // https://stackoverflow.com/a/52311051
+        const reader = new FileReader();
+        reader.readAsDataURL(fileData);
+        return new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = err => reject(err);
+        });
+    }
+}
+
+async function JSONToFormData(jsonStr) {
+    return new Promise((resolve, reject) => {
+        let _obj = JSON.parse(jsonStr);
+        let _fd = new FormData();
+        for (let v of _obj.values()) {
+            let _file = Base64ToFile(v.filename, v.data);
+            _fd.append(v.key, _file);
+        }
+        if (_fd.entries().next().done)
+            reject(false);
+        else
+            resolve(_fd);
+    });
+    /* support func */
+    function Base64ToFile(filename, baseStr) {
+        // https://stackoverflow.com/a/5100158
+        // convert base64/URLEncoded data component to raw binary data held in a string
+        let byteString;
+        if (baseStr.split(',')[0].indexOf('base64') >= 0)
+            byteString = atob(baseStr.split(',')[1]);
+        else
+            byteString = unescape(baseStr.split(',')[1]);
+
+        // separate out the mime component
+        let mimeString = baseStr.split(',')[0].split(':')[1].split(';')[0];
+
+        // write the bytes of the string to a typed array
+        let ia = new Uint8Array(byteString.length);
+        for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new File([ia], filename, { type: mimeString });
+    }
 }

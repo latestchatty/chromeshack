@@ -2,6 +2,8 @@ settingsLoadedEvent.addHandler(function()
 {
     ImageUpload =
     {
+        chattyPicsUrl : "https://chattypics.com/upload.php",
+
         imgurApiKey :  "48a14aa108f519f249aacc12d08caac3",
 
         imgurApiImageBaseUrl: "https://api.imgur.com/3/image",
@@ -36,12 +38,14 @@ settingsLoadedEvent.addHandler(function()
                 <div class="post_sub_container">
                     <div class="uploadContainer">
                         <a class="showImageUploadLink">Show Image Upload</a>
-                        <div id="uploadFields" class="hidden">
+                        <div id="uploadFields" class="">
                             <div class="uploadFilters">
-                                <input type="radio" name="imgUploadSite" id="uploadImgur" checked="checked">
+                                <input type="radio" name="imgUploadSite" id="uploadChatty" checked="checked">
+                                <input type="radio" name="imgUploadSite" id="uploadImgur">
                                 <input type="radio" name="imgUploadSite" id="uploadGfycat">
 
                                 <div class="uploadRadioLabels">
+                                    <label class="chatty" for="uploadChatty">Chattypics</label>
                                     <label class="imgur" for="uploadImgur">Imgur</label>
                                     <label class="gfycat" for="uploadGfycat">Gfycat</label>
                                 </div>
@@ -108,11 +112,17 @@ settingsLoadedEvent.addHandler(function()
                 var text = ImageUpload.uploadShown ? "Hide Image Upload" : "Show Image Upload";
                 $(".showImageUploadLink").html(text);
 
+                // scroll to our elements contextually
+                if (!$("#uploadFields").hasClass("hidden"))
+                    scrollToElement($(this)[0]);
+                else
+                    scrollToElement($("#frm_body")[0]);
                 return false;
             });
 
             $("#fileChooserLink").click(function() {
                 $("#fileUploadInput").click();
+                scrollToElement($("#uploadDropArea")[0]);
             });
 
             // debounce on keyup (1.5s) for url text input
@@ -124,6 +134,17 @@ settingsLoadedEvent.addHandler(function()
             });
 
             // toggle entry fields based on hoster
+            $("#uploadChatty").click(function() {
+                ImageUpload.toggleSnippetControls(0);
+                // chattypics can take multiple files at once
+                $("#fileUploadInput").attr("multiple");
+                $("#fileChooserLink").text("Choose some files");
+                $(".uploadDropLabel").text("or drop some here...");
+
+                $("#urlUploadInput").toggleClass('hidden', $("#uploadChatty").is(":checked"));
+                $("#fileUploadInput").attr("accept", "image/*");
+                ImageUpload.clearFileData(true);
+            });
             $("#uploadGfycat, #uploadImgur").click(function() {
                 // gfycat and imgur only allow one file at a time
                 $("#fileUploadInput").removeAttr("multiple");
@@ -148,7 +169,7 @@ settingsLoadedEvent.addHandler(function()
                     ImageUpload.toggleSnippetControls(0);
                     ImageUpload.toggleUrlBox(0);
                 }
-
+                ImageUpload.toggleUrlBox(1);
                 if (ImageUpload.formFileUrl.length > 7) {
                     // contextually unhide if we have content
                     ImageUpload.toggleDragOver(1);
@@ -203,12 +224,18 @@ settingsLoadedEvent.addHandler(function()
             $("#urlUploadButton").click(function(e) {
                 e.preventDefault();
 
-                // if both inputs are populated do url first
-                if (ImageUpload.formFileUrl.length > 7)
-                    ImageUpload.doUrlUpload();
-                else if (ImageUpload.formFiles != null)
+                if ($("#uploadChatty").is(":checked")) {
+                    // forcefully ignore url input on chattypics
                     ImageUpload.doFileUpload();
+                } else {
+                    // if both inputs are populated do url first
+                    if (ImageUpload.formFileUrl.length > 7)
+                        ImageUpload.doUrlUpload();
+                    else if (ImageUpload.formFiles != null)
+                        ImageUpload.doFileUpload();
+                }
 
+                scrollToElement($("#frm_body")[0]);
                 $("#frm_body").focus();
                 return false;
             });
@@ -283,8 +310,15 @@ settingsLoadedEvent.addHandler(function()
         loadFileData: function(files) {
             ImageUpload.formFiles = [];
             if (files.length > 0) {
-                // only use the first file
-                ImageUpload.formFiles.push(files[0]);
+                if ($("#uploadChatty").is(":checked")) {
+                    // allow multiple files for chattypics
+                    for (var i=0; i < files.length; i++) {
+                        ImageUpload.formFiles.push(files[i]);
+                    }
+                } else {
+                    // only use the first file
+                    ImageUpload.formFiles.push(files[0]);
+                }
 
                 ImageUpload.updateStatusLabel(ImageUpload.formFiles);
                 ImageUpload.toggleContextLine(1);
@@ -474,12 +508,19 @@ settingsLoadedEvent.addHandler(function()
         },
 
         doFileUpload: function () {
+            var isChattyPics  = $("#uploadChatty").length && $("#uploadChatty").is(":checked");
             var isImgur = $("#uploadImgur").length && $("#uploadImgur").is(":checked");
             var isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
             var filesList = ImageUpload.formFiles;
 
             var fd = new FormData();
-            if (isImgur) {
+            if (isChattyPics) {
+                // Chattypics prefers php array format
+                for (var file of filesList) {
+                    fd.append("userfile[]", file);
+                }
+                ImageUpload.doChattyPicsUpload(fd);
+            } else if (isImgur) {
                 fd.append("type", "file");
                 fd.append("image", filesList[0]);
                 ImageUpload.doImgurUpload(fd);
@@ -502,6 +543,22 @@ settingsLoadedEvent.addHandler(function()
                 else
                     ImageUpload.handleUploadFailure(res);
             });
+        },
+
+        doChattyPicsUpload: async function (formdata) {
+            ImageUpload.removeUploadMessage();
+            ImageUpload.addUploadMessage("silver", "Uploading to ChattyPics...");
+            let _fdJSON = await FormDataToJSON(formdata);
+
+            browser.runtime.sendMessage({ name: "corbPost",
+                optionsObj: {
+                    url: ImageUpload.chattyPicsUrl,
+                    override: { chattypics: true }
+                },
+                data: _fdJSON
+            })
+            .then(link => ImageUpload.handleUploadSuccess(link))
+            .catch(err => ImageUpload.handleUploadFailure(err));
         },
 
         handleUploadSuccess: function(link) {
