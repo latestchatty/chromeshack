@@ -400,41 +400,38 @@ function isHTML(text) {
 }
 
 async function FormDataToJSON(fd) {
-    // https://stackoverflow.com/a/48892941
     let _fd = [];
-    for (let [k, v] of fd.entries()) {
-        _fd.push({ key: k, filename: v.name, data: await FileToObject(v) });
+    for (let [k, v] of fd) {
+        let _file = await FileToObject(v);
+        _fd.push({ key: k, filename: v.name, data: _file });
     }
     return JSON.stringify(_fd);
+
     /* support func */
-    function FileToObject(fileData) {
-        // https://stackoverflow.com/a/52311051
+    async function FileToObject(fileData) {
         const reader = new FileReader();
         reader.readAsDataURL(fileData);
         return new Promise((resolve, reject) => {
             reader.onload = () => resolve(reader.result);
-            reader.onerror = err => reject(err);
+            reader.onerror = reject;
         });
     }
 }
 
-async function JSONToFormData(jsonStr) {
-    return new Promise((resolve, reject) => {
-        let _obj = JSON.parse(jsonStr);
-        let _fd = new FormData();
-        for (let v of _obj.values()) {
-            let _file = Base64ToFile(v.filename, v.data);
-            _fd.append(v.key, _file);
-        }
-        if (_fd.entries().next().done)
-            reject(false);
-        else
-            resolve(_fd);
-    });
+function JSONToFormData(jsonStr) {
+    let _obj = JSON.parse(jsonStr);
+    let _fd = new FormData();
+    for (let v of Object.values(_obj)) {
+        let _file = Base64ToFile(v.filename, v.data);
+        _fd.append(v.key, _file);
+    }
+    if (!_fd.entries().next().done)
+        return _fd;
+    return null;
+
     /* support func */
     function Base64ToFile(filename, baseStr) {
         // https://stackoverflow.com/a/5100158
-        // convert base64/URLEncoded data component to raw binary data held in a string
         let byteString;
         if (baseStr.split(',')[0].indexOf('base64') >= 0)
             byteString = atob(baseStr.split(',')[1]);
@@ -443,7 +440,6 @@ async function JSONToFormData(jsonStr) {
 
         // separate out the mime component
         let mimeString = baseStr.split(',')[0].split(':')[1].split(';')[0];
-
         // write the bytes of the string to a typed array
         let ia = new Uint8Array(byteString.length);
         for (let i = 0; i < byteString.length; i++) {

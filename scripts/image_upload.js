@@ -122,7 +122,6 @@ settingsLoadedEvent.addHandler(function()
 
             $("#fileChooserLink").click(function() {
                 $("#fileUploadInput").click();
-                scrollToElement($("#uploadDropArea")[0]);
             });
 
             // debounce on keyup (1.5s) for url text input
@@ -235,8 +234,6 @@ settingsLoadedEvent.addHandler(function()
                     else if (ImageUpload.formFiles != null)
                         ImageUpload.doFileUpload();
                 }
-
-                scrollToElement($("#frm_body")[0]);
                 $("#frm_body").focus();
                 return false;
             });
@@ -549,16 +546,31 @@ settingsLoadedEvent.addHandler(function()
         doChattyPicsUpload: async function (formdata) {
             ImageUpload.removeUploadMessage();
             ImageUpload.addUploadMessage("silver", "Uploading to ChattyPics...");
-            let _fdJSON = await FormDataToJSON(formdata);
+            try {
+                formdata.forEach(val => {
+                    if (val.size > 3*1000*1000) {
+                        ImageUpload.handleUploadFailure(-1);
+                        throw Error("File is too large!");
+                    }
+                });
+            }
+            catch { return; }
 
-            browser.runtime.sendMessage({ name: "corbPost",
+            let fd = await FormDataToJSON(formdata);
+            browser.runtime.sendMessage({
+                name: "corbPost",
                 optionsObj: {
                     url: ImageUpload.chattyPicsUrl,
                     override: { chattypics: true }
                 },
-                data: _fdJSON
+                data: fd
             })
-            .then(links => ImageUpload.handleUploadSuccess(links))
+            .then(links => {
+                if (Array.isArray(links) && links.length > 0)
+                    return ImageUpload.handleUploadSuccess(links);
+                else
+                    return ImageUpload.handleUploadFailure(false);
+            })
             .catch(err => ImageUpload.handleUploadFailure(err));
         },
 
@@ -616,11 +628,12 @@ settingsLoadedEvent.addHandler(function()
 
         handleUploadFailure: function(resp) {
             ImageUpload.removeUploadMessage();
-            if(resp && resp.status != 200 && resp.statusText.length > 0) {
+            if (resp === -1)
+                ImageUpload.delayedRemoveUploadMessage("red", "Failure: file is too large!", null, 5000);
+            else if(resp && resp.status != 200 && resp.statusText.length > 0)
                 ImageUpload.delayedRemoveUploadMessage("red", "Failure:", resp.statusText, 5000);
-            } else {
+            else
                 ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 5000);
-            }
         },
 
         checkGfycatStatus: function (gfycatKey, override) {
