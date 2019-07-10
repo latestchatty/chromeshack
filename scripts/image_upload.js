@@ -546,15 +546,13 @@ settingsLoadedEvent.addHandler(function()
         doChattyPicsUpload: async function (formdata) {
             ImageUpload.removeUploadMessage();
             ImageUpload.addUploadMessage("silver", "Uploading to ChattyPics...");
-            try {
-                formdata.forEach(val => {
-                    if (val.size > 3*1000*1000) {
-                        ImageUpload.handleUploadFailure(-1);
-                        throw Error("File is too large!");
-                    }
-                });
+            for (let [k, v] of formdata) {
+                // if file is bigger than 3MB throw an error
+                if (v.size > 3*1000*1000) {
+                    ImageUpload.handleUploadFailure(-1);
+                    return;
+                }
             }
-            catch { return; }
 
             let fd = await FormDataToJSON(formdata);
             browser.runtime.sendMessage({
