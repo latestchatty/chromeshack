@@ -34,10 +34,10 @@ settingsLoadedEvent.addHandler(function()
             $("#imageUploadButton").toggle();
             $("#cancelUploadButton").toggle();
 
-            var template = $(/* html */`
+            let template = $(/* html */`
                 <div class="post_sub_container">
                     <div class="uploadContainer">
-                        <a class="showImageUploadLink">Show Image Upload</a>
+                        <a class="showImageUploadLink">Hide Image Uploader</a>
                         <div id="uploadFields" class="">
                             <div class="uploadFilters">
                                 <input type="radio" name="imgUploadSite" id="uploadChatty" checked="checked">
@@ -107,13 +107,13 @@ settingsLoadedEvent.addHandler(function()
 
             // bind some actions to our template elements
             $(".showImageUploadLink").click(function() {
-                ImageUpload.uploadShown = !ImageUpload.uploadShown;
-                $("#uploadFields").toggleClass("hidden", !ImageUpload.uploadShown);
-                var text = ImageUpload.uploadShown ? "Hide Image Upload" : "Show Image Upload";
+                ImageUpload.uploadShown = !$("#uploadFields").hasClass("hidden");
+                $("#uploadFields").toggleClass("hidden", ImageUpload.uploadShown);
+                let text = !ImageUpload.uploadShown ? "Hide Image Uploader" : "Show Image Uploader";
                 $(".showImageUploadLink").html(text);
 
                 // scroll to our elements contextually
-                if (!$("#uploadFields").hasClass("hidden"))
+                if (ImageUpload.uploadShown)
                     scrollToElement($(this)[0]);
                 else
                     scrollToElement($("#frm_body")[0]);
@@ -126,7 +126,7 @@ settingsLoadedEvent.addHandler(function()
             });
 
             // debounce on keyup (1.5s) for url text input
-            var debouncedKeyup = debounce(function(val) {
+            let debouncedKeyup = debounce(function(val) {
                 ImageUpload.loadFileUrl(val);
             }, 1500);
             $("#urlUploadInput").keyup(function() {
@@ -150,10 +150,10 @@ settingsLoadedEvent.addHandler(function()
                 $("#fileUploadInput").removeAttr("multiple");
                 $("#fileChooserLink").text("Choose a file");
                 $(".uploadDropLabel").text("or drop one here...");
-                // gfycat allows video input
+                // gfycat allows images and videos
                 if ($(this).is("#uploadGfycat")) {
                     $("#fileUploadInput").attr("accept", "image/*,video/*");
-                    var typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
+                    let typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
                     if ($("#urlUploadSnippetBox").is(":checked") &&
                         typeObj && typeObj.type == 1) {
                         ImageUpload.toggleSnippetControls(1);
@@ -165,7 +165,8 @@ settingsLoadedEvent.addHandler(function()
                     ImageUpload.toggleUrlBox(1);
                 }
                 else if ($(this).is("#uploadImgur")) {
-                    $("#fileUploadInput").attr("accept", "image/*");
+                    // imgur allows images and mp4s
+                    $("#fileUploadInput").attr("accept", "image/*,video/mp4");
                     ImageUpload.toggleSnippetControls(0);
                     ImageUpload.toggleUrlBox(0);
                 }
@@ -187,7 +188,7 @@ settingsLoadedEvent.addHandler(function()
             })
             $("#urlUploadSnippetStart, #urlUploadSnippetDuration").on("input", function(e) {
                 // tries to sanitize inputs
-                var _ret = ImageUpload.isValidNumber($(this).val(), $(this).attr("min"), $(this).attr("max"));
+                let _ret = ImageUpload.isValidNumber($(this).val(), $(this).attr("min"), $(this).attr("max"));
                 $(this).val(_ret);
                 e.preventDefault();
             })
@@ -197,13 +198,13 @@ settingsLoadedEvent.addHandler(function()
             $("#uploadDropArea").on('drop', function(e){
                 e.preventDefault();
                 e = e.originalEvent;
-                var files = e.dataTransfer.files;
+                let files = e.dataTransfer.files;
                 if (ImageUpload.inputIsImageList(files)) {
                     ImageUpload.loadFileData(files);
                 }
             });
             $("#fileUploadInput").change(function (e) {
-                var files = e.target.files;
+                let files = e.target.files;
                 if (ImageUpload.inputIsImageList(files)) {
                     ImageUpload.loadFileData(files);
                 }
@@ -243,7 +244,7 @@ settingsLoadedEvent.addHandler(function()
 
         inputIsImageList: function(files) {
             if (files.length > 0) {
-                for (var i=0; i < files.length; i++) {
+                for (let i=0; i < files.length; i++) {
                     // break and return false if any are not images
                     if (!/image/.test(files[i].type)) {
                         return false;
@@ -312,7 +313,7 @@ settingsLoadedEvent.addHandler(function()
             if (files.length > 0) {
                 if ($("#uploadChatty").is(":checked")) {
                     // allow multiple files for chattypics
-                    for (var i=0; i < files.length; i++) {
+                    for (let i=0; i < files.length; i++) {
                         ImageUpload.formFiles.push(files[i]);
                     }
                 } else {
@@ -333,8 +334,8 @@ settingsLoadedEvent.addHandler(function()
         },
 
         loadFileUrl: function(string) {
-            var _isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
-            var typeObj = ImageUpload.isValidUrl(string);
+            let _isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
+            let typeObj = ImageUpload.isValidUrl(string);
             if (_isGfycat && typeObj && typeObj.type == 1) {
                 // video hoster url
                 ImageUpload.formFileUrl = string;
@@ -375,10 +376,10 @@ settingsLoadedEvent.addHandler(function()
 
         clearFileData: function(soft) {
             // contextually reset our uploader form inputs
-            var typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
-            var _isUrl = typeObj && typeObj.type > -1;
-            var _isFiles = ImageUpload.formFiles.length > 0;
-            var _isUrlInput = ImageUpload.formFileUrl.length > 7;
+            let typeObj = ImageUpload.isValidUrl(ImageUpload.formFileUrl);
+            let _isUrl = typeObj && typeObj.type > -1;
+            let _isFiles = ImageUpload.formFiles.length > 0;
+            let _isUrlInput = ImageUpload.formFileUrl.length > 7;
 
             // override for checking chattypics filter
             if (soft) {
@@ -423,7 +424,7 @@ settingsLoadedEvent.addHandler(function()
 
         updateStatusLabel: function(files) {
             // update our status label
-            var label = $("#uploadStatusLabel")[0];
+            let label = $("#uploadStatusLabel")[0];
             if (files != null && files.length > 0 && files.length < 2) {
                 label.textContent = `${files[0].name}`;
                 return true;
@@ -437,11 +438,11 @@ settingsLoadedEvent.addHandler(function()
         },
 
         isValidUrl: function(string) {
-            var ip_pattern = /^(?:http:\/\/|https:\/\/)(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
-            var url_pattern = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
+            let ip_pattern = /^(?:http:\/\/|https:\/\/)(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
+            let url_pattern = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(gif|jpg|jpeg|png|webp)$/i.exec(string);
             // should work for most video hosting sites but still matches false positives due to being generic
-            var vid_pattern1 = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(mp4|webm|gifv)$/i.exec(string);
-            var vid_pattern2 = /^(?:http:\/\/|https:\/\/)(?:.*)?(?:[\w\-]+\.[\w]+)\/(?:.*\/)?((?!.*?\.[\w]+$)[\w\-\&\#\@\/\?\=\.]+)$/i.exec(string);
+            let vid_pattern1 = /^(?:http:\/\/|https:\/\/).*?(?:[\w\-]+\.[\w]+)\/(?:.*?\/)?([\w\-\_\&\#\@]+)\.(mp4|webm|gifv)$/i.exec(string);
+            let vid_pattern2 = /^(?:http:\/\/|https:\/\/)(?:.*)?(?:[\w\-]+\.[\w]+)\/(?:.*\/)?((?!.*?\.[\w]+$)[\w\-\&\#\@\/\?\=\.]+)$/i.exec(string);
 
             if (string.length > 7 && string.length < 2048 &&
                 $("#uploadGfycat").is(":checked") &&
@@ -465,9 +466,9 @@ settingsLoadedEvent.addHandler(function()
         },
 
         isValidNumber: function(number, min, max) {
-            var _min = Number.parseInt(min);
-            var _max = Number.parseInt(max);
-            var _num = Number.isNaN(Number.parseInt(number)) ? _min : Number.parseInt(number);
+            let _min = Number.parseInt(min);
+            let _max = Number.parseInt(max);
+            let _num = Number.isNaN(Number.parseInt(number)) ? _min : Number.parseInt(number);
             if (_num < _min)
                 return _min;
             else if (_num > max)
@@ -477,29 +478,29 @@ settingsLoadedEvent.addHandler(function()
         },
 
         doUrlUpload: function () {
-            var isImgur = $("#uploadImgur").length && $("#uploadImgur").is(":checked");
-            var isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
-            var url = ImageUpload.formFileUrl;
+            let isImgur = $("#uploadImgur").length && $("#uploadImgur").is(":checked");
+            let isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
+            let url = ImageUpload.formFileUrl;
 
             if (isImgur) {
                 // only images
-                var fd = new FormData();
+                let fd = new FormData();
                 fd.append("type", "url");
                 fd.append("image", url);
 
                 ImageUpload.doImgurUpload(fd);
             } else if (isGfycat) {
-                var fileObj = null;
-                var _isSnip = $("#urlUploadSnippetBox").length &&
+                let fileObj = null;
+                let _isSnip = $("#urlUploadSnippetBox").length &&
                     $("#urlUploadSnippetBox").is(":checked");
-                var snipStart = $("#urlUploadSnippetStart").val();
-                var snipDuration = $("#urlUploadSnippetDuration").val();
+                let snipStart = $("#urlUploadSnippetStart").val();
+                let snipDuration = $("#urlUploadSnippetDuration").val();
 
                 if (_isSnip && snipStart > -1 && snipDuration > 0)
                     fileObj = { "cut": { "start": snipStart, "duration": snipDuration } };
 
-                var typeObj = ImageUpload.isValidUrl(url);
-                var urlObj = { "fetchUrl": url, "title": typeObj && typeObj.filename };
+                let typeObj = ImageUpload.isValidUrl(url);
+                let urlObj = { "fetchUrl": url, "title": typeObj && typeObj.filename };
                 fileObj = fileObj ? Object.assign({}, fileObj, urlObj) : urlObj;
 
                 // could be video or image
@@ -508,15 +509,15 @@ settingsLoadedEvent.addHandler(function()
         },
 
         doFileUpload: function () {
-            var isChattyPics  = $("#uploadChatty").length && $("#uploadChatty").is(":checked");
-            var isImgur = $("#uploadImgur").length && $("#uploadImgur").is(":checked");
-            var isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
-            var filesList = ImageUpload.formFiles;
+            let isChattyPics  = $("#uploadChatty").length && $("#uploadChatty").is(":checked");
+            let isImgur = $("#uploadImgur").length && $("#uploadImgur").is(":checked");
+            let isGfycat = $("#uploadGfycat").length && $("#uploadGfycat").is(":checked");
+            let filesList = ImageUpload.formFiles;
 
-            var fd = new FormData();
+            let fd = new FormData();
             if (isChattyPics) {
                 // Chattypics prefers php array format
-                for (var file of filesList) {
+                for (let file of filesList) {
                     fd.append("userfile[]", file);
                 }
                 ImageUpload.doChattyPicsUpload(fd);
@@ -539,7 +540,7 @@ settingsLoadedEvent.addHandler(function()
                 data: formdata
             }).then(res => {
                 if (res && res.data && res.data.link)
-                    ImageUpload.handleUploadSuccess(res.data.link);
+                    ImageUpload.handleUploadSuccess([ res.data.link ]);
                 else
                     ImageUpload.handleUploadFailure(res);
             });
@@ -557,105 +558,13 @@ settingsLoadedEvent.addHandler(function()
                 },
                 data: _fdJSON
             })
-            .then(link => ImageUpload.handleUploadSuccess(link))
+            .then(links => ImageUpload.handleUploadSuccess(links))
             .catch(err => ImageUpload.handleUploadFailure(err));
-        },
-
-        handleUploadSuccess: function(link) {
-            $("#frm_body").insertAtCaret(link + "\n");
-            ImageUpload.delayedRemoveUploadMessage("green", "Success!", null, 3000);
-        },
-
-        handleUploadFailure: function(resp) {
-            ImageUpload.removeUploadMessage();
-            if(resp && resp.status != 200 && resp.statusText.length > 0) {
-                ImageUpload.delayedRemoveUploadMessage("red", "Failure:", resp.statusText, 5000);
-            } else {
-                ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 5000);
-            }
-        },
-
-        addUploadMessage: function(color, message, detailMsg, spin) {
-            var statusLabel = $("#errorStatusLabel");
-            var statusLabelDetail = $("#errorStatusLabelDetail");
-
-            ImageUpload.removeUploadMessage();
-            $("#errorLabels").removeClass("hidden");
-            statusLabel.css("color", color);
-            statusLabelDetail.css("color", color);
-            if (spin) { statusLabel.removeClass("spinner").addClass("spinner"); }
-
-            statusLabel.text(message);
-            if(detailMsg != undefined && detailMsg.length > 0) {
-                statusLabelDetail.text(detailMsg);
-            }
-        },
-
-        removeUploadMessage: function(value) {
-            $("#errorStatusLabel").text("");
-            $("#errorStatusLabelDetail").text("");
-            $("#errorLabels").removeClass("hidden").addClass("hidden");
-            $("#errorStatusLabel").removeClass("spinner");
-            ImageUpload.updateStatusLabel();
-            return value;
-        },
-
-        delayedRemoveUploadMessage: function(color, mainMessage, detailMessage, delay, value) {
-            // helper function that returns a promised value to the caller after the UploadMessage
-            ImageUpload.addUploadMessage(color, mainMessage, detailMessage);
-            var ret = new Promise(function(resolve) {
-                setTimeout(function() {
-                    ImageUpload.removeUploadMessage();
-                    resolve(value);
-                }, delay);
-            });
-            return ret;
-        },
-
-        doFormTimer: function(override) {
-            if (override && ImageUpload.formUploadTimer != null) {
-                ImageUpload.formUploadElapsed = 0;
-                clearInterval(ImageUpload.formUploadTimer);
-                return;
-            }
-            // just a rough timer - not necessarily reliable
-            ImageUpload.formUploadTimer = setInterval(function() {
-                ImageUpload.formUploadElapsed++;
-            }, 1000);
-        },
-
-        elapsedToString: function() {
-            return new Date(1000 * ImageUpload.formUploadElapsed).toISOString().substr(11, 8);
-        },
-
-        handleGfycatUploadStatus: function (json) {
-            if (json && json.task == "encoding") {
-                var elapsed = ImageUpload.elapsedToString();
-                ImageUpload.addUploadMessage("silver", `Encoding ${elapsed}`, null, true);
-                // endpoint is busy so loop until we timeout or we're cancelled
-                return false;
-            }
-            else if (json && json.task == "complete" && json.gfyname) {
-                // call checkGfycatStatus with an override object to report the success
-                ImageUpload.checkGfycatStatus(null, { "gfyname": json.gfyname });
-                return false;
-            } else {
-                var err = JSON.stringify(json.errorMessage);
-                if (json.code) {
-                    ImageUpload.delayedRemoveUploadMessage(
-                        "red", "Failure:", `${err.code} = ${err.description}`, 5000
-                    );
-                } else if (json.task == 'NotFoundo') {
-                    ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 3000);
-                }
-                console.log(`Gfycat endpoint error: ${json}`);
-                return true;
-            }
         },
 
         doGfycatUpload: function(fileObj) {
             ImageUpload.removeUploadMessage();
-            var dataBody = !isEmpty(fileObj) ? JSON.stringify(fileObj) : null;
+            let dataBody = !isEmpty(fileObj) ? JSON.stringify(fileObj) : null;
             // keep track of how long we take
             ImageUpload.doFormTimer();
 
@@ -669,8 +578,8 @@ settingsLoadedEvent.addHandler(function()
                     return;
                 }
 
-                var key = key_resp.gfyname;
-                var dropUrl = key_resp.uploadType;
+                let key = key_resp.gfyname;
+                let dropUrl = key_resp.uploadType;
                 if (fileObj.fetchUrl) {
                     // if we used 'fetchUrl' the server will report back a key
                     ImageUpload.addUploadMessage("silver", "Fetching to Gfycat...");
@@ -698,16 +607,32 @@ settingsLoadedEvent.addHandler(function()
             }).catch(err => console.log(err));
         },
 
+        handleUploadSuccess: function(links) {
+            for (let i in links) {
+                $("#frm_body").insertAtCaret(links[i] + "\n");
+            }
+            ImageUpload.delayedRemoveUploadMessage("green", "Success!", null, 3000);
+        },
+
+        handleUploadFailure: function(resp) {
+            ImageUpload.removeUploadMessage();
+            if(resp && resp.status != 200 && resp.statusText.length > 0) {
+                ImageUpload.delayedRemoveUploadMessage("red", "Failure:", resp.statusText, 5000);
+            } else {
+                ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 5000);
+            }
+        },
+
         checkGfycatStatus: function (gfycatKey, override) {
             if (override instanceof Object && override.gfyname) {
-                var _key = override.gfyname;
-                var statUrl = `${ImageUpload.gfycatApiUrl}/${_key}`;
+                let _key = override.gfyname;
+                let statUrl = `${ImageUpload.gfycatApiUrl}/${_key}`;
                 // grab our formal url from the endpoint rather than constructing it
                 fetchSafe(statUrl).then(stat_resp => {
-                    var _url = stat_resp && stat_resp.gfyItem.webmUrl;
-                    var elapsed = ImageUpload.elapsedToString();
+                    let _url = stat_resp && stat_resp.gfyItem.webmUrl;
+                    let elapsed = ImageUpload.elapsedToString();
                     if (_url) {
-                        $("#frm_body").insertAtCaret(stat_resp.gfyItem.webmUrl + "\n");
+                        ImageUpload.handleUploadSuccess([ stat_resp.gfyItem.webmUrl ]);
                         ImageUpload.delayedRemoveUploadMessage("green", `Success in ${elapsed}`, null, 3000, true);
                     }
                     ImageUpload.doFormTimer(true);
@@ -716,7 +641,7 @@ settingsLoadedEvent.addHandler(function()
                 return;
             }
 
-            var requestUrl = `${ImageUpload.gfycatStatusUrl}/${gfycatKey}`;
+            let requestUrl = `${ImageUpload.gfycatStatusUrl}/${gfycatKey}`;
             // verify the upload/fetch - every 3s unless cancelled
             ImageUpload.formUploadRepeater = setInterval(function() {
                 fetchSafe(requestUrl).then(req_resp => {
@@ -727,6 +652,85 @@ settingsLoadedEvent.addHandler(function()
                     }
                 });
             }, 3000);
+        },
+
+        handleGfycatUploadStatus: function (json) {
+            if (json && json.task == "encoding") {
+                let elapsed = ImageUpload.elapsedToString();
+                ImageUpload.addUploadMessage("silver", `Encoding ${elapsed}`, null, true);
+                // endpoint is busy so loop until we timeout or we're cancelled
+                return false;
+            }
+            else if (json && json.task == "complete" && json.gfyname) {
+                // call checkGfycatStatus with an override object to report the success
+                ImageUpload.checkGfycatStatus(null, { "gfyname": json.gfyname });
+                return false;
+            } else {
+                let err = JSON.stringify(json.errorMessage);
+                if (json.code) {
+                    ImageUpload.delayedRemoveUploadMessage(
+                        "red", "Failure:", `${err.code} = ${err.description}`, 5000
+                    );
+                } else if (json.task == 'NotFoundo') {
+                    ImageUpload.delayedRemoveUploadMessage("red", "Failure!", null, 3000);
+                }
+                console.log(`Gfycat endpoint error: ${json}`);
+                return true;
+            }
+        },
+
+        addUploadMessage: function(color, message, detailMsg, spin) {
+            let statusLabel = $("#errorStatusLabel");
+            let statusLabelDetail = $("#errorStatusLabelDetail");
+
+            ImageUpload.removeUploadMessage();
+            $("#errorLabels").removeClass("hidden");
+            statusLabel.css("color", color);
+            statusLabelDetail.css("color", color);
+            if (spin) { statusLabel.removeClass("spinner").addClass("spinner"); }
+
+            statusLabel.text(message);
+            if(detailMsg != undefined && detailMsg.length > 0) {
+                statusLabelDetail.text(detailMsg);
+            }
+        },
+
+        removeUploadMessage: function(value) {
+            $("#errorStatusLabel").text("");
+            $("#errorStatusLabelDetail").text("");
+            $("#errorLabels").removeClass("hidden").addClass("hidden");
+            $("#errorStatusLabel").removeClass("spinner");
+            ImageUpload.updateStatusLabel();
+            return value;
+        },
+
+        delayedRemoveUploadMessage: function(color, mainMessage, detailMessage, delay, value) {
+            // helper function that returns a promised value to the caller after the UploadMessage
+            ImageUpload.addUploadMessage(color, mainMessage, detailMessage);
+            let ret = new Promise(function(resolve) {
+                setTimeout(function() {
+                    $("#uploadDropArea").removeClass("dragOver");
+                    ImageUpload.removeUploadMessage();
+                    resolve(value);
+                }, delay);
+            });
+            return ret;
+        },
+
+        doFormTimer: function(override) {
+            if (override && ImageUpload.formUploadTimer != null) {
+                ImageUpload.formUploadElapsed = 0;
+                clearInterval(ImageUpload.formUploadTimer);
+                return;
+            }
+            // just a rough timer - not necessarily reliable
+            ImageUpload.formUploadTimer = setInterval(function() {
+                ImageUpload.formUploadElapsed++;
+            }, 1000);
+        },
+
+        elapsedToString: function() {
+            return new Date(1000 * ImageUpload.formUploadElapsed).toISOString().substr(11, 8);
         }
     };
 

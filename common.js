@@ -207,9 +207,14 @@ function postXHR({ url, data, header, method, override }) {
                 let { chattypics } = override || {};
                 if (chattypics) {
                     let _resFragment = sanitizeToFragment(text);
-                    let _resElemVal = _resFragment.querySelector("#link11").value;
-                    if (_resElemVal)
-                        resolve(_resElemVal)
+                    let _resElemArr = _resFragment.querySelector("#allLinksDirect");
+                    let _resElemVal = _resFragment.querySelector("#link11");
+                    // return a list of links if applicable
+                    if (_resElemArr || _resElemVal)
+                        resolve(_resElemArr ?
+                            _resElemArr.value.split("\n").filter(x => x !== "") :
+                            (_resElemVal && [ _resElemVal.value ])
+                        );
                     reject(false);
                 } else {
                     var _data = JSON.parse(text);

@@ -277,21 +277,13 @@ browser.runtime.onMessage.addListener(function(request, sender)
     else if (request.name === "corbPost") {
         return new Promise(async (resolve, reject) => {
             let _fd = await JSONToFormData(request.data);
-            /* for debugging purposes
-            let _fdStr = FormDataToJSON(_fd);
-            console.log(_fdStr, request.data === _fdStr);
-            resolve(_fdStr);
-            */
             return postXHR({
                 url: request.optionsObj.url,
                 headers: request.optionsObj.headers,
                 override: request.optionsObj.override,
                 data: _fd
             })
-            .then(res => {
-                console.log(res);
-                resolve(res);
-            })
+            .then(resolve)
             .catch(reject);
         });
     }
