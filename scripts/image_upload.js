@@ -120,8 +120,9 @@ settingsLoadedEvent.addHandler(function()
                 return false;
             });
 
-            $("#fileChooserLink").click(function() {
+            $("#fileChooserLink").click(function(e) {
                 $("#fileUploadInput").click();
+                e.preventDefault();
             });
 
             // debounce on keyup (1.5s) for url text input
