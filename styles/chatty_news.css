@@ -1,0 +1,99 @@
+body.chattynews #SNCNbackimg {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+body.chattynews #SNCNmaskimg {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: black;
+    opacity: 0.85;
+    transition: background 1s;
+}
+body.chattynews.chattynews_dim60 #SNCNmaskimg {
+    opacity: 0.60;
+}
+body.chattynews.chattynews_dim65 #SNCNmaskimg {
+    opacity: 0.65;
+}
+body.chattynews.chattynews_dim70 #SNCNmaskimg {
+    opacity: 0.70;
+}
+body.chattynews.chattynews_dim75 #SNCNmaskimg {
+    opacity: 0.75;
+}
+body.chattynews.chattynews_dim80 #SNCNmaskimg {
+    opacity: 0.80;
+}
+body.chattynews.chattynews_dim85 #SNCNmaskimg {
+    opacity: 0.85;
+}
+body.chattynews.chattynews_dim90 #SNCNmaskimg {
+    opacity: 0.90;
+}
+body.chattynews #SNCNheadlines {
+    width: 300px;
+    position: relative;
+    float: right;
+    right: 5px;
+    top: 5px;
+    background: black;
+    z-index: 5;
+    border: 1px outset #ddd;
+}
+body.chattynews #SNCNheadlines h3 {
+    color: #ddd;
+    text-align: center;
+}
+body.chattynews #SNCNheadlines ul {
+    list-style-type:disc;
+    font-size: 110%;
+    font-weight: bold;
+}
+body.chattynews #SNCNheadlines ul li a {
+    color: #ddd !important;
+    text-decoration: none;
+}
+body.chattynews .content {
+    margin-top: 2em;
+}
+
+
+body.chattynews_image div.article { 
+    background-color: black; position: relative;
+}
+body.chattynews_image div.threads { 
+    position: relative; 
+}
+body.chattynews_image div.threads ul ul li.last, body.chattynews_image div.commentsblock, body.page-chatty.chattynews_image #content { 
+    background-color: transparent !important;
+}
+body.chattynews_image #chatty_comments_wrap { 
+    padding-bottom: 120%;
+}
+body.chattynews_image div div.treeview ul li:last-child { 
+    background: url(../images/commentsbulletlast.gif) 2px top no-repeat;
+}
+body.chattynews_image footer.primary {
+    position: relative; margin-top: 100px;
+}
+body.chattynews_image #chatty_comments_wrap {
+    background-color: transparent !important;
+    position: relative;
+}
+body.chattynews_image #featured-thread {
+    position: relative;
+}
+
+
+body.chattynews_article div.fpauthor_14475 {
+    background-color: #306666 !important; border: 1px solid white !important;
+}

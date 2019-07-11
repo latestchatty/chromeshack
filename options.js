@@ -420,6 +420,11 @@ function getChattyNewsWallpaper() {
     return ele.checked;
 }
 
+function getChattyNewsWallpaperDim() {
+    var ele = document.getElementById('chatty_news_wallpaper_dim');
+    return ele.value;
+}
+
 function getChattyNewsWallpaperBrighten() {
     var ele = document.getElementById('chatty_news_wallpaper_brighten');
     return ele.checked;
@@ -436,6 +441,7 @@ function showChattyNewsSettings(){
         saveOption("chatty_news_article_news","true");
         saveOption("chatty_news_highlight_article_posts","true");
         saveOption("chatty_news_show_image","true");
+        saveOption("chatty_news_wallpaper_dim","80");
         saveOption("chatty_news_brighten_image","true");
     }
     ele.value = val;
@@ -445,13 +451,20 @@ function showChattyNewsSettings(){
     ele.checked = getOption("chatty_news_highlight_article_posts");
     ele = document.getElementById('chatty_news_wallpaper')
     ele.checked = getOption("chatty_news_show_image");
-    var scrollPref = getOption("enabled_scripts").contains("scrolling_performance_hack");
+    var scrollPref = getOption("enabled_scripts").indexOf("scrolling_performance_hack") > -1;
     if(scrollPref){
         ele.disabled = true;
         setOption("chatty_news_brighten_image","false");
     }
     ele = document.getElementById('chatty_news_wallpaper_brighten')
     ele.checked = getOption("chatty_news_brighten_image");
+    
+    ele = document.getElementById('chatty_news_wallpaper_dim')
+    for(var i=0; i < ele.options.length; i++){
+        if( ele.options[i].value == getOption("chatty_news_wallpaper_dim")){
+            ele.options[i].selected = true;
+        }
+    }
 }
 
 function saveOptions()
@@ -476,6 +489,7 @@ function saveOptions()
         saveOption("chatty_news_article_news", getChattyNewsArticleNews());
         saveOption("chatty_news_highlight_article_posts", getChattyNewsArticlePosts());
         saveOption("chatty_news_show_image", getChattyNewsWallpaper());
+        saveOption("chatty_news_wallpaper_dim", getChattyNewsWallpaperDim());
         saveOption("chatty_news_brighten_image", getChattyNewsWallpaperBrighten());
     }
     catch (err)

@@ -71,7 +71,8 @@
             "styles/comic_scripts.css",
             "styles/embed_socials.css",
             "styles/two_pane.css",
-            "styles/media.css"
+            "styles/media.css",
+            "styles/chatty_news.css"
          ],
         "matches": [
             "*://shacknews.com/chatty*",
