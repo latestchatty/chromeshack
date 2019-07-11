@@ -250,6 +250,11 @@ settingsLoadedEvent.addHandler(function()
                         var type = Number(getSetting("color_style_usernames_type"));
                         if(isNaN(type)) type = 1;
                         
+                        if(type == 3 || type == 4)
+                        {
+                            css += "div.postmeta span.author span.user a { background-position-y: 3px; background-position-x: 5px; }\n";
+                        }
+                        
                         //iterate matches, check each if already done, if not, generate CSS and mark as done
                         for(i=1;i<matches.length;i++)
                         {
@@ -279,30 +284,102 @@ settingsLoadedEvent.addHandler(function()
                                         tempcss += 'color: #'+hex.substr(hex.length-6)+'; filter: drop-shadow(0px 0px 1px #888);';
                                     }
                                     break;
-                                    case 3:{
-                                        var color = fullid.substr(fullid.length-6);
-                                        var r1 = 255-((color.charAt(5)*20) + (color.charAt(2)*2));
-                                        var g1 = 255-((color.charAt(4)*20) + (color.charAt(1)*2));
-                                        var b1 = 255-((color.charAt(3)*20) + (color.charAt(0)*2));
-                                        var r2 = 255-((color.charAt(1)*20) + (color.charAt(3)*2));
-                                        var g2 = 255-((color.charAt(0)*20) + (color.charAt(5)*2));
-                                        var b2 = 255-((color.charAt(2)*20) + (color.charAt(4)*2));
-                                        tempcss += 'display: inline-block; background: linear-gradient(to right, rgb('+r1+','+g1+','+b1+'), rgb('+r2+','+g2+','+b2+')); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none;';
-                                    }
-                                    break;
+                                    case 3:
                                     case 4:{
-                                        var color = Number(fullid);
-                                        var hex = color.toString(16);
-                                        hex = "000000"+hex;
-                                        hex = hex.substr(hex.length-6);
-                                        var hex2 = hex.charAt(3)+hex.charAt(1)+hex.charAt(5)+hex.charAt(0)+hex.charAt(4)+hex.charAt(2);
-                                        tempcss += 'display: inline-block; background: linear-gradient(to right, #'+hex+', #'+hex2+'); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 0px 1px #888); text-shadow: none;';
+                                        var width = 100;
+                                        var height = 20;
+                                        var userelm = null;
+                                        var color1 = "red";
+                                        var color2 = "blue";
+                                        var username = "Unknown Name";
+                                        var fontname = "ariel, helvetica";
+                                        var fontsize = "16px";
+                                        var fontweight = "normal";
+                                        var outline = false;
+                                        
+                                        try{
+                                            //first, we need to get one of the elements that contain the user name to get it's width
+                                            //so first try to find the name in a one line (reply) post (greater chance of it being in a reply)
+                                            var replies = document.getElementsByClassName("olauthor_"+id);
+                                            if(replies != null && replies.length > 0)
+                                            {
+                                                var userelms = replies.item(0).getElementsByClassName("oneline_user");
+                                                if(userelms != null && userelms.length > 0)
+                                                {
+                                                    userelm = userelms.item(0);
+                                                }
+                                            }
+                                            
+                                            //if not found, try fullpost
+                                            if(userelm == null)
+                                            {
+                                                var fullposts = document.getElementsByClassName("fpauthor_"+id);
+                                                if(fullposts != null && fullposts.length > 0)
+                                                {
+                                                    var userelms = fullposts.item(0).getElementsByClassName("user");
+                                                    if(userelms != null && userelms.length>0)
+                                                    {
+                                                        userelm = userelms.item(0).firstElementChild;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if(userelm != null)
+                                            {
+                                                //get properties we need for the svg
+                                                width = userelm.clientWidth || userelm.offsetWidth || width;
+                                                height = userelm.clientHeight || userelm.offsetHeight || height;
+                                                username = userelm.innerText;
+                                                var computedStyle = window.getComputedStyle( userelm, null );
+                                                fontname = computedStyle.getPropertyValue( "font-family" );
+                                                fontsize = computedStyle.getPropertyValue( "font-size" );
+                                                fontweight = computedStyle.getPropertyValue( "font-weight" );
+                                                fontsize = parseFloat(fontsize);
+                                                width += 10;
+                                            }
+                                            
+                                            if(type == 3)
+                                            {
+                                                var color = fullid.substr(fullid.length-6);
+                                                var r1 = 255-((color.charAt(5)*20) + (color.charAt(2)*2));
+                                                var g1 = 255-((color.charAt(4)*20) + (color.charAt(1)*2));
+                                                var b1 = 255-((color.charAt(3)*20) + (color.charAt(0)*2));
+                                                var r2 = 255-((color.charAt(1)*20) + (color.charAt(3)*2));
+                                                var g2 = 255-((color.charAt(0)*20) + (color.charAt(5)*2));
+                                                var b2 = 255-((color.charAt(2)*20) + (color.charAt(4)*2));
+                                                
+                                                color1 = "rgb("+r1+","+g1+","+b1+")";
+                                                color2 = "rgb("+r2+","+g2+","+b2+")";
+                                            }
+                                            else if (type == 4)
+                                            {
+                                                var color = Number(fullid);
+                                                var hex = color.toString(16);
+                                                hex = "000000"+hex;
+                                                hex = hex.substr(hex.length-6);
+                                                var hex2 = hex.charAt(3)+hex.charAt(1)+hex.charAt(5)+hex.charAt(0)+hex.charAt(4)+hex.charAt(2);
+                                                
+                                                color1 = "#"+hex;
+                                                color2 = "#"+hex2;
+                                                outline = true;
+                                            }
+                                        }
+                                        catch(error)
+                                        {
+                                            //oops
+                                        }
+                                        
+                                        var gradientTextSvg = HighlightUsers.generateGradient(username, color1, color2, width, height,fontname, fontsize, fontweight, outline);
+                                        
+                                        //tempcss += 'display: inline-block; background: linear-gradient(to right, rgb('+r1+','+g1+','+b1+'), rgb('+r2+','+g2+','+b2+')); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none;';
+                                        //tempcss += 'display: inline-block; background: linear-gradient(to right, #'+hex+', #'+hex2+'); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 0px 1px #888); text-shadow: none;';
+                                        
+                                        tempcss += "color: transparent; " + gradientTextSvg +" background-repeat: no-repeat; background-position-x: 5px; padding-right: 10px; text-shadow: none;";
                                     }
                                     break;
+
                                 }
-                                //TODO: Fix 3 and 4 above (gradient names) as currently it only works on webkit
-                                //to fix, set text to be transparent and generate an SVG of the text with a gradient fill color, setting that svg to be the background image
-                                //but this requires either figuring out the name for each id, or somehow have the svg read the content of the element it is in.
+                                
                                 
                                 if(tempcss.length>0){
                                     css += '#page div.oneline.olauthor_' + id + ' span.oneline_user, #page div.fpauthor_' + id + ' div.postmeta span.author span.user a { ';
@@ -318,6 +395,19 @@ settingsLoadedEvent.addHandler(function()
                 }
                 
                 
+            },
+            
+            generateGradient: function(username, color1, color2, width, height, fontname, fontsize, fontweight, outline)
+            {
+                var outlinetext = "";
+                if(outline)
+                {
+                    outlinetext = `<text x="0" y="12" stroke="#888" stroke-width="1px" style="font-family: ${fontname};font-size: ${fontsize}px; font-weight: ${fontweight};line-height: 16px;">${username}</text>`;
+                }
+                var svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${width} ${height}" width="${width}px" height="${height}px"><defs><linearGradient id="grad" gradientUnits="userSpaceOnUse"><stop stop-color="${color1}" offset="10%"></stop><stop stop-color="${color2}" offset="90%"></stop></linearGradient></defs>${outlinetext}<text x="0" y="12" fill="url(#grad)" style="font-family: ${fontname};font-size: ${fontsize}px; font-weight: ${fontweight};line-height: 16px;">${username}</text></svg>`;
+                var encoded = window.btoa(svg);
+                var backgroundimg = "\nbackground-image: url('data:image/svg+xml;base64,"+encoded+"');\n";
+                return backgroundimg;
             },
 
             combineCss: function(users, group)
