@@ -38,7 +38,7 @@
 
         if (text == null || text.length == 0)
         {
-            ret.innerHTML = '&nbsp;';
+            ret.textContent = '&nbsp;';
         }
         else
         {
@@ -61,93 +61,6 @@
             }
         }
         return ret;
-    }
-
-    function drawProfile(data)
-    {
-        username = data['data']['username'];
-
-        pDiv = document.createElement('div');
-        pDiv.className = 'tw-profile';
-
-        pDiv.appendChild(createTextWrapper('h2', username));
-
-        // Create General panel
-        pnl = document.createElement('div');
-        pnl.className = 'tw-panel';
-
-        pnl.appendChild(createTextWrapper('h3', 'General'));
-
-        dl = document.createElement('dl');
-
-        dl.appendChild(createTextWrapper('dt', 'Age'));
-        dl.appendChild(createTextWrapper('dd', data['data']['age']));
-
-        dl.appendChild(createTextWrapper('dt', 'Location'));
-        dl.appendChild(createTextWrapper('dd', data['data']['location']));
-
-        dl.appendChild(createTextWrapper('dt', 'Gender'));
-        dl.appendChild(createTextWrapper('dd', data['data']['gender']));
-
-        dl.appendChild(createTextWrapper('dt', username + '\'s Posts', 'https://www.shacknews.com/user/' + username + '/posts'));
-
-        var actualUser = '&user=' + encodeURIComponent(getShackUsername());
-        dl.appendChild(createTextWrapper('dt', '[lol]: Shit ' + username + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser));
-
-        // Create menu item for reading post count
-        var aPostCount = document.createElement('a');
-        aPostCount.appendChild(document.createTextNode('Get Post Count'));
-        aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(username) }, false);
-        dt = document.createElement('dt');
-        dt.appendChild(aPostCount);
-        dl.appendChild(dt);
-
-        pnl.appendChild(dl);
-
-        pDiv.appendChild(pnl);
-
-        // Create Accounts panel
-        pnl = document.createElement('div');
-        pnl.className = 'tw-panel';
-
-        pnl.appendChild(createTextWrapper('h3', 'Accounts'));
-
-        dl = document.createElement('dl');
-
-        accounts = data['data']['services'];
-        if (accounts != null)
-        {
-            for (i = 0, ii = accounts.length; i < ii; i++)
-            {
-                dl.appendChild(createTextWrapper('dt', accounts[i]['service']));
-                dl.appendChild(createTextWrapper('dd', accounts[i]['user']));
-            }
-        }
-
-        pnl.appendChild(dl);
-
-        pDiv.appendChild(pnl);
-
-        // Create About panel
-        pnl = document.createElement('div');
-        pnl.className = 'tw-panel';
-
-        pnl.appendChild(createTextWrapper('h3', 'About'));
-        pnl.appendChild(createTextWrapper('div', data['data']['about']));
-
-        pDiv.appendChild(pnl);
-
-        // Add close button
-        btn = document.createElement('div');
-        btn.className = 'tw-close';
-        btn.appendChild(document.createTextNode('CLOSE'));
-        btn.setAttribute('title', 'Close Profile');
-        btn.addEventListener('click', function(e) { e.target.parentNode.style.display = 'none'; }, false);
-
-        pDiv.appendChild(btn);
-
-        // Add profile to page
-        document.getElementsByTagName('body')[0].appendChild(pDiv);
     }
 
     function displayWorkingBar(message)
@@ -186,43 +99,6 @@
         {
             workingBar.style.display = 'none';
         }
-    }
-
-    function getPostCount(username)
-    {
-        displayWorkingBar('Retrieving post counts...');
-
-        const usernameLowercase = username.toLowerCase();
-
-        xhrRequest("https://shackstats.com/data/users_info.csv").then(async res => {
-            var response = await res.text();
-            // papa parse is too slow to parse this whole csv file so filter it down to likely lines using a fast
-            // method and then use papa parse to parse that vastly shortened csv file
-            const csvLines = response.split('\n');
-            const filteredCsvLines = [];
-            for (const csvLine of csvLines) {
-                if (filteredCsvLines.length === 0 || csvLine.toLowerCase().includes(usernameLowercase)) {
-                    filteredCsvLines.push(csvLine);
-                }
-            }
-
-            const csv = Papa.parse(filteredCsvLines.join('\n'), { header: true });
-
-            hideWorkingBar();
-
-            var count = 0;
-            for (const row of csv.data) {
-                if (row.username.toLowerCase() === usernameLowercase) {
-                    count = row.post_count;
-                }
-            }
-
-            // use setTimeout so that the loading bar disappears before we show the modal alert
-            setTimeout(() => alert(username + ' has ' + addCommas(count) + ' posts'), 0);
-        }).catch(err => {
-            console.log(err);
-            alert('Unable to load the post counts.');
-        });
     }
 
     function createListItem(text, url, className, target)
@@ -273,38 +149,20 @@
             }
 
             // Create menu items and add them to ulUser
-            var postsUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
-                ? 'https://winchatty.com/nusearch?a=' + username
-                : 'https://www.shacknews.com/user/' + username + '/posts';
+            var postsUrl = 'https://www.shacknews.com/user/' + username + '/posts';
             ulUser.appendChild(createListItem(your + ' Posts', postsUrl));
 
-            var vanityUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
-                ? 'https://winchatty.com/nusearch?q=' + username
-                : 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
+            var vanityUrl = 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=' + username + '&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc';
             ulUser.appendChild(createListItem(vanitySearch, vanityUrl));
 
-            var repliesUrl = getSetting("enabled_scripts").contains("use_winchatty_search")
-                ? 'https://winchatty.com/nusearch?pa=' + username
-                : 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
+            var repliesUrl = 'https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=' + username + '&chatty_filter=all&result_sort=postdate_desc';
             ulUser.appendChild(createListItem(parentAuthor, repliesUrl, 'userDropdown-separator'));
 
-            // Include reference to person actually sitting behind the keyboard in all links to lol page
-            var actualUser = '&user=' + encodeURIComponent(getShackUsername());
-
-            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Wrote', 'https://lol.lmnopc.com/user.php?authoredby=' + username + actualUser, 'userDropdown-lol'));
-            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [lol]\'d', 'https://lol.lmnopc.com/user.php?loldby=' + username + actualUser, 'userDropdown-lol'));
-            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [inf]\'d', 'https://lol.lmnopc.com/user.php?tag=inf&loldby=' + username + actualUser, 'userDropdown-lol'));
-            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [tag]\'d', 'https://lol.lmnopc.com/user.php?tag=tag&loldby=' + username + actualUser, 'userDropdown-lol'));
-            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' [unf]\'d', 'https://lol.lmnopc.com/user.php?tag=unf&loldby=' + username + actualUser, 'userDropdown-lol'));
-            ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://lol.lmnopc.com/user.php?fanclub=' + username + actualUser, 'userDropdown-lol userDropdown-separator'));
-
-            // Create menu item for reading post count
-            var aPostCount = document.createElement('a');
-            aPostCount.appendChild(document.createTextNode('Get ' + your + ' Post Count'));
-            aPostCount.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); getPostCount(decodeURIComponent(username)) }, false);
-            var liPostCount = document.createElement('li');
-            liPostCount.appendChild(aPostCount);
-            ulUser.appendChild(liPostCount);
+            const wasWere = friendlyName === 'You' ? 'Were' : 'Was';
+            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Wrote', 'https://www.shacknews.com/tags-user?user=' + username + '#authored_by_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : Stuff ' + friendlyName + ' Tagged', 'https://www.shacknews.com/tags-user?user=' + username + '#lold_by_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : ' + your + ' Fan Train', 'https://www.shacknews.com/tags-user?user=' + username + '#fan_club_tab', 'userDropdown-lol'));
+            ulUser.appendChild(createListItem('[lol] : ' + wasWere + ' ' + friendlyName + ' Ever Funny?', 'https://www.shacknews.com/tags-ever-funny?user=' + username, 'userDropdown-lol'));
 
             // Add ulUser to the page
             parentObj.appendChild(ulUser);
@@ -370,7 +228,7 @@
     }
 
     settingsLoadedEvent.addHandler(function() {
-        if (getSetting("enabled_scripts").contains("use_winchatty_search")) {
+        if (objContains("use_winchatty_search", getSetting("enabled_scripts"))) {
             $('.tog-search').prop('href', 'https://winchatty.com').prop('target', '_blank');
             $(".modal.search").remove();
         }

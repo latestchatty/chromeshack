@@ -1,31 +1,15 @@
 DefaultSettings = {
 
     enabled_scripts: [
-        "lol",
         "getpost",
-        "comment_tags",
         "post_preview",
         "dinogegtik",
         "sparkly_comic",
-        "winchatty_comments_search",
-        "expiration_watcher",
         "nws_incognito",
-        "category_banners",
         "new_comment_highlighter",
-        "scrolling_performance_hack"
+        "shrink_user_icons",
+        "reduced_color_user_icons"
     ],
-
-    lol_tags: [
-        {name: "lol", color: "#f80"},
-        {name: "inf", color: "#09c"},
-        {name: "unf", color: "#ff0000"},
-        {name: "tag", color: "#77bb22"},
-        {name: "wtf", color: "#c000c0"}
-    ],
-
-    lol_show_counts: 'limited',
-
-    lol_ugh_threshold: '0',
 
     post_preview_location: "Right",
 

@@ -1,12 +1,12 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("video_loader"))
+    if (objContains("video_loader", getSetting("enabled_scripts")))
     {
         VideoLoader =
         {
             loadVideos: function(item)
             {
-                var links = item.querySelectorAll(".sel .postbody a");
+                var links = item.querySelectorAll(".sel .postbody > a");
                 for (var i = 0; i < links.length; i++) {
                     var parsedVideo = VideoLoader.getVideoType(links[i].href);
                     if (parsedVideo != null) {
@@ -93,7 +93,7 @@ settingsLoadedEvent.addHandler(function()
                 if (e.button == 0)
                 {
                     e.preventDefault();
-                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
@@ -132,34 +132,31 @@ settingsLoadedEvent.addHandler(function()
                     spacer.setAttribute("style", `min-width: ${width*.33}px; max-height: ${height}px; max-width: ${width}px;`);
                     video.setAttribute("class", "iframe-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
-                    video.innerHTML = /*html*/`
-                        <iframe
-                            id="iframe_${postId}-${index}"
-                            src="${video_src}"
-                            frameborder="0"
-                            scale="tofit"
-                            scrolling="no"
-                            allowfullscreen
-                        >
-                        </iframe>
-                    `;
+                    var iframe = document.createElement("iframe");
+                    iframe.setAttribute("sandbox", "allow-same-origin");
+                    iframe.setAttribute("id", `iframe_${postId}-${index}`);
+                    iframe.setAttribute("src", `${video_src}`);
+                    iframe.setAttribute("frameborder", "0");
+                    iframe.setAttribute("scale", "tofit");
+                    iframe.setAttribute("scrolling", "no");
+                    iframe.setAttribute("allowfullscreen", "");
+                    video.appendChild(iframe);
                     spacer.appendChild(video);
                     mediaContainerInsert(spacer, link, postId, index);
                 }
 
                 function getStreamableLink(shortcode) {
                     var __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-                    return new Promise(resolve => {
-                        xhrRequest(`https://api.streamable.com/videos/${shortcode}`,
-                            { headers: new Map().set("Authorization", __obf) }
-                        ).then(res => {
-                            if (!res.ok)
-                                throw Error(res.statusText);
-                            return res;
-                        })
-                        .then(res => res.json())
-                        .then(async json => { return resolve(await json.files.mp4.url); })
-                        .catch(err => { console.log(err); });
+                    return new Promise((resolve, reject) => {
+                        fetchSafe(
+                            `https://api.streamable.com/videos/${shortcode}`,
+                            { headers: { "Authorization": __obf } }
+                        ).then(json => {
+                            // sanitized in common.js!
+                            if (json && json.files.mp4.url)
+                                resolve(json.files.mp4.url);
+                            reject(false);
+                        }).catch(err => { console.log(err); });
                     });
                 }
             },
@@ -189,16 +186,14 @@ settingsLoadedEvent.addHandler(function()
                     spacer.setAttribute("style", `min-width: ${width*.33}px; max-height: ${height}px; max-width: ${width}px;`);
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
-                    video.innerHTML = /*html*/`
-                        <iframe
-                            id="iframe_${postId}-${index}"
-                            src="${video_src}"
-                            frameborder="0"
-                            allow="autoplay; encrypted-media"
-                            allowfullscreen
-                        >
-                        </iframe>
-                    `;
+                    var iframe = document.createElement("iframe");
+                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
+                    iframe.setAttribute("id", `iframe_${postId}-${index}`);
+                    iframe.setAttribute("src", `${video_src}`);
+                    iframe.setAttribute("frameborder", "0");
+                    iframe.setAttribute("allow", "autoplay; encrypted-media");
+                    iframe.setAttribute("allowfullscreen", "");
+                    video.appendChild(iframe);
                     spacer.appendChild(video);
                     mediaContainerInsert(spacer, link, postId, index);
                 }
@@ -233,16 +228,14 @@ settingsLoadedEvent.addHandler(function()
                     spacer.setAttribute("style", `min-width: ${width*.33}px !important; max-height: ${height}px; max-width: ${width}px;`);
                     video.setAttribute("class", "twitch-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
-                    video.innerHTML = /*html*/`
-                        <iframe
-                            id="iframe_${postId}-${index}"
-                            src="${video_src}"
-                            frameborder="0"
-                            scrolling="no"
-                            allowfullscreen
-                        >
-                        </iframe>
-                    `;
+                    var iframe = document.createElement("iframe");
+                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
+                    iframe.setAttribute("id", `iframe_${postId}-${index}`);
+                    iframe.setAttribute("src", `${video_src}`);
+                    iframe.setAttribute("frameborder", "0");
+                    iframe.setAttribute("scrolling", "no");
+                    iframe.setAttribute("allowfullscreen", "");
+                    video.appendChild(iframe);
                     spacer.appendChild(video);
                     mediaContainerInsert(spacer, link, postId, index);
                 }

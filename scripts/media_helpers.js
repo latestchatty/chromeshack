@@ -43,8 +43,7 @@ function getIframeDimensions(elem) {
     var _ref = elem.querySelector(".iframe-container iframe") ||
                     elem.querySelector(".yt-container iframe") ||
                     elem.querySelector(".twitch-container iframe") ||
-                    elem.querySelector(".instgrm-container") ||
-                    (elem.classList != null && elem.classList.contains("tweet-container") && elem);
+                    elem.querySelector(".instgrm-container");
     var _width = _ref && _ref.width != null && _ref.width;
     var _height = _ref && _ref.height != null && _ref.height;
     return { width: _width, height: _height, ref: _ref };
@@ -53,17 +52,20 @@ function getIframeDimensions(elem) {
 
 function locateContainer(link, postId, index) {
     // resolve our link container for media embedding (or create one)
-    var _isAlternateStyle = getSetting("enabled_scripts").contains("alternate_embed_style");
+    /*var _isAlternateStyle = true; //objContains("alternate_embed_style", getSetting("enabled_scripts"));
     var container = _isAlternateStyle ?
         link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
-        link.parentNode.querySelector("div.media-container");
-    if (container != null) {
+        link.parentNode.querySelector("div.media-container"); */
+    var container = link.parentNode &&
+        link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`);
+    if (container) {
         return container; // return the existing container
     } else {
         container = document.createElement("div");
         container.setAttribute("class", "media-container");
         // flag the container so we know we have an embed child
-        if (_isAlternateStyle) { container.setAttribute("id", `link_${postId}-${index}`); }
+        /* if (_isAlternateStyle) { container.setAttribute("id", `link_${postId}-${index}`); } */
+        container.setAttribute("id", `link_${postId}-${index}`);
         return container;
     }
 }
@@ -80,12 +82,16 @@ function toggleMediaItem(link, postId, index) {
 
     // pretty aggressive way to handle stopping an iframe player when toggling the container
     var encapMediaObj = getIframeDimensions(_embed);
+    var embedContainer = null;
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
-        var altContainer = getSetting("enabled_scripts").contains("alternate_embed_style") && container.parentNode;
-        var embed = (encapMediaObj.ref.parentNode.parentNode.classList.contains("iframe-spacer") ||
-                    encapMediaObj.ref.parentNode.parentNode.classList.contains("instgrm-container")) ?
-                    encapMediaObj.ref.parentNode.parentNode : encapMediaObj.ref;
+        var altContainer = true /*objContains("alternate_embed_style", getSetting("enabled_scripts"))*/ && container.parentNode;
+        if (objContains("iframe-spacer", encapMediaObj.ref.parentNode.parentNode.classList) ||
+            objContains("instgrm-container", encapMediaObj.ref.parentNode.parentNode.classList))
+            embedContainer = encapMediaObj.ref.parentNode.parentNode;
+        else
+            embedContainer = encapMediaObj.ref;
+
         if (!!altContainer)
             altContainer.removeChild(container);
         else
@@ -108,12 +114,13 @@ function toggleMediaLink(embedElem, link, override) {
     }
     else if (embedElem) {
         if (embedElem.nodeName === "IMG" || embedElem.nodeName === "VIDEO" ||
-            embedElem.classList.contains("yt-container") ||
-            embedElem.classList.contains("twitch-container") ||
-            embedElem.classList.contains("iframe-container"))
+            objContains("yt-container", embedElem.classList) ||
+            objContains("twitch-container", embedElem.classList) ||
+            objContains("iframe-container", embedElem.classList))
             embedElem.parentNode.classList.toggle("hidden");
         else
             embedElem.classList.toggle("hidden");
+
         toggleVideoState(embedElem);
         link.classList.toggle("embedded");
         toggleExpandoButton(_expando);
@@ -123,25 +130,49 @@ function toggleMediaLink(embedElem, link, override) {
     return false;
 }
 
-function toggleVideoState(elem, override) {
-    // abstracted helper for toggling html5 video embed pause state (based on audio)
+function toggleVideoState(elem, stateObj) {
+    let { state, mute } = stateObj || {};
     if (elem == null) return;
-    // ignore carousel children when autoplaying
-    var video = elem.nodeName === "VIDEO" ? elem : elem.querySelector("video:not(.swiper-slide)");
-    if (override || video && !video.classList.contains("hidden")) {
-       if (video.paused || override) {
-            video.currentTime = 0;
-            video.play();
-        } else {
-            video.pause();
-            video.currentTime = 0;
+    let video = elem.matches("video[id^='loader_']") ?
+        elem : elem.querySelector("video[id^='loader_']");
+
+    // if forced then play and avoid social embeds
+    let excludedParent = video && video.closest(`
+        .swiper-wrapper,
+        .instgrm-embed,
+        #twitter-media-content,
+        #twitter-quote-media-content
+    `);
+
+    if (video && (state || mute) ||
+        video && !objContains("hidden", video.classList)) {
+        if (state)
+            play();
+        else if (!excludedParent && video.paused) {
+            play();
         }
+        else
+            pause();
+
+        if (!mute || video.muted)
+            video.muted = false;
+        else
+            video.muted = true;
+    }
+
+    function play() {
+        video.currentTime = 0;
+        video.play();
+    }
+    function pause() {
+        video.pause();
+        video.currentTime = 0;
     }
 }
 
 function toggleExpandoButton(expando) {
     // abstracted helper for toggling the state of a link-expando button from a post
-    if (expando && !expando.classList.contains("collapso")) {
+    if (expando && !objContains("collapso", expando.classList)) {
         // override is the expando 'button' element
         expando.innerText = "\ue90d"; // circle-arrow-down
         return expando.classList.add("collapso");
@@ -159,14 +190,14 @@ function mediaContainerInsert(elem, link, id, index) {
     // abstracted helper for manipulating the media-container grid from a post
     var container = locateContainer(link, id, index);
     var _hasMedia = container != null && getEmbedRef(link);
-    var _isExpando = link.classList != null && link.classList.contains("expando");
+    var _isExpando = link.classList != null && objContains("expando", link.classList);
     var _postBody = _isExpando ? link.parentNode.parentNode : link.parentNode;
     if (_hasMedia) { return toggleMediaLink(_hasMedia, link); }
 
     // don't put click events on the carousel
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
-    if (getSetting("enabled_scripts").contains("alternate_embed_style") && !_hasMedia) {
+    if (true /*objContains("alternate_embed_style", getSetting("enabled_scripts"))*/ && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
     } else if (!_hasMedia) {
@@ -178,15 +209,19 @@ function mediaContainerInsert(elem, link, id, index) {
     toggleMediaLink(elem, link);
 }
 
-function appendMedia(src, link, postId, index, container, override) {
+function appendMedia(src, link, postId, index, container, overrides) {
     // compile our media items into a given container element
+    // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     var mediaElem = container != null ? container : document.createElement("div");
-    if (Array.isArray(src)) {
+    var { forceAppend, twttrEmbed, instgrmEmbed } = overrides;
+    if (Array.isArray(src) && src.length > 0) {
         var nodeList = [];
         for (var item of src) {
             // let collator know we're working on an Instagram post
-            if (container) { nodeList.push(createMediaElem(item, postId, index, true)); }
-            else { nodeList.push(createMediaElem(item, postId, index)); }
+            if (instgrmEmbed || twttrEmbed || container)
+                nodeList.push(createMediaElem(item, postId, index, true));
+            else
+                nodeList.push(createMediaElem(item, postId, index));
         }
         for (var node of nodeList) {
             mediaElem.appendChild(node);
@@ -196,15 +231,19 @@ function appendMedia(src, link, postId, index, container, override) {
             mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
             mediaElem = insertCarousel(mediaElem);
         }
-    } else if (src != null && src.length > 0) {
-        mediaElem.appendChild(createMediaElem(src, postId, index));
     }
+    else {
+        throw Error("Media array must contain at least one item!");
+    }
+
     // only append if we're not being called to return an element
-    if (!override) {
+    if (forceAppend) {
         mediaElem.classList.add("medialoader", "hidden");
         mediaContainerInsert(mediaElem, link, postId, index);
-    } else { return mediaElem; }
+    }
+    return mediaElem;
 
+    /* support funcs */
     function createMediaElem(href, postId, index, override) {
         var _animExt = /\.(mp4|gifv|webm)/i.test(href);
         var _staticExt = /\.(jpe?g|gif|png)/i.test(href);
@@ -212,11 +251,9 @@ function appendMedia(src, link, postId, index, container, override) {
         if (_animExt) {
             _elem = document.createElement("video");
             if (!override) {
-                _elem.setAttribute("autoplay", "");
-                _elem.setAttribute("muted", "");
                 _elem.setAttribute("loop", "");
             } else {
-                _elem.setAttribute("controls", ""); // for Instagram
+                _elem.setAttribute("controls", ""); // for Instagram/Twitter
             }
         }
         else if (_staticExt)
@@ -233,16 +270,23 @@ function appendMedia(src, link, postId, index, container, override) {
  *  Misc. Functions
  */
 
-function insertCommand(elem, injectable, id, override) {
+function insertScript({ elem, filePath, code, id, overwrite}) {
+    // insert a script that executes synchronously (caution!)
+    var _elem = elem ? elem : document.getElementsByTagName("head")[0];
     var _script = document.getElementById(id);
-    if (!!id && !override && document.getElementById(id) != null) { return; }
-    else if (override && !!_script) { _script.parentNode.removeChild(_script); }
-    // insert a one-way script that executes synchronously (caution!)
-    var _script = document.createElement("script");
-    if (!!id) { _script.setAttribute("id", id); }
-    _script.textContent = `${injectable}`;
-    elem.appendChild(_script);
+    if (id && !overwrite && document.getElementById(id) != null) { return; }
+    else if (overwrite && _script) { _script.parentNode.removeChild(_script); }
+    _script = document.createElement("script");
+    if (id) { _script.setAttribute("id", id); }
+    if (code && code.length > 0)
+        _script.textContent = code;
+    else if (filePath && filePath.length > 0)
+        _script.setAttribute("src", browser.runtime.getURL(filePath));
+    else
+        throw Error("Must pass a file path or code content in string format!");
+    _elem.appendChild(_script);
 }
+
 function insertExpandoButton(link, postId, index) {
     // abstracted helper for appending an expando button to a link in a post
     if (link.querySelector("div.expando") != null) { return; }
@@ -257,20 +301,22 @@ function insertExpandoButton(link, postId, index) {
 
 function insertCarousel(elem) {
     var head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("swiper.min.css") == -1) {
+    if (head.innerHTML.indexOf("swiper-4.5.0.min.css") == -1) {
         // make sure we have necessary css injected
         var carouselCSS = document.createElement("link");
         carouselCSS.rel = "stylesheet";
         carouselCSS.type = "text/css";
-        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper.min.css");
+        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper-4.5.0.min.css");
         head.appendChild(carouselCSS);
     }
     var carouselContainer = document.createElement("div");
-    carouselContainer.setAttribute("class", "swiper-container");
-    carouselContainer.innerHTML = /*html*/`
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    `;
+    carouselContainer.classList.add("swiper-container");
+    var swiperNextButton = document.createElement("div");
+    swiperNextButton.classList.add("swiper-button-next");
+    var swiperPrevButton = document.createElement("div");
+    swiperPrevButton.classList.add("swiper-button-prev");
+    carouselContainer.appendChild(swiperNextButton);
+    carouselContainer.appendChild(swiperPrevButton);
     // insert our media container into a carousel container
     // ... and rename the media container to be our carousel wrapper
     elem.classList.add("swiper-wrapper");
@@ -293,74 +339,83 @@ function insertCarousel(elem) {
 
 function insertLightbox(elem) {
     var head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("basicLightbox.min.css") == -1) {
+    if (head.innerHTML.indexOf("basicLightbox-5.0.2.min.css") == -1) {
         // make sure we have necessary css injected
         var lightboxCSS = document.createElement("link");
         lightboxCSS.rel = "stylesheet";
         lightboxCSS.type = "text/css";
-        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox.min.css");
+        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox-5.0.2.min.css");
         head.appendChild(lightboxCSS);
     }
-    browser.runtime.sendMessage({ name: 'lightbox', elemText: elem.outerHTML });
+    browser.runtime.sendMessage({ name: 'injectLightbox', elemText: elem.outerHTML });
 }
 
 function attachChildEvents(elem, id, index) {
-    var childElems = [].concat(
-        Array.from(elem.querySelectorAll("video")),
-        Array.from(elem.querySelectorAll("img"))
-    );
+    var childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
     var iframeElem = getIframeDimensions(elem);
 
     if (iframeElem.id == null && childElems != null && childElems.length > 0) {
-        var swiperEl = closestParent(childElems[0], { cssSelector: ".swiper-wrapper" });
-        var instgrmEl = closestParent(childElems[0], { cssSelector: ".instgrm-embed" });
+        // list of excluded containers
+        var swiperEl = childElems[0].closest(".swiper-wrapper");
+        var instgrmEl = childElems[0].closest(".instgrm-embed");
+        var twttrEl = childElems[0].closest(".twitter-container");
+
         childElems.forEach(item => {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
-                    item.addEventListener("canplaythrough", e => {
-                        // autoplay videos (muted) when shown
-                        if (e.target.paused) { toggleVideoState(e.target, 1); }
-                        if (!e.target.muted) { e.target.muted = true; }
-                    });
+                    let canPlayCallback = (e) => {
+                        // autoplay videos (muted) when shown (except for social embeds)
+                        if (!e.target.hasAttribute("initialPlay") &&
+                            !e.target.closest(".twitter-container, .instgrm-embed")) {
+                            e.target.setAttribute("initialPlay", "");
+                            toggleVideoState(e.target, { state: true, mute: true });
+                            // unsubscribe to avoid retriggering after video loads
+                            e.target.removeEventListener("canplaythrough", canPlayCallback);
+                        }
+                    };
+                    item.addEventListener("canplaythrough", canPlayCallback);
                 }
                 else {
                     item.addEventListener('click', e => {
                     // allow toggling play state by clicking the carousel video
-                        if (e.target.nodeName === "VIDEO" && !e.target.hasAttribute("controls")) {
-                            if (e.target.paused) { e.target.play(); }
-                            else { e.target.pause(); }
-                        }
+                        if (e.target.nodeName === "VIDEO" && !e.target.hasAttribute("controls"))
+                            toggleVideoState(e.target);
                     });
                 }
 
-                // don't attach click-to-hide events to swiper slides
-                ((swiperEl, instgrmEl) => {
+                // don't attach click-to-hide events to excluded containers
+                ((swiperEl, instgrmEl, twttrEl) => {
                     item.addEventListener('mousedown', e => {
                         var embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         var link = getLinkRef(embed);
                         if (e.which === 2 && getSetting("image_loader_newtab")) {
                             e.preventDefault();
                             // pause our current video before re-opening it
-                            if (e.target.nodeName === "VIDEO") { e.target.pause(); }
+                            if (e.target.nodeName === "VIDEO")
+                                toggleVideoState(e.target, { state: false });
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
-                        } else if (e.which === 1 && swiperEl == null && instgrmEl == null) {
+                        } else if (e.which === 1 && !swiperEl && !instgrmEl && !twttrEl) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaLink(embed, link);
                         }
                     });
-                })(swiperEl, instgrmEl);
+                })(swiperEl, instgrmEl, twttrEl);
             }
         });
     }
 }
 
 function triggerReflow(elem) {
-    $(elem).ready(function() {
-        // trigger a resize via jQuery ready() to recalc the carousel
-        var body = document.getElementsByTagName("body")[0];
-        insertCommand(body, `window.dispatchEvent(new Event('resize'));`, "reflow-wjs", true);
-    });
+    // workaround to fix Swiper not properly tracking onload events of children
+    if (elem) {
+        insertScript({
+            elem: document.getElementsByTagName("body")[0],
+            code: "window.dispatchEvent(new Event('resize'));",
+            id: "reflow-wjs",
+            overwrite: true
+        });
+    }
 }

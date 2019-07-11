@@ -33,7 +33,7 @@ settingsLoadedEvent.addHandler(() => {
             })
         );
 
-        if (getSetting("enabled_scripts").contains("post_preview")) {
+        if (objContains("post_preview", getSetting("enabled_scripts"))) {
             rules.append(
                 $('<span>', {
                     text: ' • ',
@@ -82,6 +82,7 @@ settingsLoadedEvent.addHandler(() => {
                 }
             });
         }
+
     }
 });
 

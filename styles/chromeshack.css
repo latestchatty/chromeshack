@@ -12,79 +12,37 @@ a.pin_button {
     font-weight: normal !important
 }
 
-/* lol buttons */
-
-div.lol {
-    display: inline;
-    float: none;
-    padding-left: 10px;
-    font-size: 14px !important;
-}
-
-a.lol_button {
-    padding: 0 0.25em !important;
-    text-decoration: underline !important;
-    font-weight: normal !important
-}
-
-#lollink {
-    display: block;
-    width: 152px;
-    height: 44px;
-    text-indent: -9999px;
-    color: #f00;
-    margin: 0 !important;
-    padding: 0 !important;
-    top: 0 !important;
-    left: 0 !important;
-}
-
-.oneline_tags {
-    display: inline;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.oneline_tags span {
-    margin: 0 2px 0 2px;
-    padding: 0 2px;
-    border-radius: 3px;
-    background-color: #f8f;
-    color: #000;
-    font-size: 10px;
-    font-weight: bold;
-}
-
 /* post preview */
 
 #previewArea {
-    display: none;
+    display: block;
     border: 1px solid #AEAE9B;
-    padding: 3px;
+    padding: 5px 0 5px 5px;
     background: #222;
     height: 200px;
-    width: 570px;
-    overflow: auto;
+    width: 99%;
+    overflow: wrap;
 }
-body.show_banners div.fpmod_offtopic {
+
+div.fpmod_offtopic {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #7D7D7D !important;
 }
 
-body.show_banners div.fpmod_political {
+div.fpmod_political {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #F8A500 !important;
 }
 
-body.show_banners div.fpmod_stupid {
+div.fpmod_stupid {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
 }
 
-body.show_banners div.fpmod_informative {
+div.fpmod_informative {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #00bff3 !important;
@@ -103,12 +61,7 @@ span.newcommenthighlighter {
     right: 55px !important;
 }
 
-.expiration-watcher-doom .fullpost .postdate {
-    right: 35px !important;
-}
-
-.expiration-watcher-bar .capcontainer .fullpost .postdate,
-.expiration-watcher-doom .capcontainer .fullpost .postdate {
+.expiration-watcher-bar .capcontainer .fullpost .postdate {
     right: 0px !important;
 }
 
@@ -266,38 +219,6 @@ div.threads ul ul li span.author li {
     text-align: center;
 }
 
-/* elder scroll */
-
-#elderscroll-message {
-    border-radius: 5px;
-    color: #000 !important;
-    background: #FFF !important;
-    font-size: 1.5em !important;
-    height: 25px;
-    width: 300px;
-    text-align: center;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    padding-top: 5px !important;
-}
-
-#shackLogo {
-    width: 18px;
-    height: 18px;
-    margin-left: 10px;
-    display: inline-block !important;
-    animation-name: elderscroll-rotate;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    animation-duration: 1.5s;
-}
-
-@keyframes elderscroll-rotate {
-    0% { -webkit-transform: rotate(-20deg); }
-    50% { -webkit-transform: rotate(20deg); }
-    100% { -webkit-transform: rotate(-20deg); }
-}
-
 /* fix for shack legends being cut off */
 
 p.rules { margin: 3px; }
@@ -389,7 +310,7 @@ div.post_length_counter_text {
 #post_highlighter_container.hidden {
     display: none !important;
 }
-#post_highlighter_container a#jump_to_new_post {
+a#jump_to_new_post {
     display: inline-flex;
     position: absolute;
     align-self: center;
@@ -407,8 +328,24 @@ div.post_length_counter_text {
     white-space: nowrap;
     cursor: pointer;
     line-height: 16px;
-    top: -2px;
-    left: 0;
+}
+@media (min-width: 1024px) {
+    /* pinned & unpinned desktop modes */
+    header:not(.pinned) a#jump_to_new_post {
+        top: -9px;
+        left: 70px;
+    }
+    header.pinned a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
+}
+@media (max-width: 1024px) {
+    /* pinned mobile mode */
+    a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
 }
 #post_highlighter_container a#jump_to_new_post:hover {
     background-color: #5c5070;
@@ -422,38 +359,62 @@ a.refresh_pending {
     height: 15px !important;
 }
 
-/* LOL and Who-LOL'd script */
-.lol a.who_tagged_this {
-    /* styling for LOL'er button */
-    padding: 0 !important;
-    margin: 0;
-    position: relative;
-    top: 1px;
-    left: 4px;
-}
-.lol a.who_tagged_this.hidden { display: none !important }
+/* various hacks */
 
-.postbody > .tagger_container { margin: 1em 0 0.25em 0; }
-.postbody > .tagger_container.hidden { display: none !important; }
-.tagger_container > div {
-    /* styling for generic tagger container child */
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 100%;
-    min-width: 1;
-    line-height: 13px;
-    word-break: break-word;
-    white-space: nowrap;
+/* ensure the pop-in of the lol tags doesn't cause the post to get taller */
+div.fullpost .lol-tags {
+    height: 18px !important;
+    margin-top: -5px !important;
 }
-.tagger_container > div > span {
-    /* general tag button rules */
-    border-radius: 2px;
-    color: #000;
-    font-size: 10px;
+
+body.hide_tagging_buttons .lol-tags {
+    display: none !important;
+}
+
+body.hide_tag_counts div.read-only-tags {
+    display: none !important;
+}
+
+/* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
+will un-shrink it if the shrink setting is not enabled */
+body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
+    opacity: 0.75;
+    width: 10px;
+    height: 10px;
+    vertical-align: text-top;
+}
+
+/* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
+only for users who want to see bright colors. */
+body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
+    filter: grayscale(75%);
+}
+
+a:hover > img.chatty-user-icons {
+    opacity: 1;
+    filter: none;
+}
+
+/* on the comments below articles the lol tag buttons are ridiculous */
+div.article-chatty span.lol-tags {
+    display: none !important;
+}
+
+/* don't let the lol counts cause the oneline to get taller */
+div.read-only-tags {
+    height: 1px;
+}
+
+/* emoji tagline on the postbox form */
+#postform fieldset p.emoji-tagline {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 12px;
+    margin: 0 !important;
+}
+p.emoji-tagline > span {
     font-weight: bold;
-    margin: 2px;
-    padding: 0 2px;
-    /* color for unknown tags */
-    background: #00ffff;
+    font-style: italic;
+    padding: 0 0.5em 0 0.5em;
 }
-/* end LOL stuff */

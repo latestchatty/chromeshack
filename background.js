@@ -134,9 +134,12 @@ function pollNotifications()
     //console.log("Notification UID is " + notificationuid);
     if (notificationuid != "" && notificationuid != undefined) {
         var _dataBody = `clientId=${notificationuid}`;
-        postXHR("https://winchatty.com/v2/notifications/waitForNotification", _dataBody)
-            .then(async response => {
-                var notifications = await response.json();
+        postXHR({
+            url: "https://winchatty.com/v2/notifications/waitForNotification",
+            header: { "Content-Type": "application/x-www-form-urlencoded" },
+            data: _dataBody
+        }).then(resp => {
+                var notifications = resp;
                 if(!notifications.error) {
                     //console.log("notification response text: " + res.responseText);
                     if (notifications.messages) {
@@ -201,47 +204,6 @@ function showCommentHistoryClick(info, tab)
     }
 }
 
-
-var allowedIncognito = browser.extension.isAllowedIncognitoAccess();
-var lastOpenedIncognito = -1;
-
-function openIncognito(newUrl)
-{
-    var windowInfo = browser.windows.getAll();
-
-    var incognitoId = -1;
-    if(windowInfo != null)
-    {
-        for(var i = 0; i<windowInfo.length; i++)
-        {
-            var w = windowInfo[i];
-            if(w.incognito)
-            {
-
-                incognitoId = w.id;
-                if(incognitoId === lastOpenedIncognito)
-                {
-                    //If we found the last id we opened with, use that.
-                    break;
-                }
-            }
-        }
-    }
-
-    if(incognitoId >= 0)
-    {
-        browser.tabs.create({url:newUrl, windowId: incognitoId, active: false});
-        lastOpenedIncognito = incognitoId; //In case it wasn't opened by us.
-    }
-    else
-    {
-        //Since we can't enumerate incognito windows, the best we can do is launch a new window for each one I guess.
-        try {
-            browser.windows.create({url:newUrl, incognito:true, type: 'normal'});
-        } catch (err) { console.log(err); }
-    }
-}
-
 browser.runtime.onMessage.addListener(function(request, sender)
 {
     if (request.name == "getSettings")
@@ -258,144 +220,92 @@ browser.runtime.onMessage.addListener(function(request, sender)
     else if (request.name === "unCollapseThread")
         return Promise.resolve(unCollapseThread(request.id));
     else if (request.name === "launchIncognito")
-        return Promise.resolve(openIncognito(request.value));
+        // necessary for opening nsfw links in an incognito window
+        return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
     else if (request.name === "allowedIncognitoAccess")
-        return Promise.resolve(allowedIncognito);
+        // necessary for knowing when to open nsfw media in an incognito window
+        return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
     else if (request.name === "chatViewFix") {
-        // inject CVF monkey patch once upon page load to fix scroll bugs
-        browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
-        .then(res => { if (res) { browser.tabs.executeScript({ code: `
-            function clickItem(b, f) {
-                var d = window.frames.dom_iframe;
-                var e = d.document.getElementById("item_" + f);
-                if (uncap_thread(b)) {
-                    elem_position = $("#item_" + f).position();
-                    scrollToItem($("li#item_" + f).get(0));
-                }
-                sLastClickedItem = f;
-                sLastClickedRoot = b;
-                if (d.document.getElementById("items_complete") && e) {
-                    var c = find_element(e, "DIV", "fullpost");
-                    var a = import_node(document, c);
-                    show_item_fullpost(b, f, a);
-                    return false
-                } else {
-                    path_pieces = document.location.pathname.split("?");
-                    parent_url = path_pieces[0];
-                    navigate_page_no_history(d, "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url);
-                    return false
-                }
-            }
-
-            function show_item_fullpost(f, h, b) {
-                remove_old_fullpost(f, h, parent.document);
-                var k = parent.document.getElementById("root_" + f);
-                var e = parent.document.getElementById("item_" + h);
-                push_front_element(e, b);
-                scrollToItem(e);
-                e.className = add_to_className(e.className, "sel");
-                var c = find_element(e, "DIV", "oneline");
-                c.className = add_to_className(c.className, "hidden")
-            }
-
-            function scrollToItem(b) {
-                if (!elementIsVisible(b)) {
-                    scrollToElement(b);
-                }
-            }
-            var monkeyPatchCVF = \`\$\{clickItem.toString()\}\$\{show_item_fullpost.toString()\}\$\{scrollToItem.toString()\}\$\{scrollToElement.toString()\}\$\{elementIsVisible.toString()\}\`;
-            var chatViewFixElem = document.createElement("script");
-            chatViewFixElem.id = "chatviewfix-wjs";
-            chatViewFixElem.innerHTML = monkeyPatchCVF;
-            var bodyRef = document.getElementsByTagName("body")[0];
-            bodyRef.appendChild(chatViewFixElem);
-            undefined;` }); } });
+        // scroll-to-post fix for Chatty
+        return browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` })
+            .then(res => {
+                if (res) { browser.tabs.executeScript({ file: "int/chatViewFix.js" }); }
+            })
+            .catch(err => console.log(err));
     }
-    else if (request.name === "lightbox") {
-        let commonCode = `
-            var lightbox = window.basicLightbox.create('${request.elemText}');
-            lightbox.show();
-        `;
-        browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
-        .then((res) => {
-            if (res) {
-                browser.tabs.executeScript(null, { file: "ext/basiclightbox/basicLightbox.min.js" }).then(() => {
-                    browser.tabs.executeScript(null, { code: `${commonCode}` });
-                });
-            } else {
-                browser.tabs.executeScript(null, { code: `${commonCode}` });
-            }
-        });
+    else if (request.name === "injectLightbox") {
+        // a media element's HTML is passed into the to-be-injected lightbox instantiator here
+        return browser.tabs.executeScript(null, { code: `window.basicLightbox === undefined` })
+            .then(res => {
+                const injectLightboxFunc = () => {
+                    browser.tabs.executeScript(null, { code: `var _mediaHTML = \`${request.elemText}\`;` })
+                        .then(() => browser.tabs.executeScript(null, { file: "int/injectLightbox.js" }));
+                };
+
+                if (res) {
+                    browser.tabs.executeScript(null,
+                        { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" }).then(injectLightboxFunc);
+                } else {
+                    injectLightboxFunc();
+                }
+            })
+            .catch(err => console.log(err));
     }
     else if (request.name === "injectCarousel") {
-        let commonCode = `
-            var container = document.querySelector("${request.select}");
-            var carouselOpts = {
-                autoHeight: true,
-                centeredSlides: true,
-                slidesPerView: 'auto',
-                navigation: {
-                  nextEl: '.swiper-button-next',
-                  prevEl: '.swiper-button-prev',
-                },
-                on: {
-                    init: function() {
-                        var swiperEl = this;
-                        var wrapper = container.querySelector(".swiper-wrapper");
-                        var mediaSlideFirstIndex = function(elem) {
-                            var iter = Array.from(elem.children);
-                            for (var i=0; i<iter.length-1; i++) {
-                                if (iter[i].nodeName === "VIDEO")
-                                    return i;
-                            }
-                            return -1;
-                        };
-
-                        // if video is first then recalc the carousel height once loaded
-                        var firstSlide = wrapper.children[0];
-                        if (firstSlide.nodeName === "VIDEO") {
-                            firstSlide.addEventListener("loadedmetadata", function() {
-                                swiperEl.update();
-                            });
-                        }
-                        // autoplay only if video is the first slide
-                        var videoSlideIndex = mediaSlideFirstIndex(wrapper);
-                        if (swiperEl.realIndex === videoSlideIndex)
-                            wrapper.children[videoSlideIndex].play();
-                    },
-                    transitionEnd: function() {
-                        // toggle autoplay on slides as we transition to/from them
-                        var slides = container.querySelectorAll('video');
-                        slides.forEach(function(x) {
-                            if (x.className.indexOf("swiper-slide-active") > -1) {
-                                x.play();
-                                x.muted = false;
-                            }
-                            else {
-                                x.muted = true;
-                                x.pause();
-                            }
-                        });
-                    }
+        // we pass an element's css selector into Swiper for carousel injection here
+        return browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
+            .then((res) => {
+                if (res) {
+                    browser.tabs.executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" })
+                        .then(() => browser.tabs.executeScript(null,
+                            { code: `var _carouselSelect = "${request.select}";` })
+                            .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" })));
+                } else {
+                    browser.tabs.executeScript(null, { code: `var _carouselSelect = "${request.select}";` })
+                        .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
                 }
-            };
-            if (${getSetting("alternate_embed_style")} === true) { carouselOpts.autoHeight = false; }
-            var swiper = new Swiper(container, carouselOpts);
-        `;
-        browser.tabs.executeScript(null, { code: `window.Swiper === undefined` })
-        .then((res) => {
-            if (res) {
-                browser.tabs.executeScript(null, { file: "ext/swiper/swiper.min.js" }).then(() => {
-                    browser.tabs.executeScript(null, { code: `${commonCode}` });
-                });
-            } else {
-                browser.tabs.executeScript(null, { code: `${commonCode}` });
-            }
+            })
+            .catch(err => console.log(err));
+    }
+    else if (request.name === "scrollByKeyFix") {
+        // scroll-by-key fix for Chatty
+        return browser.tabs.executeScript(null, { file: "int/scrollByKeyFix.js" })
+            .catch(err => console.log(err));
+    }
+    else if (request.name === "corbFetch")
+        return fetchSafe(request.url, request.optionsObj, request.ovrBool);
+    else if (request.name === "corbPost") {
+        return new Promise(async (resolve, reject) => {
+            let _fd = await JSONToFormData(request.data);
+            return postXHR({
+                url: request.optionsObj.url,
+                headers: request.optionsObj.headers,
+                override: request.optionsObj.override,
+                data: _fd
+            })
+            .then(resolve)
+            .catch(reject);
         });
     }
 
     return Promise.resolve();
 });
+
+/*
+    Workaround for Twitter API's lack of support for cross-domain JSON fetch.
+    NOTE: we override only responses from "api.twitter.com" and sanitize the fetch result
+        with a fetch() helper in common.js so only non-HTML containing JSON is ever used.
+*/
+function responseListener(details) {
+    details.responseHeaders.push({ "name": "Access-Control-Allow-Headers", "value": "*" });
+    details.responseHeaders.push({ "name": "Access-Control-Allow-Methods", "value": "GET" });
+    return { responseHeaders: details.responseHeaders };
+}
+browser.webRequest.onHeadersReceived.removeListener(responseListener);
+browser.webRequest.onHeadersReceived.addListener(
+    responseListener,
+    { urls: [ "https://api.twitter.com/*" ] }, [ "blocking", "responseHeaders" ]
+);
 
 addContextMenus();
 

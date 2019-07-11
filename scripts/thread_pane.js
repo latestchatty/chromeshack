@@ -1,8 +1,8 @@
-let refreshThreadPane;
+var refreshThreadPane;
 
 (() => {
     refreshThreadPane = () => {
-        if (getSetting('enabled_scripts').contains('thread_pane')) {
+        if (objContains('thread_pane', getSetting('enabled_scripts'))) {
             try {
                 install();
             } catch (e) {
@@ -78,7 +78,15 @@ let refreshThreadPane;
             }
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find('a').replaceWith(function() { return $("<span class=\"cs_thread_pane_link\">" + $(this).html() + "</span>"); });
+            $rootPostBodyDiv.find('a').replaceWith(function() {
+                // exclude expando children
+                return $(`
+                    <span class="cs_thread_pane_link">
+                        <a href="${this.href}">${this.innerText.replace(/[\ue90d\ue907]+/, "")}</a>
+                    </span>`);
+            });
+            // remove media containers from Thread Pane parent
+            $rootPostBodyDiv.find('.media-container').remove();
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
@@ -116,7 +124,7 @@ let refreshThreadPane;
 
             $cardDiv.click(() => {
                 const $li = $(`li#item_${mostRecentPostId}`);
-                const li_root = closestParent($li, { indexSelector: "root_" });
+                const li_root = $li.closest("[id^='root_']");
                 uncapThread(threadId);
 
                 $opDiv.removeClass('cs_flash_animation');
@@ -155,11 +163,15 @@ let refreshThreadPane;
     }
 
     function parseRootAuthor($opDiv) {
-        const $rootAuthorAnchor = $opDiv.find('div.postmeta span.author span.user');
-        if ($rootAuthorAnchor.length !== 1) {
-            throw new Error(`Could not find the author username.`);
-        }
-        return $rootAuthorAnchor.text();
+        // https://stackoverflow.com/a/14755309
+        // make sure we only grab the text in the root element, because the user popup menu may be nested
+        // there as well
+        const $rootAuthor = $opDiv.find(`
+            div.postmeta span.author span.user a,
+            div.postmeta span.author span.user`);
+        return $rootAuthor.contents().filter(function() {
+            return this.nodeType == 3;
+        })[0].nodeValue;
     }
 
     function parseThreadId(threadDiv) {
@@ -185,9 +197,15 @@ let refreshThreadPane;
 
     function parseMostRecentPosts($threadDiv, threadId) {
         const mostRecentSubtree = [];
-        const $mostRecentPost = $threadDiv.find('div.oneline0');
+        let $mostRecentPost = [];
+        var onelineNumber = 0;
+        while ($mostRecentPost.length !== 1 && onelineNumber < 10) {
+            $mostRecentPost = $threadDiv.find('div.oneline' + onelineNumber++);
+        }
+
         if ($mostRecentPost.length !== 1) {
-            throw new Error("Can't find the most recent post!");
+            // don't fail, it will cause the entire pane to disappear. better for it to look weird
+            return { parentIsRoot: true, mostRecentSubtree: [] };
         }
 
         let $post = $mostRecentPost;

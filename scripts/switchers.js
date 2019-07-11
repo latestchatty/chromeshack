@@ -2,7 +2,7 @@
  * Created by wzutz on 12/9/13.
  */
 settingsLoadedEvent.addHandler(function () {
-    if (getSetting("enabled_scripts").contains("switchers")) {
+    if (objContains("switchers", getSetting("enabled_scripts"))) {
         Switchers =
         {
             offenders: [
@@ -45,14 +45,14 @@ settingsLoadedEvent.addHandler(function () {
                         var span = getDescendentByTagAndClassName(post, "span", "oneline_user");
                         if(span) //For single line comments.
                         {
-                            span.innerHTML = newName;
+                            span.textContent = newName;
                         }
                         else //For fully shown comments.
                         {
                             span = getDescendentByTagAndClassName(post, "span", "user");
                             if(span)
                             {
-                                span.firstChild.innerHTML = newName;
+                                span.firstChild.textContent = newName;
                             }
                         }
 

@@ -6,7 +6,7 @@
     --thread-pane-card-padding: 10px;
     --thread-pane-card-spacing: 10px;
     --thread-pane-card-outer-width: calc(var(--thread-pane-width) - 2 * var(--thread-pane-horizontal-margin));
-    --thread-pane-card-inner-width: calc(var(--thread-pane-card-outer-width) - 2 * var(--thread-pane-card-padding))
+    --thread-pane-card-inner-width: calc(var(--thread-pane-card-outer-width) - 2 * var(--thread-pane-card-padding));
     --thread-pane-reply-preview-max-width: 200px;
     --thread-pane-reply-author-max-width: 100px;
     --thread-pane-reply-indent: 10px;

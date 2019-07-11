@@ -1,18 +1,14 @@
 function loadOptions()
 {
-    showLolTags(getOption("lol_tags"), getOption("lol_show_counts"), getOption("lol_ugh_threshold"));
     showPostPreviewLocation(getOption("post_preview_location"));
-    showPostPreviewLive(getOption("post_preview_live"));
     showHighlightUsers(getOption("highlight_users"));
     showVideoLoaderHD(getOption("video_loader_hd"));
     showImageLoaderNewTab(getOption("image_loader_newtab"));
-    showExpirationWatcherStyle(getOption("expiration_watcher_style"));
     showNwsIncognito(getOption('nws_incognito'));
     showSwitchers(getOption("switchers"));
     showNotifications(getOption("notifications"));
     showUserFilters(getOption("user_filters"));
     showEmbedSocials(getOption("embed_socials"));
-    showAlternateEmbedStyle(getOption("alternate_embed_style"));
     showChattyNewsSettings();
     showEnabledScripts();
     trackChanges();
@@ -43,13 +39,6 @@ function showEmbedSocials(enabled) {
     if (enabled)
         embeds.checked = enabled;
     return embeds.checked;
-}
-
-function showAlternateEmbedStyle(enabled) {
-    var embedStyle = document.getElementById("alternate_embed_style");
-    if (enabled)
-        embedStyle.checked = enabled;
-    return embedStyle.checked;
 }
 
 function showImageLoaderNewTab(enabled)
@@ -109,7 +98,7 @@ function showNotifications(enabled)
 function showHighlightUsers(groups)
 {
     var highlightGroups = document.getElementById("highlight_groups");
-    highlightGroups.removeChildren();
+    removeChildren(highlightGroups);
 
     for (var i = 0; i < groups.length; i++)
     {
@@ -223,120 +212,6 @@ function showPostPreviewLive(enabled)
     live.checked = enabled;
 }
 
-function getPostPreviewLive()
-{
-    var live = document.getElementById("post_preview_live");
-    return live.checked;
-}
-
-function showExpirationWatcherStyle(style)
-{
-	document.getElementById('expiration_watcher_bar').checked = (style === 'Bar');
-	document.getElementById('expiration_watcher_doom').checked = (style === 'Doom');
-}
-
-function getExpirationWatcherStyle()
-{
-	var bar = document.getElementById('expiration_watcher_bar');
-	if (bar.checked)
-	{
-		return 'Bar';
-	}
-	else
-	{
-		return 'Doom';
-	}
-}
-
-function showLolTags(tags, show_counts, ugh_threshold)
-{
-    // Set the selected item
-    lol_show_counts = document.getElementById("lol_show_counts");
-    for (var i = 0; i < lol_show_counts.options.length; i++)
-    {
-        if (lol_show_counts.options[i].value == show_counts)
-        {
-            lol_show_counts.options[i].selected = true;
-            break;
-        }
-    }
-
-    lol_ugh_threshold = document.getElementById('lol_ugh_threshold');
-    for (var i = 0; i < lol_ugh_threshold.options.length; i++)
-    {
-        if (lol_ugh_threshold.options[i].value == ugh_threshold)
-        {
-            lol_ugh_threshold.options[i].selected = true;
-            break;
-        }
-    }
-
-    var lol_div = document.getElementById("lol_tags");
-    lol_div.removeChildren();
-
-    for (var i = 0; i < tags.length; i++)
-    {
-        addTag(null, tags[i]);
-    }
-}
-
-function removeTag(node)
-{
-    var tag_row = node.parentNode;
-    tag_row.parentNode.removeChild(tag_row);
-}
-
-function addTag(event, tag)
-{
-    if(event)
-        event.preventDefault();
-
-    if(!tag)
-        tag = {name:'', color: ''};
-
-    var lol_div = document.getElementById("lol_tags");
-
-    var tag_row = document.createElement("div");
-    tag_row.innerHTML = `Tag: <input class='name' value='${tag.name}'/> Color: <input class='color' value='${tag.color}'/>`;
-
-    var remove_link = document.createElement("a");
-    remove_link.href = "#";
-    remove_link.className = "remove";
-    remove_link.appendChild(document.createTextNode(" (remove)"));
-    remove_link.addEventListener('click', function(event) {
-        event.preventDefault();
-        lol_div.removeChild(this.parentNode);
-    });
-    tag_row.appendChild(remove_link);
-
-    lol_div.appendChild(tag_row);
-
-    trackChanges();
-}
-
-function getLolTagValues()
-{
-    var tags = [];
-    var lol_div = document.getElementById("lol_tags");
-    for (var i = 0; i < lol_div.children.length; i++)
-    {
-        var tag_name = getDescendentByTagAndClassName(lol_div.children[i], "input", "name").value;
-        var tag_color = getDescendentByTagAndClassName(lol_div.children[i], "input", "color").value;
-        tags[i] = {name: tag_name, color: tag_color};
-    }
-    return tags;
-}
-
-function getLolShowCounts()
-{
-    return document.getElementById("lol_show_counts").value;
-}
-
-function getLolUghThreshhold()
-{
-    return document.getElementById('lol_ugh_threshold').value;
-}
-
 function showEnabledScripts()
 {
     var enabled = getOption("enabled_scripts");
@@ -399,8 +274,11 @@ function toggleSettingsVisible()
 function logInForNotifications(notificationuid)
 {
     var _dataBody = encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`);
-    postXHR("https://winchatty.com/v2/notifications/registerNotifierClient", _dataBody)
-    .then(() => {
+    postXHR({
+        url: "https://winchatty.com/v2/notifications/registerNotifierClient",
+        header: { "Content-type": "application/x-www-form-urlencoded" },
+        data: _dataBody
+    }).then(() => {
         //console.log("Response from register client " + res.responseText);
         browser.tabs.query({url: 'https://winchatty.com/v2/notifications/ui/login*'})
             .then(tabs => {
@@ -426,15 +304,13 @@ function updateNotificationOptions() {
     if (getNotifications()) {
         var uid = getOption("notificationuid");
         if (uid === "" || uid === undefined) {
-            xhrRequest("https://winchatty.com/v2/notifications/generateId")
-                .then(async res => {
-                    if (res.ok) {
-                        var data = await res.json();
-                        var notificationUID = data.id;
-                        //console.log("Got notification id of " + notificationUID);
-                        saveOption("notificationuid", notificationUID);
-                        logInForNotifications(notificationUID);
-                    }
+            fetchSafe("https://winchatty.com/v2/notifications/generateId")
+                .then(json => {
+                    // sanitized in common.js!
+                    var notificationUID = json.id;
+                    //console.log("Got notification id of " + notificationUID);
+                    saveOption("notificationuid", notificationUID);
+                    logInForNotifications(notificationUID);
                 });
         }
         else {
@@ -486,7 +362,7 @@ function addUserFilter(event) {
     event.preventDefault();
     var usernameTxt = document.getElementById('new_user_filter_text');
     var usersLst = document.getElementById('filtered_users');
-    var username = usernameTxt.value.trim().toLowerCase();
+    var username = superTrim(usernameTxt.value).toLowerCase();
     if (username == '') {
         alert('Please enter a username to filter.');
         return;
@@ -585,24 +461,17 @@ function saveOptions()
 
     try
     {
-        saveOption("lol_tags", getLolTagValues());
-        saveOption("lol_show_counts", getLolShowCounts());
-        saveOption("lol_ugh_threshold", getLolUghThreshhold());
         saveOption("post_preview_location", getPostPreviewLocation());
-        saveOption("post_preview_live", getPostPreviewLive());
         saveOption("enabled_scripts", getEnabledScripts());
         saveOption("highlight_users", getHighlightGroups());
         saveOption("video_loader_hd", getVideoLoaderHD());
         saveOption("image_loader_newtab", getImageLoaderNewTab());
-        saveOption("expiration_watcher_style", getExpirationWatcherStyle());
         saveOption("nws_incognito", getNwsIncognito());
         saveOption("switchers", getSwitchers());
         updateNotificationOptions();
         saveOption("notifications", getNotifications());
         saveOption("user_filters", getUserFilters());
         saveOption("embed_socials", showEmbedSocials());
-        saveOption("alternate_embed_style", showAlternateEmbedStyle());
-
         saveOption("chatty_news_article_count", getChattyNewsArticleCount());
         saveOption("chatty_news_article_news", getChattyNewsArticleNews());
         saveOption("chatty_news_highlight_article_posts", getChattyNewsArticlePosts());
@@ -612,19 +481,18 @@ function saveOptions()
     catch (err)
     {
         //alert("There was an error while saving your settings:\n" + err);
-        status.innerHTML = `Error: ${err}`;
+        status.textContent = `Error: ${err}`;
         return;
     }
 
-    status.innerHTML = "Options Saved.";
+    status.textContent = "Options Saved.";
     setTimeout(function() {
-        status.innerHTML = "";
+        status.textContent = "";
     }, 2000);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     loadOptions();
-    document.getElementById('add_tag').addEventListener('click', addTag);
     document.getElementById('clear_settings').addEventListener('click', clearSettings);
     document.getElementById('add_highlight_group').addEventListener('click', addHighlightGroup);
     document.getElementById('add_user_filter_btn').addEventListener('click', addUserFilter);

@@ -1,10 +1,14 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("post_preview"))
+    if (objContains("post_preview", getSetting("enabled_scripts")))
     {
         PostPreview =
         {
             state: 0, // 0 = insert mode, 1 = preview mode
+
+            debouncedPreview: debounce((text, target) => {
+                safeInnerHTML(generatePreview(text), target);
+            }, 200),
 
             install: function()
             {
@@ -12,72 +16,69 @@ settingsLoadedEvent.addHandler(function()
                 if (document.getElementById("previewButton") != null)
                     return;
 
-                var postButton = document.getElementById("frm_submit");
-                var form_body = document.getElementById("frm_body");
+                let postButton = document.getElementById("frm_submit");
+                let form_body = document.getElementById("frm_body");
                 if (postButton && form_body)
                 {
                     // don't add click handlers here, because these elements get cloned into the page later
-                    var previewButton = document.createElement("button");
+                    let previewButton = document.createElement("button");
                     previewButton.id = "previewButton";
                     previewButton.setAttribute("type", "button");
-                    previewButton.innerHTML = "Preview";
+                    previewButton.textContent = "Preview";
                     if (getSetting("post_preview_location") == "Left")
                         postButton.parentNode.insertBefore(previewButton, postButton);
                     else
                         postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
 
-                    var previewArea = document.createElement("div");
+                    let previewArea = document.createElement("div");
                     previewArea.id = "previewArea";
+                    previewArea.style.display = "none";
                     form_body.parentNode.insertBefore(previewArea, form_body);
                 }
             },
 
-            installClickEvent: function(postbox)
+            installClickEvent: function()
             {
-                var previewButton = document.getElementById("previewButton");
-                var previewArea = document.getElementById("previewArea");
-
+                let previewButton = document.getElementById("previewButton");
                 previewButton.addEventListener("click", PostPreview.togglePreview, true);
-                if(getSetting("post_preview_live") === false)
-                    previewArea.addEventListener("click", PostPreview.togglePreview, true);
             },
 
             togglePreview: function()
             {
-                if (PostPreview.state == 0)
-                    PostPreview.viewPreview();
-                else
-                    PostPreview.viewSource();
+                if (PostPreview.state == 0) {
+                    PostPreview.state = 1;
+                    PostPreview.enablePreview();
+                }
+                else {
+                    PostPreview.state = 0;
+                    PostPreview.disablePreview();
+                }
             },
 
-            viewPreview: function()
+            enablePreview: function()
             {
-                var previewArea = document.getElementById("previewArea");
-                var form_body = document.getElementById("frm_body");
-                previewArea.innerHTML = generatePreview(form_body.value);
-                previewArea.style.display = "block";
-                if(getSetting("post_preview_live") === false) {
-                    form_body.style.display = "none";
-                } else {
-                    form_body.addEventListener("input", PostPreview.updatePreview, true)
-                }
-                PostPreview.state = 1;
+                let form_body = document.getElementById("frm_body");
+                let preview_box = document.getElementById("previewArea");
+                preview_box.style.display = "block";
+                PostPreview.updatePreview();
+                form_body.addEventListener("input", PostPreview.updatePreview, true);
+                form_body.focus();
             },
 
-            viewSource: function()
+            disablePreview: function()
             {
-                var form_body = document.getElementById("frm_body");
-                if(getSetting("post_preview_live") === true) {
-                    form_body.removeEventListener("input", PostPreview.updatePreview, true)
-                }
-                form_body.style.display = "block";
-                document.getElementById("previewArea").style.display = "none";
-                PostPreview.state = 0;
+                let form_body = document.getElementById("frm_body");
+                let preview_box = document.getElementById("previewArea");
+                preview_box.style.display = "none";
+                form_body.removeEventListener("input", PostPreview.updatePreview, true)
+                form_body.focus();
             },
 
             updatePreview: function()
             {
-                document.getElementById("previewArea").innerHTML = generatePreview(document.getElementById("frm_body").value);
+                let form_body = document.getElementById("frm_body");
+                let previewArea = document.getElementById("previewArea");
+                PostPreview.debouncedPreview(form_body.value, previewArea);
             }
         }
 

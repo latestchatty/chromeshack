@@ -14,10 +14,12 @@ Gain the ability to publish new releases to the Chrome and Firefox web stores.
 # Release procedure
 
 - Update `release_notes.html` and `manifest.json` so they have the same new version number.
-- Tag a release on GitHub.
 - Zip the Git repo from INSIDE, don't zip the folder, the files should be at the root of the zip.  Also don't include the .git folder.
+- Tag a release on GitHub.
+- Add the zip to the release.
 - Release to the Chrome Web Store.
     - Log into the [Developer Dashboard](https://chrome.google.com/u/2/webstore/devconsole/).
+    - In the upper right corner, click the "Publisher" dropdown and pick "Chrome Shack Publishers".
     - Click on Chrome Shack in the list.
     - Click "Store Listing" in the left pane.
     - If there is a "Why can't I publish?" link at the top near the "Save Draft" and "Publish Item" buttons, then click that link, figure out whatever new rule Google instituted that prevents us from publishing, and fix it.

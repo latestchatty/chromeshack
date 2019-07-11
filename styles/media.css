@@ -36,11 +36,6 @@
     grid-gap: var(--gutter-size);
     margin: 0.75em 0 0 0;
 }
-.media-container:not(.responsive),
-.media-container:not(.responsive) img,
-.media-container:not(.responsive) video {
-    max-height: unset !important;
-}
 .medialoader {
     height: 100%;
     width: 100%;
@@ -52,16 +47,7 @@
     height: auto !important;
     box-sizing: border-box;
     object-fit: contain !important;
-    min-height: var(--min-media-item-height);
     min-width: var(--min-media-item-width);
-    max-height: var(--max-media-item-height);
-    max-width: var(--max-media-item-width);
-}
-.medialoader video.swiper-slide,
-.medialoader img.swiper-slide {
-    /* let carousel style itself but maintain ratio */
-    object-fit: contain !important;
-    max-height: var(--max-media-item-height);
     max-width: var(--max-media-item-width);
 }
 .iframe-container.hidden,
@@ -122,6 +108,11 @@ div.expando {
 .media-container:not(.responsive) .swiper-container.medialoader,
 .media-container:not(.responsive) .swiper-container.instgrm-embed {
     max-height: unset !important;
+}
+.medialoader video.swiper-slide,
+.medialoader img.swiper-slide {
+    object-fit: contain !important;
+    max-width: var(--max-media-item-width);
 }
 .swiper-button-next,
 .swiper-button-prev { opacity: 0.5 !important; }

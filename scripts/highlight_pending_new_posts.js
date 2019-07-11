@@ -30,12 +30,12 @@
 
     function loop() {
         try {
-            xhrRequest(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
-                .then(async res => {
-                var response = await res.json();
-                if (response && !response.error) {
-                    g_lastEventId = parseInt(response.lastEventId);
-                    processEvents(response.events);
+            fetchSafe(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`)
+            .then(json => {
+                // sanitized in common.js!
+                if (json) {
+                    g_lastEventId = parseInt(json.lastEventId);
+                    processEvents(json.events);
                 }
                 // Short delay in between loop iterations.
                 setTimeout(loop, 5000);
@@ -90,7 +90,7 @@
                 var offset = $(divPostItem).offset().top;
 
                 // if the element would be elsewhere on the page - scroll to it
-                if (!elementIsVisible(divPostItem) && offset > scroll) {
+                if (!elementIsVisible(divPostItem, true) && offset > scroll) {
                     scrollToElement(divPostItem);
                     return;
                 }
@@ -168,15 +168,16 @@
         });
 
         // We need to get an initial event ID to start with.
-        xhrRequest("https://winchatty.com/v2/getNewestEventId").then(async res => {
-            var response = await res.json();
-            g_lastEventId = parseInt(response.eventId);
+        fetchSafe("https://winchatty.com/v2/getNewestEventId")
+        .then(json => {
+            // sanitized in common.js!
+            g_lastEventId = parseInt(json.eventId);
             loop();
         });
     }
 
     settingsLoadedEvent.addHandler(function() {
-        if (getSetting("enabled_scripts").contains("highlight_pending_new_posts")) {
+        if (objContains("highlight_pending_new_posts", getSetting("enabled_scripts"))) {
             install();
         }
     });

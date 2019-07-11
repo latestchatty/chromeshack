@@ -1,6 +1,6 @@
 settingsLoadedEvent.addHandler(function()
 {
-    if (getSetting("enabled_scripts").contains("dinogegtik"))
+    if (objContains("dinogegtik", getSetting("enabled_scripts")))
     {
         DinoGegtik =
         {
@@ -18,7 +18,7 @@ settingsLoadedEvent.addHandler(function()
                 var fullpost = getDescendentByTagAndClassName(item, "div", "fullpost");
 
                 // we have a fullpost, and its className contains gegtik's user id
-                if (fullpost && fullpost.className.indexOf("fpauthor_174527") >= 0)
+                if (fullpost && fullpost.className.indexOf("fpauthor_174527") >= 0 || fullpost.className.indexOf("fpauthor_9995") >= 0)
                 {
                     var comic_id = "dinogegtik_" + id;
 
@@ -46,7 +46,7 @@ settingsLoadedEvent.addHandler(function()
                         panel.style.top = DinoGegtik.panels[i].y + "px";
                         panel.style.width = DinoGegtik.panels[i].width + "px";
                         panel.style.height = DinoGegtik.panels[i].height + "px";
-                        panel.innerHTML = lines[i];
+                        safeInnerHTML(lines[i], panel);
 
                         comic_div.appendChild(panel);
 

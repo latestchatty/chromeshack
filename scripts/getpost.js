@@ -1,6 +1,6 @@
 // Inspired by dodob's old postget script.
 settingsLoadedEvent.addHandler(function() {
-    if (getSetting("enabled_scripts").contains("getpost")) {
+    if (objContains("getpost", getSetting("enabled_scripts"))) {
         GetPost = {
             getLinks: function(item) {
                 var links = item.querySelectorAll(".sel .postbody > a");
@@ -29,7 +29,7 @@ settingsLoadedEvent.addHandler(function() {
             getPost: function(e, index) {
                 if (e.button == 0) {
                     e.preventDefault();
-                    var _expandoClicked = e.target.classList !== undefined && e.target.classList.contains("expando");
+                    var _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
                     var link = _expandoClicked ? e.target.parentNode : e.target;
                     var _postBody = link.parentNode;
                     var _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
@@ -38,12 +38,12 @@ settingsLoadedEvent.addHandler(function() {
                     var chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
                     var singlePost = `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
 
-                    xhrRequest(singlePost).then(async res => {
-                        var response = await res.text();
+                    fetchSafe(singlePost).then(data => {
                         var postDiv = document.createElement("div");
-                        // hack-ish way of "parsing" string to DOM
-                        postDiv.innerHTML = response;
-                        postDiv = postDiv.childNodes[5];
+                        // hack-ish way of "parsing" string to DOM (sanitized!)
+                        const fragment = data;
+                        postDiv.appendChild(fragment);
+                        postDiv = postDiv.childNodes[1];
 
                         // nuke fullpost class as we don't want
                         // chatview.js to interact with posts it's
@@ -52,7 +52,7 @@ settingsLoadedEvent.addHandler(function() {
                         postDiv.setAttribute("id", `getpost_${_postId}-${index}`);
                         toggleMediaLink(null, link, true);
                         link.parentNode.insertBefore(postDiv, link.nextSibling);
-                    }).catch(err => { console.log(err); });
+                    });
                 }
             }
         }

@@ -12,7 +12,7 @@ LocalTimeStamp =
     adjustTime: function(elm)
     {
 		var date = new Date();
-		var dstr = elm.innerHTML.toUpperCase();
+		var dstr = elm.innerText.toUpperCase();
 		var pos = dstr.indexOf("AM")+dstr.indexOf("PM")+1;
 		dstr = dstr.substring(0,pos)+" "+dstr.substr(pos);
 
@@ -44,7 +44,15 @@ LocalTimeStamp =
 			dt=hours+":"+minutes+" "+suffix;
         }
 
-		elm.innerHTML  = `${dd} ${dt} ${tz}`;
+		let timestamp = document.createElement("span");
+		timestamp.id = "local-time";
+		timestamp.innerText = `${dd} ${dt} ${tz}`;
+		// remove only text child of postdate
+		for (let c of elm.childNodes) {
+			if (c.nodeType === 3) { c.remove(); }
+		}
+		if (!elm.querySelector("#local-time"))
+			elm.appendChild(timestamp);
     },
 
     formatTimezone: function(tz)

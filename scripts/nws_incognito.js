@@ -1,5 +1,13 @@
+//
+// A note to reviewers:
+//
+// This script causes hyperlinks to "Not Safe For Work" imagery (e.g. pornographic images) to open automatically in
+// an incognito window when clicked, instead of a normal tab. In Firefox, doing so requires the
+// "allowedIncognitoAccess" permission.
+//
+
 settingsLoadedEvent.addHandler(function() {
-    if (getSetting("enabled_scripts").contains("nws_incognito"))
+    if (objContains("nws_incognito", getSetting("enabled_scripts")))
     {
         NwsIncognito =
         {
@@ -19,7 +27,12 @@ settingsLoadedEvent.addHandler(function() {
                         //Add href to collection for open all.
                         allLinks.push(cloned.href);
                         $(cloned).click(function(e) {
-                            browser.runtime.sendMessage({name: "launchIncognito", value: e.target.href});
+                            // Note to reviewers: please refer to the top of this file for explanation
+                            browser.runtime.sendMessage({ name: "allowedIncognitoAccess" }).then(result => {
+                                if (!window.chrome && !result)
+                                    alert("This feature will not work unless you enable \"Run in Private Windows\" in the Chrome Shack addon settings for Firefox!");
+                                browser.runtime.sendMessage({name: "launchIncognito", value: e.target.href});
+                            });
                             return false;
                         });
 
@@ -28,28 +41,12 @@ settingsLoadedEvent.addHandler(function() {
                             cloned.innerHTML += ' (Incognito)'
                         };
                         $(links[iLink]).replaceWith(cloned);
-                    }
 
-                    //If we're allowed incognito access, we can open all links.  Otherwise it's a shitstorm since it will open a new window for each link.
-                    browser.runtime.sendMessage({name: 'allowedIncognitoAccess'}).then(function (allowed) {
-                        if(allowed)
-                        {
-                            if(links.length > 1)
-                            {
-                                $(postBody).prepend($('<a>').attr('href', '#').html('Open All (Incognito)').click(function(){
-                                    //Run the first link and use a callback on message completion to ensure the window is created and all subsequent calls will open in that window.
-                                    browser.runtime.sendMessage({name: "launchIncognito", value: allLinks[0]}).then(function (response) {
-                                        if(allLinks.length <= 1) return;
-                                        for(var i=1; i<allLinks.length; i++)
-                                        {
-                                            browser.runtime.sendMessage({name: "launchIncognito", value: allLinks[i]});
-                                        }
-                                    });
-                                return false;
-                                }).append($('<br/><br/>')));
-                            }
-                        }
-                    });
+                        // remove expando buttons for Incognito mode
+                        var expando = links[iLink].querySelector("div.expando");
+                        if (!!expando)
+                            expando.parentNode.removeChild(expando);
+                    }
                 }
             }
         }
