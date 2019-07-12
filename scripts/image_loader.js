@@ -8,7 +8,7 @@ settingsLoadedEvent.addHandler(function()
             imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
             vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
             // common media host patterns
-            imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)?([\w\-]+)(?:#([\w\-]+))?/i,
+            imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)*([\w\-]+)(?:\#([\w\-]+))?/i,
             gfycatRegex: /https?\:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)\-.*?)/i,
             giphyRegex: /https?\:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*\-)?([\w\-]+)/i,
             dropboxImgRegex: /https?\:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gif|webp)\\?/i,
@@ -26,7 +26,7 @@ settingsLoadedEvent.addHandler(function()
                         ((i) => {
                             if (links[i].querySelector("div.expando")) { return; }
                             links[i].addEventListener("click", e => {
-                               ImageLoader.toggleImage(e, i);
+                                ImageLoader.toggleImage(e, i);
                             });
 
                             var _postBody = links[i].parentNode;
@@ -128,11 +128,14 @@ settingsLoadedEvent.addHandler(function()
 
             createImgur: async function(link, postId, index)
             {
-                if (link.href.match(/\.(jpe?g|png|web(p|m)|gifv?|mp4)$/i)) {
-                    appendMedia([ link ], link, postId, index, null, { forceAppend: true });
-                    return; // we don't need to resolve if the url looks good
-                }
+                // this method can cause DOMException errors for unresolvable links (302/404)
+                // if (link.href.match(/\.(jpe?g|png|web(p|m)|gifv?|mp4)$/i)) {
+                //     appendMedia([ link.href ], link, postId, index, null, { forceAppend: true });
+                //     return; // we don't need to resolve if the url looks good
+                // }
 
+                // resolve media shortcodes with failover (album-image > album > image)
+                // causes some unnecessary fetches due to Imgur API silliness
                 let _matchShortcode = ImageLoader.imgurRegex.exec(link.href);
                 let _shortcodes = {
                     albumHash: _matchShortcode && _matchShortcode[1],
