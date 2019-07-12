@@ -151,16 +151,22 @@ function xhrRequest(url, optionsObj) {
     });
 }
 
-function fetchSafe(url, optionsObj, modeObj) {
-    // used for sanitizing some fetches (tries to auto-detect)
-    // NOTE: HTML type gets sanitized to a document fragment
-    let { instgrmBool, htmlBool } = modeObj || {};
+function fetchSafe(url, fetchOpts, modeObj) {
+    // used for sanitizing fetches
+    // fetchOpts gets destructured in 'xhrRequest()'
+    // modeObj gets destructured into override bools:
+    //   instgrmBool: for embedded instagram graphQL parsing
+    //   htmlBool: to force parsing as HTML fragment
+    //   xmlBool: to force parsing as XML document fragment
+    // NOTE: HTML/XML types gets sanitized to a document fragment
+
+    let { instgrmBool, htmlBool, xmlBool } = modeObj || {};
     return new Promise((resolve, reject) => {
-        xhrRequest(url, !isEmpty(optionsObj) ? optionsObj : {})
+        xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
         .then(res => {
             if (res && res.ok)
                 return res.text();
-            reject(false);
+            return reject("Fetch failed!");
         })
         .then(text => {
             try {
@@ -169,23 +175,26 @@ function fetchSafe(url, optionsObj, modeObj) {
                     let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
                     let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
                     if (instgrmGQL) {
-                        resolve(safeJSON({
+                        return resolve(safeJSON({
                             metaViews: metaMatch && metaMatch[1],
                             gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
                         }));
                     }
-                    reject(false);
+                    return reject();
                 }
                 else {
                     let unsafeJSON = JSON.parse(text);
-                    resolve(safeJSON(unsafeJSON));
+                    return resolve(safeJSON(unsafeJSON));
                 }
             } catch {
-                if (htmlBool && text)
-                    resolve(DOMPurify.sanitize(text)); // caution!
+                // WARNING: handle document fragment errors in client func
+                if (xmlBool && text)
+                    return resolve(new DOMParser().parseFromString(DOMPurify.sanitize(text), "text/xml"));
+                else if (htmlBool && text)
+                    return resolve(DOMPurify.sanitize(text)); // caution!
                 else if (isHTML(text))
-                    resolve(sanitizeToFragment(text));
-                reject(false); // reject for safety if parse fails
+                    return resolve(sanitizeToFragment(text)); // auto-detect HTML
+                return reject("Parse failed!");
             }
         });
     }).catch(err => console.log(err));
