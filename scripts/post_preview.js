@@ -40,7 +40,17 @@ settingsLoadedEvent.addHandler(function()
             installClickEvent: function()
             {
                 let previewButton = document.getElementById("previewButton");
+                let clickableTags = [ ...document.querySelectorAll("#shacktags_legend_table td > a") ];
                 previewButton.addEventListener("click", PostPreview.togglePreview, true);
+                // include interactive tags legend as well
+                for (let t of clickableTags || []) {
+                    t.addEventListener("click", () => {
+                        if (PostPreview.state === 1) {
+                            // only update preview if shown
+                            PostPreview.updatePreview();
+                        }
+                    }, true);
+                }
             },
 
             togglePreview: function()

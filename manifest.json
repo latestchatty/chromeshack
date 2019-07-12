@@ -35,7 +35,6 @@
             "common.js",
             "sentence_parser.js",
             "init_events.js",
-            "scripts/post_preview.js",
             "scripts/dinogegtik.js",
             "scripts/image_loader.js",
             "scripts/video_loader.js",
@@ -57,6 +56,7 @@
             "scripts/custom_user_filters.js",
             "scripts/highlight_pending_new_posts.js",
             "scripts/options_link.js",
+            "scripts/post_preview.js",
             "scripts/post_length_counter.js",
             "scripts/thread_pane.js",
             "scripts/post_style.js",
@@ -71,7 +71,7 @@
             "styles/embed_socials.css",
             "styles/two_pane.css",
             "styles/media.css"
-         ],
+        ],
         "matches": [
             "*://shacknews.com/chatty*",
             "*://www.shacknews.com/chatty*",
