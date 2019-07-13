@@ -40,11 +40,7 @@ settingsLoadedEvent.addHandler(function()
                     if(document.location.href.indexOf("https")==-1){
                         rssurl = "http://www.shacknews.com/feed/rss";
                     }
-                    xhrRequest(rssurl)
-                        .then( response => response.text())
-                        .then( str => (new window.DOMParser()).parseFromString(str, "text/xml"))
-                        .then( data => chattynews.parseRSS(data));
-
+                    fetchSafe(rssurl, {}, { rssBool: true }).then(chattynews.parseRSS);
                 }
             },
             
@@ -53,13 +49,13 @@ settingsLoadedEvent.addHandler(function()
                 if(count < 1){ 
                     count = 7;
                 }
-                var items = data.querySelectorAll('item');
+                var items = data.items;
                 
                 var output = '<h3>NEWS HEADLINES</h3><ul>';
                 for (var i = 0; i < ((items.length<count)?items.length:count); ++i) {
-                    var title = chattynews.valueFromTagName(items[i], 'title');
-                    var link = chattynews.valueFromTagName(items[i], 'link');
-                    var desc = chattynews.valueFromTagName(items[i], 'description').replace(/<[^>]*>/g,'').replace(/"/g,'&quot;');
+                    var title = DOMPurify.sanitize(items[i].title);
+                    var link = DOMPurify.sanitize(items[i].link);
+                    var desc = DOMPurify.sanitize(items[i].content);
                     output += '<li><a href ="' + link + '" title="'+desc+'" target="_blank">' + title + '</li>\n';
                 }
                 output += '</ul>';
@@ -74,21 +70,20 @@ settingsLoadedEvent.addHandler(function()
                 }
                 
                 if(getSetting("chatty_news_article_news")){
-                    var elms = document.evaluate("//div[contains(@class,'fpauthor_14475')]/div[contains(@class,'postbody')]/a[contains(@href,'article/')]", document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-                    for(var k=0;k<elms.snapshotLength;k++){
-                        var elm = elms.snapshotItem(k);
+                    var elms = document.body.querySelectorAll('div.fpauthor_14475 div.postbody a[href*="article/"]');
+                    for(var k=0;k<elms.length;k++){
+                        var elm = elms[k];
                         
                         var postlink = elm.href;
                         //elm should be the link to the article, compare href to links in RSS
                         for(var i=0;i<items.length;i++){
-                            var link = chattynews.valueFromTagName(items[i], 'link');
+                            var link = items[i].link;
                             if(postlink.indexOf(link) > -1){
-
                                 //found match, mark as converted and add description from RSS
                                 elm.setAttribute('converted','1');
                                 var parent = elm.parentNode;
                                 var html = parent.innerHTML;
-                                html+="<br><div class='newsarticle'>"+chattynews.valueFromTagName(items[i], 'description')+"</div>";
+                                html+="<br><div class='newsarticle'>"+DOMPurify.sanitize(items[i].content)+"</div>";
                                 parent.innerHTML = html;
                                 break;
                             }
@@ -99,7 +94,7 @@ settingsLoadedEvent.addHandler(function()
                 if(getSetting("chatty_news_show_image")){
                     var lastNewsUrl = localStorage.getItem(chattynews.LOCALSTORAGE_LASTNEWS);
                     var lastNewsImage = localStorage.getItem(chattynews.LOCALSTORAGE_LASTIMAGE);
-                    var topStoryLink = chattynews.valueFromTagName(items[0], 'link');
+                    var topStoryLink = items[0].link;
                     //convert protocol, RSS seems to have HTTP, but page is now HTTPS
                     var pos = topStoryLink.indexOf(":");
                     topStoryLink = document.location.href.substring(0,document.location.href.indexOf(":"))+topStoryLink.substring(pos);
@@ -145,7 +140,6 @@ settingsLoadedEvent.addHandler(function()
                 imgdiv.setAttribute('id', "SNCNbackimg");
                 imgdiv.setAttribute('style','background-image: url("' + imgurl + '")');
                 maskimg.setAttribute('id', "SNCNmaskimg");
-                //maskimg.setAttribute('style', 'background-color: transparent !important;');
                 imgdiv.appendChild(maskimg);
                 document.body.insertBefore(imgdiv,document.body.firstChild);
                 
@@ -175,14 +169,7 @@ settingsLoadedEvent.addHandler(function()
                     document.addEventListener("scroll", scroll,false);
                     scroll();
                 }
-            },
-            
-            valueFromTagName: function (item, tagname) {
-                var val = item.getElementsByTagName(tagname);
-                if(val.length>0 && val[0]!=null && val[0].firstChild!=null)
-                    return val[0].firstChild.nodeValue;
-                return "";
-            },
+            }
             
         };
 

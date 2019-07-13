@@ -451,14 +451,8 @@ function showChattyNewsSettings(){
     ele.checked = getOption("chatty_news_highlight_article_posts");
     ele = document.getElementById('chatty_news_wallpaper')
     ele.checked = getOption("chatty_news_show_image");
-    var scrollPref = getOption("enabled_scripts").indexOf("scrolling_performance_hack") > -1;
-    if(scrollPref){
-        ele.disabled = true;
-        setOption("chatty_news_brighten_image","false");
-    }
     ele = document.getElementById('chatty_news_wallpaper_brighten')
     ele.checked = getOption("chatty_news_brighten_image");
-    
     ele = document.getElementById('chatty_news_wallpaper_dim')
     for(var i=0; i < ele.options.length; i++){
         if( ele.options[i].value == getOption("chatty_news_wallpaper_dim")){

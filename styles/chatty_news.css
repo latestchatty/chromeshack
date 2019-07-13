@@ -63,7 +63,7 @@ body.chattynews #SNCNheadlines ul li a {
     text-decoration: none;
 }
 body.chattynews .content {
-    margin-top: 2em;
+    margin-top: 3em;
 }
 
 
@@ -96,4 +96,11 @@ body.chattynews_image #featured-thread {
 
 body.chattynews_article div.fpauthor_14475 {
     background-color: #306666 !important; border: 1px solid white !important;
+}
+body.chattynews_article div.fpauthor_14475 .postdate, body.chattynews_article div.fpauthor_14475 .author{
+    color: white;
+}
+body.chattynews_article div.fpauthor_14475 .refresh
+{
+    background: radial-gradient(closest-side,#888,transparent);
 }
