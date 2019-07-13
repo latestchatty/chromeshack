@@ -157,46 +157,48 @@ function fetchSafe(url, fetchOpts, modeObj) {
     // modeObj gets destructured into override bools:
     //   instgrmBool: for embedded instagram graphQL parsing
     //   htmlBool: to force parsing as HTML fragment
-    //   xmlBool: to force parsing as XML document fragment
-    // NOTE: HTML/XML types gets sanitized to a document fragment
+    //   rssBool: to force parsing RSS to a sanitized JSON object
+    // NOTE: HTML type gets sanitized to a document fragment
 
-    let { instgrmBool, htmlBool, xmlBool } = modeObj || {};
+    let { instgrmBool, htmlBool, rssBool } = modeObj || {};
     return new Promise((resolve, reject) => {
-        xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
-        .then(res => {
-            if (res && res.ok)
-                return res.text();
-            return reject("Fetch failed!");
-        })
-        .then(text => {
-            try {
-                if (instgrmBool) {
-                    // special case for instagram graphql parsing
-                    let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-                    let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-                    if (instgrmGQL) {
-                        return resolve(safeJSON({
-                            metaViews: metaMatch && metaMatch[1],
-                            gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
-                        }));
+        if (rssBool) {
+            // sanitize response from rss-parser rather than normal fetch
+            return parseRSS(url).then(resolve).catch(reject);
+        } else {
+            xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
+            .then(res => {
+                if (res && res.ok)
+                    return res.text();
+                return reject("Fetch failed!");
+            })
+            .then(text => {
+                try {
+                    if (instgrmBool) {
+                        // special case for instagram graphql parsing
+                        let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+                        let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+                        if (instgrmGQL) {
+                            return resolve(safeJSON({
+                                metaViews: metaMatch && metaMatch[1],
+                                gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
+                            }));
+                        }
+                        return reject();
                     }
-                    return reject();
+                    else {
+                        let unsafeJSON = JSON.parse(text);
+                        return resolve(safeJSON(unsafeJSON));
+                    }
+                } catch {
+                    if (htmlBool && text)
+                        return resolve(DOMPurify.sanitize(text)); // caution!
+                    else if (isHTML(text))
+                        return resolve(sanitizeToFragment(text)); // auto-detect HTML
+                    return reject("Parse failed!");
                 }
-                else {
-                    let unsafeJSON = JSON.parse(text);
-                    return resolve(safeJSON(unsafeJSON));
-                }
-            } catch {
-                // WARNING: handle document fragment errors in client func
-                if (xmlBool && text)
-                    return resolve(new DOMParser().parseFromString(DOMPurify.sanitize(text), "text/xml"));
-                else if (htmlBool && text)
-                    return resolve(DOMPurify.sanitize(text)); // caution!
-                else if (isHTML(text))
-                    return resolve(sanitizeToFragment(text)); // auto-detect HTML
-                return reject("Parse failed!");
-            }
-        });
+            });
+        }
     }).catch(err => console.log(err));
 }
 
@@ -400,6 +402,18 @@ function safeJSON(json) {
             return safeJSON(item);
         });
     }
+}
+
+function parseRSS(rssUrl) {
+    return new Promise((resolve, reject) => {
+        let parser = new RSSParser();
+        parser.parseURL(rssUrl, function(err, feed) {
+            if (feed)
+                return resolve(safeJSON(feed));
+            else
+                return reject(err);
+        });
+    });
 }
 
 function isHTML(text) {
