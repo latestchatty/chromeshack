@@ -75,14 +75,8 @@ function superTrim(string) {
     return string.replace(/^\s+|\s+$/g,"");
 }
 
-function isEmpty(obj)
-{
-    if (!(obj instanceof Object)) return true;
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
+function isEmpty(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
 function xhrRequestLegacy(url, optionsObj) {
@@ -131,11 +125,11 @@ function xhrRequest(url, optionsObj) {
         }
     }
     // set some sane defaults
-    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("mode"))
+    if (!isEmpty(optionsObj) && !objContains("mode", optionsObj))
         optionsObj.mode = "cors"
-    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("cache"))
+    if (!isEmpty(optionsObj) && !objContains("cache", optionsObj))
         optionsObj.cache = "no-cache"
-    if (!isEmpty(optionsObj) && !optionsObj.hasOwnProperty("method"))
+    if (!isEmpty(optionsObj) && !!objContains("method", optionsObj))
         optionsObj.method = "GET"
 
     return fetch(url, optionsObj && {
@@ -162,43 +156,40 @@ function fetchSafe(url, fetchOpts, modeObj) {
 
     let { instgrmBool, htmlBool, rssBool } = modeObj || {};
     return new Promise((resolve, reject) => {
-        if (rssBool) {
-            // sanitize response from rss-parser rather than normal fetch
-            return parseRSS(url).then(resolve).catch(reject);
-        } else {
-            xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
-            .then(res => {
-                if (res && res.ok)
-                    return res.text();
-                return reject("Fetch failed!");
-            })
-            .then(text => {
-                try {
-                    if (instgrmBool) {
-                        // special case for instagram graphql parsing
-                        let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-                        let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-                        if (instgrmGQL) {
-                            return resolve(safeJSON({
-                                metaViews: metaMatch && metaMatch[1],
-                                gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
-                            }));
-                        }
-                        return reject();
+        xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
+        .then(res => {
+            if (res && res.ok)
+                return res.text();
+            return reject("Fetch failed!");
+        })
+        .then(text => {
+            try {
+                if (instgrmBool) {
+                    // special case for instagram graphql parsing
+                    let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+                    let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+                    if (instgrmGQL) {
+                        return resolve(safeJSON({
+                            metaViews: metaMatch && metaMatch[1],
+                            gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
+                        }));
                     }
-                    else {
-                        let unsafeJSON = JSON.parse(text);
-                        return resolve(safeJSON(unsafeJSON));
-                    }
-                } catch {
-                    if (htmlBool && text)
-                        return resolve(DOMPurify.sanitize(text)); // caution!
-                    else if (isHTML(text))
-                        return resolve(sanitizeToFragment(text)); // auto-detect HTML
-                    return reject("Parse failed!");
+                    return reject();
                 }
-            });
-        }
+                else {
+                    let unsafeJSON = JSON.parse(text);
+                    return resolve(safeJSON(unsafeJSON));
+                }
+            } catch {
+                if (rssBool && text)
+                    return parseShackRSS(text).then(resolve).catch(reject);
+                if (htmlBool && text)
+                    return resolve(DOMPurify.sanitize(text)); // caution!
+                else if (isHTML(text))
+                    return resolve(sanitizeToFragment(text)); // auto-detect HTML
+                return reject("Parse failed!");
+            }
+        });
     }).catch(err => console.log(err));
 }
 
@@ -404,17 +395,32 @@ function safeJSON(json) {
     }
 }
 
-function parseRSS(rssUrl) {
+function parseShackRSS(rssText) {
     return new Promise((resolve, reject) => {
-        let parser = new RSSParser();
-        parser.parseURL(rssUrl, function(err, feed) {
-            if (feed)
-                return resolve(safeJSON(feed));
-            else
-                return reject(err);
-        });
+        let result = {items: []};
+        if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
+            let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
+            for (let i of items || []) {
+                let title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
+                let link = i.match(/<link>(.+?)<\/link>/im);
+                let date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
+                let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
+                let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
+                result.items.push({
+                    title: title && title[1],
+                    link: link && link[1],
+                    date: date && date[1],
+                    content: content && content[1],
+                    medialink: medialink && medialink[1]
+                });
+            }
+        }
+        // sanitize our resulting response
+        if (!isEmpty(result))
+            return resolve(safeJSON(result));
+        return reject();
     });
-}
+};
 
 function isHTML(text) {
     // https://stackoverflow.com/a/15458968

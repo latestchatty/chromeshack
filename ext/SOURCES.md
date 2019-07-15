@@ -26,8 +26,3 @@ https://github.com/nolimits4web/swiper/blob/v4.5.0/dist/css/swiper.min.css
 https://github.com/mozilla/webextension-polyfill/releases/tag/0.4.0
 https://github.com/mozilla/webextension-polyfill/blob/0.4.0/src/browser-polyfill.js
 https://unpkg.com/webextension-polyfill@0.4.0/dist/browser-polyfill.js
-
-# rss-parser 3.7.2 (MIT)
-https://github.com/bobby-brennan/rss-parser/releases/tag/v3.7.2
-https://github.com/bobby-brennan/rss-parser/raw/v3.7.2/dist/rss-parser.js
-https://github.com/bobby-brennan/rss-parser/raw/v3.7.2/dist/rss-parser.min.js
