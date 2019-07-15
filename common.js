@@ -61,14 +61,19 @@ function insertStyle(css, containerName)
 }
 
 function objContains(needle, haystack)
-{
-    var i = haystack.length;
-    while (i--)
-    {
-        if (haystack[i] == needle)
-            return true;
+{// tests if an object (or nested object) contains a matching value (or prop)
+    if (isEmpty(haystack)) return false;
+    else {
+        let hopCheck = Object.prototype.hasOwnProperty(haystack, needle);
+        if (hopCheck) return true; // quick top level check
+        for (let k of Object.keys(haystack)) {
+            if (haystack[k] instanceof Object)
+                objContains(needle, haystack[k]);
+            else if (haystack[k] === needle)
+                return true;
+        }
+        return false;
     }
-    return false;
 }
 
 function superTrim(string) {
@@ -76,7 +81,8 @@ function superTrim(string) {
 }
 
 function isEmpty(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
+    return obj === null || obj === undefined ||
+        obj && Object.keys(obj).length === 0 && obj.constructor === Object;
 }
 
 function xhrRequestLegacy(url, optionsObj) {
@@ -277,11 +283,9 @@ function generatePreview(postText) {
 
     // replace matching pairs first
     for (var ix in complexReplacements) {
-        if (complexReplacements.hasOwnProperty(ix)) {
-            var rgx = new RegExp(complexReplacements[ix].from[0] + '(.*?)' + complexReplacements[ix].from[1], 'g');
-            while (postText.match(rgx) !== null) {
-                postText = postText.replace(rgx, complexReplacements[ix].to[0] + '$1' + complexReplacements[ix].to[1]);
-            }
+        let rgx = new RegExp(complexReplacements[ix].from[0] + '(.*?)' + complexReplacements[ix].from[1], 'g');
+        while (postText.match(rgx) !== null) {
+            postText = postText.replace(rgx, complexReplacements[ix].to[0] + '$1' + complexReplacements[ix].to[1]);
         }
     }
 
@@ -290,12 +294,10 @@ function generatePreview(postText) {
     // b[g{bold and green}g]b <-- correct
     // b[g{bold and green]b}g <-- }g is not parsed by the shack code
     for (var ix in complexReplacements) {
-        if (complexReplacements.hasOwnProperty(ix)) {
-            var rgx = new RegExp(complexReplacements[ix].from[0], 'g');
-            while (postText.match(rgx) !== null) {
-                postText = postText.replace(rgx, complexReplacements[ix].to[0]);
-                postText = postText + complexReplacements[ix].to[1];
-            }
+        let rgx = new RegExp(complexReplacements[ix].from[0], 'g');
+        while (postText.match(rgx) !== null) {
+            postText = postText.replace(rgx, complexReplacements[ix].to[0]);
+            postText = postText + complexReplacements[ix].to[1];
         }
     }
     return convertUrlToLink(postText);
