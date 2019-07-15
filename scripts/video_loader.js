@@ -26,20 +26,19 @@ settingsLoadedEvent.addHandler(function()
 
             getVideoType: function(url)
             {
-                // youtube videos and/or playlists (without offset)
                 var _isStreamable = /https?\:\/\/streamable\.com\/([\w]+)/i.exec(url);
                 var _isXboxDVR = /https?\:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w\d\-]+)\/video\/([\w\-]+)/i.exec(url);
-                var _isYoutube = /https?\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:(?:watch|watch_popup)?[\?\&tv\=]{3}?)?([\w\-]{11}[^\?\&t\=]?)(?:[\?\&]list=([\w]{34}))?/i.exec(url);
-                var _isYTOffset = /https?\:\/\/(?:.*\.)?(?:youtube\.[\w]{2,3}|youtu.be)\/(?:.*[\?\&]t=([\ds]+))/i.exec(url);
+                // youtube videos and/or playlists (vid id: $1, playlist id: $2, offset: $3)
+                var _isYoutube = /https?\:\/\/(?:.*\.)?youtu(?:(?:\.be|be\.[A-Za-z]{2,4})\/(?:watch.+?v?=([\w\-]+)(?:\&list=([\w\-]+))?(?:.*(\&t=[\w\-]+))?|playlist\?list=([\w\-]+))|\.be\/([\w\-]+)$)/i.exec(url);
                 // twitch channels, videos, and clips (with time offset)
                 var _isTwitch = /https?\:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w\-]+)(?:.*?t=(\w+))?|collections\/([\w\-]+))|([\w\-]+)))/i.exec(url);
 
                 if (_isYoutube) {
                     return {
                         type: 1,
-                        video: _isYoutube[1],
-                        playlist: _isYoutube[2],
-                        offset: _isYTOffset && _isYTOffset[1]
+                        video: _isYoutube[1] || _isYoutube[5],
+                        playlist: _isYoutube[2] || _isYoutube[4],
+                        offset: _isYoutube[3]
                     };
                 }
                 else if (_isTwitch) {
@@ -133,7 +132,6 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "iframe-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
@@ -174,6 +172,8 @@ settingsLoadedEvent.addHandler(function()
 
                 if (video_id && video_playlist)
                     video_src = `https://www.youtube.com/embed/videoseries?v=${video_id}&list=${video_playlist}&autoplay=1${timeOffset}`;
+                else if (!video_id && video_playlist)
+                    video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&autoplay=1`;
                 else if (video_id)
                     video_src = `https://www.youtube.com/embed/${video_id}?autoplay=1${timeOffset}`;
                 else if (video_playlist)
@@ -187,7 +187,6 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "yt-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
@@ -229,7 +228,6 @@ settingsLoadedEvent.addHandler(function()
                     video.setAttribute("class", "twitch-container");
                     video.setAttribute("id", `loader_${postId}-${index}`);
                     var iframe = document.createElement("iframe");
-                    iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-presentation");
                     iframe.setAttribute("id", `iframe_${postId}-${index}`);
                     iframe.setAttribute("src", `${video_src}`);
                     iframe.setAttribute("frameborder", "0");
