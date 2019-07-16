@@ -62,18 +62,21 @@ function insertStyle(css, containerName)
 
 function objContains(needle, haystack)
 {// tests if an object (or nested object) contains a matching value (or prop)
+    // since objects can contains Arrays test for them too
     if (isEmpty(haystack)) return false;
-    else {
-        let hopCheck = Object.prototype.hasOwnProperty(haystack, needle);
-        if (hopCheck) return true; // quick top level check
-        for (let k of Object.keys(haystack)) {
-            if (haystack[k] instanceof Object)
-                objContains(needle, haystack[k]);
-            else if (haystack[k] === needle)
-                return true;
+    if (haystack === needle) return true;
+    for (let v of Object.values(haystack)) {
+        if (v instanceof Object) {
+            let _objResult = objContains(needle, v);
+            if (_objResult) return true;
+        } else if (Array.isArray(v)) {
+            let _arrResult = objContains(needle, {...v});
+            if (_arrResult) return true;
+        } else if (v === needle) {
+            return true;
         }
-        return false;
     }
+    return false;
 }
 
 function superTrim(string) {
