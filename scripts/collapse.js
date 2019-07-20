@@ -1,47 +1,40 @@
-settingsLoadedEvent.addHandler(function()
-{
-    Collapse =
-    {
-        collapsed: getSetting("collapsed_threads"),
+let Collapse = {
+    toggle(item, id, is_root_post) {
+        // only process for root posts
+        if (is_root_post) {
+            let root = document.getElementById("root_" + id);
+            // root should never be null, but check anyway
+            if (root) {
+                let postmeta = getDescendentByTagAndClassName(item, "div", "postmeta");
 
-        toggle: function(item, id, is_root_post)
-        {
-            // only process for root posts
-            if (is_root_post)
-            {
-                var root = document.getElementById("root_" + id);
-                // root should never be null, but check anyway
-                if (root)
-                {
-                    var postmeta = getDescendentByTagAndClassName(item, "div", "postmeta");
+                let close = getDescendentByTagAndClassName(postmeta, "a", "closepost");
+                let show = getDescendentByTagAndClassName(postmeta, "a", "showpost");
+                close.addEventListener("click", () => {
+                    Collapse.close(id);
+                });
+                show.addEventListener("click", () => {
+                    Collapse.show(id);
+                });
 
-                    var close = getDescendentByTagAndClassName(postmeta, "a", "closepost");
-                    var show = getDescendentByTagAndClassName(postmeta, "a", "showpost");
-                    close.addEventListener("click", function() { Collapse.close(id); });
-                    show.addEventListener("click", function() { Collapse.show(id); });
-
-                    // this thread should be collapsed
-                    if (objContains(id, Collapse.collapsed))
-                    {
+                // this thread should be collapsed
+                getSetting("collapsed_threads").then(collapsed => {
+                    if (objContains(id, collapsed)) {
                         root.className += " collapsed";
                         show.className = "showpost";
                         close.className = "closepost hidden";
                     }
-
-                }
+                });
             }
-        },
-
-        close: function(id)
-        {
-            browser.runtime.sendMessage({name: "collapseThread", "id": id});
-        },
-
-        show: function(id)
-        {
-            browser.runtime.sendMessage({name: "unCollapseThread", "id": id});
         }
-    }
+    },
 
-    processPostEvent.addHandler(Collapse.toggle);
-});
+    close(id) {
+        browser.runtime.sendMessage({ name: "collapseThread", id: id });
+    },
+
+    show(id) {
+        browser.runtime.sendMessage({ name: "unCollapseThread", id: id });
+    }
+};
+
+processPostEvent.addHandler(Collapse.toggle);

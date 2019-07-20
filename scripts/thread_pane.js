@@ -1,42 +1,26 @@
-var refreshThreadPane;
+let refreshThreadPane;
+let ThreadPane = {
+    install() {
+        // regenerate the thread pane when the user refreshes a thread.
+        document.getElementById("dom_iframe").addEventListener("load", () => {
+            setTimeout(refreshThreadPane, 0);
+        });
 
-(() => {
-    refreshThreadPane = () => {
-        if (objContains('thread_pane', getSetting('enabled_scripts'))) {
-            try {
-                install();
-            } catch (e) {
-                console.log('Failed to install the thread_pane script:');
-                console.log(e);
-                $('div#cs_thread_pane').remove();
-                $('body').removeClass('cs_thread_pane_enable');
-            }
-        }
-    };
-
-    settingsLoadedEvent.addHandler(refreshThreadPane);
-
-    // regenerate the thread pane when the user refreshes a thread.
-    document.getElementById('dom_iframe').addEventListener('load', function() {
-        setTimeout(refreshThreadPane, 0);
-    });
-
-    function install() {
         // Only install on the main /chatty page, not an individual thread.
-        if (document.getElementById('newcommentbutton') === null) {
+        if (document.getElementById("newcommentbutton") === null) {
             return;
         }
 
-        $('body').addClass('cs_thread_pane_enable');
+        $("body").addClass("cs_thread_pane_enable");
 
-        const $pageDiv = $('div#page');
+        const $pageDiv = $("div#page");
 
         // if an existing thread pane exists, then nuke it, but preserve the scroll position
-        const $previousThreadPane = $('div#cs_thread_pane');
+        const $previousThreadPane = $("div#cs_thread_pane");
         let previousThreadPaneScrollTop = 0;
         if ($previousThreadPane.length > 0) {
-            previousThreadPaneScrollTop = $('div#cs_thread_pane').scrollTop();
-            $('div#cs_thread_pane').remove();
+            previousThreadPaneScrollTop = $("div#cs_thread_pane").scrollTop();
+            $("div#cs_thread_pane").remove();
         }
 
         // create the thread pane container
@@ -46,39 +30,41 @@ var refreshThreadPane;
         $threadPaneDiv.append($listDiv);
 
         // walk the thread list and collect the posts
-        for (const threadDiv of $('div#chatty_comments_wrap div.root')) {
+        for (const threadDiv of $("div#chatty_comments_wrap div.root")) {
             const $threadDiv = $(threadDiv);
 
             const threadId = parseThreadId(threadDiv);
 
-            const $opDiv = $($threadDiv.find('ul li div.fullpost')[0]);
+            const $opDiv = $($threadDiv.find("ul li div.fullpost")[0]);
 
-            const rootAuthor = parseRootAuthor($opDiv);
-            const $rootBodyDiv = cloneRootPostBody($opDiv, threadId);
-            const rootBodyHtml = getHtmlWithTrimmedLineBreaks($rootBodyDiv);
-            const postCount = parseThreadPostCount($threadDiv, threadId);
-            const { parentIsRoot, mostRecentSubtree } = parseMostRecentPosts($threadDiv, threadId);
-            const isRefreshPending = $opDiv.find('.refresh_pending').length > 0;
+            const rootAuthor = ThreadPane.parseRootAuthor($opDiv);
+            const $rootBodyDiv = ThreadPane.cloneRootPostBody($opDiv, threadId);
+            const rootBodyHtml = ThreadPane.getHtmlWithTrimmedLineBreaks($rootBodyDiv);
+            const postCount = ThreadPane.parseThreadPostCount($threadDiv, threadId);
+            const { parentIsRoot, mostRecentSubtree } = ThreadPane.parseMostRecentPosts($threadDiv, threadId);
+            const isRefreshPending = $opDiv.find(".refresh_pending").length > 0;
 
             // begin constructing the thread summary card in the thread pane
             const $cardDiv = $('<div class="cs_thread_pane_card">');
-            $cardDiv.append($('<div class="cs_thread_pane_post_count">').text(`${postCount} post${postCount === 1 ? '' : 's'}`));
+            $cardDiv.append(
+                $('<div class="cs_thread_pane_post_count">').text(`${postCount} post${postCount === 1 ? "" : "s"}`)
+            );
             $cardDiv.append($('<div class="cs_thread_pane_root_author">').text(rootAuthor));
 
             if (isRefreshPending) {
-                $cardDiv.addClass('cs_thread_pane_card_refresh_pending');
-            } else if ($opDiv.hasClass('fpmod_nws')) {
-                $cardDiv.addClass('cs_thread_pane_card_nws');
-            } else if ($opDiv.hasClass('fpmod_informative')) {
-                $cardDiv.addClass('cs_thread_pane_card_informative');
-            } else if ($opDiv.hasClass('fpmod_political')) {
-                $cardDiv.addClass('cs_thread_pane_card_political');
+                $cardDiv.addClass("cs_thread_pane_card_refresh_pending");
+            } else if ($opDiv.hasClass("fpmod_nws")) {
+                $cardDiv.addClass("cs_thread_pane_card_nws");
+            } else if ($opDiv.hasClass("fpmod_informative")) {
+                $cardDiv.addClass("cs_thread_pane_card_informative");
+            } else if ($opDiv.hasClass("fpmod_political")) {
+                $cardDiv.addClass("cs_thread_pane_card_political");
             } else {
-                $cardDiv.addClass('cs_thread_pane_card_ontopic');
+                $cardDiv.addClass("cs_thread_pane_card_ontopic");
             }
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find('a').replaceWith(function() {
+            $rootPostBodyDiv.find("a").replaceWith(function() {
                 // exclude expando children
                 return $(`
                     <span class="cs_thread_pane_link">
@@ -86,7 +72,7 @@ var refreshThreadPane;
                     </span>`);
             });
             // remove media containers from Thread Pane parent
-            $rootPostBodyDiv.find('.media-container').remove();
+            $rootPostBodyDiv.find(".media-container").remove();
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
@@ -98,13 +84,13 @@ var refreshThreadPane;
             for (let i = 0; i < mostRecentSubtree.length; i++) {
                 const { postAuthor, postPreviewHtml } = mostRecentSubtree[i];
                 const $postDiv = $('<div class="cs_thread_pane_reply">');
-                $postDiv.append($('<div class="cs_thread_pane_reply_arrow">').text('↪'));
+                $postDiv.append($('<div class="cs_thread_pane_reply_arrow">').text("↪"));
                 $postDiv.append($('<div class="cs_thread_pane_reply_preview">').html(postPreviewHtml));
-                $postDiv.append($('<div class="cs_thread_pane_reply_divider">').text(':'));
+                $postDiv.append($('<div class="cs_thread_pane_reply_divider">').text(":"));
                 $postDiv.append($('<div class="cs_thread_pane_reply_author">').text(postAuthor));
                 const isMostRecentReply = i === mostRecentSubtree.length - 1;
                 if (isMostRecentReply) {
-                    $postDiv.addClass('cs_thread_pane_most_recent_reply');
+                    $postDiv.addClass("cs_thread_pane_most_recent_reply");
                 }
 
                 parentDiv.append($postDiv);
@@ -112,7 +98,7 @@ var refreshThreadPane;
             }
 
             if (!parentIsRoot) {
-                $repliesDiv.addClass('cs_thread_pane_replies_not_at_root');
+                $repliesDiv.addClass("cs_thread_pane_replies_not_at_root");
             }
 
             let mostRecentPostId = threadId;
@@ -125,44 +111,48 @@ var refreshThreadPane;
             $cardDiv.click(() => {
                 const $li = $(`li#item_${mostRecentPostId}`);
                 const li_root = $li.closest("[id^='root_']");
-                uncapThread(threadId);
+                ThreadPane.uncapThread(threadId);
 
-                $opDiv.removeClass('cs_flash_animation');
-                $li.removeClass('cs_flash_animation');
-                $cardDiv.removeClass('cs_dim_animation');
+                $opDiv.removeClass("cs_flash_animation");
+                $li.removeClass("cs_flash_animation");
+                $cardDiv.removeClass("cs_dim_animation");
 
                 setTimeout(() => {
-                    var elemFits = elementFitsViewport(li_root);
+                    let elemFits = elementFitsViewport(li_root);
                     // scroll to fit thread or newest reply if applicable
-                    if (elemFits) { scrollToElement(li_root, true); }
-                    else { scrollToElement($li); }
+                    if (elemFits) {
+                        scrollToElement(li_root, true);
+                    } else {
+                        scrollToElement($li);
+                    }
 
-                    $opDiv.addClass('cs_flash_animation');
-                    $li.addClass('cs_flash_animation');
-                    $cardDiv.addClass('cs_dim_animation');
+                    $opDiv.addClass("cs_flash_animation");
+                    $li.addClass("cs_flash_animation");
+                    $cardDiv.addClass("cs_dim_animation");
                 }, 0);
             });
         }
 
         // restore the previous scroll position
         $threadPaneDiv.scrollTop(previousThreadPaneScrollTop);
-    }
+    },
 
-    function getHtmlWithTrimmedLineBreaks($container) {
-        return $container.html()
-            .replace(/[\r\n]/g, '') // strip newlines, we only need the <br>s
-            .replace(/^(<br>)+/, ''); // strip leading <br>s
-    }
+    getHtmlWithTrimmedLineBreaks(container) {
+        return container
+            .html()
+            .replace(/[\r\n]/g, "") // strip newlines, we only need the <br>s
+            .replace(/^(<br>)+/, ""); // strip leading <br>s
+    },
 
-    function cloneRootPostBody($opDiv, threadId) {
-        const $rootPostbodyDiv = $opDiv.find('div.postbody');
+    cloneRootPostBody(opDiv, threadId) {
+        const $rootPostbodyDiv = opDiv.find("div.postbody");
         if ($rootPostbodyDiv.length !== 1) {
             throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
         }
         return $rootPostbodyDiv.clone();
-    }
+    },
 
-    function parseRootAuthor($opDiv) {
+    parseRootAuthor($opDiv) {
         // https://stackoverflow.com/a/14755309
         // make sure we only grab the text in the root element, because the user popup menu may be nested
         // there as well
@@ -172,35 +162,35 @@ var refreshThreadPane;
         return $rootAuthor.contents().filter(function() {
             return this.nodeType == 3;
         })[0].nodeValue;
-    }
+    },
 
-    function parseThreadId(threadDiv) {
-        if (!threadDiv.id.startsWith('root_')) {
+    parseThreadId(threadDiv) {
+        if (!threadDiv.id.startsWith("root_")) {
             throw new Error(`Did not expect the root div to have an element id of "${threadDiv.id}".`);
         }
-        const threadId = parseInt(threadDiv.id.substring('root_'.length));
+        const threadId = parseInt(threadDiv.id.substring("root_".length));
         if (threadId < 1 || threadId > 50000000) {
             throw new Error(`The thread ID of ${threadId} seems bogus.`);
         }
         return threadId;
-    }
+    },
 
-    function parseThreadPostCount($threadDiv, threadId) {
-        const $capcontainerDiv = $threadDiv.find('div.capcontainer');
+    parseThreadPostCount(threadDiv) {
+        const $capcontainerDiv = threadDiv.find("div.capcontainer");
         if ($capcontainerDiv.length !== 1) {
             // no replies
             return 1;
         }
-        const $onelineDivs = $capcontainerDiv.find('div.oneline');
+        const $onelineDivs = $capcontainerDiv.find("div.oneline");
         return $onelineDivs.length + 1;
-    }
+    },
 
-    function parseMostRecentPosts($threadDiv, threadId) {
+    parseMostRecentPosts(threadDiv, threadId) {
         const mostRecentSubtree = [];
         let $mostRecentPost = [];
-        var onelineNumber = 0;
+        let onelineNumber = 0;
         while ($mostRecentPost.length !== 1 && onelineNumber < 10) {
-            $mostRecentPost = $threadDiv.find('div.oneline' + onelineNumber++);
+            $mostRecentPost = threadDiv.find("div.oneline" + onelineNumber++);
         }
 
         if ($mostRecentPost.length !== 1) {
@@ -209,16 +199,16 @@ var refreshThreadPane;
         }
 
         let $post = $mostRecentPost;
-        while (!$post.hasClass('threads')) {
-            if ($post[0].nodeName.toUpperCase() === 'LI' && $post[0].id.startsWith('item_')) {
-                const postId = parseInt($post[0].id.substring('item_'.length));
+        while (!$post.hasClass("threads")) {
+            if ($post[0].nodeName.toUpperCase() === "LI" && $post[0].id.startsWith("item_")) {
+                const postId = parseInt($post[0].id.substring("item_".length));
                 if (postId === threadId) {
                     break;
                 }
 
-                $oneline = $($post.find('div.oneline')[0]);
-                const postAuthor = $($oneline.find('span.oneline_user')[0]).text();
-                const postPreviewHtml = $($oneline.find('span.oneline_body')[0]).html();
+                $oneline = $($post.find("div.oneline")[0]);
+                const postAuthor = $($oneline.find("span.oneline_user")[0]).text();
+                const postPreviewHtml = $($oneline.find("span.oneline_body")[0]).html();
                 mostRecentSubtree.push({ postAuthor, postPreviewHtml, postId });
             }
             $post = $post.parent();
@@ -228,12 +218,28 @@ var refreshThreadPane;
         const maxReplies = 4;
         const parentIsRoot = mostRecentSubtree.length <= maxReplies;
         return { parentIsRoot, mostRecentSubtree: mostRecentSubtree.slice(0, maxReplies) };
-    }
+    },
 
-    function uncapThread(threadId) {
+    uncapThread(threadId) {
         const $a = $(`#root_${threadId}`);
-        if ($a.hasClass('capped')) {
-            $a.removeClass('capped');
+        if ($a.hasClass("capped")) {
+            $a.removeClass("capped");
         }
     }
-})();
+};
+
+addDeferredHandler(settingsContain("thread_pane"), res => {
+    if (res) {
+        refreshThreadPane = () => {
+            try {
+                ThreadPane.install();
+            } catch (e) {
+                console.log("Failed to install the thread_pane script:");
+                console.log(e);
+                $("div#cs_thread_pane").remove();
+                $("body").removeClass("cs_thread_pane_enable");
+            }
+        };
+        refreshThreadPane();
+    }
+});

@@ -9,14 +9,14 @@ a.pin_button {
     color: #16ff60;
     padding: 0 0.25em !important;
     text-decoration: underline !important;
-    font-weight: normal !important
+    font-weight: normal !important;
 }
 
 /* post preview */
 
 #previewArea {
     display: block;
-    border: 1px solid #AEAE9B;
+    border: 1px solid #aeae9b;
     padding: 5px 0 5px 5px;
     background: #222;
     height: 200px;
@@ -27,13 +27,13 @@ a.pin_button {
 div.fpmod_offtopic {
     background-position: right top;
     background-repeat: no-repeat;
-    border-top: 1px solid #7D7D7D !important;
+    border-top: 1px solid #7d7d7d !important;
 }
 
 div.fpmod_political {
     background-position: right top;
     background-repeat: no-repeat;
-    border-top: 1px solid #F8A500 !important;
+    border-top: 1px solid #f8a500 !important;
 }
 
 div.fpmod_stupid {
@@ -73,7 +73,15 @@ span.newcommenthighlighter {
     right: 5px;
     background-color: #ddd;
     border-radius: 4px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(0.4, #ccc), color-stop(0.6, #ccc), color-stop(1, #eee));
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #aaa),
+        color-stop(0.4, #ccc),
+        color-stop(0.6, #ccc),
+        color-stop(1, #eee)
+    );
 }
 
 .expired-wrap {
@@ -90,7 +98,18 @@ span.newcommenthighlighter {
     height: 100%;
     width: 0;
     border-radius: 4px;
-    background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, rgba(255, 255, 255, .4)), color-stop(.25, transparent), color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .4)), color-stop(.75, rgba(255, 255, 255, .4)), color-stop(.75, transparent), to(transparent));
+    background-image: -webkit-gradient(
+        linear,
+        0 100%,
+        100% 0,
+        color-stop(0.25, rgba(255, 255, 255, 0.4)),
+        color-stop(0.25, transparent),
+        color-stop(0.5, transparent),
+        color-stop(0.5, rgba(255, 255, 255, 0.4)),
+        color-stop(0.75, rgba(255, 255, 255, 0.4)),
+        color-stop(0.75, transparent),
+        to(transparent)
+    );
     background-size: 25px 25px;
     box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 3px rgba(0, 0, 0, 0.4);
 }
@@ -141,9 +160,16 @@ div.getPost span.user a {
 
 /* shack userpopup */
 
-body .in, .base-level { overflow: visible !important; }
-.userDropdown.hidden { display: none; }
-span.author { position: relative !important; }
+body .in,
+.base-level {
+    overflow: visible !important;
+}
+.userDropdown.hidden {
+    display: none;
+}
+span.author {
+    position: relative !important;
+}
 div.threads ul ul span.author ul {
     margin-left: 0;
     background-image: none;
@@ -202,7 +228,7 @@ div.threads ul ul li span.author li {
 }
 .userDropdown li a:hover {
     color: #fff;
-    background-color: #524A60 !important;
+    background-color: #524a60 !important;
 }
 #lolWorkingBar {
     position: fixed;
@@ -221,7 +247,9 @@ div.threads ul ul li span.author li {
 
 /* fix for shack legends being cut off */
 
-p.rules { margin: 3px; }
+p.rules {
+    margin: 3px;
+}
 
 /* make it easier to see what button is highlighted, give them some space */
 
@@ -292,7 +320,7 @@ button#previewButton:hover {
 
 div.post_length_counter_text {
     font-size: 10px;
-    color: #C0C0C0;
+    color: #c0c0c0;
     margin-top: -10px;
 }
 
@@ -322,7 +350,7 @@ a#jump_to_new_post {
     font-size: 20px;
     font-weight: 600;
     color: white;
-    font-family: 'Shack Sans', sans-serif;
+    font-family: "Shack Sans", sans-serif;
     -webkit-user-select: none;
     padding: 4px 3px 2px 2px;
     white-space: nowrap;

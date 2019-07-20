@@ -1,8 +1,9 @@
-
 /* MEDIA QUERIES FOR RESPONSIVENESS (workaround for image weirdness) */
 @media only screen and (max-width: 768px) {
     /* switch to a scrollable column-only layout */
-    .media-container.responsive { grid-template-columns: 100% !important; }
+    .media-container.responsive {
+        grid-template-columns: 100% !important;
+    }
 }
 @media only screen and (min-width: 1267px) {
     .media-container.responsive {
@@ -76,7 +77,9 @@
 }
 
 /* expando toggle button (.expando -> .expando.collapso) */
-.postbody a.embedded { color: rgb(61, 154, 154) !important; }
+.postbody a.embedded {
+    color: rgb(61, 154, 154) !important;
+}
 div.expando {
     display: inline-block !important;
     text-decoration: none !important;
@@ -115,8 +118,14 @@ div.expando {
     max-width: var(--max-media-item-width);
 }
 .swiper-button-next,
-.swiper-button-prev { opacity: 0.5 !important; }
-.swiper-button-disabled { opacity: 0.2 !important; }
+.swiper-button-prev {
+    opacity: 0.5 !important;
+}
+.swiper-button-disabled {
+    opacity: 0.2 !important;
+}
 
 /* fix z-index of lightbox so header bar doesn't cover it */
-div.basicLightbox { z-index: 99999; }
+div.basicLightbox {
+    z-index: 99999;
+}

@@ -6,26 +6,46 @@
         <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill-0.4.0.min.js"></script>
         <script type="text/javascript" src="ext/dompurify/purify-1.0.11.min.js"></script>
         <script type="text/javascript" src="ext/jquery/jquery-3.4.1.min.js"></script>
-        <script type="text/javascript" src="default_settings.js"></script>
+        <script type="text/javascript" src="init_events.js"></script>
+        <script type="text/javascript" src="settings.js"></script>
         <script type="text/javascript" src="common.js"></script>
         <script type="text/javascript" src="options.js"></script>
         <meta charset="UTF-8" />
         <style type="text/css">
-        body { font-family: helvetica, arial, sans-serif; font-size: 12px; }
+            body {
+                font-family: helvetica, arial, sans-serif;
+                font-size: 12px;
+            }
         </style>
     </head>
     <body>
         <div id="content">
             <h2><label>[lol] Tags</label></h2>
             <div>
-                <p><label><input type="checkbox" class="script_check" id="hide_tagging_buttons"> Hide tagging buttons</label></p>
-                <p><label><input type="checkbox" class="script_check" id="hide_tag_counts"> Hide tag counts</label></p>
+                <p>
+                    <label
+                        ><input type="checkbox" class="script_check" id="hide_tagging_buttons" /> Hide tagging
+                        buttons</label
+                    >
+                </p>
+                <p>
+                    <label><input type="checkbox" class="script_check" id="hide_tag_counts" /> Hide tag counts</label>
+                </p>
             </div>
 
             <h2><label>User Flair</label></h2>
             <div>
-                <p><label><input type="checkbox" class="script_check" id="shrink_user_icons"> Shrink user icons</label></p>
-                <p><label><input type="checkbox" class="script_check" id="reduced_color_user_icons"> Reduced color user icons</label></p>
+                <p>
+                    <label
+                        ><input type="checkbox" class="script_check" id="shrink_user_icons" /> Shrink user icons</label
+                    >
+                </p>
+                <p>
+                    <label
+                        ><input type="checkbox" class="script_check" id="reduced_color_user_icons" /> Reduced color user
+                        icons</label
+                    >
+                </p>
             </div>
 
             <h2>
@@ -33,40 +53,44 @@
             </h2>
             <p class="info">Show multimedia links inline when clicked.</p>
             <div>
+                <p>
+                    <input type="checkbox" id="image_loader_newtab" />
+                    <label for="image_loader_newtab">Middle-click opens media lightbox</label>
+                </p>
+                <p class="indent info">Opens embedded media in a fullscreen overlay when middle-clicked.</p>
 
-            <p>
-                <input type="checkbox" id="image_loader_newtab"/>
-                <label for="image_loader_newtab">Middle-click opens media lightbox</label>
-            </p>
-            <p class="indent info">Opens embedded media in a fullscreen overlay when middle-clicked.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="image_loader" />
+                    <label for="image_loader">Embed images</label>
+                </p>
+                <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
 
-            <p>
-                <input type="checkbox" class="script_check" id="image_loader" />
-                <label for="image_loader">Embed images</label>
-            </p>
-            <p class="indent info">Replace links to images with a thumbnail/video of the source.</p>
+                <p>
+                    <input type="checkbox" class="script_check" id="video_loader" />
+                    <label for="video_loader">Embed videos</label>
+                </p>
+                <p class="indent info">Replace links to some video hosters with the video, clip, or playlist itself.</p>
+                <p class="indent info">Supported: Youtube, Twitch.tv, Streamable, and XboxDVR.</p>
+                <div id="video_loader_settings">
+                    <input type="checkbox" id="video_loader_hd" /><label for="video_loader_hd"
+                        >Show in HD (when available)</label
+                    >
+                </div>
 
-            <p>
-                <input type="checkbox" class="script_check" id="video_loader" />
-                <label for="video_loader">Embed videos</label>
-            </p>
-            <p class="indent info">Replace links to some video hosters with the video, clip, or playlist itself.</p>
-            <p class="indent info">Supported: Youtube, Twitch.tv, Streamable, and XboxDVR.</p>
-            <div id="video_loader_settings">
-                <input type="checkbox" id="video_loader_hd"/><label for="video_loader_hd">Show in HD (when available)</label>
+                <p>
+                    <input type="checkbox" class="script_check" id="embed_socials" />
+                    <label for="embed_socials">Embed social links</label>
+                </p>
+                <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
+
+                <p>
+                    <input type="checkbox" class="script_check" id="getpost" />
+                    <label for="getpost">Embed posts</label>
+                </p>
+                <p class="indent info">
+                    When clicking a link to a Shacknews post, show the post inline rather than in a new window.
+                </p>
             </div>
-
-            <p>
-                <input type="checkbox" class="script_check" id="embed_socials" />
-                <label for="embed_socials">Embed social links</label>
-            </p>
-            <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
-
-            <p>
-                <input type="checkbox" class="script_check" id="getpost" />
-                <label for="getpost">Embed posts</label>
-            </p>
-            <p class="indent info">When clicking a link to a Shacknews post, show the post inline rather than in a new window.</p></div>
 
             <h2>
                 <label>Post Enhancements</label>
@@ -77,7 +101,10 @@
                     <input type="checkbox" class="script_check" id="nws_incognito" />
                     <label for="nws_incognito">Open NWS links in incognito mode</label>
                 </p>
-                <p class="indent info">When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window. Firefox users must enable "Run in Private Windows" in the addon settings.</p>
+                <p class="indent info">
+                    When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a
+                    normal window. Firefox users must enable "Run in Private Windows" in the addon settings.
+                </p>
                 <p>
                     <input type="checkbox" class="script_check" id="dinogegtik" />
                     <label for="dinogegtik">Dino gegtik</label>
@@ -96,15 +123,18 @@
             </div>
 
             <h2>
-                <input type="checkbox" class="script_check" id="enable_notifications">
+                <input type="checkbox" class="script_check" id="enable_notifications" />
                 <label for="enable_notifications">Push Notifications</label>
             </h2>
             <p class="info">
-                Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed.  You must restart Chrome after enabling notifications.
+                Use the WinChatty notification service to receive notifications when new posts matching specific
+                criteria are made, even when Chrome is closed. You must restart Chrome after enabling notifications.
             </p>
             <div id="enable_notifications_settings">
                 <p>
-                    <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank">Change notification options...</a>
+                    <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank"
+                        >Change notification options...</a
+                    >
                 </p>
             </div>
 
@@ -115,19 +145,29 @@
             <div>
                 <p>
                     <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
-                    <label for="highlight_pending_new_posts">Highlight refresh button when new posts are available</label>
+                    <label for="highlight_pending_new_posts"
+                        >Highlight refresh button when new posts are available</label
+                    >
                 </p>
-                <p class="indent info">Use the WinChatty push service to highlight threads that have received new replies that you need to refresh to see.  A button at the top of the chatty indicates how many threads have new posts and, upon clicking the button, will take you to the next thread with new posts.</p>
+                <p class="indent info">
+                    Use the WinChatty push service to highlight threads that have received new replies that you need to
+                    refresh to see. A button at the top of the chatty indicates how many threads have new posts and,
+                    upon clicking the button, will take you to the next thread with new posts.
+                </p>
                 <p>
                     <input type="checkbox" class="script_check" id="new_comment_highlighter" />
                     <label for="new_comment_highlighter">Highlight new posts since last refresh</label>
                 </p>
-                <p class="indent info">After refreshing the chatty or an individual thread, show a blue bar next to posts which are new.</p>
+                <p class="indent info">
+                    After refreshing the chatty or an individual thread, show a blue bar next to posts which are new.
+                </p>
                 <p>
                     <input type="checkbox" class="script_check" id="highlight_users" />
                     <label for="highlight_users">Highlight users</label>
                 </p>
-                <p class="indent info">Highlight usernames in various colors to indicate their membership in user-specified groups.</p>
+                <p class="indent info">
+                    Highlight usernames in various colors to indicate their membership in user-specified groups.
+                </p>
                 <div id="highlight_users_settings">
                     <div id="highlight_groups"></div>
                     <a href="#" id="add_highlight_group">Add</a>
@@ -138,7 +178,10 @@
                 <input type="checkbox" class="script_check" id="thread_pane" />
                 <label for="thread_pane">Two-Pane Layout</label>
             </h2>
-            <p class="info">Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet modes in the mobile clients.</p>
+            <p class="info">
+                Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet
+                modes in the mobile clients.
+            </p>
 
             <h2>
                 <input type="checkbox" class="script_check" id="custom_user_filters" />
@@ -151,7 +194,7 @@
                     <button id="remove_user_filter_btn">Remove</button>
                 </p>
                 <p>
-                    <input id="new_user_filter_text">
+                    <input id="new_user_filter_text" />
                     <button id="add_user_filter_btn">Add</button>
                 </p>
             </div>
@@ -164,20 +207,29 @@
             <div id="post_preview_settings">
                 <ul>
                     <span>Button location:</span>
-                    <li><input type="radio" name="post_preview_location" id="post_preview_left"/><label for="post_preview_left">Left of post button</label></li>
-                    <li><input type="radio" name="post_preview_location" id="post_preview_right"/><label for="post_preview_right">Right of post button</label></li>
+                    <li>
+                        <input type="radio" name="post_preview_location" id="post_preview_left" /><label
+                            for="post_preview_left"
+                            >Left of post button</label
+                        >
+                    </li>
+                    <li>
+                        <input type="radio" name="post_preview_location" id="post_preview_right" /><label
+                            for="post_preview_right"
+                            >Right of post button</label
+                        >
+                    </li>
                 </ul>
             </div>
 
             <h2>
                 <label>Reset to Default</label>
             </h2>
-            <p class="info">Reset your settings to Chrome Shack's defaults. All of your changes will be lost!</p>
-            <button id="clear_settings">Reset</button>
-
-        </div>
-        <div id="buttons">
-            <span id="status"> </span>
+            <div id="buttons">
+                <p class="info">Reset your settings to Chrome Shack's defaults. All of your changes will be lost!</p>
+                <button id="clear_settings">Reset</button>
+                <span id="status" class="hidden">Options Saved</span>
+            </div>
         </div>
     </body>
 </html>

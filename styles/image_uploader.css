@@ -121,10 +121,10 @@
     border-color: #222;
     border-radius: 4px;
 }
-.uploadRadioLabels label:first-child{
+.uploadRadioLabels label:first-child {
     border-style: solid none solid solid;
 }
-.uploadRadioLabels label:last-child{
+.uploadRadioLabels label:last-child {
     border-style: solid solid solid none;
 }
 #uploadChatty,
@@ -137,9 +137,9 @@
 .uploadRadioLabels .chatty {
     font-weight: bold;
 }
-#uploadGfycat:checked~.uploadRadioLabels .gfycat,
-#uploadImgur:checked~.uploadRadioLabels .imgur,
-#uploadChatty:checked~.uploadRadioLabels .chatty {
+#uploadGfycat:checked ~ .uploadRadioLabels .gfycat,
+#uploadImgur:checked ~ .uploadRadioLabels .imgur,
+#uploadChatty:checked ~ .uploadRadioLabels .chatty {
     color: #e9e9de !important;
     font-weight: bold;
     background: #333;
@@ -271,7 +271,7 @@ input[type="checkbox"]#urlUploadSnippetBox {
     border: 1px solid #666;
 }
 .urlUploadSnippetCheckbox .style-helper:after {
-    content: '\2713';
+    content: "\2713";
     font-size: 13px;
     left: 1px;
     top: 0px;
@@ -363,12 +363,17 @@ input[type="checkbox"]#urlUploadSnippetBox {
 }
 /* simple loading spinner */
 .spinner {
-     animation: loading 1s infinite;
+    animation: loading 1s infinite;
 }
 @keyframes loading {
-    0%   { opacity:1; }
-    50%  { opacity:0; }
-    100% { opacity:1; }
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 /* end of image uploader stuff */
-

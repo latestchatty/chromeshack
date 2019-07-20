@@ -1,4 +1,3 @@
-
 /* Dino Gegtik */
 
 div.dinogegtik a {
@@ -72,6 +71,5 @@ div.sparklycomic div.panel span.shadow {
 
 div.sparklycomic div.panel span.shadow .jt_spoiler,
 div.sparklycomic div.panel span.shadow a {
-    visibility: hidden
+    visibility: hidden;
 }
-

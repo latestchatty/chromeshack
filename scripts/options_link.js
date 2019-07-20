@@ -1,15 +1,46 @@
-settingsLoadedEvent.addHandler(() => {
+(async() => {
     if (!$(".chromeshack_options_link").length) {
-        var newComment = document.querySelector("#commenttools .newcomment");
-        var optionsLink = $('<a>', {
-            text: 'Chrome Shack Options',
-            href: browser.runtime.getURL('options.html'),
-            class: 'chromeshack_options_link',
-            target: '_blank'
+        let key = await getSetting("post_preview_location");
+        let ppSetting = await settingsContain("post_preview");
+
+        const optionsLinkHandler = () => {
+            let postButton = $("button#frm_submit")[0];
+            let previewButton = $("button#previewButton")[0];
+            let applyLocation = location => {
+                const isPreviewOnLeft = previewButton.nextSibling === postButton;
+                const shouldPreviewBeOnLeft = location === "Left";
+                if (isPreviewOnLeft !== shouldPreviewBeOnLeft) {
+                    swapNodes(postButton, previewButton);
+                }
+            };
+            let swapNodes = (a, b) => {
+                // https://stackoverflow.com/a/698440
+                let aparent = a.parentNode;
+                let asibling = a.nextSibling === b ? a : a.nextSibling;
+                b.parentNode.insertBefore(a, b);
+                aparent.insertBefore(b, asibling);
+            };
+
+            $("a.toggle_post_button_order_link").click(() => {
+                const newLocation = key === "Right" ? "Left" : "Right";
+                console.log(oldLocation + ", setting to: " + newLocation);
+                setSetting(key, newLocation);
+                applyLocation(newLocation);
+                return false;
+            });
+            applyLocation(key);
+        };
+
+        let newComment = document.querySelector("#commenttools .newcomment");
+        let optionsLink = $("<a>", {
+            text: "Chrome Shack Options",
+            href: browser.runtime.getURL("options.html"),
+            class: "chromeshack_options_link",
+            target: "_blank"
         });
 
         // adjust link position for both single and multi-thread mode
-        var rootPostCount = document.querySelectorAll("div[id^='root_']").length;
+        let rootPostCount = document.querySelectorAll("div[id^='root_']").length;
         if (rootPostCount == 1) {
             optionsLink.addClass("singlepost");
             $("#commenttools").append(optionsLink);
@@ -18,71 +49,37 @@ settingsLoadedEvent.addHandler(() => {
         }
 
         // add a link next to the "Read the Rules" link in the post box
-        const rules = $('p.rules');
+        const rules = $("p.rules");
         rules.append(
-            $('<span>', {
-                text: ' • ',
-                class: 'postbox_rules_divider'
+            $("<span>", {
+                text: " • ",
+                class: "postbox_rules_divider"
             })
         );
         rules.append(
-            $('<a>', {
-                text: 'Chrome Shack Options',
-                href: browser.runtime.getURL('options.html'),
-                target: '_blank'
+            $("<a>", {
+                text: "Chrome Shack Options",
+                href: browser.runtime.getURL("options.html"),
+                target: "_blank"
             })
         );
 
-        if (objContains("post_preview", getSetting("enabled_scripts"))) {
+        if (ppSetting) {
             rules.append(
-                $('<span>', {
-                    text: ' • ',
-                    class: 'postbox_rules_divider'
+                $("<span>", {
+                    text: " • ",
+                    class: "postbox_rules_divider"
                 })
             );
             rules.append(
-                $('<a>', {
-                    text: 'Toggle Post/Preview Button Order',
-                    href: '#',
-                    class: 'toggle_post_button_order_link'
+                $("<a>", {
+                    text: "Toggle Post/Preview Button Order",
+                    href: "#",
+                    class: "toggle_post_button_order_link"
                 })
             );
 
-            processPostBoxEvent.addHandler(() => {
-                const key = 'post_preview_location';
-                const postButton = $('button#frm_submit')[0];
-                const previewButton = $('button#previewButton')[0];
-
-                $('a.toggle_post_button_order_link').click(() => {
-                    const oldLocation = getSetting(key);
-                    const newLocation = oldLocation === 'Right' ? 'Left' : 'Right';
-                    console.log(oldLocation + ', setting to: ' + newLocation);
-                    setSetting(key, newLocation);
-                    applyLocation(newLocation);
-                    reloadSettings(false);
-                    return false;
-                });
-
-                applyLocation(getSetting(key));
-
-                function applyLocation(location) {
-                    const isPreviewOnLeft = previewButton.nextSibling === postButton;
-                    const shouldPreviewBeOnLeft = location === 'Left';
-                    if (isPreviewOnLeft !== shouldPreviewBeOnLeft) {
-                        swapNodes(postButton, previewButton);
-                    }
-                }
-
-                // https://stackoverflow.com/a/698440
-                function swapNodes(a, b) {
-                    var aparent = a.parentNode;
-                    var asibling = a.nextSibling === b ? a : a.nextSibling;
-                    b.parentNode.insertBefore(a, b);
-                    aparent.insertBefore(b, asibling);
-                }
-            });
+            processPostBoxEvent.addHandler(optionsLinkHandler);
         }
-
     }
-});
-
+})();

@@ -1,4 +1,3 @@
-
 /* two-pane layout ***************************************************************************************************/
 :root {
     --thread-pane-width: 400px;
@@ -109,9 +108,15 @@ span.cs_thread_pane_link {
 }
 
 @keyframes cs_flash_animation_keyframes {
-    0% { background-color: #205353; }
-    50% { background-color: #205353; }
-    100% { background-color: #202224; }
+    0% {
+        background-color: #205353;
+    }
+    50% {
+        background-color: #205353;
+    }
+    100% {
+        background-color: #202224;
+    }
 }
 
 .cs_dim_animation {
@@ -119,9 +124,16 @@ span.cs_thread_pane_link {
 }
 
 @keyframes cs_dim_animation_keyframes {
-    0% { border-color: #FFFFFF; }
-    50% { border-color: #FFFFFF; }
-    100% { border-color: #222; border-left-color: #444; }
+    0% {
+        border-color: #ffffff;
+    }
+    50% {
+        border-color: #ffffff;
+    }
+    100% {
+        border-color: #222;
+        border-left-color: #444;
+    }
 }
 
 div.cs_thread_pane_replies {
@@ -187,4 +199,3 @@ div.cs_thread_pane_post_count {
     font-size: 11px;
     color: #555;
 }
-

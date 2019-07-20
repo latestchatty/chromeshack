@@ -132,7 +132,6 @@ a:hover#twitter-quote-displayname {
     font-size: 14px;
 }
 
-
 /* custom instagram container */
 .instgrm-container {
     display: flex;
@@ -147,8 +146,12 @@ a:hover#twitter-quote-displayname {
     color: #262626;
     max-width: var(--max-social-item-width);
 }
-.instgrm-container.hidden { display: none !important; }
-.instgrm-container span { color: #262626; }
+.instgrm-container.hidden {
+    display: none !important;
+}
+.instgrm-container span {
+    color: #262626;
+}
 .instgrm-container a:link,
 .instgrm-container a:hover,
 .instgrm-container a:visited,
@@ -167,7 +170,7 @@ a:hover#twitter-quote-displayname {
 #instgrm_author_pic.circle {
     width: 38px;
     height: 38px;
-    border-radius:50px;
+    border-radius: 50px;
     padding: 10px;
 }
 #instgrm_author_nick {
@@ -188,7 +191,9 @@ a:hover#twitter-quote-displayname {
     margin-left: auto;
     flex-shrink: 0;
 }
-.instgrm-logo svg { margin: 15px; }
+.instgrm-logo svg {
+    margin: 15px;
+}
 
 #instgrm_embed img:not(.swiper-slide),
 #instgrm_embed video:not(.swiper-slide) {
@@ -251,7 +256,9 @@ a:hover#twitter-quote-displayname {
     color: #262626;
     width: 100%;
 }
-.instgrm-footer span:first-child { flex: 0 0 auto; }
+.instgrm-footer span:first-child {
+    flex: 0 0 auto;
+}
 .instgrm-footer span {
     line-height: 17px;
     padding: 3px 0.1em 0 0.2em;
