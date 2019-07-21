@@ -1,57 +1,40 @@
 let CustomUserFilters = {
-    getUserId(username) {
-        // Look for a post on this page from this username.
-        let classPrefix = "olauthor_";
-        username = superTrim(username).toLowerCase();
-        let userSpans = document.querySelectorAll("span.oneline_user");
-        for (let i = 0; i < userSpans.length; i++) {
-            let spanText = superTrim(userSpans[i].innerHTML).toLowerCase();
-            if (username == spanText) {
-                let parentDiv = userSpans[i].parentNode;
-                if (parentDiv.tagName !== "DIV") {
-                    continue; // Sanity check
-                }
-                let classNames = parentDiv.className.split(/\s+/);
-                for (let j = 0; j < classNames.length; j++) {
-                    let className = classNames[j];
-
-                    if (className.startsWith(classPrefix)) {
-                        return parseInt(className.substring(classPrefix.length));
-                    }
-                }
+    resolveUser(username) {
+        // similar to HighlightUsers 'resolveUsers()' except for a specific username
+        let roots = [...document.querySelectorAll("div.root")];
+        for (let i of roots) {
+            // borrow the regex pattern from HighlightUsers
+            let matches = [...i.outerHTML.matchAll(HighlightUsers.userRegex)];
+            for (let m of matches) {
+                let parsedUser = m[3].toLowerCase().split(" - ")[0];
+                let parsedId = m[1] || m[2];
+                // return the first match for this username
+                if (parsedUser === username.toLowerCase())
+                    return { id: parsedId, name: parsedUser };
             }
         }
-        return -1;
     },
 
-    removePostsFromUserId(id) {
-        let postDivs = document.querySelectorAll("div.olauthor_" + id);
-        for (let i = 0; i < postDivs.length; i++) {
-            let postDiv = postDivs[i];
-            let postLi = postDiv.parentNode;
-            if (postLi.tagName === "LI") {
-                postLi.parentNode.removeChild(postLi);
-            }
+    removeOLsFromUserId(id) {
+        let olDivs = [...document.querySelectorAll(`div.olauthor_${id}`)];
+        for (let ol of olDivs || []) {
+            let postLi = ol.parentNode;
+            if (postLi.tagName === "LI") postLi.parentNode.removeChild(postLi);
         }
     },
 
     applyFilter() {
         getSetting("user_filters").then(filteredUsernames => {
             if (!Array.isArray(filteredUsernames)) return;
-            // The CSS class for a user's posts includes an ID, so we need to map from usernames to IDs.
-            // We'll save this map into a setting so we only have to do this once per username added to the filter list.
             let usernameIdMap = {};
-            // Make sure each filtered username has a corresponding id in usernameIdMap.  Then hide posts from that user
-            // by setting the CSS for their posts.
             for (let i = 0; i < filteredUsernames.length; i++) {
                 let username = filteredUsernames[i];
                 if (!objContains(username, usernameIdMap)) {
-                    let id = CustomUserFilters.getUserId(username);
-                    if (id >= 0) {
-                        usernameIdMap[username] = id;
-                    }
+                    let { id } = CustomUserFilters.resolveUser(username) || {};
+                    // save our resolved
+                    if (id >= 0) usernameIdMap[username] = id;
                 }
-                CustomUserFilters.removePostsFromUserId(usernameIdMap[username]);
+                CustomUserFilters.removeOLsFromUserId(usernameIdMap[username]);
             }
         });
     },
