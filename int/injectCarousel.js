@@ -3,8 +3,8 @@
  * quality-of-life when viewing posts that contain galleries of media.
  */
 
-let container = document.querySelector(_carouselSelect);
-let carouselOpts = {
+var container = document.querySelector(_carouselSelect);
+var carouselOpts = {
     autoHeight: true,
     centeredSlides: true,
     slidesPerView: "auto",
@@ -15,20 +15,21 @@ let carouselOpts = {
     on: {
         init() {
             let swiperEl = this;
-            let wrapper = container.querySelector(".swiper-wrapper");
             let slides = [...container.querySelectorAll(".swiper-slide")];
             if (slides[0].nodeName === "VIDEO") {
                 // autoplay if the first slide is a video
                 toggleVideoState(slides[0], { state: true, muted: false });
             }
-            let loadedVidFunc = e => {
-                swiperEl.update();
+            let loadedMediaFunc = e => {
                 triggerReflow(e.target);
-                e.target.removeEventListener("load", loadedVidFunc);
+                swiperEl.update();
+                e.target.removeEventListener("loadeddata", loadedVidFunc);
+                e.target.removeEventListener("loaded", loadedVidFunc);
             };
             slides.forEach(i => {
                 // fire off a reflow when videos load to recalc the carousel
-                if (i.nodeName === "VIDEO") i.addEventListener("loadeddata", loadedVidFunc);
+                if (i.nodeName === "VIDEO") i.addEventListener("loadeddata", loadedMediaFunc);
+                else if (i.nodeName === "IMG") i.addEventListener("loaded", loadedMediaFunc);
             });
         },
         transitionEnd() {
@@ -44,4 +45,4 @@ let carouselOpts = {
         }
     }
 };
-let swiper = new Swiper(container, carouselOpts);
+var swiper = new Swiper(container, carouselOpts);
