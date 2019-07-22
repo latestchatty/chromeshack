@@ -50,7 +50,10 @@ const objContains = (needle, haystack) => {
     // tests if an object (or nested object) contains a matching value (or prop)
     // since objects can contains Arrays test for them too
     if (isEmpty(haystack)) return false;
-    if (haystack === needle) return haystack;
+    else if (Array.isArray(haystack) && haystack.includes(needle) ||
+        haystack === needle)
+        return needle;
+
     for (let v of Object.values(haystack)) {
         if (v instanceof Object) {
             let _objResult = objContains(needle, v);

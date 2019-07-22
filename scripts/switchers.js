@@ -66,6 +66,6 @@ let Switchers = {
     }
 };
 
-addDeferredHandler(settingsContain("switchers"), res => {
+addDeferredHandler(enabledContains("switchers"), res => {
     if (res) processPostEvent.addHandler(Switchers.loadSwitchers);
 });

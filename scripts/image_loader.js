@@ -235,6 +235,6 @@ let ImageLoader = {
     }
 };
 
-addDeferredHandler(settingsContain("image_loader"), res => {
+addDeferredHandler(enabledContains("image_loader"), res => {
     if (res) processPostEvent.addHandler(ImageLoader.loadImages);
 });

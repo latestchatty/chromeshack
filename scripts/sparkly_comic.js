@@ -67,6 +67,6 @@ let SparklyComic = {
     }
 };
 
-addDeferredHandler(settingsContain("sparkly_comic"), res => {
+addDeferredHandler(enabledContains("sparkly_comic"), res => {
     if (res) processPostEvent.addHandler(SparklyComic.installComic);
 });

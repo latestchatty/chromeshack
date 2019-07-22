@@ -33,7 +33,7 @@ let ThreadPane = {
         for (const threadDiv of $("div#chatty_comments_wrap div.root")) {
             const $threadDiv = $(threadDiv);
 
-            const threadId = parseThreadId(threadDiv);
+            const threadId = ThreadPane.parseThreadId(threadDiv);
 
             const $opDiv = $($threadDiv.find("ul li div.fullpost")[0]);
 
@@ -228,7 +228,7 @@ let ThreadPane = {
     }
 };
 
-addDeferredHandler(settingsContain("thread_pane"), res => {
+addDeferredHandler(enabledContains("thread_pane"), res => {
     if (res) {
         refreshThreadPane = () => {
             try {

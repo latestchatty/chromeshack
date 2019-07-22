@@ -169,6 +169,6 @@ let HighlightPendingPosts = {
 };
 
 
-addDeferredHandler(settingsContain("highlight_pending_new_posts"), res => {
+addDeferredHandler(enabledContains("highlight_pending_new_posts"), res => {
     if (res) HighlightPendingPosts.install();
 });

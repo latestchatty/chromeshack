@@ -45,6 +45,6 @@ let NwsIncognito = {
     }
 };
 
-addDeferredHandler(settingsContain("nws_incognito"), res => {
+addDeferredHandler(enabledContains("nws_incognito"), res => {
     if (res) processPostEvent.addHandler(NwsIncognito.hookToNwsPosts);
 });

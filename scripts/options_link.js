@@ -1,7 +1,7 @@
 (async() => {
     if (!$(".chromeshack_options_link").length) {
         let key = await getSetting("post_preview_location");
-        let ppSetting = await settingsContain("post_preview");
+        let ppSetting = await settingsContains("post_preview");
 
         const optionsLinkHandler = () => {
             let postButton = $("button#frm_submit")[0];

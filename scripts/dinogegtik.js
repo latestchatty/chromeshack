@@ -62,6 +62,6 @@ let DinoGegtik = {
     }
 };
 
-addDeferredHandler(settingsContain("dinogegtik"), res => {
+addDeferredHandler(enabledContains("dinogegtik"), res => {
     if (res) processPostEvent.addHandler(DinoGegtik.installComic);
 });

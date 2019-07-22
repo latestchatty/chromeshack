@@ -103,12 +103,8 @@ let VideoLoader = {
     async createIframePlayer(link, videoObj, postId, index) {
         // handle both Streamable and XboxDVR Iframe embed types
         let user = videoObj.type === 4 && videoObj.user;
-        let video_id = videoObj.video,
-            video_src = "";
-
-        // keep common 16:9 ratio
-        let width = await getSetting("video_loader_hd") ? 854 : 640;
-        let height = await getSetting("video_loader_hd") ? 480 : 360;
+        let video_id = videoObj.video;
+        let video_src = "";
 
         if (videoObj.type === 3) {
             // Streamable.com iFrame
@@ -122,9 +118,10 @@ let VideoLoader = {
             let video = document.createElement("div");
             let spacer = document.createElement("div");
             spacer.setAttribute("class", "iframe-spacer hidden");
+            // keep common 16:9 ratio
             spacer.setAttribute(
                 "style",
-                `min-width: ${width * 0.33}px; max-height: ${height}px; max-width: ${width}px;`
+                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
             );
             video.setAttribute("class", "iframe-container");
             video.setAttribute("id", `loader_${postId}-${index}`);
@@ -164,10 +161,6 @@ let VideoLoader = {
         let video_playlist = videoObj.playlist;
         let timeOffset = videoObj.offset ? `&start=${videoObj.offset}` : "";
 
-        // keep common 16:9 ratio
-        let width = await getSetting("video_loader_hd") ? 854 : 640;
-        let height = await getSetting("video_loader_hd") ? 480 : 360;
-
         if (video_id && video_playlist)
             video_src = `https://www.youtube.com/embed/videoseries?v=${video_id}&list=${video_playlist}&autoplay=1${timeOffset}`;
         else if (!video_id && video_playlist)
@@ -182,7 +175,7 @@ let VideoLoader = {
             spacer.setAttribute("class", "iframe-spacer hidden");
             spacer.setAttribute(
                 "style",
-                `min-width: ${width * 0.33}px; max-height: ${height}px; max-width: ${width}px;`
+                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
             );
             video.setAttribute("class", "yt-container");
             video.setAttribute("id", `loader_${postId}-${index}`);
@@ -205,9 +198,6 @@ let VideoLoader = {
         let video_clip = videoObj.clip;
         let timeOffset = videoObj.offset || 0;
 
-        let width = await getSetting("video_loader_hd") ? 854 : 640;
-        let height = await getSetting("video_loader_hd") ? 480 : 360;
-
         let video_src;
         if (video_id) {
             video_src = `https://player.twitch.tv/?video=v${video_id}&autoplay=true&muted=false&t=${timeOffset}`;
@@ -225,7 +215,7 @@ let VideoLoader = {
             spacer.setAttribute("class", "iframe-spacer hidden");
             spacer.setAttribute(
                 "style",
-                `min-width: ${width * 0.33}px !important; max-height: ${height}px; max-width: ${width}px;`
+                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
             );
             video.setAttribute("class", "twitch-container");
             video.setAttribute("id", `loader_${postId}-${index}`);
@@ -242,6 +232,6 @@ let VideoLoader = {
     }
 };
 
-settingsContain("video_loader").then(res => {
+addDeferredHandler(enabledContains("video_loader"), res => {
     if (res) processPostEvent.addHandler(VideoLoader.loadVideos);
 });

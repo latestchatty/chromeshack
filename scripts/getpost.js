@@ -58,6 +58,6 @@ let GetPost = {
     }
 };
 
-addDeferredHandler(settingsContain("getpost"), res => {
+addDeferredHandler(enabledContains("getpost"), res => {
     if (res) processPostEvent.addHandler(GetPost.getLinks);
 });

@@ -64,6 +64,6 @@ let NewCommentHighlighter = {
     }
 };
 
-addDeferredHandler(settingsContain("new_comment_highlighter"), res => {
+addDeferredHandler(enabledContains("new_comment_highlighter"), res => {
     if (res) NewCommentHighlighter.highlight();
 });

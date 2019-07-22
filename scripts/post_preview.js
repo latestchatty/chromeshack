@@ -18,11 +18,7 @@ let PostPreview = {
             previewButton.setAttribute("type", "button");
             previewButton.textContent = "Preview";
             getSetting("post_preview_location").then(position => {
-                if (position === "Left")
-                    postButton.parentNode.insertBefore(previewButton, postButton);
-                else
-                    postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
-
+                postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
                 let previewArea = document.createElement("div");
                 previewArea.id = "previewArea";
                 previewArea.style.display = "none";
@@ -84,7 +80,7 @@ let PostPreview = {
     }
 };
 
-addDeferredHandler(settingsContain("post_preview"), res => {
+addDeferredHandler(enabledContains("post_preview"), res => {
     if (res) {
         PostPreview.install();
         processPostBoxEvent.addHandler(PostPreview.installClickEvent);

@@ -190,12 +190,3 @@ if (isLoggedIn()) {
     let $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
     $account.setAttribute("id", "userDropdownTrigger");
 }
-
-addDeferredHandler(settingsContain("use_winchatty_search"), res => {
-    if (res) {
-        $(".tog-search")
-            .prop("href", "https://winchatty.com")
-            .prop("target", "_blank");
-        $(".modal.search").remove();
-    }
-});

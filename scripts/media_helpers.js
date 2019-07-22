@@ -53,7 +53,7 @@ const getIframeDimensions = elem => {
 
 const locateContainer = (link, postId, index) => {
     // resolve our link container for media embedding (or create one)
-    /*let _isAlternateStyle = true; //settingsContain("alternate_embed_style"));
+    /*let _isAlternateStyle = true; //settingsContains("alternate_embed_style"));
     let container = _isAlternateStyle ?
         link.parentNode.querySelector(`div#link_${postId}-${index}.media-container`) :
         link.parentNode.querySelector("div.media-container"); */
@@ -85,7 +85,7 @@ const toggleMediaItem = (link, postId, index) => {
     if (encapMediaObj && encapMediaObj.ref) {
         // remove our media child if it contains a video element otherwise allow toggle("hidden")
         let altContainer =
-            true /*settingsContain("alternate_embed_style"))*/ && container.parentNode;
+            true /*settingsContains("alternate_embed_style"))*/ && container.parentNode;
         if (
             objContains("iframe-spacer", encapMediaObj.ref.parentNode.parentNode.classList) ||
             objContains("instgrm-container", encapMediaObj.ref.parentNode.parentNode.classList)
@@ -193,7 +193,7 @@ const mediaContainerInsert = (elem, link, id, index) => {
     // don't put click events on the carousel
     attachChildEvents(elem, id, index);
     container.appendChild(elem);
-    if (true /*await settingsContain("alternate_embed_style"))*/ && !_hasMedia) {
+    if (true /*await settingsContains("alternate_embed_style"))*/ && !_hasMedia) {
         // insert items below their associated link
         _postBody.insertBefore(container, link.nextSibling);
     } else if (!_hasMedia) {

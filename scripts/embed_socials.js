@@ -399,6 +399,6 @@ let EmbedSocials = {
     }
 };
 
-addDeferredHandler(settingsContain("embed_socials"), res => {
+addDeferredHandler(enabledContains("embed_socials"), res => {
     if (res) processPostEvent.addHandler(EmbedSocials.getLinks);
 });
