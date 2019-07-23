@@ -22,13 +22,12 @@ var carouselOpts = {
             }
             let loadedMediaFunc = e => {
                 triggerReflow(e.target);
-                swiperEl.update();
-                e.target.removeEventListener("loadeddata", loadedVidFunc);
-                e.target.removeEventListener("loaded", loadedVidFunc);
+                e.target.removeEventListener("loadedmetadata", loadedMediaFunc);
+                e.target.removeEventListener("loaded", loadedMediaFunc);
             };
             slides.forEach(i => {
-                // fire off a reflow when videos load to recalc the carousel
-                if (i.nodeName === "VIDEO") i.addEventListener("loadeddata", loadedMediaFunc);
+                // fire off a reflow when media loads to recalc the carousel
+                if (i.nodeName === "VIDEO") i.addEventListener("loadedmetadata", loadedMediaFunc);
                 else if (i.nodeName === "IMG") i.addEventListener("loaded", loadedMediaFunc);
             });
         },
