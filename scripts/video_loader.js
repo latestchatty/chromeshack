@@ -101,43 +101,7 @@ let VideoLoader = {
     },
 
     async createIframePlayer(link, videoObj, postId, index) {
-        // handle both Streamable and XboxDVR Iframe embed types
-        let user = videoObj.type === 4 && videoObj.user;
-        let video_id = videoObj.video;
-        let video_src = "";
-
-        if (videoObj.type === 3) {
-            // Streamable.com iFrame
-            video_src = await getStreamableLink(video_id);
-        } else if (videoObj.type === 4) {
-            // XboxDVR iFrame
-            video_src = `https://xboxdvr.com/gamer/${user}/video/${video_id}/embed`;
-        }
-
-        if (video_src) {
-            let video = document.createElement("div");
-            let spacer = document.createElement("div");
-            spacer.setAttribute("class", "iframe-spacer hidden");
-            // keep common 16:9 ratio
-            spacer.setAttribute(
-                "style",
-                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
-            );
-            video.setAttribute("class", "iframe-container");
-            video.setAttribute("id", `loader_${postId}-${index}`);
-            let iframe = document.createElement("iframe");
-            iframe.setAttribute("id", `iframe_${postId}-${index}`);
-            iframe.setAttribute("src", `${video_src}`);
-            iframe.setAttribute("frameborder", "0");
-            iframe.setAttribute("scale", "tofit");
-            iframe.setAttribute("scrolling", "no");
-            iframe.setAttribute("allowfullscreen", "");
-            video.appendChild(iframe);
-            spacer.appendChild(video);
-            mediaContainerInsert(spacer, link, postId, index);
-        }
-
-        const getStreamableLink = shortcode => {
+        let getStreamableLink = shortcode => {
             let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
             return new Promise((resolve, reject) => {
                 fetchSafe(`https://api.streamable.com/videos/${shortcode}`, {
@@ -153,6 +117,27 @@ let VideoLoader = {
                     });
             });
         };
+
+        // handle both Streamable and XboxDVR Iframe embed types
+        let user = videoObj.type === 4 && videoObj.user;
+        let video_id = videoObj.video;
+        let video_src = "";
+
+        if (videoObj.type === 3) {
+            // Streamable.com iFrame
+            video_src = await getStreamableLink(video_id);
+        } else if (videoObj.type === 4) {
+            // XboxDVR iFrame
+            video_src = `https://xboxdvr.com/gamer/${user}/video/${video_id}/embed`;
+        }
+
+        if (video_src) {
+            let iframe = VideoLoader.createIframe({
+                src: video_src,
+                type: videoObj.type
+            }, postId, index);
+            mediaContainerInsert(iframe, link, postId, index);
+        }
     },
 
     async createYoutube(link, videoObj, postId, index) {
@@ -170,24 +155,11 @@ let VideoLoader = {
             video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&autoplay=1`;
 
         if (video_src) {
-            let video = document.createElement("div");
-            let spacer = document.createElement("div");
-            spacer.setAttribute("class", "iframe-spacer hidden");
-            spacer.setAttribute(
-                "style",
-                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
-            );
-            video.setAttribute("class", "yt-container");
-            video.setAttribute("id", `loader_${postId}-${index}`);
-            let iframe = document.createElement("iframe");
-            iframe.setAttribute("id", `iframe_${postId}-${index}`);
-            iframe.setAttribute("src", `${video_src}`);
-            iframe.setAttribute("frameborder", "0");
-            iframe.setAttribute("allow", "autoplay; encrypted-media");
-            iframe.setAttribute("allowfullscreen", "");
-            video.appendChild(iframe);
-            spacer.appendChild(video);
-            mediaContainerInsert(spacer, link, postId, index);
+            let iframe = VideoLoader.createIframe({
+                src: video_src,
+                type: videoObj.type
+            }, postId, index);
+            mediaContainerInsert(iframe, link, postId, index);
         }
     },
 
@@ -210,25 +182,45 @@ let VideoLoader = {
         }
 
         if (video_src) {
+            let iframe = VideoLoader.createIframe({
+                src: video_src,
+                type: videoObj.type
+            }, postId, index);
+            mediaContainerInsert(iframe, link, postId, index);
+        }
+    },
+
+    createIframe(iframeObj, postId, index) {
+        let { src, type } = iframeObj;
+        if (src && src.length > 0) {
             let video = document.createElement("div");
             let spacer = document.createElement("div");
-            spacer.setAttribute("class", "iframe-spacer hidden");
-            spacer.setAttribute(
-                "style",
-                `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
-            );
-            video.setAttribute("class", "twitch-container");
-            video.setAttribute("id", `loader_${postId}-${index}`);
             let iframe = document.createElement("iframe");
+            spacer.setAttribute("class", "iframe-spacer hidden");
+            spacer.setAttribute("style", `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`);
+
+            if (type === 1) { // Youtube
+                video.setAttribute("class", "yt-container");
+                iframe.setAttribute("allow", "autoplay; encrypted-media");
+            }
+            else if (type === 2) // Twitch
+                video.setAttribute("class", "twitch-container");
+            else if (type === 3 || type === 4) { // Streamable / XboxDVR
+                video.setAttribute("class", "iframe-container");
+                iframe.setAttribute("scale", "tofit");
+            }
+
+            video.setAttribute("id", `loader_${postId}-${index}`);
             iframe.setAttribute("id", `iframe_${postId}-${index}`);
-            iframe.setAttribute("src", `${video_src}`);
+            iframe.setAttribute("src", src);
             iframe.setAttribute("frameborder", "0");
             iframe.setAttribute("scrolling", "no");
             iframe.setAttribute("allowfullscreen", "");
             video.appendChild(iframe);
             spacer.appendChild(video);
-            mediaContainerInsert(spacer, link, postId, index);
+            return spacer;
         }
+        return null;
     }
 };
 
