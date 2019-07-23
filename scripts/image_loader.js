@@ -1,6 +1,6 @@
 let ImageLoader = {
     // general media detection patterns
-    imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
+    imgRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w*@#$%^_&!()\[\]{}'\-]+\.(png|jpe?g|webp|gif))(?:[\?\&]?.+$|$)/i,
     vidRegex: /https?\:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()\[\]{}'\-]+\.(mp4|gifv|webm))(?:[\?\&]?.+$|$)/i,
     // common media host patterns
     imgurRegex: /https?\:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)*([\w\-]+)(?:\#([\w\-]+))?/i,
