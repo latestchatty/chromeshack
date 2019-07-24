@@ -147,7 +147,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                     browser.tabs.executeScript({ file: "int/chatViewFix.js" });
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.message ? err.message : err));
     } else if (request.name === "injectLightbox") {
         // a media element's HTML is passed into the to-be-injected lightbox instantiator here
         return browser.tabs
@@ -167,7 +167,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                     injectLightboxFunc();
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.message ? err.message : err));
     } else if (request.name === "injectCarousel") {
         // we pass an element's css selector into Swiper for carousel injection here
         return browser.tabs
@@ -187,7 +187,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                         .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => console.log(err.message ? err.message : err));
     } else if (request.name === "scrollByKeyFix") {
         // scroll-by-key fix for Chatty
         return browser.tabs.executeScript(null, { file: "int/scrollByKeyFix.js" }).catch(err => console.log(err));
