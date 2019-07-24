@@ -15,9 +15,9 @@ let DefaultSettings = {
     collapsed_threads: [],
 
     highlight_users_builtin: [
-        { name: "Mods", enabled: true, css: "color: red !important" },
+        { name: "Mods", enabled: true, built_in: true, css: "color: red !important" },
         {
-            name: "Employees", enabled: true, css: "color: green !important",
+            name: "Employees", enabled: true, built_in: true, css: "color: green !important",
             users: [
                 "Steve Gibson",
                 "Maarten Goldstein",
@@ -59,7 +59,7 @@ let DefaultSettings = {
             ]
         },
         {
-            name: "Game Devs", enabled: true, css: "color: purple !important",
+            name: "Game Devs", enabled: true, built_in: true, css: "color: purple !important",
             users: [
                 "jason bergman", "dahanese", // 2K Games
                 "OverloadUT", // 2K Sports
@@ -120,7 +120,7 @@ let DefaultSettings = {
                 "freakynipples69" // MindShaft
             ]
         },
-        { name: "Original Poster", enabled: true, css: "font-weight: bold; color: yellow !important" },
+        { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow !important" },
     ],
 
     highlight_users_added: [
@@ -131,32 +131,33 @@ let DefaultSettings = {
 const getSetting = async (key, defaultVal) => {
     let settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
-    return settings[key];
+    return settings[key] || false;
 };
 
 const getEnabled = async (key) => {
-    let enabled = await getSetting("enabled_scripts");
+    let enabled = await getSetting("enabled_scripts") || [];
     if (!key) return enabled;
     return enabled && enabled.find((v) => v === key) || false;
 };
 
-const setEnabled = (key, val) => {
-    return getEnabled().then((scripts) => {
-        if (scripts.includes(key) && !val)
-            setSetting(scripts.filter((v) => v !== key));
-        else {
-            scripts.push(val);
-            setSetting(scripts);
-        }
-    });
+const setEnabled = async (key) => {
+    let scripts = await getEnabled() || [];
+    if (!scripts.includes(key) && key.length > 0)
+        scripts.push(key);
+    return setSetting("enabled_scripts", scripts);
 };
 
 const getSettings = async () => {
     let settings = await browser.storage.local.get();
-    return { ...DefaultSettings, ...settings };
+    return new Promise(resolve => {
+        if (isEmpty(settings)) browser.storage.local.set(DefaultSettings);
+        return browser.storage.local.get().then(resolve);
+    });
 }
 
-const setSetting = (key, val) => browser.storage.local.set({ [key]: val });
+const setSetting = (key, val) => {
+    if (key && val) return browser.storage.local.set({ [key]: val });
+}
 
 const removeSetting = (key) => browser.storage.local.remove(key);
 
@@ -166,6 +167,10 @@ const settingsContains = async (key) => objContains(key, await getSettings());
 
 const enabledContains = (key) => {
     return new Promise((resolve) => {
-        getEnabled().then((enabled) => resolve(enabled.includes(key)))
+        getEnabled().then((enabled) => resolve(enabled && enabled.includes(key) || false))
     });
 }
+
+// for debugging purposes (use from background/popup context)
+window.getSettings = () => getSettings().then(console.log);
+window.resetSettings = () => resetSettings().then(getSettings.then(console.log));

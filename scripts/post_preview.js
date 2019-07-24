@@ -1,11 +1,9 @@
 let PostPreview = {
     state: 0, // 0 = insert mode, 1 = preview mode
 
-    debouncedPreview: debounce((text, target) => {
-        safeInnerHTML(generatePreview(text), target);
-    }, 200),
+    previewTimer: null,
 
-    install: () => {
+    install() {
         // script is already injected
         if (document.getElementById("previewButton") != null) return;
 
@@ -27,26 +25,22 @@ let PostPreview = {
         }
     },
 
-    installClickEvent: () => {
+    installClickEvent() {
         let previewButton = document.getElementById("previewButton");
         let clickableTags = [...document.querySelectorAll("#shacktags_legend_table td > a")];
         previewButton.addEventListener("click", PostPreview.togglePreview, true);
         // include interactive tags legend as well
         for (let t of clickableTags || []) {
-            t.addEventListener(
-                "click",
-                () => {
-                    if (PostPreview.state === 1) {
-                        // only update preview if shown
-                        PostPreview.updatePreview();
-                    }
-                },
-                true
-            );
+            t.addEventListener("click", () => {
+                if (PostPreview.state === 1) {
+                    // only update preview if shown
+                    PostPreview.updatePreview();
+                }
+            }, true);
         }
     },
 
-    togglePreview: () => {
+    togglePreview() {
         if (PostPreview.state == 0) {
             PostPreview.state = 1;
             PostPreview.enablePreview();
@@ -56,28 +50,33 @@ let PostPreview = {
         }
     },
 
-    enablePreview: () => {
+    enablePreview() {
         let form_body = document.getElementById("frm_body");
         let preview_box = document.getElementById("previewArea");
         preview_box.style.display = "block";
         PostPreview.updatePreview();
-        form_body.addEventListener("input", PostPreview.updatePreview, true);
+        form_body.addEventListener("keyup", PostPreview.updatePreview, true);
         form_body.focus();
     },
 
-    disablePreview: () => {
+    disablePreview() {
         let form_body = document.getElementById("frm_body");
         let preview_box = document.getElementById("previewArea");
         preview_box.style.display = "none";
-        form_body.removeEventListener("input", PostPreview.updatePreview, true);
+        form_body.removeEventListener("keyup", PostPreview.updatePreview, true);
         form_body.focus();
     },
 
-    updatePreview: () => {
+    updatePreview() {
+        if (PostPreview.previewTimer) clearTimeout(PostPreview.previewTimer);
+        PostPreview.previewTimer = setTimeout(PostPreview.delayedPreview, 250);
+    },
+
+    delayedPreview() {
         let form_body = document.getElementById("frm_body");
         let previewArea = document.getElementById("previewArea");
-        PostPreview.debouncedPreview(form_body.value, previewArea);
-    }
+        safeInnerHTML(generatePreview(form_body.value), previewArea);
+    },
 };
 
 addDeferredHandler(enabledContains("post_preview"), res => {
