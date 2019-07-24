@@ -157,39 +157,36 @@ const hideAllDropdowns = () => {
 
 // Add catch-all event handlers for creating user dropdown menus
 document.addEventListener("click", e => {
-        // try to eat exceptions that are typically harmless
-        try {
-            let sanitizedUser = e.target.parentNode.innerText &&
-                e.target.parentNode.innerText.split(" - ")[0];
-            // Post author clicked
-            if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
-                e.preventDefault();
-                e.stopPropagation();
-                hideAllDropdowns();
-                displayUserMenu(e.target, sanitizedUser, sanitizedUser);
-            } else if (e.target.parentNode.matches("span.user.this-user") && e.target.matches("a")) {
-                // OWN user name clicked as post author
-                e.preventDefault();
-                e.stopPropagation();
-                hideAllDropdowns();
-                displayUserMenu(e.target, sanitizedUser, "You");
-            } else if (e.target.matches("a#userDropdownTrigger")) {
-                // User name clicked (at the top of the banner?)
-                e.preventDefault();
-                e.stopPropagation();
-                hideAllDropdowns();
-                displayUserMenu(e.target, getShackUsername(), "You");
-            } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
-                e.preventDefault();
-                e.stopPropagation();
-                hideAllDropdowns();
-            }
-        } catch (e) {
-            console.log(e);
+    // try to eat exceptions that are typically harmless
+    try {
+        let sanitizedUser = e.target.parentNode.innerText &&
+            e.target.parentNode.innerText.split(" - ")[0];
+        // Post author clicked
+        if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
+            e.preventDefault();
+            e.stopPropagation();
+            hideAllDropdowns();
+            displayUserMenu(e.target, sanitizedUser, sanitizedUser);
+        } else if (e.target.parentNode.matches("span.user.this-user") && e.target.matches("a")) {
+            // OWN user name clicked as post author
+            e.preventDefault();
+            e.stopPropagation();
+            hideAllDropdowns();
+            displayUserMenu(e.target, sanitizedUser, "You");
+        } else if (e.target.matches("a#userDropdownTrigger")) {
+            // User name clicked (at the top of the banner?)
+            e.preventDefault();
+            e.stopPropagation();
+            hideAllDropdowns();
+            displayUserMenu(e.target, getShackUsername(), "You");
+        } else if (!e.target.closest("ul.userDropdown") ||
+                    !e.target.matches("a#userDropdownTrigger")) {
+            hideAllDropdowns();
         }
-    },
-    false
-);
+    } catch (e) {
+        console.log(e);
+    }
+});
 
 if (isLoggedIn()) {
     // Add custom dropdown stuff to the Account button
