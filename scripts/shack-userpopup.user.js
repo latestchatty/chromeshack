@@ -146,37 +146,43 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
     }
 };
 
+const hideAllDropdowns = () => {
+    // close all dropdowns if clicking outside of their boundary
+    let userDD = [...document.querySelectorAll("ul.userDropdown")];
+    for (let dd of userDD) {
+        if (dd && !dd.classList.contains("hidden"))
+            dd.classList.add("hidden");
+    }
+}
+
 // Add catch-all event handlers for creating user dropdown menus
-document.addEventListener(
-    "click",
-    e => {
+document.addEventListener("click", e => {
         // try to eat exceptions that are typically harmless
         try {
-            let t = e.target;
-            let p = t.parentNode;
-            // use the nuShack username rather than the full switcher string (if applicable)
-            let matchFilteredUser = t.tagName === "A" && /(.*?)\s\-\s\(/i.exec(t.innerHTML);
-            let sanitizedUser = !!matchFilteredUser ? matchFilteredUser[1] : t.innerHTML;
-
+            let sanitizedUser = e.target.parentNode.innerText &&
+                e.target.parentNode.innerText.split(" - ")[0];
             // Post author clicked
-            if (t.tagName == "A" && p.tagName == "SPAN" && p.className == "user") {
+            if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
                 e.preventDefault();
                 e.stopPropagation();
-
-                displayUserMenu(t, sanitizedUser, sanitizedUser);
-            } else if (t.id == "userDropdownTrigger") {
+                hideAllDropdowns();
+                displayUserMenu(e.target, sanitizedUser, sanitizedUser);
+            } else if (e.target.parentNode.matches("span.user.this-user") && e.target.matches("a")) {
+                // OWN user name clicked as post author
+                e.preventDefault();
+                e.stopPropagation();
+                hideAllDropdowns();
+                displayUserMenu(e.target, sanitizedUser, "You");
+            } else if (e.target.matches("a#userDropdownTrigger")) {
                 // User name clicked (at the top of the banner?)
                 e.preventDefault();
                 e.stopPropagation();
-
-                displayUserMenu(t, getShackUsername(), "You");
-            }
-
-            // OWN user name clicked as post author
-            else if (t.tagName == "A" && p.tagName == "SPAN" && p.className == "user this-user") {
+                hideAllDropdowns();
+                displayUserMenu(e.target, getShackUsername(), "You");
+            } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
                 e.preventDefault();
                 e.stopPropagation();
-                displayUserMenu(t, sanitizedUser, "You");
+                hideAllDropdowns();
             }
         } catch (e) {
             console.log(e);
