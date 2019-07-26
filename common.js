@@ -105,9 +105,11 @@ const fetchSafeLegacy = ({ url, optionsObj, type }) => {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
         return xhrRequestLegacy(url, !isEmpty(optionsObj) ? optionsObj : {}).then(res => {
-            if ((res && !type) || type == "JSON") resolve(safeJSON(JSON.parse(res)));
-            else if (res && type == "HTML") resolve(sanitizeToFragment(res));
-            else reject(res.statusText || res);
+            if ((res && !type) || type == "JSON")
+                return resolve(JSON.parse(DOMPurify.sanitize(res)));
+            else if (res && type == "HTML")
+                return resolve(sanitizeToFragment(res));
+            else return reject(res.statusText || res);
         });
     }).catch(err => console.log(err));
 };
@@ -164,26 +166,22 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                         let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
                         let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
                         if (instgrmGQL) {
-                            return resolve(
-                                safeJSON({
-                                    metaViews: metaMatch && metaMatch[1],
-                                    gqlData: instgrmGQL && JSON.parse(instgrmGQL[1])
-                                })
-                            );
+                            return resolve({
+                                metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
+                                gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1]))
+                            });
                         }
                         return reject();
                     } else {
-                        let unsafeJSON = JSON.parse(text);
-                        return resolve(safeJSON(unsafeJSON));
+                        // reserve a special edge case for WinChatty Notification GUID object
+                        // if (/"?{"id":"[A-F0-9]{8}\-(?:[A-F0-9]{4}\-){3}[A-F0-9]{12}"}"?/.test(text))
+                        //     return resolve(JSON.parse(text));
+                        return resolve(JSON.parse(DOMPurify.sanitize(text)));
                     }
                 } catch {
-                    if (rssBool && text)
-                        return parseShackRSS(text)
-                            .then(resolve)
-                            .catch(reject);
+                    if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
                     if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
-                    // caution!
-                    else if (isHTML(text)) return resolve(sanitizeToFragment(text)); // auto-detect HTML
+                    else if (isHTML(text)) return resolve(sanitizeToFragment(text)); // auto-detect HTML (caution!)
                     return reject("Parse failed!");
                 }
             });
@@ -211,18 +209,15 @@ const postXHR = ({ url, data, header, method, override }) => {
                         let _resElemVal = _resFragment.querySelector("#link11");
                         // return a list of links if applicable
                         if (_resElemArr || _resElemVal)
-                            resolve(
+                            return resolve(
                                 _resElemArr
                                     ? _resElemArr.value.split("\n").filter(x => x !== "")
                                     : _resElemVal && [_resElemVal.value]
                             );
-                        reject(false);
-                    } else {
-                        let _data = JSON.parse(text);
-                        resolve(safeJSON(_data));
                     }
+                    return resolve(JSON.parse(DOMPurify.sanitize(text)));
                 } catch {
-                    resolve(true); // be safe here
+                    return reject("Failed to parse!");
                 }
             });
     }).catch(err => console.log(err));
@@ -361,30 +356,6 @@ const safeInnerHTML = (text, targetNode) => {
     targetRange.insertNode(sanitizedContent);
 };
 
-const safeJSON = json => {
-    const sanitizeArr = arr => {
-        return arr.map(item => {
-            return safeJSON(item);
-        });
-    };
-    // deep clean json objects
-    let _json = json && Object.assign(json);
-    if (_json) {
-        Object.keys(_json).forEach(key => {
-            let val = _json[key];
-            if (val && typeof val === "object" && !Array.isArray(val)) {
-                Object.keys(val).forEach(ikey => {
-                    if (val[ikey] && typeof val[ikey] === "object") val[ikey] = safeJSON(val[ikey]);
-                    else if (val[ikey] && Array.isArray(val[ikey])) val[ikey] = sanitizeArr(val[ikey]);
-                });
-            } else if (val && Array.isArray(val)) _json[key] = safeJSON(_json[key]);
-            else if (val && typeof val === "boolean") _json[key] = _json[key];
-            else if (val) _json[key] = DOMPurify.sanitize(_json[key]);
-        });
-    }
-    return _json;
-};
-
 const parseShackRSS = rssText => {
     return new Promise((resolve, reject) => {
         let result = { items: [] };
@@ -397,16 +368,16 @@ const parseShackRSS = rssText => {
                 let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
                 let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
                 result.items.push({
-                    title: title && title[1],
-                    link: link && link[1],
-                    date: date && date[1],
-                    content: content && content[1],
-                    medialink: medialink && medialink[1]
+                    title: title && DOMPurify.sanitize(title[1]),
+                    link: link && DOMPurify.sanitize(link[1]),
+                    date: date && DOMPurify.sanitize(date[1]),
+                    content: content && DOMPurify.sanitize(content[1]),
+                    medialink: medialink && DOMPurify.sanitize(medialink[1])
                 });
             }
         }
         // sanitize our resulting response
-        if (!isEmpty(result)) return resolve(safeJSON(result));
+        if (!isEmpty(result)) return resolve(result);
         return reject();
     });
 };

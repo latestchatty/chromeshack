@@ -117,54 +117,40 @@ let ImageLoader = {
     },
 
     async createImgur(link, postId, index) {
-        let fetchImgur = url => {
+        const fetchImgur = url => {
             // sanitized in common.js!
-            return fetchSafe(url, { headers: { Authorization: "Client-ID c045579f61fc802" } }).then(
-                formatImgur
-            );
-        };
-        let formatImgur = response => {
-            try {
-                let _items =
-                    response && Array.isArray(response.data.images || response.data)
-                        ? response.data.images
-                        : response.data.mp4 || response.data.link;
-                if (Array.isArray(_items) && _items.length > 0) {
-                    let _media = [];
-                    for (let i of _items || []) {
-                        if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
+            return fetchSafe(url, { headers: { Authorization: "Client-ID c045579f61fc802" } })
+                .then(response => {
+                    try {
+                        let _items =
+                            response && Array.isArray(response.data.images || response.data)
+                                ? response.data.images
+                                : response.data.mp4 || response.data.link;
+                        if (Array.isArray(_items) && _items.length > 0) {
+                            let _media = [];
+                            for (let i of _items || []) {
+                                if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
+                            }
+                            return _media;
+                        } else if (_items) {
+                            return [_items];
+                        }
+                    } catch {
+                        return null;
                     }
-                    return _media;
-                } else if (_items) {
-                    return [_items];
-                }
-            } catch {
-                return null;
-            }
+                });
         };
-
-        // this method can cause DOMException errors for unresolvable links (302/404)
-        // if (link.href.match(/\.(jpe?g|png|web(p|m)|gifv?|mp4)$/i)) {
-        //     appendMedia([ link.href ], link, postId, index, null, { forceAppend: true });
-        //     return; // we don't need to resolve if the url looks good
-        // }
 
         // resolve media shortcodes with failover (album-image > album > image)
         // causes some unnecessary fetches due to Imgur API silliness
         let _matchShortcode = ImageLoader.imgurRegex.exec(link.href);
-        let _shortcodes = {
-            albumHash: _matchShortcode && _matchShortcode[1],
-            imageHash: _matchShortcode && _matchShortcode[2]
-        };
-        let _imageUrl =
-            _shortcodes.albumHash &&
-            !_shortcodes.imageHash &&
-            `https://api.imgur.com/3/image/${_shortcodes.albumHash}`;
+        let albumHash = _matchShortcode && _matchShortcode[1];
+        let imageHash = _matchShortcode && _matchShortcode[2];
+        let _imageUrl = albumHash && !imageHash &&
+            `https://api.imgur.com/3/image/${albumHash}`;
         let _albumUrl = _imageUrl && _imageUrl.replace(/\/image\//, "/album/");
-        let _albumImageUrl =
-            _shortcodes.imageHash &&
-            _shortcodes.albumHash &&
-            `https://api.imgur.com/3/album/${_shortcodes.albumHash}/image/${_shortcodes.imageHash}`;
+        let _albumImageUrl = imageHash && albumHash &&
+            `https://api.imgur.com/3/album/${albumHash}/image/${imageHash}`;
 
         if (_matchShortcode) {
             // resolver priority: album-image > image > album
