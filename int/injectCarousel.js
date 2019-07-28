@@ -14,22 +14,12 @@ var carouselOpts = {
     },
     on: {
         init() {
-            let swiperEl = this;
             let slides = [...container.querySelectorAll(".swiper-slide")];
             if (slides[0].nodeName === "VIDEO") {
                 // autoplay if the first slide is a video
                 toggleVideoState(slides[0], { state: true, muted: false });
             }
-            let loadedMediaFunc = e => {
-                triggerReflow(e.target);
-                e.target.removeEventListener("loadedmetadata", loadedMediaFunc);
-                e.target.removeEventListener("loaded", loadedMediaFunc);
-            };
-            slides.forEach(i => {
-                // fire off a reflow when media loads to recalc the carousel
-                if (i.nodeName === "VIDEO") i.addEventListener("loadedmetadata", loadedMediaFunc);
-                else if (i.nodeName === "IMG") i.addEventListener("loaded", loadedMediaFunc);
-            });
+            slides.forEach(triggerReflow);
         },
         transitionEnd() {
             // toggle autoplay on slides as we transition to/from them
