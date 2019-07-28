@@ -19,7 +19,7 @@ var carouselOpts = {
                 // autoplay if the first slide is a video
                 toggleVideoState(slides[0], { state: true, muted: false });
             }
-            slides.forEach(triggerReflow);
+            this.update(); // trigger a carousel recalc
         },
         transitionEnd() {
             // toggle autoplay on slides as we transition to/from them
