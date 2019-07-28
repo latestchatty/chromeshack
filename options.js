@@ -1,241 +1,180 @@
-const loadOptions = async () => {
-    showPostPreviewLocation(await getOption("post_preview_location"));
-    showHighlightUsers(await getOption("highlight_users"));
-    showVideoLoaderHD(await getOption("video_loader_hd"));
-    showImageLoaderNewTab(await getOption("image_loader_newtab"));
-    showNwsIncognito(await getOption("nws_incognito"));
-    showSwitchers(await getOption("switchers"));
-    showNotifications(await getOption("notifications"));
-    showUserFilters(await getOption("user_filters"));
-    showEmbedSocials(await getOption("embed_socials"));
-    showEnabledScripts();
-    trackChanges();
+/*
+ * Highlight Users' Support
+ */
+
+// https://stackoverflow.com/a/5365036
+const getRandomColor = () => `#${((Math.random() * 0xffffff) << 0).toString(16)}`;
+
+const getRandomInt = () => {
+    let min = Math.ceil(1);
+    let max = Math.floor(999999);
+    return Math.floor(Math.random() * (max - min)) + min;
 };
 
-const getOption = async key => {
-    let option = await getSetting(key);
-    return option;
-};
+const trimName = (name) => name.trim().replace(/[\W\s]+/g, "").toLowerCase();
 
-const saveOption = (key, value) => {
-    setSetting(key, value);
-};
-
-const clearSettings = (e) => {
-    resetSettings();
-    loadOptions();
-    saveOptions(e);
-};
-
-const showEmbedSocials = enabled => {
-    let embeds = document.getElementById("embed_socials");
-    if (enabled) embeds.checked = enabled;
-    return embeds.checked;
-};
-
-const showImageLoaderNewTab = enabled => {
-    let newtab = document.getElementById("image_loader_newtab");
-    newtab.checked = enabled;
-};
-
-const getImageLoaderNewTab = () => {
-    let newtab = document.getElementById("image_loader_newtab");
-    return newtab.checked;
-};
-
-const showVideoLoaderHD = enabled => {
-    let hd = document.getElementById("video_loader_hd");
-    hd.checked = enabled;
-};
-
-const getVideoLoaderHD = () => {
-    let hd = document.getElementById("video_loader_hd");
-    return hd.checked;
-};
-
-const getNwsIncognito = () => {
-    return document.getElementById("nws_incognito").checked;
-};
-
-const showNwsIncognito = enabled => {
-    document.getElementById("nws_incognito").checked = enabled;
-};
-
-const getSwitchers = () => {
-    return document.getElementById("switchers").checked;
-};
-
-const showSwitchers = enabled => {
-    document.getElementById("switchers").checked = enabled;
-};
-
-const getNotifications = () => {
-    return document.getElementById("enable_notifications").checked;
-};
-
-const showNotifications = enabled => {
-    document.getElementById("enable_notifications").checked = enabled;
-};
-
-const showHighlightUsers = groups => {
+const showHighlightGroups = async () => {
     let highlightGroups = document.getElementById("highlight_groups");
     removeChildren(highlightGroups);
-
-    for (let i = 0; i < groups.length; i++) {
-        let group = groups[i];
-        addHighlightGroup(null, group);
-    }
+    let groups = await getSetting("highlight_groups");
+    for (let group of groups || []) addHighlightGroup(null, group);
 };
 
-const addHighlightGroup = (event, group) => {
-    if (event) event.preventDefault();
+const getHighlightGroups = async () => {
+    // serialize all existing highlight groups
+    let activeGroups = [...document.querySelectorAll("#highlight_group")];
+    let highlightRecords = [];
+    for (let group of activeGroups || []) {
+        let record = getHighlightGroup(group);
+        if (!isEmpty(record)) highlightRecords.push(record);
+    }
+    if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
+};
 
-    if (!group) group = { name: "", checked: true, css: "", users: [] };
+const getHighlightGroup = (groupElem) => {
+    // serialize a highlight group
+    if (groupElem) {
+        let enabled = groupElem.querySelector(".group_header input[type='checkbox']").checked;
+        let name = groupElem.querySelector(".group_label").value;
+        let built_in = groupElem.querySelector(".group_label").hasAttribute("readonly");
+        let css = groupElem.querySelector(".group_css textarea").value;
+        let users = [...groupElem.querySelector(".group_select select").options].map(x => x.text);
+        return {name, enabled, built_in, css, users};
+    }
+    return {};
+};
 
-    let settings = document.getElementById("highlight_groups");
-    let div = document.createElement("div");
-    div.className = "group";
-    let check = document.createElement("input");
-    check.type = "checkbox";
-    check.className = "group_enabled";
-    check.checked = group.enabled;
-    div.appendChild(check);
+const newHighlightGroup = (name, css, username) => {
+    // return a new group with a random color as its default css
+    return {
+        enabled: true,
+        name: name && name.length > 0 ? name : `New Group ${getRandomInt()}`,
+        css: css && css.length > 0 ? css : `color: ${getRandomColor()} !important;`,
+        users: username && username.length > 0 ? [username] : []
+    };
+};
 
-    let name_box = document.createElement("input");
-    name_box.type = "text";
-    name_box.className = "group_name";
-    name_box.value = group.name;
-    div.appendChild(name_box);
+let debouncedUpdate = null;
+const delayedTextUpdate = (e) => {
+    if (debouncedUpdate) clearTimeout(debouncedUpdate);
+    debouncedUpdate = setTimeout(async () => {
+        let groupElem = e.target.closest("#highlight_group");
+        let groupName = groupElem.querySelector(".group_label").value;
+        let updatedGroup = getHighlightGroup(groupElem);
+        await setHighlightGroup(groupName, updatedGroup);
+    }, 500);
+};
 
+const addHighlightGroup = (e, group) => {
+    if (e) e.preventDefault();
+    if (!group) group = newHighlightGroup();
+    let groupElem = document.createElement("div");
+    let trimmedName = trimName(group.name);
+    groupElem.id = "highlight_group";
+    groupElem.innerHTML = `
+        <div class="group_header">
+            <input type="checkbox" id="${trimmedName}_box" ${group.enabled && "checked"} />
+            <input type="text" class="group_label" value="${group.name}" ${group.built_in && "readonly"}></input>
+            <button id="remove_group">Remove</button>
+        </div>
+        <div class="group_select">
+            <select id="${trimmedName}_list" multiple></select>
+        </div>
+        <div class="group_option_input">
+            <input type="text" class="group_option_textinput"></input>
+            <button id="option_add">Add</button>
+            <button id="option_del" disabled>Remove</button>
+        </div>
+        <div class="group_css">
+            <textarea id="${trimmedName}_css"/>${group.css}</textarea>
+        </div>
+    `;
     if (group.built_in) {
-        name_box.className += " built_in";
-        name_box.readOnly = true;
-    } else {
-        let users = document.createElement("input");
-        users.className = "group_users";
-        users.value = JSON.stringify(group.users);
-        div.appendChild(users);
-
-        let remove = document.createElement("a");
-        remove.href = "#";
-        remove.addEventListener("click", event => {
-            event.preventDefault();
-            settings.removeChild(div);
-        });
-        remove.appendChild(document.createTextNode("(remove)"));
-        div.appendChild(remove);
+        // hide mutation interactions if userlist is readonly
+        groupElem.querySelector("#remove_group").setAttribute("style", "display: none;");
+        groupElem.querySelector(".group_select").setAttribute("style", "display: none;");
+        groupElem.querySelector(".group_option_input").setAttribute("style", "display: none;");
     }
+    for (let user of group.users || []) {
+        let select = groupElem.querySelector(`#${trimmedName}_list`);
+        let option = document.createElement("option");
+        option.setAttribute("value", user);
+        option.innerText = user;
+        select.appendChild(option);
+    }
+    // handle Add, Remove, Remove Group, Toggle, and Text Changed states
+    groupElem.querySelector("#option_add").addEventListener("click", async (e) => {
+        let optionContainer = e.target.parentNode.parentNode.querySelector(".group_select > select");
+        let username = e.target.parentNode.querySelector(".group_option_textinput");
+        let usernameTxt = superTrim(username.value).toLowerCase();
+        let groupName = e.target.parentNode.parentNode.querySelector(".group_label").value;
+        let usersList = [...optionContainer.options].map(x => x.text);
+        if (!usersList.find(x => superTrim(x).toLowerCase() === usernameTxt)) {
+            let option = document.createElement("option");
+            option.setAttribute("value", username.value);
+            option.innerText = username.value;
+            username.value = "";
+            optionContainer.appendChild(option);
 
-    div.appendChild(document.createElement("br"));
-
-    let css = document.createElement("textarea");
-    css.className = "group_css";
-    css.rows = "2";
-    css.cols = "25";
-    css.value = group.css;
-    div.appendChild(css);
-
-    settings.appendChild(div);
-
-    trackChanges();
-};
-
-const getHighlightGroups = () => {
-    let groups = [];
-
-    let settings = document.getElementById("highlight_groups");
-    let group_divs = settings.getElementsByTagName("div");
-    for (let i = 0; i < group_divs.length; i++) {
-        let group = {};
-        let input_name = getDescendentByTagAndClassName(group_divs[i], "input", "group_name");
-        group.name = input_name.value;
-        group.built_in = input_name.readOnly;
-        group.enabled = getDescendentByTagAndClassName(group_divs[i], "input", "group_enabled").checked;
-        group.css = getDescendentByTagAndClassName(group_divs[i], "textarea", "group_css").value;
-        if (!group.built_in) {
-            group.users = JSON.parse(getDescendentByTagAndClassName(group_divs[i], "input", "group_users").value);
+            let updatedGroup = getHighlightGroup(e.target.closest("#highlight_group"));
+            await setHighlightGroup(groupName, updatedGroup);
         }
-        groups.push(group);
-    }
+    });
+    groupElem.querySelector("#option_del").addEventListener("click", async (e) => {
+        let groupElem = e.target.closest("#highlight_group");
+        let groupName = groupElem.querySelector(".group_label").value;
+        let usersSelect = groupElem.querySelector("select");
+        for (let option of [...usersSelect.selectedOptions])
+            option.parentNode.removeChild(option);
 
-    return groups;
-};
-
-const showPostPreviewLocation = position => {
-    let left = document.getElementById("post_preview_left");
-    let right = document.getElementById("post_preview_right");
-    left.checked = position == "Left";
-    right.checked = position == "Right";
-};
-
-const getPostPreviewLocation = () => {
-    let left = document.getElementById("post_preview_left");
-    if (left.checked) return "Left";
-    return "Right";
-};
-
-const showPostPreviewLive = enabled => {
-    let live = document.getElementById("post_preview_live");
-    live.checked = enabled;
-};
-
-const showEnabledScripts = async () => {
-    let enabled = await getOption("enabled_scripts");
-
-    let inputs = document.getElementsByTagName("input");
-
-    for (let i = 0; i < inputs.length; i++) {
-        if (inputs[i].type == "checkbox" && inputs[i].className == "script_check") {
-            inputs[i].onclick = toggleSettingsVisible;
-            let found = false;
-            for (let j = 0; j < enabled.length; j++) {
-                if (enabled[j] == inputs[i].id) {
-                    found = true;
-                    break;
-                }
-            }
-
-            inputs[i].checked = found;
-            let settings_div = document.getElementById(inputs[i].id + "_settings");
-            if (settings_div) {
-                settings_div.style.display = found ? "block" : "none";
-            }
+        let updatedGroup = getHighlightGroup(groupElem);
+        await setHighlightGroup(groupName, updatedGroup);
+    });
+    groupElem.querySelector("#remove_group").addEventListener("click", (e) => {
+        let groupElem = e.target.closest("#highlight_group");
+        let groupsContainer = e.target.closest("#highlight_groups");
+        groupsContainer.removeChild(groupElem);
+        getHighlightGroups();
+    });
+    groupElem.querySelector("input[type='checkbox']").addEventListener("click", async (e) => {
+        let groupElem = e.target.closest("#highlight_group");
+        let groupName = groupElem.querySelector(".group_label").value;
+        let updatedGroup = getHighlightGroup(groupElem);
+        await setHighlightGroup(groupName, updatedGroup);
+    });
+    groupElem.querySelector("select").addEventListener("change", (e) => {
+        let groupElem = e.target.closest("#highlight_group");
+        let selected = e.target.options.selectedIndex;
+        let removeBtn = groupElem.querySelector("#option_del");
+        if (selected > -1) removeBtn.removeAttribute("disabled");
+        else if (selected === -1) removeBtn.setAttribute("disabled", "");
+    });
+    // handle changes on mutable text fields with a debounce
+    let textfields = [...groupElem.querySelectorAll(".group_css textarea, .group_label")];
+    for (let textfield of textfields || []) {
+        if (!textfield.hasAttribute("readonly")) {
+            textfield.removeEventListener("keyup", delayedTextUpdate);
+            textfield.addEventListener("keyup", delayedTextUpdate);
         }
     }
+    document.querySelector("#highlight_groups").appendChild(groupElem);
+    if (e && e.target.matches("#add_highlight_group")) getHighlightGroups();
 };
 
-const getEnabledScripts = () => {
-    let enabled = [];
-    let inputs = document.getElementsByTagName("input");
 
-    for (let i = 0; i < inputs.length; i++) {
-        if (inputs[i].type == "checkbox" && inputs[i].className == "script_check") {
-            if (inputs[i].checked) {
-                enabled.push(inputs[i].id);
-            }
-        }
-    }
+/*
+ * Notifications Support
+ */
 
-    return enabled;
-};
-
-const toggleSettingsVisible = () => {
-    let settings_div = document.getElementById(this.id + "_settings");
-    if (settings_div) {
-        settings_div.style.display = this.checked ? "block" : "none";
-    }
-};
-
-const logInForNotifications = notificationuid => {
-    let _dataBody = encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`);
-    postXHR({
+const logInForNotifications = (notificationuid) => {
+    return postXHR({
         url: "https://winchatty.com/v2/notifications/registerNotifierClient",
-        header: { "Content-type": "application/x-www-form-urlencoded" },
-        data: _dataBody
+        header: {"Content-type": "application/x-www-form-urlencoded"},
+        data: encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`)
     })
         .then(() => {
             //console.log("Response from register client " + res.responseText);
-            browser.tabs.query({ url: "https://winchatty.com/v2/notifications/ui/login*" }).then(tabs => {
+            browser.tabs.query({url: "https://winchatty.com/v2/notifications/ui/login*"}).then((tabs) => {
                 if (tabs.length === 0) {
                     browser.tabs.create({
                         url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`
@@ -250,152 +189,172 @@ const logInForNotifications = notificationuid => {
                 }
             });
         })
-        .catch(err => {
+        .catch((err) => {
             console.log(err);
         });
 };
 
 const updateNotificationOptions = async () => {
     //Log the user in for notifications.
-    if (getNotifications()) {
-        let uid = await getOption("notificationuid");
+    let notifications = await getEnabled("enable_notifications");
+    if (notifications) {
+        let uid = await getSetting("notificationuid");
         if (!uid) {
-            fetchSafe("https://winchatty.com/v2/notifications/generateId").then(json => {
-                // sanitized in common.js!
-                let notificationUID = json.id;
-                //console.log("Got notification id of " + notificationUID);
-                saveOption("notificationuid", notificationUID);
+            let json = await fetchSafe("https://winchatty.com/v2/notifications/generateId");
+            let notificationUID = json.id;
+            if (notificationUID) {
+                let result = await setSetting("notificationuid", notificationUID);
                 logInForNotifications(notificationUID);
-            });
+            }
         } else {
             //console.log("Notifications already set up using an id of " + notificationUID);
         }
     } else {
-        saveOption("notificationuid", "");
+        setSetting("notificationuid", "");
         //TODO: Log them out because they're disabling it. This requires a username and password.  For now we'll just kill the UID and they can remove it manually because... meh whatever.
     }
 };
 
-const showUserFilters = userFilters => {
+
+/*
+ * Custom User Filters Support
+ */
+const showUserFilters = async () => {
+    let filters = await getSetting("user_filters");
     let usersLst = document.getElementById("filtered_users");
-    for (let i = 0; i < usersLst.length; i++) {
-        usersLst.remove(0);
+    removeChildren(usersLst);
+
+    for (let filter of filters || []) {
+        let newOption = document.createElement("option");
+        newOption.textContent = filter;
+        newOption.value = filter;
+        usersLst.appendChild(newOption);
     }
-    if (userFilters) {
-        for (let i = 0; i < userFilters.length; i++) {
-            let newOption = document.createElement("option");
-            newOption.textContent = userFilters[i];
-            newOption.value = userFilters[i];
-            usersLst.appendChild(newOption);
+
+    let addFilterBtn = document.getElementById("add_user_filter_btn");
+    addFilterBtn.removeEventListener("click", addUserFilter);
+    addFilterBtn.addEventListener("click", addUserFilter);
+    let delFilterBtn = document.getElementById("remove_user_filter_btn");
+    delFilterBtn.removeEventListener("click", removeUserFilter);
+    delFilterBtn.addEventListener("click", removeUserFilter);
+    usersLst.removeEventListener("change", filterOptionsChanged);
+    usersLst.addEventListener("change", filterOptionsChanged);
+};
+
+const filterOptionsChanged = (e) => {
+    let filterElem = e.target.closest("#custom_user_filters_settings");
+    let selected = document.getElementById("filtered_users").options.selectedIndex;
+    let removeBtn = filterElem.querySelector("#remove_user_filter_btn");
+    if (selected > -1) removeBtn.removeAttribute("disabled");
+    else if (selected === -1) removeBtn.setAttribute("disabled", "");
+};
+
+const getUserFilters = async () => {
+    // serialize user filters to extension storage
+    let usersLst = document.getElementById("filtered_users");
+    let users = [...usersLst.options].map(x => x.text);
+    return await setSetting("user_filters", users);
+};
+
+const addUserFilter = (e) => {
+    let username = document.getElementById("new_user_filter_text");
+    let usersLst = document.getElementById("filtered_users");
+    let usernameTxt = superTrim(username.value).toLowerCase();
+    let users = [...usersLst.options].map(x => x.text);
+    if (!users.find(y => superTrim(y).toLowerCase() === usernameTxt)) {
+        let newOption = document.createElement("option");
+        newOption.textContent = username.value;
+        newOption.value = username.value;
+        usersLst.appendChild(newOption);
+        username.value = "";
+        getUserFilters();
+    }
+};
+
+const removeUserFilter = (e) => {
+    let selectElem = document.getElementById("filtered_users");
+    let selectedOptions = [...selectElem.selectedOptions];
+    for (let option of selectedOptions || [])
+        option.parentNode.removeChild(option);
+    getUserFilters();
+};
+
+
+/*
+ * Options Serialization/Deserialization
+ */
+const getEnabledScripts = async () => {
+    // serialize checkbox/option state to extension storage
+    let enabled = [];
+    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    for (let checkbox of checkboxes) {
+        if (checkbox.checked) {
+            // put non-boolean save supports here
+            if (checkbox.id === "enable_notifications") await updateNotificationOptions();
+            else if (checkbox.id === "custom_user_filters") await getUserFilters();
+            else if (checkbox.id === "highlight_users") await getHighlightGroups();
+
+            enabled.push(checkbox.id);
         }
     }
+    await setSetting("enabled_scripts", enabled);
+    return enabled;
 };
 
-const getUserFilters = () => {
-    let usersLst = document.getElementById("filtered_users");
-    let users = [];
-    let options = usersLst.getElementsByTagName("option");
-    for (let i = 0; i < options.length; i++) {
-        users.push(options[i].value);
-    }
-    return users;
-};
-
-const addUserFilter = event => {
-    event.preventDefault();
-    let usernameTxt = document.getElementById("new_user_filter_text");
-    let usersLst = document.getElementById("filtered_users");
-    let username = superTrim(usernameTxt.value).toLowerCase();
-    if (username == "") {
-        alert("Please enter a username to filter.");
-        return;
-    }
-    let list = usersLst.getElementsByTagName("option");
-    for (let i = 0; i < list.length; i++) {
-        let existingUsername = list[i].value;
-        if (username == existingUsername) {
-            alert("That username is already filtered.");
-            usernameTxt.value = "";
-            return;
+const loadOptions = async () => {
+    // deserialize extension storage to options state
+    let scripts = await getEnabled();
+    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    for (let script of scripts) {
+        for (let checkbox of checkboxes) {
+            if (checkbox.id === script) checkbox.checked = true;
+            let settingsChild = document.querySelector(`div#${checkbox.id}_settings`);
+            if (checkbox.checked && settingsChild)
+                settingsChild.classList.remove("hidden");
+            else if (!checkbox.checked && settingsChild)
+                settingsChild.classList.add("hidden");
         }
-    }
-    let newOption = document.createElement("option");
-    newOption.textContent = username;
-    newOption.value = username;
-    usersLst.appendChild(newOption);
-    usernameTxt.value = "";
-    saveOptions();
-};
 
-const removeUserFilter = event => {
-    event.preventDefault();
-    let usersLst = document.getElementById("filtered_users");
-    let index = usersLst.selectedIndex;
-    if (index >= 0) {
-        usersLst.remove(index);
-        saveOptions();
-    } else {
-        alert("Please select a username to remove.");
+        // put non-boolean load supports here
+        if (script === "enable_notifications") await updateNotificationOptions();
+        else if (script === "highlight_users") await showHighlightGroups();
+        else if (script === "custom_user_filters") await showUserFilters();
     }
 };
 
-const saveOptions = (e) => {
-    // Update status to let the user know options were saved
+const saveOptions = async (e) => {
     let status = document.getElementById("status");
-
-    try {
-        saveOption("post_preview_location", getPostPreviewLocation());
-        saveOption("enabled_scripts", getEnabledScripts());
-        saveOption("highlight_users", getHighlightGroups());
-        saveOption("video_loader_hd", getVideoLoaderHD());
-        saveOption("image_loader_newtab", getImageLoaderNewTab());
-        saveOption("nws_incognito", getNwsIncognito());
-        saveOption("switchers", getSwitchers());
-        updateNotificationOptions();
-        saveOption("notifications", getNotifications());
-        saveOption("user_filters", getUserFilters());
-        saveOption("embed_socials", showEmbedSocials());
-    } catch (err) {
-        //alert("There was an error while saving your settings:\n" + err);
-        status.textContent = `Error: ${err}`;
-        return;
+    if (e.target.id !== "clear_settings") {
+        await getEnabledScripts();
+        await loadOptions();
     }
 
-    if (e.target.id === "clear_settings")
-        status.innerText = "Options Reset";
-    else
-        status.innerText = "Options Saved";
-
+    // Update status to let the user know options were saved
+    if (e.target.id === "clear_settings") status.innerText = "Options Reset";
+    else status.innerText = "Options Saved";
     status.classList.remove("hidden");
-    setTimeout(() => status.classList.add("hidden"), 3000);
+    const statusMsg = () => status.classList.add("hidden");
+    clearTimeout(statusMsg);
+    setTimeout(statusMsg, 2000);
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadOptions();
+const clearSettings = (e) => resetSettings().then(loadOptions).then(saveOptions(e));
+
+
+/*
+ * Options Event Handling Stuff
+ */
+const trackChanges = () => {
+    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    for (let checkbox of checkboxes || []) {
+        checkbox.removeEventListener("change", saveOptions);
+        checkbox.addEventListener("change", saveOptions);
+    }
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadOptions();
+    trackChanges();
     document.getElementById("clear_settings").addEventListener("click", clearSettings);
     document.getElementById("add_highlight_group").addEventListener("click", addHighlightGroup);
-    document.getElementById("add_user_filter_btn").addEventListener("click", addUserFilter);
-    document.getElementById("remove_user_filter_btn").addEventListener("click", removeUserFilter);
 });
-
-const trackChanges = () => {
-    let links = document.getElementById("content").getElementsByTagName("a");
-    for (let i = 0; i < links.length; i++) {
-        links[i].addEventListener("click", saveOptions);
-    }
-
-    let inputs = document.getElementsByTagName("input");
-    for (let i = 0; i < inputs.length; i++) {
-        inputs[i].addEventListener("change", saveOptions);
-    }
-
-    let selects = document.getElementsByTagName("select");
-    for (let i = 0; i < selects.length; i++) {
-        selects[i].addEventListener("change", saveOptions);
-    }
-
-    let textareas = document.getElementsByTagName("textarea");
-    for (let i = 0; i < textareas.length; i++) {
-        textareas[i].addEventListener("input", saveOptions);
-    }
-};

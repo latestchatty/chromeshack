@@ -9,13 +9,16 @@ let DefaultSettings = {
         "getpost",
         "nws_incognito",
         "new_comment_highlighter",
+        "highlight_users",
+        "custom_user_filters",
         "post_preview"
     ],
 
     collapsed_threads: [],
 
-    highlight_users_builtin: [
-        { name: "Mods", enabled: true, built_in: true, css: "color: red !important" },
+    user_filters: [],
+
+    highlight_groups: [
         {
             name: "Employees", enabled: true, built_in: true, css: "color: green !important",
             users: [
@@ -120,24 +123,22 @@ let DefaultSettings = {
                 "freakynipples69" // MindShaft
             ]
         },
+        { name: "Mods", enabled: true, built_in: true, css: "color: red !important" },
         { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow !important" },
-    ],
-
-    highlight_users_added: [
-        { name: "Friends", enabled: true, css: "border: 1px dotted white !important", users: [] }
+        { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important", users: [] }
     ]
 };
 
 const getSetting = async (key, defaultVal) => {
     let settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
-    return settings[key] || false;
+    return settings[key];
 };
 
 const getEnabled = async (key) => {
     let enabled = await getSetting("enabled_scripts") || [];
     if (!key) return enabled;
-    return enabled && enabled.find((v) => v === key) || false;
+    return enabled && enabled.find((v) => v === key);
 };
 
 const setEnabled = async (key) => {
@@ -149,15 +150,13 @@ const setEnabled = async (key) => {
 
 const getSettings = async () => {
     let settings = await browser.storage.local.get();
-    return new Promise(resolve => {
-        if (isEmpty(settings)) browser.storage.local.set(DefaultSettings);
-        return browser.storage.local.get().then(resolve);
-    });
+    if (isEmpty(settings))
+        return await browser.storage.local.set(DefaultSettings)
+                        .then(browser.storage.local.get);
+    return settings;
 }
 
-const setSetting = (key, val) => {
-    if (key && val) return browser.storage.local.set({ [key]: val });
-}
+const setSetting = async (key, val) => await browser.storage.local.set({ [key]: val });
 
 const removeSetting = (key) => browser.storage.local.remove(key);
 
@@ -165,12 +164,25 @@ const resetSettings = () => browser.storage.local.clear();
 
 const settingsContains = async (key) => objContains(key, await getSettings());
 
-const enabledContains = (key) => {
-    return new Promise((resolve) => {
-        getEnabled().then((enabled) => resolve(enabled && enabled.includes(key) || false))
-    });
+const enabledContains = async (key) => {
+    return await getEnabled()
+        .then((enabled) => enabled && enabled.includes(key) || false);
 }
 
-// for debugging purposes (use from background/popup context)
-window.getSettings = () => getSettings().then(console.log);
-window.resetSettings = () => resetSettings().then(getSettings.then(console.log));
+const setHighlightGroup = async (groupName, obj) => {
+    // for overwriting a specific highlight group by name
+    let records = await getSetting("highlight_groups");
+    let indexMatch = records.findIndex(x => x.name.toLowerCase() === groupName.toLowerCase());
+    // overwrite at index if applicable (append otherwise)
+    if (indexMatch > -1) records[indexMatch] = obj;
+    else records.push(obj);
+    return setSetting("highlight_groups", records);
+}
+
+const removeHighlightGroup = async (groupName) => {
+    // for removing a highlight group while preserving record order
+    let records = await getSetting("highlight_groups");
+    let result = records.filter(x => x.name !== groupName);
+    // return the new records Promise from the store
+    return setSetting("highlight_groups", result).then(getSetting("highlight_groups"));
+}

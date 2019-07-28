@@ -18,7 +18,7 @@ let CustomUserFilters = {
 
     applyFilter() {
         getSetting("user_filters").then(filteredUsers => {
-            if (filteredUsers.length === 0) return;
+            if (!filteredUsers || filteredUsers.length === 0) return;
             for (let filteredUser of filteredUsers) {
                 let userMatches = CustomUserFilters.resolveUser(filteredUser);
                 for (let userMatch of userMatches)

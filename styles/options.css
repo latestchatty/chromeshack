@@ -1,13 +1,18 @@
+:root {
+    --font-family: helvetica, arial, sans-serif;
+    --font-size: 13px;
+    scrollbar-width: thin;
+}
 body {
-    font-size: 14px;
-    min-width: 550px;
-    max-width: 550px;
-    min-height: 325px;
-    max-height: 600px;
-    margin: 0;
+    min-width: 500px;
+    max-width: 500px;
+    min-height: 400px;
+    max-height: 400px;
     padding: 0;
-    top: 0;
-    left: 0;
+    margin: 0.5em 0.33em 0.25em -0.15em;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    overflow-x: hidden;
 }
 h2 {
     width: 100%;
@@ -27,102 +32,94 @@ input.color {
 textarea {
     width: 250;
 }
-
-select#filtered_users {
-    width: 239px;
-}
-input#new_user_filter_text {
-    width: 235px;
-}
-input.name {
-    width: 75px;
-}
-input.color {
-    width: 100px;
-}
-select#filtered_users {
-    height: 90px;
-}
-div#custom_user_filters_settings p button {
-    float: right;
-    width: 75px;
-}
-
 div#content {
     justify-items: start;
-    margin: 0em 1em 0.5em 1em;
+    margin: 0 1em 0 1em;
 }
-div#ugh_field {
+div[id$='_settings'].hidden {
+    display: none !important;
+}
+
+/* highlight users styling */
+#highlight_users_settings {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    max-width: 350px;
+    margin: 0 auto 0 auto;
 }
-div#ugh_field > label {
-    padding-right: 3em;
+#add_highlight_group {
+    width: 100%;
 }
-
-div#expiration_watcher_settings > * {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
-    align-items: center;
-    padding: 0;
-}
-div#expiration_watcher_settings > ul > span {
-    font-size: 14px;
-    align-self: center;
-    justify-self: center;
-}
-div#expiration_watcher_settings > ul {
-    list-style: none;
-}
-div#expiration_watcher_settings > li {
-    display: inline-block;
-}
-
-div#post_preview_settings > * {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-items: center;
-    align-items: center;
-    padding: 0;
-}
-div#post_preview_settings > ul > span {
-    align-self: center;
-    justify-self: center;
-}
-div#post_preview_settings > ul {
-    list-style: none;
-}
-div#post_preview_settings > li {
-    display: inline-block;
-}
-div#live_preview_checkbox {
+.highlight_group {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+}
+.group_header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 0.25em;
+}
+.group_label {
+    display: flex;
+    padding: 3px;
+    width: 100%;
+}
+input[type='text']:read-only {
+    outline: none;
+}
+.group_select {
+    display: flex;
+}
+.group_select select {
+    width: 100%;
+    height: 125px;
+    padding: 6px;
+    margin: 0 1px;
+}
+.group_css {
+    display: flex;
+}
+.group_css textarea {
+    width: 100%;
+    height: 32px;
+    padding: 5px;
+    margin-bottom: 0.5em;
+}
+.group_option_input {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0.25em 0 0.25em 0;
+}
+.group_option_textinput {
+    width: 100%;
 }
 
-h2.group {
-    font-size: 18pt;
-    margin-top: 25px;
-    background: #3264c8;
-    color: white;
-    border: none;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    text-align: center;
+/* custom user filter styling */
+div#custom_user_filters_settings {
+    display: flex;
+    flex-direction: column;
+    width: 99%;
+    margin: 0 0.33em 0 0.33em;
 }
-div.group_header {
-    font-size: 12pt;
-    font-weight: bold;
-    color: white;
-    margin-top: 15px;
+select.custom_user_filter_options {
+    width: 100%;
+    height: 125px;
+    padding: 6px;
+}
+.custom_user_filter_inputs {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0.25em 0 0.25em;
+}
+.custom_user_filter_inputs input {
+    width: 100%;
 }
 
 div#image_loader_settings,
-div#video_loader_settings,
-div#highlight_users_settings {
+div#video_loader_settings {
     margin-left: 25px;
 }
 
@@ -149,4 +146,8 @@ span#status {
 }
 span#status.hidden {
     display: none !important;
+}
+
+button#clear_settings {
+    margin-bottom: 0.5em;
 }

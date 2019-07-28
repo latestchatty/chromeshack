@@ -7,19 +7,11 @@
     2011-04-26
         * First stab at profiles
 */
-// grab start time of script
-const getTime = () => {
-    benchmarkTimer = new Date();
-    return benchmarkTimer.getTime();
-};
-let benchmarkTimer = null;
-let scriptStartTime = getTime();
-
-const addCommas = nStr => {
+const addCommas = (nStr) => {
     nStr += "";
-    x = nStr.split(".");
-    x1 = x[0];
-    x2 = x.length > 1 ? "." + x[1] : "";
+    let x = nStr.split(".");
+    let x1 = x[0];
+    let x2 = x.length > 1 ? "." + x[1] : "";
     let rgx = /(\d+)(\d{3})/;
     while (rgx.test(x1)) {
         x1 = x1.replace(rgx, "$1" + "," + "$2");
@@ -51,7 +43,7 @@ const createListItem = (text, url, className, target) => {
     // Prevent menu clicks from bubbling up
     a.addEventListener(
         "click",
-        e => {
+        (e) => {
             e.stopPropagation();
         },
         false
@@ -79,9 +71,7 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
             parentAuthor = "Parent Author Search";
 
             // Add the account link to the dropdown menu
-            ulUser.appendChild(
-                createListItem("Shack Account", "/settings", "userDropdown-lol userDropdown-separator")
-            );
+            ulUser.appendChild(createListItem("Shack Account", "/settings", "userDropdown-lol userDropdown-separator"));
         } else {
             your = friendlyName + "'s";
             vanitySearch = 'Search for "' + friendlyName + '"';
@@ -139,10 +129,8 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
     } // ulUserDD already exists -- this just handles the toggling of its display
     else {
         // Toggle ulUser's classname
-        if (ulUserDD.className.split(" ").indexOf("hidden") == -1)
-            ulUserDD.classList.add("hidden");
-        else
-            ulUserDD.classList.remove("hidden");
+        if (ulUserDD.className.split(" ").indexOf("hidden") == -1) ulUserDD.classList.add("hidden");
+        else ulUserDD.classList.remove("hidden");
     }
 };
 
@@ -150,17 +138,15 @@ const hideAllDropdowns = () => {
     // close all dropdowns if clicking outside of their boundary
     let userDD = [...document.querySelectorAll("ul.userDropdown")];
     for (let dd of userDD) {
-        if (dd && !dd.classList.contains("hidden"))
-            dd.classList.add("hidden");
+        if (dd && !dd.classList.contains("hidden")) dd.classList.add("hidden");
     }
-}
+};
 
 // Add catch-all event handlers for creating user dropdown menus
-document.addEventListener("click", e => {
+document.addEventListener("click", (e) => {
     // try to eat exceptions that are typically harmless
     try {
-        let sanitizedUser = e.target.parentNode.innerText &&
-            e.target.parentNode.innerText.split(" - ")[0];
+        let sanitizedUser = e.target.parentNode.innerText && e.target.parentNode.innerText.split(" - ")[0];
         // Post author clicked
         if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
             e.preventDefault();
@@ -179,8 +165,7 @@ document.addEventListener("click", e => {
             e.stopPropagation();
             hideAllDropdowns();
             displayUserMenu(e.target, getShackUsername(), "You");
-        } else if (!e.target.closest("ul.userDropdown") ||
-                    !e.target.matches("a#userDropdownTrigger")) {
+        } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
             hideAllDropdowns();
         }
     } catch (e) {
