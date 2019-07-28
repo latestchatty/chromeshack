@@ -17,7 +17,8 @@ const showHighlightGroups = async () => {
     let highlightGroups = document.getElementById("highlight_groups");
     removeChildren(highlightGroups);
     let groups = await getSetting("highlight_groups");
-    for (let group of groups || []) addHighlightGroup(null, group);
+    for (let group of groups || [])
+        addHighlightGroup(null, group);
 };
 
 const getHighlightGroups = async () => {
@@ -28,7 +29,8 @@ const getHighlightGroups = async () => {
         let record = getHighlightGroup(group);
         if (!isEmpty(record)) highlightRecords.push(record);
     }
-    if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
+    if (highlightRecords.length > 0)
+        return await setSetting("highlight_groups", highlightRecords);
 };
 
 const getHighlightGroup = (groupElem) => {
@@ -291,9 +293,6 @@ const getEnabledScripts = async () => {
         if (checkbox.checked) {
             // put non-boolean save supports here
             if (checkbox.id === "enable_notifications") await updateNotificationOptions();
-            else if (checkbox.id === "custom_user_filters") await getUserFilters();
-            else if (checkbox.id === "highlight_users") await getHighlightGroups();
-
             enabled.push(checkbox.id);
         }
     }
@@ -314,7 +313,6 @@ const loadOptions = async () => {
             else if (!checkbox.checked && settingsChild)
                 settingsChild.classList.add("hidden");
         }
-
         // put non-boolean load supports here
         if (script === "enable_notifications") await updateNotificationOptions();
         else if (script === "highlight_users") await showHighlightGroups();
