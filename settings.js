@@ -145,14 +145,33 @@ const setEnabled = async (key) => {
     let scripts = await getEnabled() || [];
     if (!scripts.includes(key) && key.length > 0)
         scripts.push(key);
-    return setSetting("enabled_scripts", scripts);
+    return await setSetting("enabled_scripts", scripts);
 };
+
+const removeEnabled = async (key) => {
+    let scripts = await getEnabled() || [];
+    scripts = scripts.filter(x => x !== key);
+    return await setSetting("enabled_scripts", scripts);
+}
 
 const getSettings = async () => {
     let settings = await browser.storage.local.get();
     if (isEmpty(settings))
         return await browser.storage.local.set(DefaultSettings)
                         .then(browser.storage.local.get);
+    return settings;
+}
+
+const getSettingsLegacy = () => {
+    let settings = {...localStorage};
+    for (let key of Object.keys(settings) || []) {
+        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
+            settings[key] = JSON.parse(settings[key]);
+        else if (!isNaN(parseFloat(JSON.parse(settings[key]))))
+            settings[key] = parseFloat(JSON.parse(settings[key]));
+        else
+            settings[key] = JSON.parse(settings[key]);
+    }
     return settings;
 }
 
@@ -185,4 +204,17 @@ const removeHighlightGroup = async (groupName) => {
     let result = records.filter(x => x.name !== groupName);
     // return the new records Promise from the store
     return setSetting("highlight_groups", result).then(getSetting("highlight_groups"));
+}
+
+const highlightsContains = async (username) => {
+    // check mutable groups for this username
+    let highlightedUsers = [...await getSetting("highlight_groups")]
+        .filter(x => !x.built_in).map(y => y.users);
+    return highlightedUsers
+        .filter(x => x.find(y => y.toLowerCase() === superTrim(username.toLowerCase())));
+}
+
+const filtersContains = async (username) => {
+    return [...await getSetting("user_filters")]
+        .find(x => x && x.toLowerCase() === superTrim(username.toLowerCase())) || false;
 }

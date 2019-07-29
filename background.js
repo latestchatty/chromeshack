@@ -1,9 +1,22 @@
-const migrateSettings = () => {
-    getSetting("version", 0).then(last_version => {
-        let current_version = parseFloat(browser.runtime.getManifest().version);
-        if (last_version !== current_version) browser.tabs.create({ url: "release_notes.html" });
-        setSetting("version", current_version);
-    });
+const migrateSettings = async () => {
+    let legacy_settings = getSettingsLegacy();
+    let last_version = await getSetting("version", 0);
+    let current_version = parseFloat(browser.runtime.getManifest().version);
+    if (legacy_settings && legacy_settings["version"] <= 1.63) {
+        // quick reload from default settings of nustorage
+        await resetSettings().then(getSettings);
+        // preserve previous convertible filters and notifications state
+        let prevFilters = legacy_settings["user_filters"] || null;
+        let prevNotifyUID = legacy_settings["notificationuid"] || null;
+        let prevNotifyState = legacy_settings["notifications"] || null;
+        if (prevFilters) await setSetting("user_filters", prevFilters);
+        if (prevNotifyUID && prevNotifyState) {
+            await setSetting("notificationuid", prevNotifyUID);
+            await setEnabled("enable_notifications");
+        }
+    }
+    if (last_version !== current_version) browser.tabs.create({ url: "release_notes.html" });
+    await setSetting("version", current_version);
 };
 
 const collapseThread = id => {
@@ -44,72 +57,66 @@ const addContextMenus = () => {
     });
 };
 
-const startNotifications = () => {
+const startNotifications = async () => {
     browser.notifications.onClicked.addListener(notificationClicked);
-    pollNotifications();
+    await pollNotifications();
 };
 
-const pollNotifications = () => {
-    getSetting("notificationuid").then(notificationuid => {
-        //console.log("Notification UID is " + notificationuid);
-        if (notificationuid) {
-            let _dataBody = `clientId=${notificationuid}`;
-            postXHR({
-                url: "https://winchatty.com/v2/notifications/waitForNotification",
-                header: { "Content-Type": "application/x-www-form-urlencoded" },
-                data: _dataBody
-            })
-                .then(resp => {
-                    let notifications = resp;
-                    if (!notifications.error) {
-                        //console.log("notification response text: " + res.responseText);
-                        if (notifications.messages) {
-                            for (let i = 0; i < notifications.messages.length; i++) {
-                                let n = notifications.messages[i];
-                                browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                                    type: "basic",
-                                    title: n.subject,
-                                    message: n.body,
-                                    iconUrl: "images/icon.png"
-                                });
-                            }
-                        }
-                        //If everything was successful, poll again in 15 seconds.
-                        setTimeout(pollNotifications, 15000);
-                        return;
-                    } else {
-                        if (notifications.code === "ERR_UNKNOWN_CLIENT_ID") {
-                            browser.notifications.create("ErrorChromeshackNotification", {
-                                type: "basic",
-                                title: "ChromeShack Error",
-                                message:
-                                    "Notifications are no longer enabled for this client, please try enabling them again.",
-                                iconUrl: "images/icon.png"
-                            });
-                            setSetting("notificationuid", "");
-                            setSetting("notifications", false);
-                            return;
-                        } else if (notifications.code == "ERR_CLIENT_NOT_ASSOCIATED") {
-                            browser.tabs.query({ url: "https://winchatty.com/v2/notifications/ui/login*" }, tabs => {
-                                // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
-                                if (tabs.length === 0) {
-                                    browser.tabs.create({
-                                        url:
-                                            "https://winchatty.com/v2/notifications/ui/login?clientId=" +
-                                            notificationuid
-                                    });
-                                }
-                            });
-                        }
+const pollNotifications = async () => {
+    let notificationuid = await getSetting("notificationuid");
+    if (notificationuid) {
+        return await postXHR({
+            url: "https://winchatty.com/v2/notifications/waitForNotification",
+            header: { "Content-Type": "application/x-www-form-urlencoded" },
+            data: `clientId=${notificationuid}`
+        }).then(async resp => {
+            let notifications = resp;
+            if (!notifications.error) {
+                //console.log("notification response text: " + res.responseText);
+                if (notifications.messages) {
+                    for (let i = 0; i < notifications.messages.length; i++) {
+                        let n = notifications.messages[i];
+                        browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
+                            type: "basic",
+                            title: n.subject,
+                            message: n.body,
+                            iconUrl: "images/icon.png"
+                        });
                     }
-                    setTimeout(pollNotifications, 60000);
-                })
-                .catch(err => {
-                    console.log(err);
-                    setTimeout(pollNotifications, 60000);
-                });
-        }
-    });
+                }
+                //If everything was successful, poll again in 15 seconds.
+                setTimeout(pollNotifications, 15000);
+            } else {
+                if (notifications.code === "ERR_UNKNOWN_CLIENT_ID") {
+                    browser.notifications.create("ErrorChromeshackNotification", {
+                        type: "basic",
+                        title: "ChromeShack Error",
+                        message:
+                            "Notifications are no longer enabled for this client, please try enabling them again.",
+                        iconUrl: "images/icon.png"
+                    });
+                    await setSetting("notificationuid", "");
+                    await removeEnabled("enable_notifications");
+                } else if (notifications.code == "ERR_CLIENT_NOT_ASSOCIATED") {
+                    browser.tabs.query({ url: "https://winchatty.com/v2/notifications/ui/login*" }, tabs => {
+                        // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
+                        if (tabs.length === 0) {
+                            browser.tabs.create({
+                                url:
+                                    "https://winchatty.com/v2/notifications/ui/login?clientId=" +
+                                    notificationuid
+                            });
+                        }
+                    });
+                }
+            }
+            setTimeout(pollNotifications, 60000);
+        })
+        .catch(async err => {
+            console.log(err);
+            setTimeout(pollNotifications, 60000);
+        });
+    }
 };
 
 const notificationClicked = notificationId => {
@@ -227,7 +234,9 @@ browser.webRequest.onHeadersReceived.addListener(responseListener, { urls: ["htt
 
 addContextMenus();
 
-// attempt to update version settings
-migrateSettings();
+(async() => {
+    // attempt to update version settings
+    await migrateSettings();
 
-startNotifications();
+    await startNotifications();
+})();
