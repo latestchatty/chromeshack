@@ -2,7 +2,7 @@ let HighlightPendingPosts = {
     g_lastEventId: 0,
 
     processEvents(events) {
-        for (let i = 0; i < events.length; i++) {
+        for (let evt of events || []) {
             let evt = events[i];
             if (evt.eventType !== "newPost") continue;
 
