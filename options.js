@@ -212,7 +212,7 @@ const updateNotificationOptions = async () => {
             //console.log("Notifications already set up using an id of " + notificationUID);
         }
     } else {
-        setSetting("notificationuid", "");
+        await setSetting("notificationuid", "");
         //TODO: Log them out because they're disabling it. This requires a username and password.  For now we'll just kill the UID and they can remove it manually because... meh whatever.
     }
 };

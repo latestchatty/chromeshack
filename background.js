@@ -14,6 +14,7 @@ const migrateSettings = async () => {
             await setSetting("notificationuid", prevNotifyUID);
             await setEnabled("enable_notifications");
         }
+        localStorage = {};
     }
     if (last_version !== current_version) browser.tabs.create({ url: "release_notes.html" });
     await setSetting("version", current_version);
@@ -64,7 +65,7 @@ const startNotifications = async () => {
 
 const pollNotifications = async () => {
     let notificationuid = await getSetting("notificationuid");
-    if (notificationuid) {
+    if (await getEnabled("enable_notifications") && notificationuid) {
         return await postXHR({
             url: "https://winchatty.com/v2/notifications/waitForNotification",
             header: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -116,6 +117,10 @@ const pollNotifications = async () => {
             console.log(err);
             setTimeout(pollNotifications, 60000);
         });
+    } else if (!(await getEnabled("enable_notifications"))) {
+        // disable the detached guid
+        await setSetting("notificationuid", "");
+        await removeEnabled("enable_notifications");
     }
 };
 
