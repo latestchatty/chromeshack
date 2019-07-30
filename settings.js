@@ -19,11 +19,9 @@ let DefaultSettings = {
     user_filters: [],
 
     highlight_groups: [
-        {
-            name: "Employees",
-            enabled: true,
-            built_in: true,
-            css: "color: green !important",
+        { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow;" },
+        { name: "Mods", enabled: true, built_in: true, css: "color: red !important;" },
+        { name: "Employees", enabled: true, built_in: true, css: "color: green !important;",
             users: [
                 "Steve Gibson",
                 "Maarten Goldstein",
@@ -64,11 +62,7 @@ let DefaultSettings = {
                 "Charles Singletary Jr"
             ]
         },
-        {
-            name: "Game Devs",
-            enabled: true,
-            built_in: true,
-            css: "color: purple !important",
+        { name: "Game Devs", enabled: true, built_in: true, css: "color: purple !important;",
             users: [
                 "jason bergman",
                 "dahanese", // 2K Games
@@ -169,9 +163,7 @@ let DefaultSettings = {
                 "freakynipples69" // MindShaft
             ]
         },
-        {name: "Mods", enabled: true, built_in: true, css: "color: red !important"},
-        {name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow !important"},
-        {name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important", users: []}
+        { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important;", users: [] }
     ]
 };
 
