@@ -1,7 +1,13 @@
 let HighlightUsers = {
     userRegex: /(?:olauthor_|fpauthor_)(\d+)+?[\s\S]+?(?:(?:"\/user\/(.*?)\/|oneline_user ">(.*?)\<\/))[\s\S]+?(?:.*?\/(moderator)\.png")?/gi,
 
-    resolveUsers() {
+    cache: [],
+
+    resolveUsers(refresh) {
+        // memoize this resolution method for speed
+        if (!refresh && HighlightUsers.cache.length > 0)
+            return HighlightUsers.cache;
+
         let uniques = [];
         let rootHTML = document.querySelector("div.threads").innerHTML;
         // match#1 = olid, match#2 = fpid, match#3 = username, match#4 = mod-flag
@@ -15,6 +21,7 @@ let HighlightUsers = {
             // only include unique ids (can be the same username)
             if (!uniques.find(v => v.id === id)) uniques.push({ id, name, mod });
         }
+        HighlightUsers.cache = [...HighlightUsers.cache, uniques];
         return uniques;
     },
 
