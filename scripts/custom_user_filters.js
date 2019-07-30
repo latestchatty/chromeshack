@@ -12,7 +12,9 @@ let CustomUserFilters = {
         let olDivs = [...document.querySelectorAll(`div.olauthor_${id}`)];
         for (let ol of olDivs || []) {
             let postLi = ol.parentNode;
-            if (postLi.tagName === "LI") postLi.parentNode.removeChild(postLi);
+            let isOLOfParent = ol.parentNode.parentNode.parentNode.matches(".root");
+            if (!isOLOfParent && postLi.tagName === "LI")
+                postLi.parentNode.removeChild(postLi);
         }
     },
 
