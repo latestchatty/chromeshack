@@ -108,19 +108,19 @@ const addHighlightGroup = (e, group) => {
     groupElem.querySelector("#option_add").addEventListener("click", async (e) => {
         let optionContainer = e.target.parentNode.parentNode.querySelector(".group_select > select");
         let username = e.target.parentNode.querySelector(".group_option_textinput");
-        let usernameTxt = superTrim(username.value).toLowerCase();
         let groupName = e.target.parentNode.parentNode.querySelector(".group_label").value;
-        let usersList = [...optionContainer.options].map(x => x.text);
-        if (!usersList.find(x => superTrim(x).toLowerCase() === usernameTxt)) {
-            let option = document.createElement("option");
-            option.setAttribute("value", username.value);
-            option.innerText = username.value;
+        let highlightsHas = await highlightsContains(username.value);
+        if (highlightsHas) {
+            alert("Highlight groups cannot contain duplicates!");
             username.value = "";
-            optionContainer.appendChild(option);
-
-            let updatedGroup = getHighlightGroup(e.target.closest("#highlight_group"));
-            await setHighlightGroup(groupName, updatedGroup);
+            return;
         }
+        await addHighlightUser(groupName, username.value);
+        let option = document.createElement("option");
+        option.setAttribute("value", username.value);
+        option.innerText = username.value;
+        username.value = "";
+        optionContainer.appendChild(option);
     });
     groupElem.querySelector("#option_del").addEventListener("click", async (e) => {
         let groupElem = e.target.closest("#highlight_group");
@@ -205,7 +205,7 @@ const updateNotificationOptions = async () => {
             let json = await fetchSafe("https://winchatty.com/v2/notifications/generateId");
             let notificationUID = json.id;
             if (notificationUID) {
-                let result = await setSetting("notificationuid", notificationUID);
+                await setSetting("notificationuid", notificationUID);
                 logInForNotifications(notificationUID);
             }
         } else {
@@ -258,7 +258,7 @@ const getUserFilters = async () => {
     return await setSetting("user_filters", users);
 };
 
-const addUserFilter = (e) => {
+const addUserFilter = async (e) => {
     let username = document.getElementById("new_user_filter_text");
     let usersLst = document.getElementById("filtered_users");
     let usernameTxt = superTrim(username.value).toLowerCase();
@@ -269,16 +269,16 @@ const addUserFilter = (e) => {
         newOption.value = username.value;
         usersLst.appendChild(newOption);
         username.value = "";
-        getUserFilters();
+        await getUserFilters();
     }
 };
 
-const removeUserFilter = (e) => {
+const removeUserFilter = async (e) => {
     let selectElem = document.getElementById("filtered_users");
     let selectedOptions = [...selectElem.selectedOptions];
     for (let option of selectedOptions || [])
         option.parentNode.removeChild(option);
-    getUserFilters();
+    await getUserFilters();
 };
 
 
@@ -322,13 +322,13 @@ const loadOptions = async () => {
 
 const saveOptions = async (e) => {
     let status = document.getElementById("status");
-    if (e.target.id !== "clear_settings") {
+    if (e && e.target.id !== "clear_settings") {
         await getEnabledScripts();
         await loadOptions();
     }
 
     // Update status to let the user know options were saved
-    if (e.target.id === "clear_settings") status.innerText = "Options Reset";
+    if (e && e.target.id === "clear_settings") status.innerText = "Options Reset";
     else status.innerText = "Options Saved";
     status.classList.remove("hidden");
     const statusMsg = () => status.classList.add("hidden");

@@ -13,7 +13,6 @@ a.pin_button {
 }
 
 /* post preview */
-
 #previewArea {
     display: block;
     border: 1px solid #aeae9b;
@@ -24,6 +23,7 @@ a.pin_button {
     overflow: wrap;
 }
 
+/* moderator tags */
 div.fpmod_offtopic {
     background-position: right top;
     background-repeat: no-repeat;
@@ -49,7 +49,6 @@ div.fpmod_informative {
 }
 
 /* new comment marker */
-
 span.newcommenthighlighter {
     border-left-color: #0099ff;
     border-left-width: thin;
@@ -57,81 +56,7 @@ span.newcommenthighlighter {
     padding-left: 2px;
 }
 
-.expiration-watcher-bar .fullpost .postdate {
-    right: 55px !important;
-}
-
-.expiration-watcher-bar .capcontainer .fullpost .postdate {
-    right: 0px !important;
-}
-
-.countdown-wrap {
-    height: 8px;
-    width: 48px;
-    position: absolute;
-    bottom: 6px;
-    right: 5px;
-    background-color: #ddd;
-    border-radius: 4px;
-    background-image: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0, #aaa),
-        color-stop(0.4, #ccc),
-        color-stop(0.6, #ccc),
-        color-stop(1, #eee)
-    );
-}
-
-.expired-wrap {
-    height: 8px;
-    width: 48px;
-    position: absolute;
-    bottom: 6px;
-    right: 5px;
-    background-color: #ddd;
-    border-radius: 4px;
-}
-
-.countdown-value {
-    height: 100%;
-    width: 0;
-    border-radius: 4px;
-    background-image: -webkit-gradient(
-        linear,
-        0 100%,
-        100% 0,
-        color-stop(0.25, rgba(255, 255, 255, 0.4)),
-        color-stop(0.25, transparent),
-        color-stop(0.5, transparent),
-        color-stop(0.5, rgba(255, 255, 255, 0.4)),
-        color-stop(0.75, rgba(255, 255, 255, 0.4)),
-        color-stop(0.75, transparent),
-        to(transparent)
-    );
-    background-size: 25px 25px;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 3px rgba(0, 0, 0, 0.4);
-}
-
-.expired-value {
-    height: 100%;
-    width: 0;
-    border-radius: 4px;
-    background-size: 25px 25px;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 3px rgba(0, 0, 0, 0.4);
-}
-
-.countdown-doom {
-    height: 30px;
-    width: 30px;
-    position: absolute;
-    bottom: 6px;
-    right: 5px;
-}
-
 /* get post */
-
 div.getPost {
     position: relative;
     padding: 0.25em 0.5em 0.25em 0;
@@ -159,7 +84,6 @@ div.getPost span.user a {
 }
 
 /* shack userpopup */
-
 body .in,
 .base-level {
     overflow: visible !important;
@@ -212,7 +136,8 @@ div.threads ul ul li span.author li {
 .userDropdown li.userDropdown-separator {
     border-bottom: 1px solid #666 !important;
 }
-.userDropdown li a {
+.userDropdown li a,
+.userDropdown li div {
     display: block;
     width: 100% !important;
     white-space: nowrap;
@@ -226,27 +151,13 @@ div.threads ul ul li span.author li {
     background-color: transparent !important;
     text-align: left !important;
 }
-.userDropdown li a:hover {
+.userDropdown li a:hover,
+.userDropdown li div:hover {
     color: #fff;
     background-color: #524a60 !important;
 }
-#lolWorkingBar {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    height: 2.5em;
-    width: 100%;
-    line-height: 2.5em;
-    background-color: #000;
-    color: #fff;
-    font-size: 150%;
-    font-weight: bold;
-    display: none;
-    text-align: center;
-}
 
 /* fix for shack legends being cut off */
-
 p.rules {
     margin: 3px;
 }
