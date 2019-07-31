@@ -50,7 +50,7 @@ let Switchers = {
         let span = post.querySelector("span.oneline_user");
         let alt_span = post.querySelector("span.user");
         if (span) span.textContent = newName;
-        else if (alt_span) span.firstChild.textContent = newName;
+        else if (alt_span) alt_span.firstChild.textContent = newName;
         // Switchers don't deserve flair icons
         let user_icons = post.querySelectorAll("img.chatty-user-icons");
         for (let icon of user_icons || []) {
