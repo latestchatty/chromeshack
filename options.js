@@ -109,8 +109,8 @@ const addHighlightGroup = (e, group) => {
         let optionContainer = e.target.parentNode.parentNode.querySelector(".group_select > select");
         let username = e.target.parentNode.querySelector(".group_option_textinput");
         let groupName = e.target.parentNode.parentNode.querySelector(".group_label").value;
-        let highlightsHas = await highlightsContains(username.value);
-        if (highlightsHas) {
+        let groupHas = await highlightGroupContains(groupName, username.value);
+        if (groupHas) {
             alert("Highlight groups cannot contain duplicates!");
             username.value = "";
             return;
@@ -263,21 +263,27 @@ const addUserFilter = async (e) => {
     let usersLst = document.getElementById("filtered_users");
     let usernameTxt = superTrim(username.value).toLowerCase();
     let users = [...usersLst.options].map(x => x.text);
-    if (!users.find(y => superTrim(y).toLowerCase() === usernameTxt)) {
-        let newOption = document.createElement("option");
-        newOption.textContent = username.value;
-        newOption.value = username.value;
-        usersLst.appendChild(newOption);
+    let filtersHas = await filtersContains(username.value);
+    if (filtersHas) {
+        alert("Filters cannot contain duplicates!");
         username.value = "";
-        await getUserFilters();
+        return;
     }
+    let newOption = document.createElement("option");
+    newOption.textContent = username.value;
+    newOption.value = username.value;
+    usersLst.appendChild(newOption);
+    username.value = "";
+    await getUserFilters();
 };
 
 const removeUserFilter = async (e) => {
     let selectElem = document.getElementById("filtered_users");
+    let removeBtnElem = document.getElementById("remove_user_filter_btn");
     let selectedOptions = [...selectElem.selectedOptions];
     for (let option of selectedOptions || [])
         option.parentNode.removeChild(option);
+    removeBtnElem.setAttribute("disabled", "");
     await getUserFilters();
 };
 

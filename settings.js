@@ -19,9 +19,13 @@ let DefaultSettings = {
     user_filters: [],
 
     highlight_groups: [
-        { name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow;" },
-        { name: "Mods", enabled: true, built_in: true, css: "color: red !important;" },
-        { name: "Employees", enabled: true, built_in: true, css: "color: green !important;",
+        {name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow;"},
+        {name: "Mods", enabled: true, built_in: true, css: "color: red !important;"},
+        {
+            name: "Employees",
+            enabled: true,
+            built_in: true,
+            css: "color: green !important;",
             users: [
                 "Steve Gibson",
                 "Maarten Goldstein",
@@ -62,7 +66,11 @@ let DefaultSettings = {
                 "Charles Singletary Jr"
             ]
         },
-        { name: "Game Devs", enabled: true, built_in: true, css: "color: purple !important;",
+        {
+            name: "Game Devs",
+            enabled: true,
+            built_in: true,
+            css: "color: purple !important;",
             users: [
                 "jason bergman",
                 "dahanese", // 2K Games
@@ -163,7 +171,7 @@ let DefaultSettings = {
                 "freakynipples69" // MindShaft
             ]
         },
-        { name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important;", users: [] }
+        {name: "Friends", enabled: true, built_in: false, css: "border: 1px dotted white !important;", users: []}
     ]
 };
 
@@ -220,7 +228,8 @@ const resetSettings = () => browser.storage.local.clear();
 const settingsContains = async (key) => objContains(key, await getSettings());
 
 const enabledContains = async (key) => {
-    return await getEnabled().then((enabled) => (enabled && enabled.includes(key)) || false);
+    let enabled = await getEnabled();
+    return enabled ? enabled.includes(key) : false;
 };
 
 const setHighlightGroup = async (groupName, obj) => {
@@ -235,38 +244,47 @@ const setHighlightGroup = async (groupName, obj) => {
 
 const removeHighlightGroup = async (groupName) => {
     // for removing a highlight group while preserving record order
-    let records = await getSetting("highlight_groups");
-    let result = records.filter((x) => x.name !== groupName);
+    let result = (await getSetting("highlight_groups"))
+        .filter((x) => x.name !== groupName);
     // return the new records Promise from the store
     return setSetting("highlight_groups", result).then(getSetting("highlight_groups"));
 };
 
-const highlightsContains = async (username) => {
-    let groups = await getSetting("highlight_groups");
-    let contains = groups.filter(
-        (x) => !x.built_in && x.users &&
-            x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
-    );
-    // only return the first match
-    return contains.length > 0 ? contains[0] : false;
+const getMutableHighlights = async () => {
+    return (await getSetting("highlight_groups"))
+        .filter(x => !x.built_in && x.users);
 };
 
-const removeHighlightUser = async (username) => {
-    let groupContains = await highlightsContains(username);
-    if (groupContains) {
-        // mutually exclusive mutation (due to CSS rule priority)
-        let mutated = groupContains.users
+const highlightsContains = async (username) => {
+    // return all group matches based on username
+    return (await getMutableHighlights())
+        .filter(x =>
+            x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
+        );
+};
+
+const highlightGroupContains = async (groupName, username) => {
+    let groups = await highlightsContains(username);
+    if (groups.length > 0)
+        for (let group of groups || []) if (group.name === groupName) return group;
+    return false;
+};
+
+const removeHighlightUser = async (groupName, username) => {
+    let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
+    group = group.length > 0 ? group[0] : null;
+    if (group) {
+        let mutated = group.users
             .filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase()));
-        groupContains.users = mutated;
-        return await setHighlightGroup(groupContains.name, groupContains);
+        group.users = mutated;
+        return await setHighlightGroup(group.name, group);
     }
 };
 
 const addHighlightUser = async (groupName, username) => {
-    let groups = await getSetting("highlight_groups");
-    let groupContains = await highlightsContains(username);
-    let group = groups.filter((x) => x.name === groupName)[0];
-    if (group && !groupContains) {
+    let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
+    group = group.length > 0 ? group[0] : null;
+    if (group) {
         let mutated = [...group.users, username];
         group.users = mutated;
         return await setHighlightGroup(group.name, group);
@@ -274,20 +292,19 @@ const addHighlightUser = async (groupName, username) => {
 };
 
 const filtersContains = async (username) => {
-    let filters = await getSetting("user_filters");
-    return filters.find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) || false;
+    return (await getSetting("user_filters"))
+        .find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) || false;
 };
 
 const removeFilter = async (username) => {
-    let filters = await getSetting("user_filters");
-    let mutated = filters.filter((y) => y.toLowerCase() !== username.toLowerCase());
+    let mutated = (await getSetting("user_filters"))
+        .filter((y) => y.toLowerCase() !== username.toLowerCase());
     await setSetting("user_filters", mutated);
 };
 
 const addFilter = async (username) => {
     if (!(await filtersContains(username))) {
-        let filters = await getSetting("user_filters");
-        let mutated = [...filters, username];
+        let mutated = [...(await getSetting("user_filters")), username];
         await setSetting("user_filters", mutated);
     }
 };

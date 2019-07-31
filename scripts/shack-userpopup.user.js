@@ -44,9 +44,9 @@ const handleFilterUser = async (e, username) => {
 const handleHighlightUser = async (e, groupName, username) => {
     e.preventDefault();
     e.stopPropagation();
-    let highlightsHas = await highlightsContains(username);
+    let highlightsHas = await highlightGroupContains(groupName, username);
     if (!highlightsHas) await addHighlightUser(groupName, username);
-    else await removeHighlightUser(username);
+    else await removeHighlightUser(groupName, username);
     hideAllDropdowns();
 };
 
@@ -79,11 +79,9 @@ const createFilterListItems = async (target, username) => {
             container.appendChild(filterCustomItem);
         }
         if (await enabledContains("highlight_users")) {
-            // adding users to highlight groups is mutually exclusive (due to CSS rules)
-            let highlightGroups = [...await getSetting("highlight_groups")]
-                .filter(x => !x.built_in && x.users).flat();
-            let groupContainsUser = await highlightsContains(username);
+            let highlightGroups = await getMutableHighlights();
             for (let group of highlightGroups || []) {
+                let groupContainsUser = await highlightGroupContains(group.name, username);
                 let filterHighlightsItem = createFilterListItem(
                     `${(groupContainsUser ? "Remove from" : "Add to")} Highlights Group: ${group.name}`,
                     "userDropdown-highlights"
