@@ -176,7 +176,6 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                 } catch (err) {
                     if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
                     else if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
-                    else if (isJSON(text)) return resolve(safeJSON(JSON.parse(text)));
                     else if (isHTML(text)) return resolve(sanitizeToFragment(text));
                     return reject("Parse failed:", err);
                 }
@@ -353,25 +352,27 @@ const safeInnerHTML = (text, targetNode) => {
 };
 
 const safeJSON = (text) => {
-    let obj = JSON.parse(text);
-    const loop = (obj) => {
-        if (typeof obj === Object) {
-            for (let subval of Object.values(obj))
-                subval = DOMPurify.sanitize(subval);
-        } else if (Array.isArray(obj)) {
-            for (let child of obj)
-                child = DOMPurify.sanitize(child);
+    if (isJSON(text)) {
+        let obj = JSON.parse(text);
+        const iterate = (subval) => {
+            if (Array.isArray(subval)) {
+                for (let child of subval)
+                    child = DOMPurify.sanitize(child);
+            } else if (typeof subval === Object) {
+                for (let val of Object.values(subval))
+                    subval = DOMPurify.sanitize(val);
+            }
+            return subval;
+        };
+
+        for (let val of Object.values(obj) || []) {
+            if (Array.isArray(val) || typeof val === Object)
+                val = iterate(val);
+            else val = DOMPurify.sanitize(val);
         }
         return obj;
-    };
-
-    for (let val of Object.values(obj) || []) {
-        if (typeof val !== Object || !Array.isArray(val))
-            val = DOMPurify.sanitize(val);
-        else
-            val = loop(val);
     }
-    return obj;
+    return null;
 };
 
 const parseShackRSS = rssText => {
