@@ -121,7 +121,7 @@ let ImageUpload = {
         });
 
         // debounce on keyup (1.5s) for url text input
-        let debouncedKeyup = debounce(val => {
+        const debouncedKeyup = debounce(val => {
             ImageUpload.loadFileUrl(val);
         }, 1500);
         $("#urlUploadInput").keyup(() => {
@@ -722,7 +722,7 @@ let ImageUpload = {
     delayedRemoveUploadMessage(color, mainMessage, detailMessage, delay, value) {
         // helper function that returns a promised value to the caller after the UploadMessage
         ImageUpload.addUploadMessage(color, mainMessage, detailMessage);
-        let ret = new Promise(resolve => {
+        const ret = new Promise(resolve => {
             setTimeout(() => {
                 $("#uploadDropArea").removeClass("dragOver");
                 ImageUpload.removeUploadMessage();

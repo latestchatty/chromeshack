@@ -1,46 +1,17 @@
-/* MEDIA QUERIES FOR RESPONSIVENESS (workaround for image weirdness) */
-@media only screen and (max-width: 768px) {
-    /* switch to a scrollable column-only layout */
-    .media-container.responsive {
-        grid-template-columns: 100% !important;
-    }
-}
-@media only screen and (min-width: 1267px) {
-    .media-container.responsive {
-        /* try to fit a max of 3 columns (should work okay for ~1920-2560px[w] screens) */
-        grid-template-columns: repeat(auto-fit, minmax(var(--min-media-col-size), 1fr)) !important;
-    }
-}
-/* END MEDIA QUERIES */
-
 /* basic rules for styling media/socials children */
 :root {
     --gutter-size: 6px;
     --min-media-col-size: calc(33% - var(--gutter-size));
     --max-media-col-size: calc(50% - var(--gutter-size));
     --min-media-item-height: 200px;
-    --max-media-item-height: 640px;
+    --max-media-item-height: 720px;
     --min-media-item-width: 300px;
     --max-media-item-width: 854px;
-    --max-social-item-width: 640px;
     --min-media-row-size: 200px;
     --max-media-row-size: 640px;
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.media-container.responsive {
-    display: grid !important;
-    /* default to a largest-first-or-50% layout */
-    grid-template-columns: repeat(auto-fit, minmax(var(--max-media-col-size), 1fr));
-    grid-template-rows: min-content 1fr;
-    grid-auto-flow: row dense;
-    grid-gap: var(--gutter-size);
-    margin: 0.75em 0 0 0;
-}
-.medialoader {
-    height: 100%;
-    width: 100%;
-}
 .medialoader video:not(.swiper-slide),
 .medialoader img:not(.swiper-slide) {
     outline: 0 !important;
@@ -48,14 +19,10 @@
     height: auto !important;
     box-sizing: border-box;
     object-fit: contain !important;
-    min-width: var(--min-media-item-width);
     max-width: var(--max-media-item-width);
 }
-.iframe-container.hidden,
-.twitch-container.hidden,
-.yt-container.hidden,
-.medialoader video.hidden,
-.medialoader img.hidden {
+.iframe-spacer.hidden,
+.medialoader.hidden {
     display: none !important;
 }
 .iframe-container,

@@ -164,7 +164,7 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                     if (instgrmBool) {
                         // special case for instagram graphql parsing
                         let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-                        let instgrmGQL = /\:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+                        let instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
                         if (instgrmGQL) {
                             return resolve({
                                 metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
@@ -172,17 +172,13 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                             });
                         }
                         return reject();
-                    } else {
-                        // reserve a special edge case for WinChatty Notification GUID object
-                        // if (/"?{"id":"[A-F0-9]{8}\-(?:[A-F0-9]{4}\-){3}[A-F0-9]{12}"}"?/.test(text))
-                        //     return resolve(JSON.parse(text));
-                        return resolve(JSON.parse(DOMPurify.sanitize(text)));
-                    }
-                } catch {
+                    } else return resolve(JSON.parse(DOMPurify.sanitize(text)));
+                } catch (err) {
                     if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
-                    if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
-                    else if (isHTML(text)) return resolve(sanitizeToFragment(text)); // auto-detect HTML (caution!)
-                    return reject("Parse failed!");
+                    else if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
+                    else if (text && JSON.parse(text)) return resolve(safeJSON(JSON.parse(text)));
+                    else if (text && isHTML(text)) return resolve(sanitizeToFragment(text));
+                    return reject("Parse failed:", err);
                 }
             });
     }).catch(err => console.log(err));
@@ -216,7 +212,7 @@ const postXHR = ({ url, data, header, method, override }) => {
                             );
                     }
                     return resolve(JSON.parse(DOMPurify.sanitize(text)));
-                } catch {
+                } catch (err) {
                     return reject("Failed to parse!");
                 }
             });
@@ -354,6 +350,28 @@ const safeInnerHTML = (text, targetNode) => {
     targetRange.deleteContents();
     // replace innerHTML assign with sanitized insert
     targetRange.insertNode(sanitizedContent);
+};
+
+const safeJSON = (text) => {
+    let obj = JSON.parse(text);
+    const loop = (obj) => {
+        if (typeof obj === Object) {
+            for (let subval of Object.values(obj))
+                subval = DOMPurify.sanitize(subval);
+        } else if (Array.isArray(obj)) {
+            for (let child of obj)
+                child = DOMPurify.sanitize(child);
+        }
+        return obj;
+    };
+
+    for (let val of Object.values(obj) || []) {
+        if (typeof val !== Object || !Array.isArray(val))
+            val = DOMPurify.sanitize(val);
+        else
+            val = loop(val);
+    }
+    return obj;
 };
 
 const parseShackRSS = rssText => {

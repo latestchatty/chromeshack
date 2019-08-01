@@ -10,7 +10,7 @@ let EmbedSocials = {
                     if (links[i].querySelector("div.expando")) {
                         return;
                     }
-                    links[i].addEventListener("click", e => {
+                    links[i].addEventListener("click", (e) => {
                         EmbedSocials.processPost(e, parsedSocialPost, i);
                     });
 
@@ -23,8 +23,8 @@ let EmbedSocials = {
     },
 
     getSocialType(href) {
-        let _isTwitter = /https?\:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i;
-        let _isInstagram = /https?\:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w\-]+)\/?/i;
+        let _isTwitter = /https?:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i;
+        let _isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w-]+)\/?/i;
         let _twttrMatch = _isTwitter.exec(href);
         let _instgrmMatch = _isInstagram.exec(href);
         if (_twttrMatch) {
@@ -46,17 +46,13 @@ let EmbedSocials = {
             e.preventDefault();
             let socialType = parsedPost.type;
             let socialId = parsedPost.id;
-            let userName = parsedPost.user;
             // adjust relative node position based on expando state
-            let _expandoClicked =
-                e.target.classList !== undefined && objContains("expando", e.target.classList);
+            let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
             let _postBody = link.parentNode;
             let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
             // cancel early if we're toggling
-            if (toggleMediaItem(link, _postId, index)) {
-                return;
-            }
+            if (toggleMediaItem(link, _postId, index)) return;
 
             if (socialType === 1 && socialId) {
                 EmbedSocials.createTweet(link, socialId, _postId, index);
@@ -77,8 +73,8 @@ let EmbedSocials = {
     },
 
     async fetchTweetData(tweetId) {
-        let collectTweetMedia = tweetMediaObj => {
-            let sortByBitrate = mediaArr => {
+        let collectTweetMedia = (tweetMediaObj) => {
+            let sortByBitrate = (mediaArr) => {
                 let result = mediaArr.sort((a, b) => {
                     if (a.bitrate < b.bitrate) return 1;
                     else if (a.bitrate > b.bitrate) return -1;
@@ -88,26 +84,24 @@ let EmbedSocials = {
             };
 
             let result = [];
-            Object.values(tweetMediaObj).forEach(item => {
+            Object.values(tweetMediaObj).forEach((item) => {
                 if (item.type === "video" && item.video_info.variants) {
-                    let _sorted = sortByBitrate(
-                        item.video_info.variants.filter(x => x.content_type === "video/mp4")
-                    );
+                    let _sorted = sortByBitrate(item.video_info.variants.filter((x) => x.content_type === "video/mp4"));
                     for (let vidItem of _sorted) {
                         let _vidDimensionsMatch = /vid\/(\d+)x(\d+)\//i.exec(vidItem.url);
                         let _ratio = _vidDimensionsMatch
                             ? (1 / (_vidDimensionsMatch[1] / _vidDimensionsMatch[2])) * 100
                             : 56.25;
-                        result.push({ type: "video", url: vidItem.url, ratio: _ratio });
+                        result.push({type: "video", url: vidItem.url, ratio: _ratio});
                         break; // bail on the first match (highest res)
                     }
                 } else if (item.type === "photo" && item.media_url_https) {
-                    result.push({ type: "photo", url: item.media_url_https });
+                    result.push({type: "photo", url: item.media_url_https});
                 }
             });
             return result;
         };
-        let tagifyTweetText = text => {
+        let tagifyTweetText = (text) => {
             // try to parse our tags and text content into a DOM fragment
             let postTextContentElem = document.createElement("span");
             let hashReplacer = (match, g1) => {
@@ -129,41 +123,38 @@ let EmbedSocials = {
         };
 
         let _reqUrl = `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`;
-        let _token =
-            "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
-        let _header = { headers: { Authorization: `Bearer ${atob(_token)}` } };
-        return new Promise(resolve => {
-            browser.runtime
-                .sendMessage({ name: "corbFetch", url: _reqUrl, optionsObj: _header })
-                .then(tweetObj => {
-                    // sanitized in common.js!
-                    //console.log("From background: ", tweetObj);
-                    let _response = {
-                        tweetUrl: `https://twitter.com/${tweetObj.user.screen_name}/status/${tweetObj.id_str}`,
-                        profilePic: tweetObj.user.profile_image_url_https,
-                        profilePicUrl: `https://twitter.com/${tweetObj.user.screen_name}`,
-                        displayName: tweetObj.user.name,
-                        realName: tweetObj.user.screen_name,
-                        tweetText: tagifyTweetText(tweetObj.full_text).outerHTML,
-                        tweetMediaItems: !!tweetObj.extended_entities
-                            ? collectTweetMedia(tweetObj.extended_entities.media)
-                            : [],
-                        tweetQuoted:
-                            (!!tweetObj.quoted_status && {
-                                quotedUrl: tweetObj.quoted_status_permalink.expanded,
-                                quotedDisplayName: tweetObj.quoted_status.user.name,
-                                quotedRealName: tweetObj.quoted_status.user.screen_name,
-                                quotedText: tagifyTweetText(tweetObj.quoted_status.full_text).outerHTML,
-                                quotedMediaItems: !!tweetObj.quoted_status.extended_entities
-                                    ? collectTweetMedia(tweetObj.quoted_status.extended_entities.media)
-                                    : []
-                            }) ||
-                            null,
-                        timestamp: new Date(Date.parse(tweetObj.created_at)).toLocaleString(),
-                        userVerified: tweetObj.user.verified
-                    };
-                    return resolve(_response);
-                });
+        let _token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
+        let _header = {headers: {Authorization: `Bearer ${atob(_token)}`}};
+        return new Promise((resolve) => {
+            browser.runtime.sendMessage({name: "corbFetch", url: _reqUrl, optionsObj: _header}).then((tweetObj) => {
+                // sanitized in common.js!
+                //console.log("From background: ", tweetObj);
+                let _response = {
+                    tweetUrl: `https://twitter.com/${tweetObj.user.screen_name}/status/${tweetObj.id_str}`,
+                    profilePic: tweetObj.user.profile_image_url_https,
+                    profilePicUrl: `https://twitter.com/${tweetObj.user.screen_name}`,
+                    displayName: tweetObj.user.name,
+                    realName: tweetObj.user.screen_name,
+                    tweetText: tagifyTweetText(tweetObj.full_text).outerHTML,
+                    tweetMediaItems: tweetObj.extended_entities
+                        ? collectTweetMedia(tweetObj.extended_entities.media)
+                        : [],
+                    tweetQuoted:
+                        (!!tweetObj.quoted_status && {
+                            quotedUrl: tweetObj.quoted_status_permalink.expanded,
+                            quotedDisplayName: tweetObj.quoted_status.user.name,
+                            quotedRealName: tweetObj.quoted_status.user.screen_name,
+                            quotedText: tagifyTweetText(tweetObj.quoted_status.full_text).outerHTML,
+                            quotedMediaItems: tweetObj.quoted_status.extended_entities
+                                ? collectTweetMedia(tweetObj.quoted_status.extended_entities.media)
+                                : []
+                        }) ||
+                        null,
+                    timestamp: new Date(Date.parse(tweetObj.created_at)).toLocaleString(),
+                    userVerified: tweetObj.user.verified
+                };
+                return resolve(_response);
+            });
         });
     },
 
@@ -218,15 +209,14 @@ let EmbedSocials = {
             index
         );
         // toggle visibility of our verified badge if data allows it
-        if (tweetObj.userVerified)
-            _compiledTemplate.querySelector("#twttr-verified").classList.remove("hidden");
+        if (tweetObj.userVerified) _compiledTemplate.querySelector("#twttr-verified").classList.remove("hidden");
         return _compiledTemplate;
     },
 
     compileTwitterMedia(parentLink, templateElem, tweetObj, postId, index) {
-        let parseMedia = mediaObjArr => {
+        let parseMedia = (mediaObjArr) => {
             let mediaArr = [];
-            mediaObjArr.forEach(item => {
+            mediaObjArr.forEach((item) => {
                 mediaArr.push(item.url);
             });
             return mediaArr;
@@ -236,23 +226,30 @@ let EmbedSocials = {
         if (!isEmpty(tweetObj.tweetMediaItems) && tweetObj.tweetMediaItems.length > 0) {
             // let appendMedia decide if a carousel is necessary and return an element
             let mediaItems = parseMedia(tweetObj.tweetMediaItems);
-            let mediaContainer = appendMedia(mediaItems, parentLink, postId, index, null, { twttrEmbed: true });
+            let mediaContainer = appendMedia({
+                src: mediaItems,
+                link: parentLink,
+                postId,
+                index,
+                type: {twttrEmbed: true}
+            });
             mediaParent.appendChild(mediaContainer);
             mediaParent.classList.remove("hidden");
-        } else if (
-            !isEmpty(tweetObj.tweetQuoted) &&
-            Object.entries(tweetObj.tweetQuoted.quotedMediaItems).length > 0
-        ) {
+        } else if (!isEmpty(tweetObj.tweetQuoted) && Object.entries(tweetObj.tweetQuoted.quotedMediaItems).length > 0) {
             // include media items inside quoted tweets (if available)
             let quotedMediaItems = parseMedia(tweetObj.tweetQuoted.quotedMediaItems);
             templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
             let quotedMediaParent = templateElem.querySelector("#twitter-quote-media-content");
-            let mediaContainer = appendMedia(quotedMediaItems, parentLink, postId, index, null, {
-                twttrEmbed: true
+            let mediaContainer = appendMedia({
+                src: quotedMediaItems,
+                link: parentLink,
+                postId,
+                index,
+                type: {twttrEmbed: true}
             });
             quotedMediaParent.appendChild(mediaContainer);
             quotedMediaParent.classList.remove("hidden");
-        } else if (!!tweetObj.tweetQuoted) {
+        } else if (tweetObj.tweetQuoted) {
             templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
         }
         return templateElem;
@@ -274,11 +271,11 @@ let EmbedSocials = {
     },
 
     async fetchInstagramData(socialId) {
-        let collectInstgrmMedia = parsedGQL => {
+        let collectInstgrmMedia = (parsedGQL) => {
             let collector = [];
             if (parsedGQL.__typename === "GraphSidecar") {
-                parsedGQL.edge_sidecar_to_children.edges.forEach(edge => {
-                    Object.entries(edge).forEach(item => {
+                parsedGQL.edge_sidecar_to_children.edges.forEach((edge) => {
+                    Object.entries(edge).forEach((item) => {
                         // pick the video url of this item, or the smallest of the media choices (640x640)
                         collector.push(
                             item[1].video_url != null ? item[1].video_url : item[1].display_resources[0].src
@@ -292,7 +289,7 @@ let EmbedSocials = {
             }
             return collector;
         };
-        let tagifyInstgrmContent = text => {
+        let tagifyInstgrmContent = (text) => {
             let captionContainer = document.createElement("span");
             captionContainer.id = "instgrm_post_caption";
             let hashReplacer = (match, g1) => {
@@ -308,7 +305,7 @@ let EmbedSocials = {
             captionContainer.innerHTML = postTextTagified;
             return captionContainer;
         };
-        let getDate = timestamp => {
+        let getDate = (timestamp) => {
             let _date = new Date(0);
             _date.setUTCSeconds(timestamp);
             // we should have our relative local time now
@@ -318,8 +315,8 @@ let EmbedSocials = {
         let postUrl = `https://www.instagram.com/p/${socialId}/`;
         let result = await new Promise((resolve, reject) =>
             browser.runtime
-                .sendMessage({ name: "corbFetch", url: postUrl, ovrBool: { instgrmBool: true } })
-                .then(response => {
+                .sendMessage({name: "corbFetch", url: postUrl, ovrBool: {instgrmBool: true}})
+                .then((response) => {
                     // sanitized in common.js!
                     let _matchGQL = response && response.gqlData.shortcode_media;
                     let _metaViews = response && response.metaViews;
@@ -333,7 +330,7 @@ let EmbedSocials = {
                             postTimestamp: getDate(_matchGQL.taken_at_timestamp),
                             postUrl: `https://instagr.am/p/${_matchGQL.shortcode}/`,
                             postCaption: tagifyInstgrmContent(
-                                !!_matchGQL.edge_media_to_caption.edges[0]
+                                _matchGQL.edge_media_to_caption.edges[0]
                                     ? _matchGQL.edge_media_to_caption.edges[0].node.text
                                     : _matchGQL.edge_media_to_caption
                             ).outerHTML,
@@ -352,7 +349,7 @@ let EmbedSocials = {
     renderInstagram(instgrmObj, parentLink, postId, index) {
         let fragment = document.createDocumentFragment();
         let container = document.createElement("div");
-        container.id = `instgrm-container_${postId}-${index}`;
+        container.id = `loader_${postId}-${index}`;
         container.setAttribute("class", "instgrm-container hidden");
         if (instgrmObj) {
             container.innerHTML = /*html*/ `
@@ -387,8 +384,12 @@ let EmbedSocials = {
             fragment.appendChild(container);
             // detected media also gets included in the template
             let _embedTarget = fragment.querySelector("#instgrm_embed");
-            let _mediaContainer = appendMedia(instgrmObj.postMedia, parentLink, postId, index, null, {
-                instgrmEmbed: true
+            let _mediaContainer = appendMedia({
+                src: instgrmObj.postMedia,
+                link: parentLink,
+                postId,
+                index,
+                type: {instgrmEmbed: true}
             });
             _mediaContainer.classList.add("instgrm-embed");
             _embedTarget.appendChild(_mediaContainer);
@@ -399,6 +400,6 @@ let EmbedSocials = {
     }
 };
 
-addDeferredHandler(enabledContains("embed_socials"), res => {
+addDeferredHandler(enabledContains("embed_socials"), (res) => {
     if (res) processPostEvent.addHandler(EmbedSocials.getLinks);
 });

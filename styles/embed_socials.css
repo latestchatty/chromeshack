@@ -8,8 +8,11 @@
     --twttr-bg-link-color: #8899a6;
     --twttr-fg-border-color: #38444d;
     --twttr-bg-border-color: #6b7d8c;
-    --twttr-media-item-max-height: 720px;
     --twttr-max-width: 500px;
+
+    --min-social-item-height: 300px;
+    --max-social-item-height: 720px;
+    --max-social-item-width: 640px;
 }
 
 /* custom twitter container */
@@ -107,7 +110,8 @@ a:hover#twitter-quote-displayname {
     border-radius: 8px;
     width: 100% !important;
     height: 100% !important;
-    max-height: var(--twttr-media-item-max-height);
+    min-height: var(--min-social-item-height);
+    max-height: var(--max-social-item-height);
     outline: none !important;
     margin: 0;
     padding: 0;
@@ -201,17 +205,17 @@ a:hover#twitter-quote-displayname {
     object-fit: contain !important;
     width: 100% !important;
     height: auto !important;
+    min-height: var(--min-social-item-height);
+    max-height: var(--max-social-item-height);
     min-width: var(--min-media-item-width);
-    min-height: var(--min-media-item-height);
     max-width: var(--max-social-item-width);
-    max-height: var(--max-media-item-height);
 }
 #instgrm_embed img.swiper-slide,
 #instgrm_embed video.swiper-slide {
     /* let carousel style itself but maintain ratio */
     object-fit: contain !important;
     max-width: var(--max-social-item-width);
-    max-height: var(--max-media-item-height);
+    max-height: var(--max-social-item-height);
 }
 
 #instgrm-caption {
@@ -219,7 +223,7 @@ a:hover#twitter-quote-displayname {
     padding: 10px;
 }
 #instgrm_post_caption {
-    display: flex;
+    display: inline-block;
     flex-flow: row wrap;
     align-self: center;
     align-items: center;
