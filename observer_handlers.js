@@ -1,7 +1,7 @@
 let ChromeShack = {
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
-        let observer_handler = mutationsList => {
+        const observer_handler = mutationsList => {
             for (let mutation of mutationsList) {
                 if (mutation.type === "childList") {
                     let added_nodes = mutation.addedNodes;

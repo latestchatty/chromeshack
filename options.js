@@ -261,7 +261,6 @@ const getUserFilters = async () => {
 const addUserFilter = async (e) => {
     let username = document.getElementById("new_user_filter_text");
     let usersLst = document.getElementById("filtered_users");
-    let usernameTxt = superTrim(username.value).toLowerCase();
     let users = [...usersLst.options].map(x => x.text);
     let filtersHas = await filtersContains(username.value);
     if (filtersHas) {

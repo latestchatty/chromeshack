@@ -6,14 +6,14 @@
         const optionsLinkHandler = () => {
             let postButton = $("button#frm_submit")[0];
             let previewButton = $("button#previewButton")[0];
-            let applyLocation = location => {
+            const applyLocation = location => {
                 const isPreviewOnLeft = previewButton.nextSibling === postButton;
                 const shouldPreviewBeOnLeft = location === "Left";
                 if (isPreviewOnLeft !== shouldPreviewBeOnLeft) {
                     swapNodes(postButton, previewButton);
                 }
             };
-            let swapNodes = (a, b) => {
+            const swapNodes = (a, b) => {
                 // https://stackoverflow.com/a/698440
                 let aparent = a.parentNode;
                 let asibling = a.nextSibling === b ? a : a.nextSibling;

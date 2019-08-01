@@ -69,8 +69,8 @@ let EmojiPoster = {
         // credit: Mathias Bynens (https://github.com/mathiasbynens/he)
         let _matchAstrals = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
         let _matchBMPs = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-        let escapeCP = codePoint => `&#x${codePoint.toString(16).toUpperCase()};`;
-        let escapeBmp = symbol => escapeCP(symbol.charCodeAt(0));
+        const escapeCP = codePoint => `&#x${codePoint.toString(16).toUpperCase()};`;
+        const escapeBmp = symbol => escapeCP(symbol.charCodeAt(0));
         return text
             .replace(_matchAstrals, $0 => {
                 let _high = $0.charCodeAt(0);
