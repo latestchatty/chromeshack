@@ -42,8 +42,7 @@ let GetPost = {
             fetchSafe(singlePost).then(data => {
                 let postDiv = document.createElement("div");
                 // hack-ish way of "parsing" string to DOM (sanitized!)
-                const fragment = data;
-                postDiv.appendChild(fragment);
+                postDiv.appendChild(data);
                 postDiv = postDiv.childNodes[1];
 
                 // nuke fullpost class as we don't want
@@ -51,7 +50,7 @@ let GetPost = {
                 // not meant to handle
                 postDiv.setAttribute("class", "getPost");
                 postDiv.setAttribute("id", `getpost_${_postId}-${index}`);
-                toggleMediaLink(null, link, true);
+                toggleMediaItem(link);
                 link.parentNode.insertBefore(postDiv, link.nextSibling);
             });
         }

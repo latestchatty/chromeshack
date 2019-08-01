@@ -172,12 +172,12 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                             });
                         }
                         return reject();
-                    } else return resolve(JSON.parse(DOMPurify.sanitize(text)));
+                    } else return resolve(safeJSON(text));
                 } catch (err) {
                     if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
                     else if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
-                    else if (text && JSON.parse(text)) return resolve(safeJSON(JSON.parse(text)));
-                    else if (text && isHTML(text)) return resolve(sanitizeToFragment(text));
+                    else if (isJSON(text)) return resolve(safeJSON(JSON.parse(text)));
+                    else if (isHTML(text)) return resolve(sanitizeToFragment(text));
                     return reject("Parse failed:", err);
                 }
             });
@@ -402,9 +402,18 @@ const parseShackRSS = rssText => {
 
 const isHTML = text => {
     // https://stackoverflow.com/a/15458968
+    if (!text) return false;
     let doc = new DOMParser().parseFromString(text, "text/html");
     return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 };
+
+const isJSON = text => {
+    try {
+        if (text && JSON.parse(text)) return true;
+    } catch (err) {
+        return false;
+    }
+}
 
 const FormDataToJSON = async fd => {
     const FileToObject = async fileData => {
