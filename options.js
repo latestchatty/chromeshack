@@ -2,8 +2,8 @@
  * Highlight Users' Support
  */
 
-// https://stackoverflow.com/a/5365036
-const getRandomColor = () => `#${((Math.random() * 0xffffff) << 0).toString(16)}`;
+// https://stackoverflow.com/a/25873123
+const randomHsl = () => `hsla(${Math.random() * 360}, 100%, 50%, 1)`;
 
 const getRandomInt = () => {
     let min = Math.ceil(1);
@@ -51,7 +51,7 @@ const newHighlightGroup = (name, css, username) => {
     return {
         enabled: true,
         name: name && name.length > 0 ? name : `New Group ${getRandomInt()}`,
-        css: css && css.length > 0 ? css : `color: ${getRandomColor()} !important;`,
+        css: css && css.length > 0 ? css : `color: ${randomHsl()} !important;`,
         users: username && username.length > 0 ? [username] : []
     };
 };
