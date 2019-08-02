@@ -61,9 +61,9 @@ const delayedTextUpdate = (e) => {
     if (debouncedUpdate) clearTimeout(debouncedUpdate);
     debouncedUpdate = setTimeout(async () => {
         let groupElem = e.target.closest("#highlight_group");
-        let groupName = groupElem.querySelector(".group_label").value;
+        let realGroupName = groupElem.querySelector(".group_label").dataset.name;
         let updatedGroup = getHighlightGroup(groupElem);
-        await setHighlightGroup(groupName, updatedGroup);
+        await setHighlightGroup(realGroupName, updatedGroup);
     }, 500);
 };
 
@@ -75,8 +75,14 @@ const addHighlightGroup = (e, group) => {
     groupElem.id = "highlight_group";
     groupElem.innerHTML = `
         <div class="group_header">
-            <input type="checkbox" id="${trimmedName}_box" ${group.enabled && "checked"} />
-            <input type="text" class="group_label" value="${group.name}" ${group.built_in && "readonly"}></input>
+            <input type="checkbox" ${group.enabled && "checked"} />
+            <input
+                type="text"
+                class="group_label"
+                data-name="${group.name}"
+                value="${group.name}"
+                ${group.built_in && "readonly"}
+            ></input>
             <button id="remove_group">Remove</button>
         </div>
         <div class="group_select">
