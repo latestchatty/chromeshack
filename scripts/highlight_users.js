@@ -21,8 +21,8 @@ let HighlightUsers = {
             // only include unique ids (can be the same username)
             if (!uniques.find(v => v.id === id)) uniques.push({ id, name, mod });
         }
-        HighlightUsers.cache = [...HighlightUsers.cache, uniques];
-        return uniques;
+        HighlightUsers.cache = uniques.flat();
+        return HighlightUsers.cache;
     },
 
     gatherCSS(users, groups) {
