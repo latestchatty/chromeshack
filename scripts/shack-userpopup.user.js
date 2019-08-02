@@ -104,7 +104,7 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
         var ulUser = document.createElement("ul");
         ulUser.className = "userDropdown";
         // Scrub username
-        let usernameTxt = encodeURIComponent(username.trim());
+        let usernameTxt = encodeURIComponent(username);
         if (friendlyName == "You") {
             var your = "Your";
             var vanitySearch = "Vanity Search";
@@ -175,7 +175,8 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
 document.addEventListener("click", async (e) => {
     // try to eat exceptions that are typically harmless
     try {
-        let sanitizedUser = e.target.parentNode.innerText && e.target.parentNode.innerText.split(" - ")[0];
+        let sanitizedUser = e.target.parentNode.matches("span.user") &&
+            superTrim(e.target.innerText.split(" - ")[0]);
         // Post author clicked
         if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
             e.preventDefault();
