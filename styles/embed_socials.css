@@ -112,6 +112,8 @@ a:hover#twitter-quote-displayname {
     height: 100% !important;
     min-height: var(--min-social-item-height);
     max-height: var(--max-social-item-height);
+    min-width: var(--min-media-item-width);
+    max-width: var(--max-social-item-width);
     outline: none !important;
     margin: 0;
     padding: 0;
