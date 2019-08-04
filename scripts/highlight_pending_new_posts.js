@@ -1,59 +1,46 @@
 let HighlightPendingPosts = {
-    g_lastEventId: 0,
+    lastEventId: 0,
 
     processEvents(events) {
         for (let evt of events || []) {
-            let evt = events[i];
-            if (evt.eventType !== "newPost") continue;
-
-            let postId = parseInt(evt.eventData.postId);
-            if (document.getElementById(`item_${postId}`) !== null) continue; // Received an event for a post we already have.
-
-            let threadId = parseInt(evt.eventData.post.threadId);
-            let a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
-            if (a !== null) a.classList.add("refresh_pending");
+            if (evt.eventType === "newPost") {
+                let postId = parseInt(evt.eventData.postId);
+                // Received an event for a post we already have.
+                if (document.getElementById(`item_${postId}`) !== null) continue;
+                let threadId = parseInt(evt.eventData.post.threadId);
+                let a = document.querySelector(`li#item_${threadId} div.fullpost div.refresh a`);
+                if (a !== null) a.classList.add("refresh_pending");
+            }
         }
         HighlightPendingPosts.showOrHideJumpToNewPostButton();
-
         // if the Thread Pane script is loaded, then refresh the thread pane
-        if (typeof refreshThreadPane !== "undefined") {
-            refreshThreadPane();
-        }
+        if (typeof refreshThreadPane !== "undefined") refreshThreadPane();
     },
 
     loop() {
-        try {
-            fetchSafe(`https://winchatty.com/v2/waitForEvent?lastEventId=${g_lastEventId}`).then(json => {
+        fetchSafe(`https://winchatty.com/v2/waitForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`)
+            .then((json) => {
                 // sanitized in common.js!
-                if (json) {
-                    g_lastEventId = parseInt(json.lastEventId);
+                if (json.events) {
+                    HighlightPendingPosts.lastEventId = json.lastEventId && parseInt(json.lastEventId);
                     HighlightPendingPosts.processEvents(json.events);
                 }
                 // Short delay in between loop iterations.
                 setTimeout(HighlightPendingPosts.loop, 5000);
             });
-        } catch (e) {}
     },
 
     isCollapsed(aRefresh) {
         let divRefresh = aRefresh.parentNode;
-        if (divRefresh === null) {
-            return false;
-        }
+        if (!divRefresh) return false;
         let divFullpost = divRefresh.parentNode;
-        if (divFullpost === null) {
-            return false;
-        }
+        if (!divFullpost) return false;
         let li = divFullpost.parentNode;
-        if (li === null) {
-            return false;
-        }
+        if (!li) return false;
         let ul = li.parentNode;
-        if (ul === null) {
-            return false;
-        }
+        if (!ul) return false;
         let root = ul.parentNode;
-        return root !== null && root.tagName == "DIV" && root.className.split(" ").indexOf("collapsed") !== -1;
+        return root && root.tagName == "DIV" && root.className.split(" ").indexOf("collapsed") !== -1;
     },
 
     getNonCollapsedPendings() {
@@ -61,11 +48,8 @@ let HighlightPendingPosts = {
         let filtered = [];
 
         for (let i = 0; i < pendings.length; i++) {
-            if (!HighlightPendingPosts.isCollapsed(pendings[i])) {
-                filtered.push(pendings[i]);
-            }
+            if (!HighlightPendingPosts.isCollapsed(pendings[i])) filtered.push(pendings[i]);
         }
-
         return filtered;
     },
 
@@ -160,15 +144,14 @@ let HighlightPendingPosts = {
         });
 
         // We need to get an initial event ID to start with.
-        fetchSafe("https://winchatty.com/v2/getNewestEventId").then(json => {
+        fetchSafe("https://winchatty.com/v2/getNewestEventId").then((json) => {
             // sanitized in common.js!
-            g_lastEventId = parseInt(json.eventId);
+            HighlightPendingPosts.lastEventId = parseInt(json.eventId);
             HighlightPendingPosts.loop();
         });
-    },
+    }
 };
 
-
-addDeferredHandler(enabledContains("highlight_pending_new_posts"), res => {
+addDeferredHandler(enabledContains("highlight_pending_new_posts"), (res) => {
     if (res) HighlightPendingPosts.install();
 });
