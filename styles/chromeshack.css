@@ -121,9 +121,10 @@ div.threads ul ul li span.author li {
     top: 1.5em;
     left: 0;
 }
-.userDropdown li {
+.userDropdown li,
+.userDropdown #filter-list li:not(.userDropdown-separator) {
     overflow: hidden;
-    background-color: inherit;
+    background: #222 !important;
     margin: 0 !important;
     padding: 0 !important;
     background-image: none !important;

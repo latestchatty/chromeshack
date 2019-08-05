@@ -10,12 +10,22 @@
 
 const getShackUsername = () => document.getElementById("user_posts").innerText || "";
 
-const hideAllDropdowns = () => {
-    // close all dropdowns if clicking outside of their boundary
-    let userDD = [...document.querySelectorAll("ul.userDropdown")];
-    for (let dd of userDD) {
-        if (dd && !dd.classList.contains("hidden")) dd.classList.add("hidden");
-    }
+const toggleDropdowns = (targetElem) => {
+    const toggleDropdown = (elem, hide) => {
+        if (hide && elem) elem.classList.add("hidden");
+        else if (elem && elem.classList.contains("hidden"))
+            elem.classList.remove("hidden");
+        else if (elem && !elem.classList.contains("hidden"))
+            elem.classList.add("hidden");
+    };
+
+    let targetDD = targetElem ? targetElem.querySelector("ul.userDropdown") : null;
+    let userDDs = [...document.querySelectorAll("ul.userDropdown")];
+    userDDs = userDDs.filter(x => x !== targetDD);
+    // toggle our targeted dropdown if it exists
+    if (targetDD) toggleDropdown(targetDD);
+    // hide all other dropdowns if clicking outside of their boundary
+    for (let dd of userDDs) toggleDropdown(dd, true);
 };
 
 const createListItem = (text, url, className, target) => {
@@ -38,7 +48,7 @@ const handleFilterUser = async (e, username) => {
     let filtersHas = await filtersContains(username);
     if (!filtersHas) await addFilter(username);
     else await removeFilter(username);
-    hideAllDropdowns();
+    toggleDropdowns();
 };
 
 const handleHighlightUser = async (e, groupName, username) => {
@@ -47,7 +57,7 @@ const handleHighlightUser = async (e, groupName, username) => {
     let highlightsHas = await highlightGroupContains(groupName, username);
     if (!highlightsHas) await addHighlightUser(groupName, username);
     else await removeHighlightUser(groupName, username);
-    hideAllDropdowns();
+    toggleDropdowns();
 };
 
 const createFilterListItem = (text, className) => {
@@ -163,11 +173,6 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
         );
         // Add ulUser to the page
         parentObj.appendChild(ulUser);
-    } // ulUserDD already exists -- this just handles the toggling of its display
-    else {
-        // Toggle ulUser's classname
-        if (ulUserDD.className.split(" ").indexOf("hidden") == -1) ulUserDD.classList.add("hidden");
-        else ulUserDD.classList.remove("hidden");
     }
 };
 
@@ -181,7 +186,7 @@ document.addEventListener("click", async (e) => {
         if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
             e.preventDefault();
             e.stopPropagation();
-            hideAllDropdowns();
+            toggleDropdowns(e.target);
             displayUserMenu(e.target, sanitizedUser, sanitizedUser);
             // add filter options for fullpost usernames
             let usertext = e.target.closest("span.user");
@@ -191,16 +196,16 @@ document.addEventListener("click", async (e) => {
             // OWN user name clicked as post author
             e.preventDefault();
             e.stopPropagation();
-            hideAllDropdowns();
+            toggleDropdowns();
             displayUserMenu(e.target, sanitizedUser, "You");
         } else if (e.target.matches("a#userDropdownTrigger")) {
             // User name clicked (at the top of the banner?)
             e.preventDefault();
             e.stopPropagation();
-            hideAllDropdowns();
+            toggleDropdowns();
             displayUserMenu(e.target, getShackUsername(), "You");
         } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
-            hideAllDropdowns();
+            toggleDropdowns();
         }
     } catch (e) {
         console.log(e);
