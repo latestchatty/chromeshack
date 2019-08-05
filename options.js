@@ -3,13 +3,11 @@
  */
 
 // https://stackoverflow.com/a/25873123
-const randomHsl = () => `hsla(${Math.random() * 360}, 100%, 50%, 1)`;
+const randomHsl = () => `hsla(${getRandomNum(0, 360, 3)}, ${getRandomNum(50, 100, 3)}%, ${getRandomNum(50, 100, 3)}%, 1)`;
 
-const getRandomInt = () => {
-    let min = Math.ceil(1);
-    let max = Math.floor(999999);
-    return Math.floor(Math.random() * (max - min)) + min;
-};
+const getRandomInt = (min, max) => Math.floor(Math.random() * (Math.ceil(max) - Math.floor(min))) + Math.ceil(min);
+
+const getRandomNum = (min, max, precision) => (Math.random() * (max - min) + min).toPrecision(precision ? precision : 1);
 
 const trimName = (name) => name.trim().replace(/[\W\s]+/g, "").toLowerCase();
 
@@ -50,7 +48,7 @@ const newHighlightGroup = (name, css, username) => {
     // return a new group with a random color as its default css
     return {
         enabled: true,
-        name: name && name.length > 0 ? name : `New Group ${getRandomInt()}`,
+        name: name && name.length > 0 ? name : `New Group ${getRandomInt(1, 999999)}`,
         css: css && css.length > 0 ? css : `color: ${randomHsl()} !important;`,
         users: username && username.length > 0 ? [username] : []
     };
