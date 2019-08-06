@@ -26,8 +26,11 @@ var carouselOpts = {
                 let wrapperWidth = wrapper.style.width.split("px")[0];
                 let imgWidth = slides[0].naturalWidth;
                 let imgHeight = slides[0].naturalHeight;
-                if (wrapperHeight !== imgHeight || wrapperWidth !== imgWidth)
+                if (wrapperHeight !== imgHeight || wrapperWidth !== imgWidth) {
+                    wrapper.style.height = `${imgHeight}px`;
+                    wrapper.style.width = `${imgWidth}px`;
                     this.update();
+                }
             }
         },
         transitionEnd() {
