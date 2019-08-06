@@ -99,16 +99,15 @@ const toggleMediaItem = (link) => {
         expando.classList.remove("embedded");
         toggleExpandoButton(link.querySelector("div.expando"));
         return true;
-    } else if (embed || container) {
+    } else if (embed) {
         // just toggle the container  and link state
-        if (!expando.matches(".embedded")) {
-            expando.classList.add("embedded");
+        if (!expando.matches(".embedded")) expando.classList.add("embedded");
+        if (embed.matches("div")) {
             if (embed.matches(".hidden")) embed.classList.remove("hidden");
-        } else {
-            if (container && container.matches(".hidden")) container.classList.remove("hidden");
-            else if (container) container.classList.add("hidden");
-            if (embed.matches(".hidden")) embed.classList.remove("hidden");
-            else embed.classList.add("hidden");
+            else if (embed.matches("div")) embed.classList.add("hidden");
+        } else if (container) {
+            if (container.matches(".hidden")) container.classList.remove("hidden");
+            else container.classList.add("hidden");
         }
         toggleVideoState(embed);
         toggleExpandoButton(link.querySelector("div.expando"));
@@ -186,7 +185,7 @@ const appendMedia = ({src, link, postId, index, type}) => {
     // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     let mediaElem = document.createElement("div");
     mediaElem.setAttribute("class", "media-container");
-    let {forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed} = type;
+    let {forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed} = type || {};
     if (Array.isArray(src) && src.length > 0) {
         let nodeList = [];
         for (let item of src) {
@@ -197,9 +196,7 @@ const appendMedia = ({src, link, postId, index, type}) => {
             else
                 nodeList.push(createMediaElem(item, postId, index));
         }
-        for (let node of nodeList) {
-            mediaElem.appendChild(node);
-        }
+        for (let node of nodeList) mediaElem.appendChild(node);
         // only use carousel if we have multiple items
         if (nodeList.length > 1) {
             mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
@@ -223,15 +220,11 @@ const insertScript = ({elem, filePath, code, id, overwrite}) => {
     // insert a script that executes synchronously (caution!)
     let _elem = elem ? elem : document.getElementsByTagName("head")[0];
     let _script = document.getElementById(id);
-    if (id && !overwrite && document.getElementById(id) != null) {
-        return;
-    } else if (overwrite && _script) {
+    if (id && !overwrite && document.getElementById(id)) return;
+    else if (overwrite && _script)
         _script.parentNode.removeChild(_script);
-    }
     _script = document.createElement("script");
-    if (id) {
-        _script.setAttribute("id", id);
-    }
+    if (id) _script.setAttribute("id", id);
     if (code && code.length > 0) _script.textContent = code;
     else if (filePath && filePath.length > 0) _script.setAttribute("src", browser.runtime.getURL(filePath));
     else throw Error("Must pass a file path or code content in string format!");
@@ -240,9 +233,7 @@ const insertScript = ({elem, filePath, code, id, overwrite}) => {
 
 const insertExpandoButton = (link, postId, index) => {
     // abstracted helper for appending an expando button to a link in a post
-    if (link.querySelector("div.expando") != null) {
-        return;
-    }
+    if (link.querySelector("div.expando")) return;
     // process a link into a link container that includes a dynamic styled "button"
     let expando = document.createElement("div");
     expando.classList.add("expando");
@@ -311,8 +302,7 @@ const attachChildEvents = (elem, id, index) => {
         let swiperEl = childElems[0].closest(".swiper-wrapper");
         let instgrmEl = childElems[0].closest(".instgrm-embed");
         let twttrEl = childElems[0].closest(".twitter-container");
-
-        childElems.forEach((item) => {
+        for (let item of childElems) {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
@@ -336,7 +326,6 @@ const attachChildEvents = (elem, id, index) => {
                             toggleVideoState(e.target);
                     });
                 }
-
                 // don't attach click-to-hide events to excluded containers
                 ((swiperEl, instgrmEl, twttrEl) => {
                     item.addEventListener("mousedown", async (e) => {
@@ -357,7 +346,7 @@ const attachChildEvents = (elem, id, index) => {
                     });
                 })(swiperEl, instgrmEl, twttrEl);
             }
-        });
+        }
     }
 };
 

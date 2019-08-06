@@ -97,9 +97,8 @@ let ImageLoader = {
                     ImageLoader.createDropboxVid(link, postId, index);
                 else {
                     let src = ImageLoader.vidRegex.exec(link.href);
-                    src = src ? [src[0]] : null;
                     appendMedia({
-                        src,
+                        src: src && [src[0]],
                         link,
                         postId,
                         index,
@@ -110,9 +109,8 @@ let ImageLoader = {
                 // use HTTPS to better conform to CORS rules
                 // NOTE: ShackPics needs SSL fixes before uncommenting this!
                 // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
-                let src = [ImageLoader.getImageUrl(link.href)];
                 appendMedia({
-                    src,
+                    src: [ImageLoader.getImageUrl(link.href)],
                     link,
                     postId,
                     index,
