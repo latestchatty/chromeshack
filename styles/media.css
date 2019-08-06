@@ -12,6 +12,9 @@
     --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+.media-container.hidden {
+    display: none !important;
+}
 .medialoader video:not(.swiper-slide),
 .medialoader img:not(.swiper-slide) {
     outline: 0 !important;
@@ -26,10 +29,6 @@
     width: 854px;
     min-width: calc(480 * 0.5)px;
     min-height: calc(854 * 0.5)px;
-}
-.iframe-spacer.hidden,
-.medialoader.hidden {
-    display: none !important;
 }
 .iframe-container,
 .yt-container,

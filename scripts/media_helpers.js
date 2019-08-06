@@ -92,18 +92,24 @@ const toggleMediaItem = (link) => {
     let expando = link.querySelector("div.expando");
     let embed = getEmbedRef(link);
     if (!embed) return;
+    let container = embed.closest(".media-container");
     if (expando.matches(".embedded") && embed && embed.matches(".iframe-spacer")) {
         // remove iframe directly to toggle media
-        embed.parentNode.removeChild(embed);
+        container.parentNode.removeChild(container);
         expando.classList.remove("embedded");
         toggleExpandoButton(link.querySelector("div.expando"));
         return true;
-    } else if (embed) {
-        if (embed.closest(".medialoader")) embed = embed.closest(".medialoader");
-        // just toggle the media and container state
-        if (embed.matches(".hidden")) embed.classList.remove("hidden");
-        else embed.classList.add("hidden");
-        if (!expando.matches(".embedded")) expando.classList.add("embedded");
+    } else if (embed || container) {
+        // just toggle the container  and link state
+        if (!expando.matches(".embedded")) {
+            expando.classList.add("embedded");
+            if (embed.matches(".hidden")) embed.classList.remove("hidden");
+        } else {
+            if (container && container.matches(".hidden")) container.classList.remove("hidden");
+            else if (container) container.classList.add("hidden");
+            if (embed.matches(".hidden")) embed.classList.remove("hidden");
+            else embed.classList.add("hidden");
+        }
         toggleVideoState(embed);
         toggleExpandoButton(link.querySelector("div.expando"));
         return true;
@@ -179,6 +185,7 @@ const appendMedia = ({src, link, postId, index, type}) => {
     // compile our media items into a given container element
     // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     let mediaElem = document.createElement("div");
+    mediaElem.setAttribute("class", "media-container");
     let {forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed} = type;
     if (Array.isArray(src) && src.length > 0) {
         let nodeList = [];
