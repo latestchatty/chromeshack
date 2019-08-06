@@ -31,6 +31,7 @@ let VideoLoader = {
         let _isTwitch = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w-]+)(?:.*?t=(\w+))?|collections\/([\w-]+))|([\w-]+)))/i.exec(
             url
         );
+        let _isMixer = /https:\/\/(?:.+\.)?mixer\.com\/([\w-]+)(\?vod=[\w-]+|\?clip=[\w-]+)?/i.exec(url);
 
         if (_isYoutube) {
             return {
@@ -77,6 +78,12 @@ let VideoLoader = {
                 user: _isXboxDVR[1],
                 video: _isXboxDVR[2]
             };
+        } else if (_isMixer) {
+            return {
+                type: 5,
+                user: _isMixer[1],
+                video: _isMixer[2]
+            };
         }
 
         return null;
@@ -94,32 +101,24 @@ let VideoLoader = {
 
             if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, _postId, index);
             else if (videoObj && videoObj.type === 2) VideoLoader.createTwitch(link, videoObj, _postId, index);
-            else if ((videoObj && videoObj.type === 3) || videoObj.type === 4)
+            else if ((videoObj && videoObj.type === 3) || videoObj.type === 4 || videoObj.type === 5)
                 VideoLoader.createIframePlayer(link, videoObj, _postId, index);
         }
     },
 
     async createIframePlayer(link, videoObj, postId, index) {
-        const getStreamableLink = (shortcode) => {
+        const getStreamableLink = async (shortcode) => {
             let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-            return new Promise((resolve, reject) => {
-                fetchSafe(`https://api.streamable.com/videos/${shortcode}`, {
-                    headers: {Authorization: __obf}
-                })
-                    .then((json) => {
-                        // sanitized in common.js!
-                        if (json && json.files.mp4.url) resolve(json.files.mp4.url);
-                        reject(false);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
-            });
+            let json = await fetchSafe(
+                `https://api.streamable.com/videos/${shortcode}`,
+                { headers: { Authorization: __obf } }
+            ); // sanitized in common.js!
+            return json.files.mp4.url || "";
         };
 
         // handle both Streamable and XboxDVR Iframe embed types
-        let user = videoObj.type === 4 && videoObj.user;
-        let video_id = videoObj.video;
+        let user = videoObj.user;
+        let video_id = videoObj.video || "";
         let video_src = "";
 
         if (videoObj.type === 3) {
@@ -128,6 +127,9 @@ let VideoLoader = {
         } else if (videoObj.type === 4) {
             // XboxDVR iFrame
             video_src = `https://xboxdvr.com/gamer/${user}/video/${video_id}/embed`;
+        } else if (videoObj.type === 5) {
+            // Mixer iFrame
+            video_src = `https://mixer.com/embed/player/${user}${video_id}`;
         }
 
         if (video_src) {
@@ -139,7 +141,7 @@ let VideoLoader = {
         }
     },
 
-    async createYoutube(link, videoObj, postId, index) {
+    createYoutube(link, videoObj, postId, index) {
         let video_src;
         let video_id = videoObj.video;
         let video_playlist = videoObj.playlist;
@@ -162,7 +164,7 @@ let VideoLoader = {
         }
     },
 
-    async createTwitch(link, videoObj, postId, index) {
+    createTwitch(link, videoObj, postId, index) {
         let video_id = videoObj.video;
         let video_channel = videoObj.channel;
         let video_collection = videoObj.collection;

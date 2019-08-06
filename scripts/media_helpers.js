@@ -152,17 +152,13 @@ const createIframe = (src, type, postId, index) => {
         let iframe = document.createElement("iframe");
         spacer.setAttribute("class", "iframe-spacer hidden");
         spacer.setAttribute("id", `loader_${postId}-${index}`);
-        spacer.setAttribute(
-            "style",
-            `min-width: ${854 * 0.33}px !important; max-height: ${480}px; max-width: ${854}px;`
-        );
 
         if (type === 1) {
             video.setAttribute("class", "yt-container"); // Youtube
             iframe.setAttribute("allow", "autoplay; encrypted-media");
         } else if (type === 2)
             video.setAttribute("class", "twitch-container"); // Twitch
-        else if (type === 3 || type === 4) {
+        else if (type === 3 || type === 4 || type === 5) {
             video.setAttribute("class", "iframe-container"); // Streamable / XboxDVR
             iframe.setAttribute("scale", "tofit");
         }
