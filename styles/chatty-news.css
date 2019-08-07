@@ -1,0 +1,66 @@
+:root {
+    --chatty-news-font: "Shack Sans", sans-serif;
+    --chatty-bg: #111;
+    --chatty-news-bg: #222;
+    --chatty-news-alt: #656565;
+    --chatty-news-fg: #ddd;
+    --chatty-news-link-fg: #5e98a5;
+    --chatty-news-link-bg: #fff;
+}
+
+hr.chatty-news-sep {
+    border: 0;
+    height: 1px;
+    background: var(--chatty-news-alt);
+}
+.chatty-news {
+    display: inline-block;
+    font-size: 16px;
+    font-family: var(--chatty-news-font);
+    background-color: var(--chatty-news-bg);
+    border: solid 1px var(--chatty-news-alt);
+    border-radius: 4px;
+    margin: 0.33em;
+    padding: 0;
+    min-width: 275px;
+    max-width: 425px;
+}
+.chatty-news h2 {
+    font-size: 18px;
+    text-align: center;
+    color: white;
+    margin: 0.25em 0.5em 0 0.5em;
+    padding: 0;
+}
+.chatty-news ul {
+    list-style-type: none;
+    padding: 0;
+    margin: -0.5em 0.5em 0.33em 0.25em;
+}
+.chatty-news li {
+    line-height: 1.85rem;
+}
+.chatty-news a {
+    text-decoration: none;
+    color: var(--chatty-news-link-bg);
+}
+.chatty-news a:hover {
+    text-decoration: none;
+    color: var(--chatty-news-link-fg);
+    font-weight: 500;
+}
+.chatty-news a::before {
+    padding: 0 0.5em;
+    content: "» ";
+    color: var(--chatty-news-alt);
+}
+
+.truncated {
+    display: flex;
+}
+.truncated span {
+    /* use a span for the child to enable truncation */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

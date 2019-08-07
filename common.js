@@ -172,11 +172,15 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
                             });
                         }
                         return reject();
-                    } else return resolve(safeJSON(text));
-                } catch (err) {
-                    if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
+                    } else if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
                     else if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
                     else if (isHTML(text)) return resolve(sanitizeToFragment(text));
+                    else {
+                        let parsed = safeJSON(text);
+                        if (parsed) return resolve(parsed);
+                        return reject();
+                    }
+                } catch (err) {
                     return reject("Parse failed:", err);
                 }
             });
@@ -377,7 +381,7 @@ const safeJSON = (text) => {
 
 const parseShackRSS = rssText => {
     return new Promise((resolve, reject) => {
-        let result = { items: [] };
+        let result = [];
         if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
             let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
             for (let i of items || []) {
@@ -386,7 +390,7 @@ const parseShackRSS = rssText => {
                 let date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
                 let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
                 let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
-                result.items.push({
+                result.push({
                     title: title && DOMPurify.sanitize(title[1]),
                     link: link && DOMPurify.sanitize(link[1]),
                     date: date && DOMPurify.sanitize(date[1]),
