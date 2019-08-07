@@ -73,7 +73,7 @@ let EmbedSocials = {
     },
 
     async fetchTweetData(tweetId) {
-        let collectTweetMedia = (tweetMediaObj) => {
+        const collectTweetMedia = (tweetMediaObj) => {
             let sortByBitrate = (mediaArr) => {
                 let result = mediaArr.sort((a, b) => {
                     if (a.bitrate < b.bitrate) return 1;
@@ -85,14 +85,10 @@ let EmbedSocials = {
 
             let result = [];
             Object.values(tweetMediaObj).forEach((item) => {
-                if (item.type === "video" && item.video_info.variants) {
+                if ((item.type === "video" || item.type === "animated_gif") && item.video_info.variants) {
                     let _sorted = sortByBitrate(item.video_info.variants.filter((x) => x.content_type === "video/mp4"));
                     for (let vidItem of _sorted) {
-                        let _vidDimensionsMatch = /vid\/(\d+)x(\d+)\//i.exec(vidItem.url);
-                        let _ratio = _vidDimensionsMatch
-                            ? (1 / (_vidDimensionsMatch[1] / _vidDimensionsMatch[2])) * 100
-                            : 56.25;
-                        result.push({type: "video", url: vidItem.url, ratio: _ratio});
+                        result.push({type: "video", url: vidItem.url});
                         break; // bail on the first match (highest res)
                     }
                 } else if (item.type === "photo" && item.media_url_https) {
@@ -101,7 +97,7 @@ let EmbedSocials = {
             });
             return result;
         };
-        let tagifyTweetText = (text) => {
+        const tagifyTweetText = (text) => {
             // try to parse our tags and text content into a DOM fragment
             let postTextContentElem = document.createElement("span");
             let hashReplacer = (match, g1) => {
