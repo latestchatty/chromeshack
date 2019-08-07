@@ -167,7 +167,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             .then(res => {
                 const injectLightboxFunc = () => {
                     browser.tabs
-                        .executeScript(null, { code: `let _mediaHTML = \`${request.elemText}\`;` })
+                        .executeScript(null, { code: `var _mediaHTML = \`${request.elemText}\`;` })
                         .then(() => browser.tabs.executeScript(null, { file: "int/injectLightbox.js" }));
                 };
 
@@ -190,12 +190,12 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                         .executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" })
                         .then(() =>
                             browser.tabs
-                                .executeScript(null, { code: `let _carouselSelect = "${request.select}";` })
+                                .executeScript(null, { code: `var _carouselSelect = "${request.select}";` })
                                 .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }))
                         );
                 } else {
                     browser.tabs
-                        .executeScript(null, { code: `let _carouselSelect = "${request.select}";` })
+                        .executeScript(null, { code: `var _carouselSelect = "${request.select}";` })
                         .then(() => browser.tabs.executeScript(null, { file: "int/injectCarousel.js" }));
                 }
             })

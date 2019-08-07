@@ -294,7 +294,7 @@ const insertLightbox = (elem) => {
     browser.runtime.sendMessage({name: "injectLightbox", elemText: elem.outerHTML});
 };
 
-const attachChildEvents = (elem, id, index) => {
+const attachChildEvents = async (elem, id, index) => {
     let childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
     let iframeElem = elem.querySelector("iframe");
     if (!iframeElem && childElems && childElems.length > 0) {
@@ -302,6 +302,7 @@ const attachChildEvents = (elem, id, index) => {
         let swiperEl = childElems[0].closest(".swiper-wrapper");
         let instgrmEl = childElems[0].closest(".instgrm-embed");
         let twttrEl = childElems[0].closest(".twitter-container");
+        let lightboxed = await settingsContains("image_loader_newtab");
         for (let item of childElems) {
             if (item.nodeName === "IMG" || item.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
@@ -327,24 +328,24 @@ const attachChildEvents = (elem, id, index) => {
                     });
                 }
                 // don't attach click-to-hide events to excluded containers
-                ((swiperEl, instgrmEl, twttrEl) => {
-                    item.addEventListener("mousedown", async (e) => {
+                ((swiperEl, instgrmEl, twttrEl, lightboxed) => {
+                    item.addEventListener("mousedown", (e) => {
                         let embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         let link = getLinkRef(embed);
-                        let lightboxed = await settingsContains("image_loader_newtab");
                         if (e.which === 2 && lightboxed) {
                             e.preventDefault();
                             // pause our current video before re-opening it
                             if (e.target.nodeName === "VIDEO") toggleVideoState(e.target, {state: false});
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
+                            return false;
                         } else if (e.which === 1 && !swiperEl && !instgrmEl && !twttrEl) {
                             e.preventDefault();
                             // toggle our embed state when non-carousel media embed is left-clicked
                             toggleMediaItem(link);
                         }
                     });
-                })(swiperEl, instgrmEl, twttrEl);
+                })(swiperEl, instgrmEl, twttrEl, lightboxed);
             }
         }
     }
