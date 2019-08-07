@@ -331,7 +331,7 @@ const attachChildEvents = (elem, id, index) => {
                     item.addEventListener("mousedown", async (e) => {
                         let embed = e.target.parentNode.querySelector(`#loader_${id}-${index}`);
                         let link = getLinkRef(embed);
-                        let lightboxed = await getSetting("image_loader_newtab");
+                        let lightboxed = await settingsContains("image_loader_newtab");
                         if (e.which === 2 && lightboxed) {
                             e.preventDefault();
                             // pause our current video before re-opening it
