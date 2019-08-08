@@ -210,7 +210,7 @@ let EmbedSocials = {
     },
 
     compileTwitterMedia(parentLink, templateElem, tweetObj, postId, index) {
-        let parseMedia = (mediaObjArr) => {
+        const parseMedia = (mediaObjArr) => {
             let mediaArr = [];
             mediaObjArr.forEach((item) => {
                 mediaArr.push(item.url);
@@ -267,7 +267,7 @@ let EmbedSocials = {
     },
 
     async fetchInstagramData(socialId) {
-        let collectInstgrmMedia = (parsedGQL) => {
+        const collectInstgrmMedia = (parsedGQL) => {
             let collector = [];
             if (parsedGQL.__typename === "GraphSidecar") {
                 parsedGQL.edge_sidecar_to_children.edges.forEach((edge) => {
@@ -285,7 +285,7 @@ let EmbedSocials = {
             }
             return collector;
         };
-        let tagifyInstgrmContent = (text) => {
+        const tagifyInstgrmContent = (text) => {
             let captionContainer = document.createElement("span");
             captionContainer.id = "instgrm_post_caption";
             let hashReplacer = (match, g1) => {
@@ -301,7 +301,7 @@ let EmbedSocials = {
             captionContainer.innerHTML = postTextTagified;
             return captionContainer;
         };
-        let getDate = (timestamp) => {
+        const getDate = (timestamp) => {
             let _date = new Date(0);
             _date.setUTCSeconds(timestamp);
             // we should have our relative local time now
@@ -326,9 +326,8 @@ let EmbedSocials = {
                             postTimestamp: getDate(_matchGQL.taken_at_timestamp),
                             postUrl: `https://instagr.am/p/${_matchGQL.shortcode}/`,
                             postCaption: tagifyInstgrmContent(
-                                _matchGQL.edge_media_to_caption.edges[0]
-                                    ? _matchGQL.edge_media_to_caption.edges[0].node.text
-                                    : _matchGQL.edge_media_to_caption
+                                _matchGQL.edge_media_to_caption.edges.length > 0 ?
+                                _matchGQL.edge_media_to_caption.edges[0].node.text : ""
                             ).outerHTML,
                             postMedia: collectInstgrmMedia(_matchGQL)
                         };
