@@ -57,5 +57,5 @@ let ChattyNews = {
 };
 
 addDeferredHandler(enabledContains("chatty_news"), (res) => {
-    if (res) fullPostsCompletedEvent.addHandler(ChattyNews.install);
+    if (res) ChattyNews.install();
 });
