@@ -391,11 +391,11 @@ const parseShackRSS = rssText => {
                 let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
                 let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
                 result.push({
-                    title: title && DOMPurify.sanitize(title[1]),
-                    link: link && DOMPurify.sanitize(link[1]),
-                    date: date && DOMPurify.sanitize(date[1]),
-                    content: content && DOMPurify.sanitize(content[1]),
-                    medialink: medialink && DOMPurify.sanitize(medialink[1])
+                    title: title ? DOMPurify.sanitize(title[1]) : "",
+                    link: link ? DOMPurify.sanitize(link[1]) : "",
+                    date: date ? DOMPurify.sanitize(date[1]) : new Date().toISOString(),
+                    content: content ? DOMPurify.sanitize(content[1]) : "",
+                    medialink: medialink ? DOMPurify.sanitize(medialink[1]) : ""
                 });
             }
         }
