@@ -18,7 +18,7 @@ hr.chatty-news-sep {
     font-size: 16px;
     font-family: var(--chatty-news-font);
     background-color: var(--chatty-news-bg);
-    border: solid 1px var(--chatty-news-alt);
+    box-shadow: 0 0.125em 0.5em 0 rgba(0,0,0,.25);
     border-radius: 4px;
     margin: 0.33em;
     padding: 0;
@@ -50,7 +50,7 @@ hr.chatty-news-sep {
     font-weight: 500;
 }
 .chatty-news a::before {
-    padding: 0 0.5em;
+    padding: 0 0.5em 0 0.25em;
     content: "» ";
     color: var(--chatty-news-alt);
 }
