@@ -17,7 +17,7 @@
 }
 .medialoader video:not(.swiper-slide),
 .medialoader img:not(.swiper-slide) {
-    outline: 0 !important;
+    outline: none !important;
     width: 100% !important;
     height: auto !important;
     box-sizing: border-box;
@@ -66,28 +66,22 @@ div.expando {
 /* end expando */
 
 /* customizations for carousel */
-:not(div.instgrm-container) .swiper-container {
-    /* workaround 1 for non-instagram responsiveness */
-    margin: unset !important;
-}
+:not(div.instgrm-container) .swiper-container,
 .swiper-container.medialoader {
-    /* workaround 2 for non-instagram responsiveness */
+    /* workaround for non-instagram responsiveness */
     margin: unset !important;
-    max-width: var(--max-media-item-width);
-    max-height: var(--max-media-item-height);
 }
 .swiper-container.instgrm-embed {
     max-width: var(--max-social-item-width);
-    max-height: var(--max-media-item-height);
-}
-.media-container:not(.responsive) .swiper-container.medialoader,
-.media-container:not(.responsive) .swiper-container.instgrm-embed {
-    max-height: unset !important;
 }
 .medialoader video.swiper-slide,
 .medialoader img.swiper-slide {
     object-fit: contain !important;
     max-width: var(--max-media-item-width);
+}
+img.swiper-slide,
+video.swiper-slide {
+    outline: none !important;
 }
 .swiper-button-next,
 .swiper-button-prev {

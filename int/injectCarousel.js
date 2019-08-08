@@ -20,17 +20,8 @@ var carouselOpts = {
                 // autoplay if the first slide is a video
                 toggleVideoState(slides[0], { state: true, muted: false });
             } else {
-                // workaround for incorrect height calc on first slide
-                let wrapper = slides[0].closest(".swiper-wrapper");
-                let wrapperHeight = wrapper.style.height.split("px")[0];
-                let wrapperWidth = wrapper.style.width.split("px")[0];
-                let imgWidth = slides[0].naturalWidth;
-                let imgHeight = slides[0].naturalHeight;
-                if (wrapperHeight !== imgHeight || wrapperWidth !== imgWidth) {
-                    wrapper.style.height = `${imgHeight}px`;
-                    wrapper.style.width = `${imgWidth}px`;
-                    this.update();
-                }
+                // force async container recalc when instantiating
+                setTimeout(() => swiper.update(), 100);
             }
         },
         transitionEnd() {
