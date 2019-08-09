@@ -407,7 +407,7 @@ const parseShackRSS = rssText => {
 
 const isHTML = text => {
     // https://stackoverflow.com/a/15458968
-    if (!text) return false;
+    if (!text || text && isJSON(text)) return false;
     let doc = new DOMParser().parseFromString(text, "text/html");
     return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 };
