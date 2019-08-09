@@ -8,6 +8,10 @@ settingsLoadedEvent.addHandler(() => {
             var val = Number(gauge.style.width.substr(0,gauge.style.width.length-1)); //remove percent (%)
             if(val > 99.9){ //about 1 minute left or less
                 gauge.classList.add('gauge_dead');
+            }else if(val > 98.6){ //about 15 minutes left or less
+                gauge.classList.add('gauge_redest');
+            }else if(val > 94.4){ //about 60 minutes left or less
+                gauge.classList.add('gauge_reder');
             }else if(val > 88.8){ //about 2 hours left
                 gauge.classList.add('gauge_red');
             }else if(val > 77.7){//about 4 hours left

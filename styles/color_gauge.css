@@ -19,6 +19,12 @@
 .postdate .completion-meter .guage .progress.gauge_red {
     background: linear-gradient(to bottom,#ff0000,#800000);
 }
+.postdate .completion-meter .guage .progress.gauge_reder {
+    background: linear-gradient(to bottom,#ff0080,#a00000);
+}
+.postdate .completion-meter .guage .progress.gauge_redest {
+    background: linear-gradient(to bottom,#ff00c0,#a00000);
+}
 .postdate .completion-meter .guage .progress.gauge_dead {
     background: linear-gradient(to bottom,#000000,#800000);
 }
