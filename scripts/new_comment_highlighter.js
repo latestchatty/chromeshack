@@ -1,38 +1,27 @@
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 let NewCommentHighlighter = {
-    highlight() {
-        getSetting("new_comment_highlighter_last_id").then(last_id => {
-            let new_last_id = NewCommentHighlighter.findLastID();
-
-            // only highlight if we wouldn't highlight everything on the page
-            if (last_id != null && new_last_id - last_id < 1000) {
-                NewCommentHighlighter.highlightPostsAfter(last_id);
-            }
-
-            if (last_id == null || new_last_id > last_id) {
-                setSetting("new_comment_highlighter_last_id", new_last_id);
-            }
-        });
+    async highlight() {
+        let last_id = await getSetting("new_comment_highlighter_last_id");
+        let new_last_id = NewCommentHighlighter.findLastID();
+        // only highlight if we wouldn't highlight everything on the page
+        if (last_id && new_last_id - last_id < 1000)
+            NewCommentHighlighter.highlightPostsAfter(last_id);
+        if (!last_id || new_last_id > last_id)
+            await setSetting("new_comment_highlighter_last_id", new_last_id);
     },
 
     highlightPostsAfter(last_id) {
         let new_posts = NewCommentHighlighter.getPostsAfter(last_id);
-
-        let post;
-        for (i = 0; i < new_posts.snapshotLength; i++) {
-            let post = new_posts.snapshotItem(i);
-
-            let preview = post.getElementsByClassName("oneline_body");
-            if (preview.length > 0) {
-                preview[0].className += " newcommenthighlighter";
-            }
+        for (let post of new_posts || []) {
+            let preview = post.querySelector(".oneline_body");
+            if (preview && !preview.classList.contains("newcommenthighlighter"))
+                preview.classList.add("newcommenthighlighter");
         }
-
-        NewCommentHighlighter.displayNewCommentCount(new_posts.snapshotLength);
+        NewCommentHighlighter.displayNewCommentCount(new_posts.length);
     },
 
     displayNewCommentCount(count) {
-        if (count > 0) {
+        if (count && count > 0) {
             let commentDisplay = document.getElementById("chatty_settings");
             let commentsCount =
                 commentDisplay.childNodes[4].innerText != null &&
@@ -44,23 +33,16 @@ let NewCommentHighlighter = {
 
     getPostsAfter(last_id) {
         // grab all the posts with post ids after the last post id we've seen
-        let query = '//li[number(substring-after(@id, "item_")) > ' + last_id + "]";
-        return document.evaluate(query, document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        return [...document.querySelectorAll("li[id^='item_']")]
+            .filter(x => parseInt(x.id.substr(5)) > last_id);
     },
 
     findLastID() {
         // 'oneline0' is applied to highlight the most recent post in each thread
         // we only want the first one, since the top post will contain the most recent
         // reply.
-        let query = '//div[contains(@class, "oneline0")]';
-        let post = document.evaluate(query, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
-            .singleNodeValue;
-
-        // no posts? no id
-        if (post == null) return null;
-
-        let id = post.parentNode.id;
-        return parseInt(id.substr(5));
+        let post = document.querySelector("div.oneline0");
+        return post ? parseInt(post.parentNode.id.substr(5)) : null;
     }
 };
 
