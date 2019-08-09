@@ -8,6 +8,13 @@ let NewCommentHighlighter = {
             NewCommentHighlighter.highlightPostsAfter(last_id);
         if (!last_id || new_last_id > last_id)
             await setSetting("new_comment_highlighter_last_id", new_last_id);
+
+        // refresh highlights when refreshing a post
+        document.getElementById("dom_iframe").addEventListener("load", () => {
+            enabledContains("new_comment_highlighter").then((r) => {
+                if (r) NewCommentHighlighter.highlight();
+            });
+        });
     },
 
     highlightPostsAfter(last_id) {
