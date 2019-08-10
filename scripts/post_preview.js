@@ -15,7 +15,7 @@ let PostPreview = {
             previewButton.id = "previewButton";
             previewButton.setAttribute("type", "button");
             previewButton.textContent = "Preview";
-            getSetting("post_preview_location").then(position => {
+            getSetting("post_preview_location").then(() => {
                 postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
                 let previewArea = document.createElement("div");
                 previewArea.id = "previewArea";
@@ -25,9 +25,16 @@ let PostPreview = {
         }
     },
 
+    replyToggleHandler(e) {
+        if (e.target && e.target.matches("div.closeform > a") || e.target.matches("div.reply > a"))
+            PostPreview.state = 0;
+    },
+
     installClickEvent() {
         let previewButton = document.getElementById("previewButton");
         let clickableTags = [...document.querySelectorAll("#shacktags_legend_table td > a")];
+        document.removeEventListener("click", PostPreview.replyToggleHandler);
+        document.addEventListener("click", PostPreview.replyToggleHandler);
         previewButton.addEventListener("click", PostPreview.togglePreview, true);
         // include interactive tags legend as well
         for (let t of clickableTags || []) {
