@@ -15,15 +15,17 @@ let PostLengthCounter = {
 
     update() {
         let counter = document.querySelector("div.post_length_counter_text");
-        let textarea = document.querySelector("textarea#frm_body");
-        let rawPostText = textarea.value;
-        let encodedText = EmojiPoster.handleEncoding(rawPostText);
-        let textCount = EmojiPoster.countText(encodedText);
-        let astralCount = EmojiPoster.countAstrals(encodedText).astralsCount;
-        let charCount = astralCount ? textCount + astralCount : textCount;
-        counter.innerText = charCount > PostLengthCounter.MAX_POST_BYTES ?
-            "The post preview will be truncated." :
-            `Characters remaining in post preview: ${(PostLengthCounter.MAX_POST_BYTES - charCount)}`;
+        try {
+            let textarea = document.querySelector("textarea#frm_body");
+            let rawPostText = textarea.value;
+            let encodedText = EmojiPoster.handleEncoding(rawPostText);
+            let textCount = EmojiPoster.countText(encodedText);
+            let astralCount = EmojiPoster.countAstrals(encodedText).astralsCount;
+            let charCount = astralCount ? textCount + astralCount : textCount;
+            counter.innerText = charCount > PostLengthCounter.MAX_POST_BYTES ?
+                "The post preview will be truncated." :
+                `Characters remaining in post preview: ${(PostLengthCounter.MAX_POST_BYTES - charCount)}`;
+        } catch (err) { console.log(err); }
     },
 
     delayedUpdate() {
@@ -39,4 +41,4 @@ let PostLengthCounter = {
     }
 };
 
-PostLengthCounter.install();
+addDeferredHandler(Promise.resolve(true), PostLengthCounter.install);

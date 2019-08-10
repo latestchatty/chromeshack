@@ -60,4 +60,4 @@ let LocalTimeStamp = {
     }
 };
 
-processPostEvent.addHandler(LocalTimeStamp.convertTime);
+addDeferredHandler(Promise.resolve(true), processPostEvent.addHandler(LocalTimeStamp.convertTime));

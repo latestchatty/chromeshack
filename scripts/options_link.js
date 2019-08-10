@@ -1,4 +1,4 @@
-(async() => {
+addDeferredHandler(Promise.resolve(true), async() => {
     if (!$(".chromeshack_options_link").length) {
         let key = await getSetting("post_preview_location");
         let ppSetting = await settingsContains("post_preview");
@@ -82,4 +82,4 @@
             processPostBoxEvent.addHandler(optionsLinkHandler);
         }
     }
-})();
+});

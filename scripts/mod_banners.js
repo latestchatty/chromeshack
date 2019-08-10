@@ -36,5 +36,7 @@ let ModBanners = {
     }
 };
 
-ModBanners.install();
-processPostEvent.addHandler(ModBanners.processPost);
+addDeferredHandler(Promise.resolve(true), () => {
+    ModBanners.install();
+    processPostEvent.addHandler(ModBanners.processPost);
+});

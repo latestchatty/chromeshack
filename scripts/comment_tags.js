@@ -115,4 +115,4 @@ let CommentTags = {
     }
 };
 
-processPostBoxEvent.addHandler(CommentTags.installCommentTags);
+addDeferredHandler(Promise.resolve(true), processPostBoxEvent.addHandler(CommentTags.installCommentTags));

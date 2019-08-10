@@ -749,4 +749,4 @@ let ImageUpload = {
     }
 };
 
-processPostBoxEvent.addHandler(ImageUpload.insertForm);
+addDeferredHandler(Promise.resolve(true), processPostBoxEvent.addHandler(ImageUpload.insertForm));

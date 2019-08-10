@@ -37,4 +37,4 @@ let Collapse = {
     }
 };
 
-processPostEvent.addHandler(Collapse.toggle);
+addDeferredHandler(Promise.resolve(true), processPostEvent.addHandler(Collapse.toggle));
