@@ -20,7 +20,9 @@ Event.prototype.raise = function() {
 var deferredHandlers = [];
 // don't forget to Promise.all([...]) these handlers
 const addDeferredHandler = (settingPromise, cb) => {
-    deferredHandlers.push(settingPromise.then(cb));
+    deferredHandlers.push(
+        settingPromise.then(cb).catch(e => console.log(e))
+    );
 };
 
 if (!window.eventsInitialized) {

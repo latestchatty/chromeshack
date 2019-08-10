@@ -5,8 +5,7 @@ let PostPreview = {
 
     install() {
         // script is already injected
-        if (document.getElementById("previewButton") != null) return;
-
+        if (document.getElementById("previewButton")) return;
         let postButton = document.getElementById("frm_submit");
         let form_body = document.getElementById("frm_body");
         if (postButton && form_body) {
@@ -15,13 +14,11 @@ let PostPreview = {
             previewButton.id = "previewButton";
             previewButton.setAttribute("type", "button");
             previewButton.textContent = "Preview";
-            getSetting("post_preview_location").then(() => {
-                postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
-                let previewArea = document.createElement("div");
-                previewArea.id = "previewArea";
-                previewArea.style.display = "none";
-                form_body.parentNode.insertBefore(previewArea, form_body);
-            });
+            postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
+            let previewArea = document.createElement("div");
+            previewArea.id = "previewArea";
+            previewArea.style.display = "none";
+            form_body.parentNode.insertBefore(previewArea, form_body);
         }
     },
 

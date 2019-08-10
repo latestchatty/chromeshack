@@ -8,7 +8,10 @@
         * First stab at profiles
 */
 
-const getShackUsername = () => document.getElementById("user_posts").innerText || "";
+const getShackUsername = () => {
+    let username = document.getElementById("user_posts");
+    return username && username.innerText || "";
+}
 
 const toggleDropdowns = (targetElem) => {
     const toggleDropdown = (elem, hide) => {
