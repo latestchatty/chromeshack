@@ -32,6 +32,7 @@ let VideoLoader = {
             url
         );
         let _isMixer = /https:\/\/(?:.+\.)?mixer\.com\/([\w-]+)(\?vod=[\w-]+|\?clip=[\w-]+)?/i.exec(url);
+        let _isFacebook = /https:\/\/(?:.+\.)?facebook.(?:.+?)\/.+\/videos\/(\d+)\/?/i.exec(url);
 
         if (_isYoutube) {
             return {
@@ -41,51 +42,20 @@ let VideoLoader = {
                 offset: _isYoutube[3]
             };
         } else if (_isTwitch) {
-            if (_isTwitch[6]) {
-                // twitch channels
-                return {
-                    type: 2,
-                    channel: _isTwitch[6]
-                };
-            } else if (_isTwitch[5]) {
-                // twitch collections
-                return {
-                    type: 2,
-                    collection: _isTwitch[5]
-                };
-            } else if (_isTwitch[3]) {
-                // twitch videos
-                return {
-                    type: 2,
-                    video: _isTwitch[3],
-                    offset: _isTwitch[4]
-                };
-            } else if (_isTwitch[1] || _isTwitch[2]) {
-                // twitch clip
-                return {
-                    type: 2,
-                    clip: _isTwitch[1] || _isTwitch[2]
-                };
-            }
-        } else if (_isStreamable) {
-            return {
-                type: 3,
-                video: _isStreamable[1]
-            };
-        } else if (_isXboxDVR) {
-            return {
-                type: 4,
-                user: _isXboxDVR[1],
-                video: _isXboxDVR[2]
-            };
-        } else if (_isMixer) {
-            return {
-                type: 5,
-                user: _isMixer[1],
-                video: _isMixer[2]
-            };
+            // twitch channels
+            if (_isTwitch[6]) return { type: 2, channel: _isTwitch[6] };
+            // twitch collections
+            else if (_isTwitch[5]) return { type: 2, collection: _isTwitch[5] };
+            // twitch videos
+            else if (_isTwitch[3]) return { type: 2, video: _isTwitch[3], offset: _isTwitch[4] };
+            // twitch clips
+            else if (_isTwitch[1] || _isTwitch[2]) return { type: 2, clip: _isTwitch[1] || _isTwitch[2] };
         }
-
+        // assorted common media hosts
+        else if (_isStreamable) return { type: 3, video: _isStreamable[1] };
+        else if (_isXboxDVR) return { type: 4, user: _isXboxDVR[1], video: _isXboxDVR[2] };
+        else if (_isMixer) return { type: 5, user: _isMixer[1], video: _isMixer[2] };
+        else if (_isFacebook) return { type: 6, video: _isFacebook[1] };
         return null;
     },
 
@@ -101,7 +71,7 @@ let VideoLoader = {
 
             if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, _postId, index);
             else if (videoObj && videoObj.type === 2) VideoLoader.createTwitch(link, videoObj, _postId, index);
-            else if ((videoObj && videoObj.type === 3) || videoObj.type === 4 || videoObj.type === 5)
+            else if (videoObj && videoObj.type >= 3 && videoObj.type <= 6)
                 VideoLoader.createIframePlayer(link, videoObj, _postId, index);
         }
     },
@@ -130,6 +100,9 @@ let VideoLoader = {
         } else if (videoObj.type === 5) {
             // Mixer iFrame
             video_src = `https://mixer.com/embed/player/${user}${video_id}`;
+        } else if (videoObj.type === 6) {
+            // Facebook Video iFrame
+            video_src = `https://www.facebook.com/video/embed?video_id=${video_id}`;
         }
 
         if (video_src) {
