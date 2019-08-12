@@ -28,16 +28,14 @@ let PostLengthCounter = {
                 `Characters remaining in post preview: ${(PostLengthCounter.MAX_POST_BYTES - charCount)}`;
     },
 
-    delayedUpdate(item) {
-        if (PostLengthCounter.updateTimer) clearTimeout(PostLengthCounter.updateTimer);
-        PostLengthCounter.updateTimer = setTimeout(PostLengthCounter.update(item), 250);
-    },
-
     plcHandler(item) {
         PostLengthCounter.update(item);
         // only update the counter when they stop typing for performance
-        document.querySelector("textarea#frm_body")
-            .addEventListener("keyup", PostLengthCounter.delayedUpdate(item));
+        item.querySelector("textarea#frm_body")
+            .addEventListener("keyup", () => {
+                if (PostLengthCounter.updateTimer) clearTimeout(PostLengthCounter.updateTimer);
+                PostLengthCounter.updateTimer = setTimeout(PostLengthCounter.update(item), 250);
+            });
     }
 };
 
