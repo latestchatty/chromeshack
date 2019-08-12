@@ -98,4 +98,4 @@ let EmojiPoster = {
     }
 };
 
-addDeferredHandler(Promise.resolve(true), processPostBoxEvent.addHandler(EmojiPoster.install));
+processPostBoxEvent.addHandler(EmojiPoster.install);

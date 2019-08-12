@@ -66,10 +66,12 @@ const startNotifications = async () => {
 const pollNotifications = async () => {
     let notificationuid = await getSetting("notificationuid");
     if (await getEnabled("enable_notifications") && notificationuid) {
-        return await postXHR({
+        return await fetchSafe({
             url: "https://winchatty.com/v2/notifications/waitForNotification",
-            header: { "Content-Type": "application/x-www-form-urlencoded" },
-            data: `clientId=${notificationuid}`
+            fetchOpts: {
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `clientId=${notificationuid}`
+            }
         }).then(async resp => {
             let notifications = resp;
             if (!notifications.error) {
@@ -203,18 +205,25 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
     } else if (request.name === "scrollByKeyFix") {
         // scroll-by-key fix for Chatty
         return browser.tabs.executeScript(null, { file: "int/scrollByKeyFix.js" }).catch(err => console.log(err));
-    } else if (request.name === "corbFetch") return fetchSafe(request.url, request.optionsObj, request.ovrBool);
+    } else if (request.name === "corbFetch") return fetchSafe({
+        url: request.url,
+        fetchOpts: request.fetchOpts,
+        parseType: request.parseType
+    });
     else if (request.name === "corbPost") {
         let _fd = await JSONToFormData(request.data);
         return new Promise((resolve, reject) => {
-            return postXHR({
-                url: request.optionsObj.url,
-                headers: request.optionsObj.headers,
-                override: request.optionsObj.override,
-                data: _fd
+            return fetchSafe({
+                url: request.url,
+                fetchOpts: {
+                    method: "POST",
+                    headers: request.headers,
+                    body: _fd
+                },
+                parseType: request.parseType
             })
-                .then(resolve)
-                .catch(reject);
+            .then(resolve)
+            .catch(reject);
         });
     }
 

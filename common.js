@@ -96,54 +96,23 @@ const xhrRequestLegacy = (url, optionsObj) => {
             reject({ status: this.status, statusText: xhr.statusText });
         };
         xhr.send();
-    }).catch(err => {
-        console.log(err);
     });
 };
 
-const fetchSafeLegacy = ({ url, optionsObj, type }) => {
+const fetchSafeLegacy = ({ url, fetchOpts, parseType }) => {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
-        return xhrRequestLegacy(url, !isEmpty(optionsObj) ? optionsObj : {}).then(res => {
-            if ((res && !type) || type == "JSON")
-                return resolve(JSON.parse(DOMPurify.sanitize(res)));
-            else if (res && type == "HTML")
-                return resolve(sanitizeToFragment(res));
-            else return reject(res.statusText || res);
-        });
-    }).catch(err => console.log(err));
+        xhrRequestLegacy(url, fetchOpts)
+            .then(res => {
+                let result = res && parseFetchResponse(res, parseType);
+                if (result) resolve(result);
+                return reject(res);
+            })
+            .catch(err => reject(err))
+    });
 };
 
-const xhrRequest = (url, optionsObj) => {
-    // newer fetch() based promisified XHR helper
-    let _headers = new Headers();
-    if (optionsObj && !isEmpty(optionsObj.headers)) {
-        for (let [key, val] of Object.entries(optionsObj.headers)) {
-            _headers.append(key, val);
-        }
-    }
-    // set some sane defaults
-    if (!isEmpty(optionsObj) && !objContains("mode", optionsObj)) optionsObj.mode = "cors";
-    if (!isEmpty(optionsObj) && !objContains("cache", optionsObj)) optionsObj.cache = "no-cache";
-    if (!isEmpty(optionsObj) && !!objContains("method", optionsObj)) optionsObj.method = "GET";
-
-    return fetch(
-        url,
-        optionsObj && {
-            method: optionsObj.method,
-            mode: optionsObj.mode,
-            cache: optionsObj.cache,
-            credentials: optionsObj.credentials,
-            headers: _headers,
-            redirect: optionsObj.redirect,
-            referrer: optionsObj.referrer,
-            referrerPolicy: optionsObj.referrerPolicy,
-            body: optionsObj.body
-        }
-    );
-};
-
-const fetchSafe = (url, fetchOpts, modeObj) => {
+const fetchSafe = ({ url, fetchOpts, parseType }) => {
     // used for sanitizing fetches
     // fetchOpts gets destructured in 'xhrRequest()'
     // modeObj gets destructured into override bools:
@@ -151,75 +120,61 @@ const fetchSafe = (url, fetchOpts, modeObj) => {
     //   htmlBool: to force parsing as HTML fragment
     //   rssBool: to force parsing RSS to a sanitized JSON object
     // NOTE: HTML type gets sanitized to a document fragment
-
-    let { instgrmBool, htmlBool, rssBool } = modeObj || {};
-    return new Promise((resolve, reject) => {
-        xhrRequest(url, !isEmpty(fetchOpts) ? fetchOpts : {})
-            .then(res => {
-                if (res && res.ok) return res.text();
-                return reject("Fetch failed!");
+    return new Promise((resolve, reject) =>
+        fetch(url, fetchOpts)
+            .then(async res => {
+                let result = res && (res.ok || res.statusText === "OK") &&
+                    parseFetchResponse((await res).text(), parseType);
+                if (result) return resolve(result);
+                return reject(res);
             })
-            .then(text => {
-                try {
-                    if (instgrmBool) {
-                        // special case for instagram graphql parsing
-                        let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-                        let instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-                        if (instgrmGQL) {
-                            return resolve({
-                                metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
-                                gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1]))
-                            });
-                        }
-                        return reject();
-                    } else if (rssBool && text) return parseShackRSS(text).then(resolve).catch(reject);
-                    else if (htmlBool && text) return resolve(DOMPurify.sanitize(text));
-                    else if (isHTML(text)) return resolve(sanitizeToFragment(text));
-                    else {
-                        let parsed = safeJSON(text);
-                        if (parsed) return resolve(parsed);
-                        return reject();
-                    }
-                } catch (err) {
-                    return reject("Parse failed:", err);
-                }
-            });
-    }).catch(err => console.log(err));
+            .catch(err => reject(err))
+    );
 };
 
-const postXHR = ({ url, data, header, method, override }) => {
-    // used for sanitizing POSTs that return JSON
-    return new Promise((resolve, reject) => {
-        xhrRequest(url, {
-            method: method || "POST",
-            headers: header,
-            body: data
-        })
-            .then(res => {
-                if (res && res.ok) return res.text();
-                reject(false);
-            })
-            .then(text => {
-                try {
-                    let { chattypics } = override || {};
-                    if (chattypics) {
-                        let _resFragment = sanitizeToFragment(text);
-                        let _resElemArr = _resFragment.querySelector("#allLinksDirect");
-                        let _resElemVal = _resFragment.querySelector("#link11");
-                        // return a list of links if applicable
-                        if (_resElemArr || _resElemVal)
-                            return resolve(
-                                _resElemArr
-                                    ? _resElemArr.value.split("\n").filter(x => x !== "")
-                                    : _resElemVal && [_resElemVal.value]
-                            );
-                    }
-                    return resolve(JSON.parse(DOMPurify.sanitize(text)));
-                } catch (err) {
-                    return reject("Failed to parse!");
-                }
-            });
-    }).catch(err => console.log(err));
+const parseFetchResponse = async (textPromise, parseType) => {
+    const { chattyPics, instagram, html, chattyRSS } = parseType || {};
+    const text = await textPromise;
+    try {
+        // sanitize Instagram graphQL cache to JSON
+        if (instagram) {
+            let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+            let instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+            if (instgrmGQL)
+                return {
+                    metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
+                    gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1]))
+                };
+        }
+        // sanitize ChattyPics response to array of links
+        else if (chattyPics) {
+            let _resFragment = sanitizeToFragment(text);
+            let _resElemArr = _resFragment.querySelector("#allLinksDirect");
+            let _resElemVal = _resFragment.querySelector("#link11");
+            // return a list of links if applicable
+            if (_resElemArr || _resElemVal)
+                return _resElemArr
+                    ? _resElemArr.value.split("\n").filter(x => x !== "")
+                    : _resElemVal && [_resElemVal.value];
+        }
+        // sanitize and return as Shacknews RSS article list
+        else if (chattyRSS && text) return parseShackRSS(text);
+        // explicitly sanitize (don't return fragment)
+        else if (html && text) return DOMPurify.sanitize(text);
+        // sanitize and return as DOM fragment
+        else if (isHTML(text)) return sanitizeToFragment(text);
+        // fallthrough: sanitize to JSON
+        else if (isJSON(text)) {
+            let parsed = safeJSON(text);
+            if (parsed) return parsed;
+        }
+        // fallthrough: Gfycat (assume OK)
+        else if (text.length === 0) return true;
+    } catch (err) {
+        if (err) console.log("Parse failed:", err);
+        console.log("Parse failed!");
+    }
+    return null;
 };
 
 const getCookieValue = (name, defaultValue) => {
@@ -380,29 +335,27 @@ const safeJSON = (text) => {
 };
 
 const parseShackRSS = rssText => {
-    return new Promise((resolve, reject) => {
-        let result = [];
-        if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
-            let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
-            for (let i of items || []) {
-                let title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
-                let link = i.match(/<link>(.+?)<\/link>/im);
-                let date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
-                let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
-                let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
-                result.push({
-                    title: title ? DOMPurify.sanitize(title[1]) : "",
-                    link: link ? DOMPurify.sanitize(link[1]) : "",
-                    date: date ? DOMPurify.sanitize(date[1]) : new Date().toISOString(),
-                    content: content ? DOMPurify.sanitize(content[1]) : "",
-                    medialink: medialink ? DOMPurify.sanitize(medialink[1]) : ""
-                });
-            }
+    let result = [];
+    if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
+        let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
+        for (let i of items || []) {
+            let title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
+            let link = i.match(/<link>(.+?)<\/link>/im);
+            let date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
+            let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
+            let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
+            result.push({
+                title: title ? DOMPurify.sanitize(title[1]) : "",
+                link: link ? DOMPurify.sanitize(link[1]) : "",
+                date: date ? DOMPurify.sanitize(date[1]) : new Date().toISOString(),
+                content: content ? DOMPurify.sanitize(content[1]) : "",
+                medialink: medialink ? DOMPurify.sanitize(medialink[1]) : ""
+            });
         }
-        // sanitize our resulting response
-        if (!isEmpty(result)) return resolve(result);
-        return reject();
-    });
+    }
+    // sanitize our resulting response
+    if (!isEmpty(result)) return result;
+    return null;
 };
 
 const isHTML = text => {

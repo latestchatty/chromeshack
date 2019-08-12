@@ -19,9 +19,9 @@ let ChattyNews = {
         let rss = await getSetting("chatty_news_lastfetchdata");
         if (await ChattyNews.checkTime(1000 * 60 * 15)) {
             // cache each successful fetch for 15 minutes
-            rss = await fetchSafe("https://www.shacknews.com/feed/rss", {}, { rssBool: true });
+            rss = await fetchSafe({ url: "https://www.shacknews.com/feed/rss", parseType: { chattyRSS: true } });
             await setSetting("chatty_news_lastfetchdata", rss);
-            console.log("Refreshed ChattyNews cache:", rss);
+            //console.log("Refreshed ChattyNews cache:", rss);
         }
 
         let newsBox = container && container.querySelector("#recent-articles");

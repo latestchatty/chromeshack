@@ -173,10 +173,12 @@ const addHighlightGroup = (e, group) => {
  */
 
 const logInForNotifications = (notificationuid) => {
-    return postXHR({
+    return fetchSafe({
         url: "https://winchatty.com/v2/notifications/registerNotifierClient",
-        header: {"Content-type": "application/x-www-form-urlencoded"},
-        data: encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`)
+        fetchOpts: {
+            headers: { "Content-type": "application/x-www-form-urlencoded" },
+            body: encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`)
+        }
     })
         .then(() => {
             //console.log("Response from register client " + res.responseText);

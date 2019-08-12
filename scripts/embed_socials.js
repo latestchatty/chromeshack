@@ -120,9 +120,15 @@ let EmbedSocials = {
 
         let _reqUrl = `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`;
         let _token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
-        let _header = {headers: {Authorization: `Bearer ${atob(_token)}`}};
         return new Promise((resolve) => {
-            browser.runtime.sendMessage({name: "corbFetch", url: _reqUrl, optionsObj: _header}).then((tweetObj) => {
+            browser.runtime.sendMessage({
+                name: "corbFetch",
+                url: _reqUrl,
+                fetchOpts: {
+                    headers: { Authorization: `Bearer ${atob(_token)}` }
+                }
+            })
+            .then((tweetObj) => {
                 // sanitized in common.js!
                 //console.log("From background: ", tweetObj);
                 let _response = {
@@ -311,7 +317,11 @@ let EmbedSocials = {
         let postUrl = `https://www.instagram.com/p/${socialId}/`;
         let result = await new Promise((resolve, reject) =>
             browser.runtime
-                .sendMessage({name: "corbFetch", url: postUrl, ovrBool: {instgrmBool: true}})
+                .sendMessage({
+                    name: "corbFetch",
+                    url: postUrl,
+                    parseType: { instagram: true }
+                })
                 .then((response) => {
                     // sanitized in common.js!
                     let _matchGQL = response && response.gqlData.shortcode_media;

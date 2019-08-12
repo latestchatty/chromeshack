@@ -39,7 +39,7 @@ let GetPost = {
             let chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
             let singlePost = `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
 
-            fetchSafe(singlePost).then(data => {
+            fetchSafe({ url: singlePost }).then(data => {
                 let postDiv = document.createElement("div");
                 // hack-ish way of "parsing" string to DOM (sanitized!)
                 postDiv.appendChild(data);

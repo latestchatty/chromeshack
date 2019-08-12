@@ -1,4 +1,4 @@
-addDeferredHandler(Promise.resolve(true), async() => {
+(async() => {
     if (await settingsContains("hide_tagging_buttons")) {
         document.body.className += " hide_tagging_buttons";
     }
@@ -14,4 +14,4 @@ addDeferredHandler(Promise.resolve(true), async() => {
     if (!(await settingsContains("reduced_color_user_icons"))) {
         document.body.className += " do_not_reduce_color_user_icons";
     }
-});
+})();

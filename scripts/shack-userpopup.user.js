@@ -179,46 +179,44 @@ const displayUserMenu = (parentObj, username, friendlyName) => {
     }
 };
 
-addDeferredHandler(Promise.resolve(true), () => {
-    // Add catch-all event handlers for creating user dropdown menus
-    document.addEventListener("click", async (e) => {
-        // try to eat exceptions that are typically harmless
-        try {
-            let sanitizedUser = e.target.parentNode.matches("span.user") &&
-                superTrim(e.target.innerText.split(" - ")[0]);
-            // Post author clicked
-            if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDropdowns(e.target);
-                displayUserMenu(e.target, sanitizedUser, sanitizedUser);
-                // add filter options for fullpost usernames
-                let usertext = e.target.closest("span.user");
-                let ulUserDD = usertext && usertext.querySelector("ul.userDropdown");
-                await createFilterListItems(ulUserDD, sanitizedUser);
-            } else if (e.target.parentNode.matches("span.user.this-user") && e.target.matches("a")) {
-                // OWN user name clicked as post author
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDropdowns();
-                displayUserMenu(e.target, sanitizedUser, "You");
-            } else if (e.target.matches("a#userDropdownTrigger")) {
-                // User name clicked (at the top of the banner?)
-                e.preventDefault();
-                e.stopPropagation();
-                toggleDropdowns();
-                displayUserMenu(e.target, getShackUsername(), "You");
-            } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
-                toggleDropdowns();
-            }
-        } catch (e) {
-            console.log(e);
+// Add catch-all event handlers for creating user dropdown menus
+document.addEventListener("click", async (e) => {
+    // try to eat exceptions that are typically harmless
+    try {
+        let sanitizedUser = e.target.parentNode.matches("span.user") &&
+            superTrim(e.target.innerText.split(" - ")[0]);
+        // Post author clicked
+        if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdowns(e.target);
+            displayUserMenu(e.target, sanitizedUser, sanitizedUser);
+            // add filter options for fullpost usernames
+            let usertext = e.target.closest("span.user");
+            let ulUserDD = usertext && usertext.querySelector("ul.userDropdown");
+            await createFilterListItems(ulUserDD, sanitizedUser);
+        } else if (e.target.parentNode.matches("span.user.this-user") && e.target.matches("a")) {
+            // OWN user name clicked as post author
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdowns();
+            displayUserMenu(e.target, sanitizedUser, "You");
+        } else if (e.target.matches("a#userDropdownTrigger")) {
+            // User name clicked (at the top of the banner?)
+            e.preventDefault();
+            e.stopPropagation();
+            toggleDropdowns();
+            displayUserMenu(e.target, getShackUsername(), "You");
+        } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
+            toggleDropdowns();
         }
-    });
-
-    if (getShackUsername()) {
-        // Add custom dropdown stuff to the Account button
-        let $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
-        $account.setAttribute("id", "userDropdownTrigger");
+    } catch (e) {
+        console.log(e);
     }
 });
+
+if (getShackUsername()) {
+    // Add custom dropdown stuff to the Account button
+    let $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
+    $account.setAttribute("id", "userDropdownTrigger");
+}

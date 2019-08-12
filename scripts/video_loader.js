@@ -109,10 +109,10 @@ let VideoLoader = {
     async createIframePlayer(link, videoObj, postId, index) {
         const getStreamableLink = async (shortcode) => {
             let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-            let json = await fetchSafe(
-                `https://api.streamable.com/videos/${shortcode}`,
-                { headers: { Authorization: __obf } }
-            ); // sanitized in common.js!
+            let json = await fetchSafe({
+                url: `https://api.streamable.com/videos/${shortcode}`,
+                fetchOpts: { headers: { Authorization: __obf } }
+            }); // sanitized in common.js!
             return json.files.mp4.url || "";
         };
 

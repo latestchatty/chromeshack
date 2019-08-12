@@ -134,25 +134,26 @@ let ImageLoader = {
     async createImgur(link, postId, index) {
         const fetchImgur = (url) => {
             // sanitized in common.js!
-            return fetchSafe(url, {headers: {Authorization: "Client-ID c045579f61fc802"}}).then((response) => {
-                try {
-                    let _items =
-                        response && Array.isArray(response.data.images || response.data)
-                            ? response.data.images
-                            : response.data.mp4 || response.data.link;
-                    if (Array.isArray(_items) && _items.length > 0) {
-                        let _media = [];
-                        for (let i of _items || []) {
-                            if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
-                        }
-                        return _media;
-                    } else if (_items) {
-                        return [_items];
-                    }
-                } catch (err) {
-                    return null;
+            return fetchSafe({
+                url,
+                fetchOpts: {
+                    headers: { Authorization: "Client-ID c045579f61fc802" }
                 }
-            });
+            }).then((response) => {
+                let _items =
+                    response && Array.isArray(response.data.images || response.data)
+                        ? response.data.images
+                        : response.data.mp4 || response.data.link;
+                if (Array.isArray(_items) && _items.length > 0) {
+                    let _media = [];
+                    for (let i of _items || []) {
+                        if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
+                    }
+                    return _media;
+                } else if (_items) {
+                    return [_items];
+                }
+            }).catch(err => console.log("Imgur resolution failure:", err.status || err));
         };
 
         // resolve media shortcodes with failover (album-image > album > image)
@@ -195,7 +196,7 @@ let ImageLoader = {
         if (gfycat_id) {
             let url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
             if (window.chrome) {
-                fetchSafe(url).then((json) => {
+                fetchSafe({ url }).then((json) => {
                     // sanitized in common.js!
                     if (json && json.gfyItem.mobileUrl != null) {
                         appendMedia({
@@ -211,24 +212,23 @@ let ImageLoader = {
                 });
             } else {
                 // fallback to older XHR method for Firefox for this endpoint
-                fetchSafeLegacy({url})
-                    .then((json) => {
-                        // sanitized in common.js!
-                        if (json && json.gfyItem.mobileUrl != null) {
-                            appendMedia({
-                                src: [json.gfyItem.mobileUrl],
-                                link,
-                                postId,
-                                index,
-                                type: {forceAppend: true}
-                            });
-                        } else {
-                            throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
-                        }
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
+                fetchSafeLegacy({url}).then((json) => {
+                    // sanitized in common.js!
+                    if (json && json.gfyItem.mobileUrl != null) {
+                        appendMedia({
+                            src: [json.gfyItem.mobileUrl],
+                            link,
+                            postId,
+                            index,
+                            type: {forceAppend: true}
+                        });
+                    } else {
+                        throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
             }
         } else {
             console.log(`An error occurred parsing the Gfycat url: ${link.href}`);

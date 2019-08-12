@@ -20,7 +20,9 @@ let HighlightPendingPosts = {
     },
 
     fetchPendings() {
-        fetchSafe(`https://winchatty.com/v2/waitForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`)
+        fetchSafe({
+            url: `https://winchatty.com/v2/waitForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`
+        })
         .then((json) => {
             // sanitized in common.js!
             if (json.events) {
@@ -127,7 +129,7 @@ let HighlightPendingPosts = {
             }
         });
         // We need to get an initial event ID to start with.
-        fetchSafe("https://winchatty.com/v2/getNewestEventId").then((json) => {
+        fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" }).then((json) => {
             // sanitized in common.js!
             HighlightPendingPosts.lastEventId = parseInt(json.eventId);
             HighlightPendingPosts.fetchPendings();
