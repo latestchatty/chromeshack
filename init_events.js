@@ -13,14 +13,14 @@ Event.prototype.removeHandler = function(callback) {
 
 Event.prototype.raise = function() {
     for (let handler of this.eventHandlers) {
-        if (handler !== undefined) handler.apply(this, arguments);
+        if (handler) handler.apply(this, arguments);
     }
 };
 
 var deferredHandlers = [];
 // don't forget to Promise.all([...]) these handlers
 const addDeferredHandler = (settingPromise, cb) => {
-    if (cb !== "undefined") deferredHandlers.push(settingPromise.then(cb));
+    if (cb) deferredHandlers.push(settingPromise.then(cb));
 };
 
 if (!window.eventsInitialized) {
