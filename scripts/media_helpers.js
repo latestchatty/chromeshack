@@ -136,7 +136,6 @@ const mediaContainerInsert = (elem, link, id, index) => {
     attachChildEvents(elem, id, index);
     // always insert media embeds next to their expando
     postBody.insertBefore(elem, link.nextSibling);
-    if (elem.childNodes.length > 0)
     toggleMediaItem(link);
 };
 
