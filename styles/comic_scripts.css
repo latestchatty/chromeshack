@@ -1,7 +1,11 @@
 /* Dino Gegtik */
 
 div.dinogegtik a {
+    display: block;
     color: #e00 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 div.dinogegtik {
@@ -26,7 +30,6 @@ div.dinogegtik div.panel {
 }
 
 /* sparkly comic */
-
 div.sparklycomic {
     display: block;
     width: 100%;
@@ -62,14 +65,25 @@ div.sparklycomic div.panel span {
     bottom: 2px;
 }
 
-div.sparklycomic div.panel span.shadow {
-    color: #000;
+div.sparklycomic div.panel span {
+    color: #fff;
     left: 2px;
     right: 0;
     bottom: 0;
+    text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
 }
 
-div.sparklycomic div.panel span.shadow .jt_spoiler,
-div.sparklycomic div.panel span.shadow a {
+div.sparklycomic div.panel span a {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+div.sparklycomic div.panel span .jt_spoiler {
     visibility: hidden;
 }

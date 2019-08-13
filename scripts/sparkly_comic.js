@@ -26,14 +26,9 @@ let SparklyComic = {
                 panel.style.backgroundImage = `url("${browser.runtime.getURL(
                     "../images/sparkly/" + SparklyComic.getImage(lines[i], i, max)
                 )}")`;
-                let s1 = document.createElement("span");
-                s1.className = "shadow";
-                safeInnerHTML(lines[i], s1);
-                panel.appendChild(s1);
-                let s2 = document.createElement("span");
-                s2.className = "front";
-                safeInnerHTML(lines[i], s2);
-                panel.appendChild(s2);
+                let s = document.createElement("span");
+                safeInnerHTML(lines[i], s);
+                panel.appendChild(s);
                 comic_div.appendChild(panel);
             }
         }
@@ -50,9 +45,8 @@ let SparklyComic = {
         if (line.indexOf("?") >= 0 || line.indexOf("wtf") >= 0) return "sparkly4.jpg";
         // LOL or NWS
         if (line.indexOf("lol") >= 0 || line.indexOf("nws") >= 0) return "sparkly3.jpg";
-        if (line.indexOf(":/") >= 0) return "sparkly1.jpg";
         // end on a smile
-        if (i == count - 1) return "sparkly3.jpg";
+        if (i === count - 1) return "sparkly3.jpg";
         // default sparkly
         return "sparkly1.jpg";
     }
