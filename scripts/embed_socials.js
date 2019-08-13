@@ -66,23 +66,32 @@ let EmbedSocials = {
         Twitter Implementation
     */
     async createTweet(parentLink, socialId, postId, index) {
-        let _tweetObj = await EmbedSocials.fetchTweetData(socialId);
-        let _tweetElem = EmbedSocials.renderTweet(parentLink, _tweetObj, postId, index);
-        //console.log(_tweetObj, _tweetElem);
-        mediaContainerInsert(_tweetElem, parentLink, postId, index);
+        let tweetObj = await EmbedSocials.renderTweetObj(await EmbedSocials.fetchTweet(socialId));
+        let tweetReplyElem = tweetObj.tweetReply &&
+            EmbedSocials.renderTweet(parentLink, tweetObj.tweetReply, postId, index);
+        let tweetElem = EmbedSocials.renderTweet(parentLink, tweetObj, postId, index);
+        let tweetContainer;
+        if (tweetReplyElem) {
+            tweetContainer = document.createElement("div");
+            tweetContainer.id = `loader_${postId}-${index}`;
+            tweetContainer.classList.add("media-container");
+            // move the parent tweet above the reply
+            tweetContainer.appendChild(tweetReplyElem);
+            tweetContainer.appendChild(tweetElem);
+        }
+        mediaContainerInsert(tweetContainer || tweetElem, parentLink, postId, index);
     },
 
-    async fetchTweetData(tweetId) {
+    async renderTweetObj(response) {
+        const sortByBitrate = (mediaArr) => {
+            let result = mediaArr.sort((a, b) => {
+                if (a.bitrate < b.bitrate) return 1;
+                else if (a.bitrate > b.bitrate) return -1;
+                return 0;
+            });
+            return result;
+        };
         const collectTweetMedia = (tweetMediaObj) => {
-            let sortByBitrate = (mediaArr) => {
-                let result = mediaArr.sort((a, b) => {
-                    if (a.bitrate < b.bitrate) return 1;
-                    else if (a.bitrate > b.bitrate) return -1;
-                    return 0;
-                });
-                return result;
-            };
-
             let result = [];
             Object.values(tweetMediaObj).forEach((item) => {
                 if ((item.type === "video" || item.type === "animated_gif") && item.video_info.variants) {
@@ -118,45 +127,48 @@ let EmbedSocials = {
             return postTextContentElem;
         };
 
-        let _reqUrl = `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`;
-        let _token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
-        return new Promise((resolve) => {
-            browser.runtime.sendMessage({
-                name: "corbFetch",
-                url: _reqUrl,
-                fetchOpts: {
-                    headers: { Authorization: `Bearer ${atob(_token)}` }
-                }
-            })
-            .then((tweetObj) => {
-                // sanitized in common.js!
-                //console.log("From background: ", tweetObj);
-                let _response = {
-                    tweetUrl: `https://twitter.com/${tweetObj.user.screen_name}/status/${tweetObj.id_str}`,
-                    profilePic: tweetObj.user.profile_image_url_https,
-                    profilePicUrl: `https://twitter.com/${tweetObj.user.screen_name}`,
-                    displayName: tweetObj.user.name,
-                    realName: tweetObj.user.screen_name,
-                    tweetText: tagifyTweetText(tweetObj.full_text).outerHTML,
-                    tweetMediaItems: tweetObj.extended_entities
-                        ? collectTweetMedia(tweetObj.extended_entities.media)
-                        : [],
-                    tweetQuoted:
-                        (!!tweetObj.quoted_status && {
-                            quotedUrl: tweetObj.quoted_status_permalink.expanded,
-                            quotedDisplayName: tweetObj.quoted_status.user.name,
-                            quotedRealName: tweetObj.quoted_status.user.screen_name,
-                            quotedText: tagifyTweetText(tweetObj.quoted_status.full_text).outerHTML,
-                            quotedMediaItems: tweetObj.quoted_status.extended_entities
-                                ? collectTweetMedia(tweetObj.quoted_status.extended_entities.media)
-                                : []
-                        }) ||
-                        null,
-                    timestamp: new Date(Date.parse(tweetObj.created_at)).toLocaleString(),
-                    userVerified: tweetObj.user.verified
-                };
-                return resolve(_response);
-            });
+        if (response && !response.errors) {
+          let result = {
+            tweetUrl: `https://twitter.com/${response.user.screen_name}/status/${response.id_str}`,
+            profilePic: response.user.profile_image_url_https,
+            profilePicUrl: `https://twitter.com/${response.user.screen_name}`,
+            displayName: response.user.name,
+            realName: response.user.screen_name,
+            tweetText: tagifyTweetText(response.full_text).outerHTML,
+            tweetMediaItems: response.extended_entities ? collectTweetMedia(response.extended_entities.media) : [],
+            timestamp: new Date(Date.parse(response.created_at)).toLocaleString(),
+            userVerified: response.user.verified
+          };
+          if (response.quoted_status)
+            result = {
+              ...result,
+              tweetQuoted: {
+                quotedUrl: response.quoted_status_permalink.expanded,
+                quotedDisplayName: response.quoted_status.user.name,
+                quotedRealName: response.quoted_status.user.screen_name,
+                quotedText: tagifyTweetText(response.quoted_status.full_text).outerHTML,
+                quotedMediaItems: response.quoted_status.extended_entities ?
+                    collectTweetMedia(response.quoted_status.extended_entities.media) : []
+              }
+            };
+          if (response.in_reply_to_status_id_str) {
+            let fetchedReply = await EmbedSocials.fetchTweet(response.in_reply_to_status_id_str);
+            let tweetReply = await EmbedSocials.renderTweetObj(fetchedReply);
+            result = { ...result, tweetReply };
+          }
+          return result;
+        }
+        return null;
+    },
+
+    async fetchTweet(tweetId) {
+        let token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
+        return await browser.runtime.sendMessage({
+            name: "corbFetch",
+            url: `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`,
+            fetchOpts: {
+                headers: { Authorization: `Bearer ${atob(token)}` }
+            }
         });
     },
 

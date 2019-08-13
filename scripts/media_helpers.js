@@ -102,7 +102,14 @@ const toggleMediaItem = (link) => {
     } else if (embed) {
         // just toggle the container  and link state
         if (!expando.matches(".embedded")) expando.classList.add("embedded");
-        if (embed.matches("div")) {
+        if (container && container.childElementCount > 1) {
+            // toggle multiple children of placed media container (Twitter)
+            for (let child of container.children || []) {
+                if (child.matches(".hidden")) child.classList.remove("hidden");
+                else child.classList.add("hidden");
+            }
+        }
+        else if (embed.matches("div")) {
             if (embed.matches(".hidden")) embed.classList.remove("hidden");
             else if (embed.matches("div")) embed.classList.add("hidden");
         } else if (container) {
@@ -129,6 +136,7 @@ const mediaContainerInsert = (elem, link, id, index) => {
     attachChildEvents(elem, id, index);
     // always insert media embeds next to their expando
     postBody.insertBefore(elem, link.nextSibling);
+    if (elem.childNodes.length > 0)
     toggleMediaItem(link);
 };
 
