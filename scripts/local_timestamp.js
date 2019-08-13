@@ -3,8 +3,8 @@ let LocalTimeStamp = {
     timeAmPm: true,
 
     convertTime(item, id) {
-        let postdate = getDescendentByTagAndClassName(item, "div", "postdate");
-        LocalTimeStamp.adjustTime(postdate);
+        let postdate = item.querySelector("div.postdate");
+        postdate && LocalTimeStamp.adjustTime(postdate);
     },
 
     adjustTime(elm) {

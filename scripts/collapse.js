@@ -5,10 +5,9 @@ let Collapse = {
             let root = document.getElementById("root_" + id);
             // root should never be null, but check anyway
             if (root) {
-                let postmeta = getDescendentByTagAndClassName(item, "div", "postmeta");
-
-                let close = getDescendentByTagAndClassName(postmeta, "a", "closepost");
-                let show = getDescendentByTagAndClassName(postmeta, "a", "showpost");
+                let postmeta = item.querySelector("div.postmeta");
+                let close = postmeta.querySelector("a.closepost");
+                let show = postmeta.querySelector("a.showpost");
                 close.addEventListener("click", () => {
                     Collapse.close(id);
                 });

@@ -9,9 +9,9 @@
 let NwsIncognito = {
     hookToNwsPosts(item) {
         let allLinks = [];
-        let nwsPost = getDescendentByTagAndAnyClassName(item, "div", "fpmod_nws");
+        let nwsPost = item.querySelector("div.fpmod_nws");
         if (nwsPost) {
-            let postBody = getDescendentByTagAndClassName(nwsPost, "div", "postbody");
+            let postBody = nwsPost.querySelector("div.postbody");
             let links = postBody.getElementsByTagName("a");
             for (let iLink = 0; iLink < links.length; iLink++) {
                 //Clone the link to get rid of any handlers that were put on it before (like the inline image loader)

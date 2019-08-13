@@ -1,39 +1,7 @@
-const getDescendentByTagAndClassName = (parent, tag, class_name) => {
-    let descendents = parent.getElementsByTagName(tag);
-    for (let i = 0; i < descendents.length; i++) {
-        if (descendents[i].className.indexOf(class_name) == 0) return descendents[i];
-    }
-};
-
-const getDescendentByTagAndAnyClassName = (parent, tag, class_name) => {
-    let descendents = parent.getElementsByTagName(tag);
-    for (let i = 0; i < descendents.length; i++) {
-        if (descendents[i].className.indexOf(class_name) !== -1) return descendents[i];
-    }
-};
-
-const getDescendentsByTagAndClassName = (parent, tag, class_name) => {
-    let descendents = parent.getElementsByTagName(tag);
-    let descArray = new Array();
-    for (let i = 0; i < descendents.length; i++) {
-        if (descendents[i].className.indexOf(class_name) == 0) descArray.push(descendents[i]);
-    }
-
-    return descArray;
-};
-
-const getDescendentsByTagAndAnyClassName = (parent, tag, class_name) => {
-    let descendents = parent.getElementsByTagName(tag);
-    let descArray = new Array();
-    for (let i = 0; i < descendents.length; i++) {
-        if (descendents[i].className.indexOf(class_name) !== -1) descArray.push(descendents[i]);
-    }
-
-    return descArray;
-};
-
 const stripHtml = html => {
-    return String(html).replace(/(<([^>]+)>)/gi, "");
+    // respect carriage returns
+    let result = html.replace(/<br.*?>/gi, "\n");
+    return result.replace(/(<([^>]+)>)/gi, "");
 };
 
 const insertStyle = (css, containerName) => {

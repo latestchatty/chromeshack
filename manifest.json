@@ -35,7 +35,7 @@
                 "ext/jquery/jquery-3.4.1.min.js",
                 "scripts/jquery.drop.js",
                 "scripts/jquery.insert.js",
-                "sentence_parser.js",
+                "scripts/sentence_parser.js",
                 "init_events.js",
                 "common.js",
                 "settings.js",
