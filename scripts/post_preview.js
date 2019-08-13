@@ -54,16 +54,18 @@ let PostPreview = {
     },
 
     enablePreview(item) {
+        if (item instanceof MouseEvent) item = item.target.closest("div.postbox");
         let form_body = item.querySelector("#frm_body");
         let preview_box = item.querySelector("#previewArea");
         if (!form_body || !preview_box) return;
         preview_box.style.display = "block";
-        PostPreview.updatePreview();
+        PostPreview.updatePreview(item);
         form_body.addEventListener("keyup", PostPreview.updatePreview, true);
         form_body.focus();
     },
 
     disablePreview(item) {
+        if (item instanceof MouseEvent) item = item.target.closest("div.postbox");
         let form_body = item.querySelector("#frm_body");
         let preview_box = item.querySelector("#previewArea");
         if (!form_body || !preview_box) return;
@@ -78,8 +80,9 @@ let PostPreview = {
     },
 
     delayedPreview(item) {
+        if (item instanceof KeyboardEvent) item = item.target.closest("div.postbox");
         let form_body = item.querySelector("#frm_body");
-        let previewArea = item.querySelector("previewArea");
+        let previewArea = item.querySelector("#previewArea");
         if (!form_body || !previewArea) return;
         safeInnerHTML(generatePreview(form_body.value), previewArea);
     },
