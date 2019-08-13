@@ -18,9 +18,7 @@ let ImageLoader = {
             if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
                 // pass our loop position and add an expando button for every hooked link
                 ((i) => {
-                    if (links[i].querySelector("div.expando")) {
-                        return;
-                    }
+                    if (links[i].querySelector("div.expando")) return;
                     links[i].addEventListener("click", (e) => {
                         ImageLoader.toggleImage(e, i);
                     });

@@ -11,7 +11,10 @@ let SparklyComic = {
             // comic is already here!
             if (document.getElementById(comic_id)) return;
             let postBody = fullpost.querySelector("div.postbody");
-            let lines = SentenceParser.parseIntoLines(postBody.innerHTML);
+            let postBodyClone = postBody.cloneNode(true);
+            let expando = postBodyClone.querySelector("div.expando");
+            if (expando) expando.parentNode.removeChild(expando);
+            let lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
             let comic_div = document.createElement("div");
             comic_div.id = comic_id;
             comic_div.className = "sparklycomic";

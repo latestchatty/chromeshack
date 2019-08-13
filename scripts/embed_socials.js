@@ -7,9 +7,7 @@ let EmbedSocials = {
             let parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
             if (parsedSocialPost != null) {
                 ((parsedSocialPost, i) => {
-                    if (links[i].querySelector("div.expando")) {
-                        return;
-                    }
+                    if (links[i].querySelector("div.expando")) return;
                     links[i].addEventListener("click", (e) => {
                         EmbedSocials.processPost(e, parsedSocialPost, i);
                     });

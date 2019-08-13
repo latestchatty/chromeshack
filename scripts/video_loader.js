@@ -5,9 +5,7 @@ let VideoLoader = {
             let parsedVideo = VideoLoader.getVideoType(links[i].href);
             if (parsedVideo != null) {
                 ((parsedVideo, i) => {
-                    if (links[i].querySelector("div.expando")) {
-                        return;
-                    }
+                    if (links[i].querySelector("div.expando")) return;
                     links[i].addEventListener("click", (e) => {
                         VideoLoader.toggleVideo(e, parsedVideo, i);
                     });
