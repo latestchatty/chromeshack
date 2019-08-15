@@ -64,9 +64,7 @@ let EmbedSocials = {
         Twitter Implementation
     */
     async createTweet(parentLink, socialId, postId, index) {
-        let testTweet = "1162042713904168961";
-        //let tweetObj = await EmbedSocials.fetchTweet(socialId);
-        let tweetObj = await EmbedSocials.fetchTweet(testTweet);
+        let tweetObj = await EmbedSocials.fetchTweet(socialId);
         let tweetElem = EmbedSocials.renderTweet(parentLink, tweetObj, postId, index);
         let tweetContainer = document.createElement("div");
         if (tweetObj.tweetParentId) {
