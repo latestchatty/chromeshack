@@ -64,20 +64,26 @@ let EmbedSocials = {
         Twitter Implementation
     */
     async createTweet(parentLink, socialId, postId, index) {
-        let tweetObj = await EmbedSocials.renderTweetObj(await EmbedSocials.fetchTweet(socialId));
-        let tweetReplyElem = tweetObj.tweetReply &&
-            EmbedSocials.renderTweet(parentLink, tweetObj.tweetReply, postId, index);
+        let testTweet = "1162042713904168961";
+        //let tweetObj = await EmbedSocials.fetchTweet(socialId);
+        let tweetObj = await EmbedSocials.fetchTweet(testTweet);
         let tweetElem = EmbedSocials.renderTweet(parentLink, tweetObj, postId, index);
-        let tweetContainer;
-        if (tweetReplyElem) {
-            tweetContainer = document.createElement("div");
+        let tweetContainer = document.createElement("div");
+        if (tweetObj.tweetParentId) {
+            let mutated = await EmbedSocials.fetchTweetParents(tweetObj);
+            // stack the tweets (oldest to newest)
             tweetContainer.id = `loader_${postId}-${index}`;
             tweetContainer.classList.add("media-container");
-            // move the parent tweet above the reply
-            tweetContainer.appendChild(tweetReplyElem);
+            for (let tweetParent of mutated.tweetParents || []) {
+                let tweetParentElem = EmbedSocials.renderTweet(parentLink, tweetParent, postId, index);
+                tweetContainer.appendChild(tweetParentElem);
+            }
             tweetContainer.appendChild(tweetElem);
         }
-        mediaContainerInsert(tweetContainer || tweetElem, parentLink, postId, index);
+        mediaContainerInsert(
+            tweetContainer.childElementCount > 0 ? tweetContainer : tweetElem,
+            parentLink, postId, index
+        );
     },
 
     async renderTweetObj(response) {
@@ -149,11 +155,8 @@ let EmbedSocials = {
                     collectTweetMedia(response.quoted_status.extended_entities.media) : []
               }
             };
-          if (response.in_reply_to_status_id_str) {
-            let fetchedReply = await EmbedSocials.fetchTweet(response.in_reply_to_status_id_str);
-            let tweetReply = await EmbedSocials.renderTweetObj(fetchedReply);
-            result = { ...result, tweetReply };
-          }
+          if (response.in_reply_to_status_id_str)
+            result = { ...result, tweetParentId: response.in_reply_to_status_id_str };
           return result;
         }
         return null;
@@ -161,13 +164,28 @@ let EmbedSocials = {
 
     async fetchTweet(tweetId) {
         let token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
-        return await browser.runtime.sendMessage({
+        let response = await browser.runtime.sendMessage({
             name: "corbFetch",
             url: `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`,
             fetchOpts: {
                 headers: { Authorization: `Bearer ${atob(token)}` }
             }
         });
+        return EmbedSocials.renderTweetObj(response);
+    },
+
+    async fetchTweetParents(tweetObj) {
+        const fetchParents = async (id, acc) => {
+          let tweetObj = await EmbedSocials.fetchTweet(id);
+          acc.push(tweetObj);
+          if (tweetObj.tweetParentId)
+            return await fetchParents(tweetObj.tweetParentId, acc);
+          return acc.reverse();
+        };
+        // accumulate each tweet in the tweet mention chain (oldest to newest)
+        if (tweetObj.tweetParentId)
+            return { ...tweetObj, tweetParents: await fetchParents(tweetObj.tweetParentId, []) };
+        return [];
     },
 
     renderTweet(parentLink, tweetObj, postId, index) {
