@@ -69,6 +69,7 @@ const pollNotifications = async () => {
         return await fetchSafe({
             url: "https://winchatty.com/v2/notifications/waitForNotification",
             fetchOpts: {
+                method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `clientId=${notificationuid}`
             }
