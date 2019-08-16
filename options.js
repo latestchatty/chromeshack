@@ -176,6 +176,7 @@ const logInForNotifications = (notificationuid) => {
     return fetchSafe({
         url: "https://winchatty.com/v2/notifications/registerNotifierClient",
         fetchOpts: {
+            method: "POST",
             headers: { "Content-type": "application/x-www-form-urlencoded" },
             body: encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`)
         }
@@ -208,7 +209,7 @@ const updateNotificationOptions = async () => {
     if (notifications) {
         let uid = await getSetting("notificationuid");
         if (!uid) {
-            let json = await fetchSafe("https://winchatty.com/v2/notifications/generateId");
+            let json = await fetchSafe({ url: "https://winchatty.com/v2/notifications/generateId" });
             let notificationUID = json.id;
             if (notificationUID) {
                 await setSetting("notificationuid", notificationUID);
