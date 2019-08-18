@@ -1,9 +1,18 @@
 let ChromeShack = {
+    isPostReplyMutation: false,
+
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = mutationsList => {
             for (let mutation of mutationsList) {
                 if (mutation.type === "childList") {
+                    try {
+                        if (mutation.previousSibling && mutation.removedNodes &&
+                            mutation.previousSibling.matches(".fullpost") &&
+                            mutation.removedNodes[0].matches(".inlinereply"))
+                            ChromeShack.isPostReplyMutation = true;
+                    } catch (err) { /* eat exceptions here */ }
+
                     let added_nodes = mutation.addedNodes;
                     for (let addedNode of added_nodes || []) {
                         // wrap in a try/catch in case our element node is null
@@ -19,6 +28,9 @@ let ChromeShack = {
                                 let id = source_id.substr(5);
                                 ChromeShack.processPost(elem, id);
                             }
+                            // the user posted a reply and the thread has refreshed
+                            if (elem && elem.matches("div.threads") && ChromeShack.isPostReplyMutation)
+                                ChromeShack.replyFixHandler(elem); // fix busted nuLOL API loading
 
                             // check specifically for the postbox being added
                             let changed_id = addedNode && addedNode.id;
@@ -58,7 +70,20 @@ let ChromeShack = {
 
     processPostBox(postbox) {
         processPostBoxEvent.raise(postbox);
-    }
+    },
+
+    replyFixHandler(threadElem) {
+        let newestChildId = Math.max(
+            ...[...threadElem.querySelectorAll("li[id^='item_']")]
+            .map(x => parseInt(x.id.substr(5)))
+        );
+        let newPostRefreshBtn = threadElem.querySelector(`li#item_${newestChildId} .refresh > a`);
+        if (newPostRefreshBtn) {
+            newPostRefreshBtn.click();
+            console.log("Chrome Shack nuLOL reply fix ran successfully");
+        } else console.log("Something went wrong with the nuLOL reply fix!");
+        ChromeShack.isPostReplyMutation = false; // unflag when done with handling
+    },
 };
 
 // make sure our async handlers are resolved before observing
