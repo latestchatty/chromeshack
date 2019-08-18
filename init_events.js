@@ -27,5 +27,6 @@ if (!window.eventsInitialized) {
     var fullPostsCompletedEvent = new Event();
     var processPostEvent = new Event();
     var processPostBoxEvent = new Event();
+    var processReplyEvent = new Event();
     window.eventsInitialized = true;
 }

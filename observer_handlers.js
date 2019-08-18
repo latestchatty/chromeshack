@@ -73,15 +73,11 @@ let ChromeShack = {
     },
 
     replyFixHandler(threadElem) {
-        let newestChildId = Math.max(
-            ...[...threadElem.querySelectorAll("li[id^='item_']")]
-            .map(x => parseInt(x.id.substr(5)))
-        );
-        let newPostRefreshBtn = threadElem.querySelector(`li#item_${newestChildId} .refresh > a`);
-        if (newPostRefreshBtn) {
-            newPostRefreshBtn.click();
-            console.log("Chrome Shack nuLOL reply fix ran successfully");
-        } else console.log("Something went wrong with the nuLOL reply fix!");
+        let newPostRefreshBtn = threadElem.querySelector("li li.sel.last .fullpost .refresh > a");
+        processReplyEvent.raise(newPostRefreshBtn.closest("li .fullpost"));
+        // target the last selected child to find the newest reply
+        if (newPostRefreshBtn) newPostRefreshBtn.click();
+        else console.log("Something went wrong with the nuLOL reply fix!");
         ChromeShack.isPostReplyMutation = false; // unflag when done with handling
     },
 };
