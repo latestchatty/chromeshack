@@ -10,10 +10,23 @@ let NewCommentHighlighter = {
             await setSetting("new_comment_highlighter_last_id", new_last_id);
 
         // refresh highlights when refreshing a post
-        document.getElementById("dom_iframe").addEventListener("load", () => {
-            enabledContains("new_comment_highlighter").then((r) => {
-                if (r) NewCommentHighlighter.highlight();
-            });
+        document.removeEventListener("click", NewCommentHighlighter.domRefreshBtnHandler);
+        document.addEventListener("click", NewCommentHighlighter.domRefreshBtnHandler);
+    },
+
+    domRefreshBtnHandler(e) {
+        if (e.target.matches("div.refresh a")) {
+            let refreshFrame = document.getElementById("dom_iframe");
+            refreshFrame.removeEventListener("load", NewCommentHighlighter.domRefreshHandler);
+            refreshFrame.addEventListener("load", NewCommentHighlighter.domRefreshHandler);
+        }
+    },
+
+    domRefreshHandler() {
+        enabledContains("new_comment_highlighter").then((r) => {
+            if (r) NewCommentHighlighter.highlight();
+            document.getElementById("dom_iframe")
+                .removeEventListener("load", NewCommentHighlighter.domRefreshHandler);
         });
     },
 
