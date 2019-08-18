@@ -7,6 +7,7 @@ let ChromeShack = {
             for (let mutation of mutationsList) {
                 if (mutation.type === "childList") {
                     try {
+                        // flag indicated the user has triggered a fullpost reply
                         if (mutation.previousSibling && mutation.removedNodes &&
                             mutation.previousSibling.matches(".fullpost") &&
                             mutation.removedNodes[0].matches(".inlinereply"))
@@ -30,7 +31,7 @@ let ChromeShack = {
                             }
                             // the user posted a reply and the thread has refreshed
                             if (elem && elem.matches("div.threads") && ChromeShack.isPostReplyMutation)
-                                ChromeShack.replyFixHandler(elem); // fix busted nuLOL API loading
+                                ChromeShack.processReply(elem);
 
                             // check specifically for the postbox being added
                             let changed_id = addedNode && addedNode.id;
@@ -72,10 +73,10 @@ let ChromeShack = {
         processPostBoxEvent.raise(postbox);
     },
 
-    replyFixHandler(threadElem) {
+    processReply(threadElem) {
         let newPostRefreshBtn = threadElem.querySelector("li li.sel.last .fullpost .refresh > a");
         processReplyEvent.raise(newPostRefreshBtn.closest("li .fullpost"));
-        // target the last selected child to find the newest reply
+        // fix busted nuLOL API loading on replies
         if (newPostRefreshBtn) newPostRefreshBtn.click();
         else console.log("Something went wrong with the nuLOL reply fix!");
         ChromeShack.isPostReplyMutation = false; // unflag when done with handling
