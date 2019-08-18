@@ -51,12 +51,12 @@ let HighlightPendingPosts = {
         HighlightPendingPosts.pendings = mutated;
     },
 
-    isCollapsed(pending) {
-        return !!pending.closest("div.root.collapsed");
+    isCollapsed(elem) {
+        return elem && elem.closest("div.root.collapsed");
     },
 
     isPending(elem) {
-        return elem && refreshElem.closest("div.refresh a") === elem;
+        return elem && elem.matches("a.refresh_pending") && elem.closest("div.refresh a") === elem;
     },
 
     getNonCollapsedPendings(refreshElem) {
@@ -65,7 +65,7 @@ let HighlightPendingPosts = {
         let filtered = [];
         for (let pending of pendings) {
             // include only non-refreshed/non-collapsed pendings
-            if (!HighlightPendingPosts.isPending(refreshElem) &&
+            if (HighlightPendingPosts.isPending(pending) &&
                 !HighlightPendingPosts.isCollapsed(pending))
                 filtered.push(pending);
         }
