@@ -1,6 +1,6 @@
 let VideoLoader = {
     loadVideos(item) {
-        let links = item.querySelectorAll(".sel .postbody > a");
+        let links = item.querySelectorAll(".sel .postbody a");
         for (let i = 0; i < links.length; i++) {
             let parsedVideo = VideoLoader.getVideoType(links[i].href);
             if (parsedVideo != null) {
@@ -10,8 +10,8 @@ let VideoLoader = {
                         VideoLoader.toggleVideo(e, parsedVideo, i);
                     });
 
-                    let _postBody = links[i].parentNode;
-                    let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    let _postBody = links[i].closest(".postbody");
+                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
                     insertExpandoButton(links[i], _postId, i);
                 })(parsedVideo, i);
             }
@@ -63,8 +63,8 @@ let VideoLoader = {
             e.preventDefault();
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let _postBody = link.parentNode;
-            let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+            let _postBody = link.closest(".postbody");
+            let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
             if (toggleMediaItem(link, _postId, index)) return;
 
             if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, _postId, index);

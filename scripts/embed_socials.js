@@ -2,7 +2,7 @@
 let EmbedSocials = {
     getLinks(item) {
         // don't retrace our DOM nodes (use relative positions of event items)
-        let links = item.querySelectorAll(".sel .postbody > a");
+        let links = item.querySelectorAll(".sel .postbody a");
         for (let i = 0; i < links.length; i++) {
             let parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
             if (parsedSocialPost != null) {
@@ -12,8 +12,8 @@ let EmbedSocials = {
                         EmbedSocials.processPost(e, parsedSocialPost, i);
                     });
 
-                    let _postBody = links[i].parentNode;
-                    let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    let _postBody = links[i].closest(".postbody");
+                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
                     insertExpandoButton(links[i], _postId, i);
                 })(parsedSocialPost, i);
             }
@@ -47,8 +47,8 @@ let EmbedSocials = {
             // adjust relative node position based on expando state
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let _postBody = link.parentNode;
-            let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+            let _postBody = link.closest(".postbody");
+            let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
             // cancel early if we're toggling
             if (toggleMediaItem(link, _postId, index)) return;
 

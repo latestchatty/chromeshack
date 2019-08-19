@@ -13,7 +13,7 @@ let ImageLoader = {
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&|([\w\-.]+))?/i,
 
     loadImages(item) {
-        let links = item.querySelectorAll(".sel .postbody > a");
+        let links = item.querySelectorAll(".sel .postbody a");
         for (let i = 0; i < links.length; i++) {
             if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
                 // pass our loop position and add an expando button for every hooked link
@@ -23,8 +23,8 @@ let ImageLoader = {
                         ImageLoader.toggleImage(e, i);
                     });
 
-                    let _postBody = links[i].parentNode;
-                    let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    let _postBody = links[i].closest(".postbody");
+                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
                     insertExpandoButton(links[i], _postId, i);
                 })(i);
             }
@@ -83,8 +83,8 @@ let ImageLoader = {
             e.preventDefault();
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let postBody = link.parentNode;
-            let postId = postBody.parentNode.parentNode.id.replace(/item_/, "");
+            let postBody = link.closest(".postbody");
+            let postId = postBody.closest("li[id^='item_']").id.substr(5);
             if (toggleMediaItem(link, postId, index)) return;
 
             if (ImageLoader.isVideo(link.href)) {

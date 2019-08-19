@@ -1,7 +1,7 @@
 // Inspired by dodob's old postget script.
 let GetPost = {
     getLinks(item) {
-        let links = item.querySelectorAll(".sel .postbody > a");
+        let links = item.querySelectorAll(".sel .postbody a");
         for (let i = 0; i < links.length; i++) {
             if (GetPost.isChattyLink(links[i].href)) {
                 (i => {
@@ -10,8 +10,8 @@ let GetPost = {
                         GetPost.getPost(e, i);
                     });
 
-                    let _postBody = links[i].parentNode;
-                    let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+                    let _postBody = links[i].closest(".postbody");
+                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
                     insertExpandoButton(links[i], _postId, i);
                 })(i);
             }
@@ -32,8 +32,8 @@ let GetPost = {
             let _expandoClicked =
                 e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let _postBody = link.parentNode;
-            let _postId = _postBody.parentNode.parentNode.id.replace(/item_/, "");
+            let _postBody = link.closest(".postbody");
+            let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
             if (toggleMediaItem(link, _postId, index)) return;
 
             let chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
