@@ -5,13 +5,14 @@ const stripHtml = html => {
 };
 
 const insertStyle = (css, containerName) => {
-    let style = document.getElementById(containerName) || document.createElement("style");
+    let style = document.querySelector(`style#${containerName}`) || document.createElement("style");
     if (!style.id) {
         style.type = "text/css";
         style.id = containerName;
+        style.appendChild(document.createTextNode(css));
+        document.getElementsByTagName("head")[0].appendChild(style);
     }
-    style.appendChild(document.createTextNode(css));
-    document.getElementsByTagName("head")[0].appendChild(style);
+    else if (style.id) style.innerHTML = css;
 };
 
 const objContains = (needle, haystack) => {

@@ -58,5 +58,9 @@ let HighlightUsers = {
 };
 
 addDeferredHandler(enabledContains("highlight_users"), (res) => {
-    if (res) fullPostsCompletedEvent.addHandler(HighlightUsers.install);
+    if (res) {
+        fullPostsCompletedEvent.addHandler(HighlightUsers.install);
+        // refresh our styling state when refreshing a post
+        processRefreshEvent.addHandler(HighlightUsers.install);
+    }
 });
