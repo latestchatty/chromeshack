@@ -27,19 +27,12 @@ let CustomUserFilters = {
                     CustomUserFilters.removeOLsFromUserId(userMatch.id);
             }
         });
-    },
-
-    install() {
-        // Re-filter when a thread is updated by the "refresh" button.
-        document.getElementById("dom_iframe").addEventListener("load", () => {
-            // This is fired BEFORE the onload inside the Ajax response, so we need to wait until
-            // the inner onload has run.
-            setTimeout(CustomUserFilters.applyFilter, 0);
-        });
-        CustomUserFilters.applyFilter();
     }
 };
 
 addDeferredHandler(enabledContains("custom_user_filters"), res => {
-    if (res) CustomUserFilters.install();
+    if (res) {
+        processRefreshEvent.addHandler(CustomUserFilters.applyFilter);
+        CustomUserFilters.applyFilter();
+    }
 });

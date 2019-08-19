@@ -28,5 +28,6 @@ if (!window.eventsInitialized) {
     var processPostEvent = new Event();
     var processPostBoxEvent = new Event();
     var processReplyEvent = new Event();
+    var processRefreshEvent = new Event();
     window.eventsInitialized = true;
 }

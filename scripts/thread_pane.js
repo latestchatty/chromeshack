@@ -2,14 +2,10 @@ let refreshThreadPane;
 let ThreadPane = {
     install() {
         // regenerate the thread pane when the user refreshes a thread.
-        document.getElementById("dom_iframe").addEventListener("load", () => {
-            setTimeout(refreshThreadPane, 0);
-        });
+        processRefreshEvent.addHandler(() => refreshThreadPane);
 
         // Only install on the main /chatty page, not an individual thread.
-        if (document.getElementById("newcommentbutton") === null) {
-            return;
-        }
+        if (document.getElementById("newcommentbutton") === null) return;
 
         $("body").addClass("cs_thread_pane_enable");
 

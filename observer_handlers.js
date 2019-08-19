@@ -45,6 +45,7 @@ let ChromeShack = {
         };
         let observer = new MutationObserver(observer_handler);
         observer.observe(document, { characterData: true, subtree: true, childList: true });
+
         ChromeShack.processFullPosts();
     },
 
@@ -60,6 +61,13 @@ let ChromeShack = {
         browser.runtime.sendMessage({ name: "chatViewFix" });
         // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
         browser.runtime.sendMessage({ name: "scrollByKeyFix" });
+
+        // feed the refresh-post event handler
+        let refreshBtns = [...document.querySelectorAll("div.refresh a, a.closepost, a.showpost")];
+        for (let btn of refreshBtns || []) {
+            btn.removeEventListener("click", ChromeShack.processRefresh);
+            btn.addEventListener("click", ChromeShack.processRefresh);
+        }
     },
 
     processPost(item, root_id) {
@@ -81,6 +89,17 @@ let ChromeShack = {
         else console.log("Something went wrong with the nuLOL reply fix!");
         ChromeShack.isPostReplyMutation = false; // unflag when done with handling
     },
+
+    processRefresh(e) {
+        let refreshed = e.target.closest(".fullpost"); // pass the nearest parent
+        let refreshFrame = document.getElementById("dom_iframe");
+        const loadHandler = () => {
+            processRefreshEvent.raise(refreshed);
+            refreshFrame.removeEventListener("load", loadHandler);
+        };
+        refreshFrame.removeEventListener("load", loadHandler);
+        refreshFrame.addEventListener("load", loadHandler);
+    }
 };
 
 // make sure our async handlers are resolved before observing

@@ -117,16 +117,9 @@ let HighlightPendingPosts = {
         if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
-        document.addEventListener("click", (e) => {
-            if (e.target.matches("div.refresh a") ||
-                e.target.matches("a.closepost") || e.target.matches("a.showpost")) {
-                (refreshElem => {
-                    document.getElementById("dom_iframe").addEventListener("load", () => {
-                        HighlightPendingPosts.updatePendings();
-                        HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
-                    });
-                })(e.target);
-            }
+        processRefreshEvent.addHandler(refreshElem => {
+            HighlightPendingPosts.updatePendings();
+            HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
         });
         // We need to get an initial event ID to start with.
         fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" }).then((json) => {
