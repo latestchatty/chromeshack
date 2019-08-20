@@ -335,19 +335,10 @@ const loadOptions = async () => {
 };
 
 const saveOptions = async (e) => {
-    let status = document.getElementById("status");
     if (e && e.target.id !== "clear_settings") {
         await getEnabledScripts();
         await loadOptions();
     }
-
-    // Update status to let the user know options were saved
-    if (e && e.target.id === "clear_settings") status.innerText = "Options Reset";
-    else status.innerText = "Options Saved";
-    status.classList.remove("hidden");
-    const statusMsg = () => status.classList.add("hidden");
-    clearTimeout(statusMsg);
-    setTimeout(statusMsg, 2000);
 };
 
 const clearSettings = (e) => resetSettings().then(loadOptions).then(saveOptions(e));
@@ -369,4 +360,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     trackChanges();
     document.getElementById("clear_settings").addEventListener("click", clearSettings);
     document.getElementById("add_highlight_group").addEventListener("click", addHighlightGroup);
+    document.getElementById("rls_notes").addEventListener("click", () => {
+        browser.tabs.create({ url: browser.runtime.getURL("release_notes.html") });
+        return false;
+    });
 });

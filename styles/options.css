@@ -34,7 +34,7 @@ textarea {
 }
 div#content {
     justify-items: start;
-    margin: 0 1em 0 1em;
+    margin: 0.25em 1em 0.5em 1em;
 }
 div[id$='_settings'].hidden {
     display: none !important;
@@ -129,25 +129,4 @@ p.info {
 }
 p.indent {
     margin-left: 25px;
-}
-
-span#status {
-    position: fixed;
-    color: white;
-    font-size: 14px;
-    background: rgba(107, 144, 218, 0.75);
-    border: 1px solid rgba(107, 144, 218, 0.75);
-    border-radius: 6px;
-    font-weight: bold;
-    padding: 3px;
-    pointer-events: none;
-    bottom: 5px;
-    left: 40%;
-}
-span#status.hidden {
-    display: none !important;
-}
-
-button#clear_settings {
-    margin-bottom: 0.5em;
 }
