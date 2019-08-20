@@ -59,9 +59,12 @@ const delayedTextUpdate = (e) => {
     if (debouncedUpdate) clearTimeout(debouncedUpdate);
     debouncedUpdate = setTimeout(async () => {
         let groupElem = e.target.closest("#highlight_group");
-        let realGroupName = groupElem.querySelector(".group_label").dataset.name;
+        let groupLabel = groupElem.querySelector(".group_label");
+        let realGroupName = groupLabel.dataset.name;
         let updatedGroup = getHighlightGroup(groupElem);
+        await removeHighlightGroup(realGroupName);
         await setHighlightGroup(realGroupName, updatedGroup);
+        groupLabel.dataset.name = updatedGroup.name;
     }, 500);
 };
 
@@ -268,7 +271,6 @@ const getUserFilters = async () => {
 const addUserFilter = async (e) => {
     let username = document.getElementById("new_user_filter_text");
     let usersLst = document.getElementById("filtered_users");
-    let users = [...usersLst.options].map(x => x.text);
     let filtersHas = await filtersContains(username.value);
     if (filtersHas) {
         alert("Filters cannot contain duplicates!");
