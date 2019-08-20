@@ -62,7 +62,6 @@ const delayedTextUpdate = (e) => {
         let groupLabel = groupElem.querySelector(".group_label");
         let realGroupName = groupLabel.dataset.name;
         let updatedGroup = getHighlightGroup(groupElem);
-        await removeHighlightGroup(realGroupName);
         await setHighlightGroup(realGroupName, updatedGroup);
         groupLabel.dataset.name = updatedGroup.name;
     }, 500);
