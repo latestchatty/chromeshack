@@ -42,6 +42,7 @@ let ChattyNews = {
     },
 
     async install() {
+        if (document.querySelector("div.chatty-news")) return;
         let articleBox = document.querySelector(".article-body p:first-child");
         let newsBox = document.createElement("div");
         newsBox.classList.add("chatty-news");
