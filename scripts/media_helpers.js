@@ -238,7 +238,7 @@ const insertScript = ({elem, filePath, code, id, overwrite}) => {
     _elem.appendChild(_script);
 };
 
-const insertExpandoButton = (link, postId, index) => {
+const createExpandoButton = (link, postId, index) => {
     // abstracted helper for appending an expando button to a link in a post
     if (link.querySelector("div.expando")) return;
     // process a link into a link container that includes a dynamic styled "button"
@@ -248,6 +248,24 @@ const insertExpandoButton = (link, postId, index) => {
     expando.style.fontFamily = "Icon";
     expando.innerText = "\ue907";
     link.appendChild(expando);
+};
+
+const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
+    for (let idx = 0; idx < linksArr.length; idx++) {
+        let link = linksArr[idx];
+        let parsed = linkParser(link.href);
+        if (parsed) {
+            ((parsed, idx) => {
+                if (link.querySelector("div.expando")) return;
+                link.addEventListener("click", (e) => {
+                    postProcesser(e, parsed, postId, idx);
+                });
+                let postBody = link.closest(".postbody");
+                let postId = postBody.closest("li[id^='item_']").id.substr(5);
+                createExpandoButton(link, postId, idx);
+            })(parsed, idx);
+        }
+    }
 };
 
 const insertCarousel = (elem) => {

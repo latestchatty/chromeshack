@@ -13,108 +13,88 @@ let ImageLoader = {
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&|([\w\-.]+))?/i,
 
     loadImages(item) {
-        let links = item.querySelectorAll(".sel .postbody a");
-        for (let i = 0; i < links.length; i++) {
-            if (ImageLoader.isVideo(links[i].href) || ImageLoader.isImage(links[i].href)) {
-                // pass our loop position and add an expando button for every hooked link
-                ((i) => {
-                    if (links[i].querySelector("div.expando")) return;
-                    links[i].addEventListener("click", (e) => {
-                        ImageLoader.toggleImage(e, i);
-                    });
+        let links = [...item.querySelectorAll(".sel .postbody a")];
+        if (links) processExpandoLinks(links, ImageLoader.getMediaType, ImageLoader.toggleImage);
+    },
 
-                    let _postBody = links[i].closest(".postbody");
-                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
-                    insertExpandoButton(links[i], _postId, i);
-                })(i);
+    getMediaType(href) {
+        const isVideo = () => {
+            if (
+                ImageLoader.imgurRegex.test(href) ||
+                ImageLoader.gfycatRegex.test(href) ||
+                ImageLoader.giphyRegex.test(href) ||
+                ImageLoader.dropboxVidRegex.test(href) ||
+                ImageLoader.vidRegex.test(href)
+            )
+                return true;
+            return false;
+        };
+        const getImageUrl = () => {
+            // change shackpics to chattypics
+            if (/shackpics\.com/.test(href)) {
+                href = href.replace(/shackpics\.com/, "chattypics.com");
+                if (/chattypics\.com\/viewer\.x/.test(href)) href = href.replace(/viewer\.x/, "viewer.php");
+                return href;
             }
-        }
-    },
-
-    isVideo(href) {
-        if (
-            ImageLoader.imgurRegex.test(href) ||
-            ImageLoader.gfycatRegex.test(href) ||
-            ImageLoader.giphyRegex.test(href) ||
-            ImageLoader.dropboxVidRegex.test(href) ||
-            ImageLoader.vidRegex.test(href)
-        )
-            return true;
-        return false;
-    },
-
-    isImage(href) {
-        // some urls don't end in jpeg/png/etc so the normal test won't work
-        if (ImageLoader.twimgRegex.test(href) || ImageLoader.dropboxImgRegex.test(href)) return true;
-
-        return ImageLoader.getImageUrl(href).match(ImageLoader.imgRegex);
-    },
-
-    getImageUrl(href) {
-        // change shackpics to chattypics
-        if (/shackpics\.com/.test(href)) {
-            href = href.replace(/shackpics\.com/, "chattypics.com");
-            if (/chattypics\.com\/viewer\.x/.test(href)) href = href.replace(/viewer\.x/, "viewer.php");
-        }
-
-        // change shackpics image page into image
-        if (ImageLoader.chattypicsRegex.test(href)) return href.replace(/viewer\.php\?file=/, "files/");
-
-        if ((m = ImageLoader.twimgRegex.exec(href)) != null) {
-            if (m[3] != null) {
-                return `${m[1]}${m[4] || m[2]}.${m[3]}`;
-            } else {
-                return `${m[1]}${m[4] || m[2]}`;
+            // change shackpics image page into image
+            else if (ImageLoader.chattypicsRegex.test(href))
+                return href.replace(/viewer\.php\?file=/, "files/");
+            // distinguish between twitter cdn types
+            else if ((m = ImageLoader.twimgRegex.exec(href)) !== null) {
+                if (m[3]) return `${m[1]}${m[4] || m[2]}.${m[3]}`;
+                else return `${m[1]}${m[4] || m[2]}`;
             }
-        }
+            // dropbox sharing links can be viewed directly by setting the "raw" flag
+            else if (ImageLoader.dropboxImgRegex.test(href) && !/raw=1$/.test(href))
+                return href.replace(/\?dl=0/i, "") + "?raw=1";
+            else if ((m = ImageLoader.imgRegex.exec(href)) !== null)
+                return m[0] || href;
+            return null;
+        };
+        const isImage = () => {
+            // some urls don't end in jpeg/png/etc so the normal test won't work
+            let src = getImageUrl(href);
+            if (ImageLoader.twimgRegex.test(href) ||
+                ImageLoader.dropboxImgRegex.test(href) ||
+                src && ImageLoader.imgRegex.test(src))
+                return true;
+            return false;
+        };
 
-        // dropbox sharing links can be viewed directly by setting the "raw" flag
-        if (ImageLoader.dropboxImgRegex.test(href) && !/raw=1$/.test(href))
-            return href.replace(/\?dl=0/i, "") + "?raw=1";
-
-        // not a special case, just use the link's href
-        let _match = ImageLoader.imgRegex.exec(href);
-        return _match ? _match[0] : href;
+        if (isVideo(href)) return { type: 2, src: href };
+        else if (isImage(href)) return { type: 1, src: [ getImageUrl(href) ] };
     },
 
-    toggleImage(e, index) {
+    toggleImage(e, parsedPost, postId, index) {
         // left click only
         if (e.button == 0) {
             e.preventDefault();
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let postBody = link.closest(".postbody");
-            let postId = postBody.closest("li[id^='item_']").id.substr(5);
             if (toggleMediaItem(link, postId, index)) return;
-
-            if (ImageLoader.isVideo(link.href)) {
-                if (link.href.match(/imgur/)) ImageLoader.createImgur(link, postId, index);
-                else if (link.href.match(/gfycat/)) ImageLoader.createGfycat(link, postId, index);
-                else if (link.href.match(/giphy/)) ImageLoader.createGiphy(link, postId, index);
-                else if (ImageLoader.dropboxVidRegex.test(link.href) && !/raw=1$/.test(link.href))
-                    ImageLoader.createDropboxVid(link, postId, index);
-                else {
-                    let src = ImageLoader.vidRegex.exec(link.href);
+            if (parsedPost && parsedPost.type === 2 && parsedPost.src) {
+                if (parsedPost.src.match(/imgur/)) ImageLoader.createImgur(link, postId, index);
+                else if (parsedPost.src.match(/gfycat/)) ImageLoader.createGfycat(link, postId, index);
+                else if (parsedPost.src.match(/giphy/)) ImageLoader.createGiphy(link, postId, index);
+                else if (parsedPost.src.match(/dropbox/)) ImageLoader.createDropboxVid(link, postId, index);
+                else if ((src = ImageLoader.vidRegex.exec(link.href)) !== null) {
                     appendMedia({
-                        src: src && [src[0]],
+                        src: [src[0]],
                         link,
                         postId,
                         index,
                         type: {forceAppend: true}
                     });
                 }
-            } else {
-                // use HTTPS to better conform to CORS rules
-                // NOTE: ShackPics needs SSL fixes before uncommenting this!
-                // image.src = ImageLoader.getImageUrl(link.href).replace(/http\:\/\//i, "https://");
+            } else if (parsedPost && parsedPost.type === 1 && parsedPost.src) {
                 appendMedia({
-                    src: [ImageLoader.getImageUrl(link.href)],
+                    src: parsedPost.src,
                     link,
                     postId,
                     index,
                     type: {forceAppend: true}
                 });
-            }
+            } else throw Error("Could not parse the given image link:", link.href);
         }
     },
 

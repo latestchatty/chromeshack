@@ -1,21 +1,7 @@
 let VideoLoader = {
     loadVideos(item) {
-        let links = item.querySelectorAll(".sel .postbody a");
-        for (let i = 0; i < links.length; i++) {
-            let parsedVideo = VideoLoader.getVideoType(links[i].href);
-            if (parsedVideo != null) {
-                ((parsedVideo, i) => {
-                    if (links[i].querySelector("div.expando")) return;
-                    links[i].addEventListener("click", (e) => {
-                        VideoLoader.toggleVideo(e, parsedVideo, i);
-                    });
-
-                    let _postBody = links[i].closest(".postbody");
-                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
-                    insertExpandoButton(links[i], _postId, i);
-                })(parsedVideo, i);
-            }
-        }
+        let links = [...item.querySelectorAll(".sel .postbody a")];
+        if (links) processExpandoLinks(links, VideoLoader.getVideoType, VideoLoader.toggleVideo);
     },
 
     getVideoType(url) {
@@ -57,20 +43,18 @@ let VideoLoader = {
         return null;
     },
 
-    toggleVideo(e, videoObj, index) {
+    toggleVideo(e, videoObj, postId, index) {
         // left click only
         if (e.button == 0) {
             e.preventDefault();
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let _postBody = link.closest(".postbody");
-            let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
-            if (toggleMediaItem(link, _postId, index)) return;
+            if (toggleMediaItem(link, postId, index)) return;
 
-            if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, _postId, index);
-            else if (videoObj && videoObj.type === 2) VideoLoader.createTwitch(link, videoObj, _postId, index);
+            if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, postId, index);
+            else if (videoObj && videoObj.type === 2) VideoLoader.createTwitch(link, videoObj, postId, index);
             else if (videoObj && videoObj.type >= 3 && videoObj.type <= 6)
-                VideoLoader.createIframePlayer(link, videoObj, _postId, index);
+                VideoLoader.createIframePlayer(link, videoObj, postId, index);
         }
     },
 

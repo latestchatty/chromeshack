@@ -2,22 +2,8 @@
 let EmbedSocials = {
     getLinks(item) {
         // don't retrace our DOM nodes (use relative positions of event items)
-        let links = item.querySelectorAll(".sel .postbody a");
-        for (let i = 0; i < links.length; i++) {
-            let parsedSocialPost = EmbedSocials.getSocialType(links[i].href);
-            if (parsedSocialPost != null) {
-                ((parsedSocialPost, i) => {
-                    if (links[i].querySelector("div.expando")) return;
-                    links[i].addEventListener("click", (e) => {
-                        EmbedSocials.processPost(e, parsedSocialPost, i);
-                    });
-
-                    let _postBody = links[i].closest(".postbody");
-                    let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
-                    insertExpandoButton(links[i], _postId, i);
-                })(parsedSocialPost, i);
-            }
-        }
+        let links = [...item.querySelectorAll(".sel .postbody a")];
+        if (links) processExpandoLinks(links, EmbedSocials.getSocialType, EmbedSocials.processPost);
     },
 
     getSocialType(href) {
@@ -25,21 +11,12 @@ let EmbedSocials = {
         let _isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/p\/([\w-]+)\/?/i;
         let _twttrMatch = _isTwitter.exec(href);
         let _instgrmMatch = _isInstagram.exec(href);
-        if (_twttrMatch) {
-            return {
-                type: 1,
-                id: _twttrMatch && _twttrMatch[1]
-            };
-        } else if (_instgrmMatch) {
-            return {
-                type: 2,
-                id: _instgrmMatch && _instgrmMatch[1]
-            };
-        }
+        if (_twttrMatch) return { type: 1, id: _twttrMatch && _twttrMatch[1] };
+        else if (_instgrmMatch) return { type: 2, id: _instgrmMatch && _instgrmMatch[1] };
         return null;
     },
 
-    processPost(e, parsedPost, index) {
+    processPost(e, parsedPost, postId, index) {
         if (e.button == 0) {
             e.preventDefault();
             let socialType = parsedPost.type;
@@ -47,16 +24,9 @@ let EmbedSocials = {
             // adjust relative node position based on expando state
             let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
-            let _postBody = link.closest(".postbody");
-            let _postId = _postBody.closest("li[id^='item_']").id.substr(5);
-            // cancel early if we're toggling
-            if (toggleMediaItem(link, _postId, index)) return;
-
-            if (socialType === 1 && socialId) {
-                EmbedSocials.createTweet(link, socialId, _postId, index);
-            } else if (socialType === 2 && socialId) {
-                EmbedSocials.createInstagram(link, socialId, _postId, index);
-            }
+            if (toggleMediaItem(link, postId, index)) return;
+            if (socialType === 1 && socialId) EmbedSocials.createTweet(link, socialId, postId, index);
+            else if (socialType === 2 && socialId) EmbedSocials.createInstagram(link, socialId, postId, index);
         }
     },
 
