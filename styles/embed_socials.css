@@ -109,7 +109,7 @@ a:hover#twitter-quote-displayname {
     border: 1px solid var(--twttr-fg-border-color);
     border-radius: 8px;
     width: 100% !important;
-    height: 100% !important;
+    height: auto !important;
     min-height: var(--min-social-item-height);
     max-height: var(--max-social-item-height);
     min-width: var(--min-media-item-width);
@@ -117,6 +117,7 @@ a:hover#twitter-quote-displayname {
     outline: none !important;
     margin: 0;
     padding: 0;
+    object-fit: contain !important;
 }
 #twitter-quote-media-content.hidden {
     display: none !important;

@@ -21,7 +21,7 @@ var carouselOpts = {
                 toggleVideoState(slides[0], { state: true, muted: false });
             } else {
                 // force async container recalc when instantiating
-                setTimeout(() => swiper.update(), 100);
+                setTimeout(() => swiper.update(), 250);
             }
         },
         transitionEnd() {
