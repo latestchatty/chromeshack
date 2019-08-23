@@ -10,7 +10,7 @@ let ImageLoader = {
     dropboxVidRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:mp4|gifv|webm)\\?/i,
     // common image host patterns
     chattypicsRegex: /https?:\/\/(?:.*?\.)?chattypics\.com\/viewer\.php/i,
-    twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&|([\w\-.]+))?/i,
+    twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i,
 
     loadImages(item) {
         let links = [...item.querySelectorAll(".sel .postbody a")];
