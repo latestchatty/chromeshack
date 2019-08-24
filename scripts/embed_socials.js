@@ -132,21 +132,24 @@ let EmbedSocials = {
 
     async fetchTweet(tweetId) {
         let token = "QUFBQUFBQUFBQUFBQUFBQUFBQUFBRGJiJTJGQUFBQUFBQVpQaURmd2VoMUtSMTdtTDdTRmVNTXpINEZLQSUzRFoxZ0ZXVmJxS2l6bjFweFZkcHFHSk85MW5uUVR3OVRFVHZrajRzcXZZcm9kcDc1OGo2";
-        let response = await browser.runtime.sendMessage({
-            name: "corbFetch",
-            url: `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`,
-            fetchOpts: {
-                headers: { Authorization: `Bearer ${atob(token)}` }
-            }
-        });
-        return EmbedSocials.renderTweetObj(response);
+        try {
+            let response = await browser.runtime.sendMessage({
+                name: "corbFetch",
+                url: `https://api.twitter.com/1.1/statuses/show/${tweetId}.json?tweet_mode=extended`,
+                fetchOpts: {
+                    headers: { Authorization: `Bearer ${atob(token)}` }
+                }
+            });
+            if (response) return EmbedSocials.renderTweetObj(response);
+        } catch (e) { /* eat thrown rejections (likely 403s) */ }
+        return null;
     },
 
     async fetchTweetParents(tweetObj) {
         const fetchParents = async (id, acc) => {
           let tweetObj = await EmbedSocials.fetchTweet(id);
-          acc.push(tweetObj);
-          if (tweetObj.tweetParentId)
+          if (tweetObj) acc.push(tweetObj); // only save available tweets
+          if (tweetObj && tweetObj.tweetParentId)
             return await fetchParents(tweetObj.tweetParentId, acc);
           return acc.reverse();
         };
