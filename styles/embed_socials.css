@@ -55,6 +55,9 @@ a:hover#twitter-quote-displayname {
     padding-left: 0.5em;
     padding-right: 1em;
 }
+.twitter-403 > span {
+    color: #8899a6 !important;
+}
 #twitter-realname,
 #twitter-quote-realname {
     color: var(--twttr-bg-link-color);

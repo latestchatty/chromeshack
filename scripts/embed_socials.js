@@ -99,8 +99,9 @@ let EmbedSocials = {
             return postTextContentElem;
         };
 
+        let result = {};
         if (response && !response.errors) {
-          let result = {
+          result = {
             tweetUrl: `https://twitter.com/${response.user.screen_name}/status/${response.id_str}`,
             profilePic: response.user.profile_image_url_https,
             profilePicUrl: `https://twitter.com/${response.user.screen_name}`,
@@ -125,9 +126,8 @@ let EmbedSocials = {
             };
           if (response.in_reply_to_status_id_str)
             result = { ...result, tweetParentId: response.in_reply_to_status_id_str };
-          return result;
-        }
-        return null;
+        } else result = { unavailable: true }
+        return result;
     },
 
     async fetchTweet(tweetId) {
@@ -142,13 +142,13 @@ let EmbedSocials = {
             });
             if (response) return EmbedSocials.renderTweetObj(response);
         } catch (e) { /* eat thrown rejections (likely 403s) */ }
-        return null;
+        return EmbedSocials.renderTweetObj(null); // render unavailable for failures
     },
 
     async fetchTweetParents(tweetObj) {
         const fetchParents = async (id, acc) => {
           let tweetObj = await EmbedSocials.fetchTweet(id);
-          if (tweetObj) acc.push(tweetObj); // only save available tweets
+          if (tweetObj) acc.push(tweetObj);
           if (tweetObj && tweetObj.tweetParentId)
             return await fetchParents(tweetObj.tweetParentId, acc);
           return acc.reverse();
@@ -163,7 +163,8 @@ let EmbedSocials = {
         let tweetTemplateElem = document.createElement("div");
         tweetTemplateElem.setAttribute("class", "twitter-container hidden");
         tweetTemplateElem.setAttribute("id", `loader_${postId}-${index}`);
-        tweetTemplateElem.innerHTML = /*html*/ `
+        if (tweetObj && !tweetObj.unavailable) {
+            tweetTemplateElem.innerHTML = /*html*/ `
             <div class="twitter-header">
                 <a href="${tweetObj.profilePicUrl}" id="profile-pic-link">
                     <img id="user-profile-pic" src="${tweetObj.profilePic}" />
@@ -201,6 +202,11 @@ let EmbedSocials = {
                 </div>
                 <div id="twitter-timestamp">${tweetObj.timestamp}</div>
             </div>`;
+        } else {
+            tweetTemplateElem.innerHTML = /*html*/`
+                <div class="twitter-403"><span>This tweet is unavailable.</span></div>
+            `;
+        }
         // compile media items into the "twitter-media-content" container
         let _compiledTemplate = EmbedSocials.compileTwitterMedia(
             parentLink,
@@ -210,7 +216,8 @@ let EmbedSocials = {
             index
         );
         // toggle visibility of our verified badge if data allows it
-        if (tweetObj.userVerified) _compiledTemplate.querySelector("#twttr-verified").classList.remove("hidden");
+        if (tweetObj && tweetObj.userVerified)
+            _compiledTemplate.querySelector("#twttr-verified").classList.remove("hidden");
         return _compiledTemplate;
     },
 
