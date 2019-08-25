@@ -18,10 +18,11 @@
 .medialoader video:not(.swiper-slide),
 .medialoader img:not(.swiper-slide) {
     outline: none !important;
-    width: 100% !important;
-    height: auto !important;
     box-sizing: border-box;
     object-fit: contain !important;
+    min-height: var(--min-media-item-height);
+    max-height: var(--max-media-item-height);
+    min-width: var(--min-media-item-width);
     max-width: var(--max-media-item-width);
 }
 .iframe-spacer iframe {
