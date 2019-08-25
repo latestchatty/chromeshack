@@ -186,7 +186,7 @@ document.addEventListener("click", async (e) => {
         let sanitizedUser = e.target.parentNode.matches("span.user") &&
             superTrim(e.target.innerText.split(" - ")[0]);
         // Post author clicked
-        if (e.target.parentNode.matches("span.user") && e.target.matches("a")) {
+        if (e.target.parentNode.matches("span.user:not(.this-user)") && e.target.matches("a")) {
             e.preventDefault();
             e.stopPropagation();
             toggleDropdowns(e.target);
@@ -199,14 +199,14 @@ document.addEventListener("click", async (e) => {
             // OWN user name clicked as post author
             e.preventDefault();
             e.stopPropagation();
-            toggleDropdowns();
-            displayUserMenu(e.target, sanitizedUser, "You");
+            toggleDropdowns(e.target);
+            if (!e.target.querySelector("ul.userDropdown")) displayUserMenu(e.target, sanitizedUser, "You");
         } else if (e.target.matches("a#userDropdownTrigger")) {
             // User name clicked (at the top of the banner?)
             e.preventDefault();
             e.stopPropagation();
-            toggleDropdowns();
-            displayUserMenu(e.target, getShackUsername(), "You");
+            toggleDropdowns(e.target);
+            if (!e.target.querySelector("ul.userDropdown")) displayUserMenu(e.target, getShackUsername(), "You");
         } else if (!e.target.closest("ul.userDropdown") || !e.target.matches("a#userDropdownTrigger")) {
             toggleDropdowns();
         }
