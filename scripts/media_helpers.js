@@ -64,7 +64,7 @@ const toggleVideoState = (elem, stateObj) => {
         #twitter-quote-media-content
     `);
 
-    if ((video && (state || mute)) || (video && !objContains("hidden", video.classList))) {
+    if ((video && (state || mute)) || video && !objContains("hidden", video.closest(".media-container").classList)) {
         if (state) play();
         else if (!excludedParent && video.paused) {
             play();
