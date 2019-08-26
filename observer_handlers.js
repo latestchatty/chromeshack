@@ -84,8 +84,8 @@ let ChromeShack = {
     processReply(threadElem) {
         let newPostRefreshBtn = threadElem.querySelector("li li.sel.last .fullpost .refresh > a");
         processReplyEvent.raise(newPostRefreshBtn.closest("li .fullpost"));
-        // fix busted nuLOL API loading on replies
-        if (newPostRefreshBtn) newPostRefreshBtn.click();
+        // fix busted nuLOL API loading on replies (wait on the server a little bit)
+        if (newPostRefreshBtn) setTimeout(() => newPostRefreshBtn.click(), 250);
         else console.log("Something went wrong with the nuLOL reply fix!");
         ChromeShack.isPostReplyMutation = false; // unflag when done with handling
     },
