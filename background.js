@@ -14,7 +14,7 @@ const migrateSettings = async () => {
             await setSetting("notificationuid", prevNotifyUID);
             await setEnabled("enable_notifications");
         }
-        localStorage = {};
+        window.localStorage.clear();
     }
     if (last_version !== current_version) browser.tabs.create({ url: "release_notes.html" });
     await setSetting("version", current_version);
