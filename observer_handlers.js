@@ -83,23 +83,10 @@ let ChromeShack = {
 
     processReply(threadElem) {
         let refreshedPost = threadElem.querySelector("li li.sel.last");
-        try {
-            let rootPost = refreshedPost.closest(".root");
-            let rootPostRefreshBtn = rootPost.querySelector(".fullpost.op .refresh > a");
-            let refreshedOL = refreshedPost.querySelector("span.oneline_body");
-            // pass along our refreshed post element and root post id
-            processReplyEvent.raise(refreshedPost, rootPost.id.substr(5));
-            // try to fix busted nuLOL tag data loading when replying
-            if (rootPostRefreshBtn)
-                setTimeout(() => {
-                    // refresh the root so we get fresh tag data
-                    rootPostRefreshBtn.click();
-                    // re-open the new post
-                    refreshedOL.click();
-                }, 250);
-        }
-        catch (e) { console.log("Something went wrong with the nuLOL reply fix:", e); }
-        finally { ChromeShack.isPostReplyMutation = false; }
+        let rootPost = refreshedPost.closest(".root");
+        // pass along our refreshed post and root post elements
+        processReplyEvent.raise(refreshedPost, rootPost);
+        ChromeShack.isPostReplyMutation = false;
     },
 
     processRefresh(e) {

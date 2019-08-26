@@ -65,6 +65,7 @@
                 "scripts/emoji_poster.js",
                 "scripts/mod_banners.js",
                 "scripts/chatty-news.js",
+                "scripts/nulol_reply_fix.js",
                 "observer_handlers.js"
             ],
             "css": [

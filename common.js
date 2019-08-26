@@ -389,3 +389,7 @@ const JSONToFormData = jsonStr => {
     if (!_fd.entries().next().done) return _fd;
     return null;
 };
+
+const delayPromise = (timeout, value) => new Promise(
+    r => setTimeout(r.bind(null, value), timeout)
+);
