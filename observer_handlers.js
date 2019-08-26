@@ -82,12 +82,24 @@ let ChromeShack = {
     },
 
     processReply(threadElem) {
-        let newPostRefreshBtn = threadElem.querySelector("li li.sel.last .fullpost .refresh > a");
-        processReplyEvent.raise(newPostRefreshBtn.closest("li .fullpost"));
-        // fix busted nuLOL API loading on replies (wait on the server a little bit)
-        if (newPostRefreshBtn) setTimeout(() => newPostRefreshBtn.click(), 250);
-        else console.log("Something went wrong with the nuLOL reply fix!");
-        ChromeShack.isPostReplyMutation = false; // unflag when done with handling
+        let refreshedPost = threadElem.querySelector("li li.sel.last");
+        try {
+            let rootPost = refreshedPost.closest(".root");
+            let rootPostRefreshBtn = rootPost.querySelector(".fullpost.op .refresh > a");
+            let refreshedOL = refreshedPost.querySelector("span.oneline_body");
+            // pass along our refreshed post element and root post id
+            processReplyEvent.raise(refreshedPost, rootPost.id.substr(5));
+            // try to fix busted nuLOL tag data loading when replying
+            if (rootPostRefreshBtn)
+                setTimeout(() => {
+                    // refresh the root so we get fresh tag data
+                    rootPostRefreshBtn.click();
+                    // re-open the new post
+                    refreshedOL.click();
+                }, 250);
+        }
+        catch (e) { console.log("Something went wrong with the nuLOL reply fix:", e); }
+        finally { ChromeShack.isPostReplyMutation = false; }
     },
 
     processRefresh(e) {
