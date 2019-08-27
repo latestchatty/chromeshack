@@ -95,4 +95,5 @@ video.swiper-slide {
 /* fix z-index of lightbox so header bar doesn't cover it */
 div.basicLightbox {
     z-index: 99999;
+    overflow-y: scroll;
 }

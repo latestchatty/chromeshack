@@ -316,7 +316,12 @@ const insertLightbox = (elem) => {
         lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox-5.0.2.min.css");
         head.appendChild(lightboxCSS);
     }
-    browser.runtime.sendMessage({name: "injectLightbox", elemText: elem.outerHTML});
+    let _elem = elem.cloneNode(true);
+    // don't limit height of images inside lightbox if far larger than monitor
+    // y-axis overflow scrolling is enabled via CSS to handle this
+    if (_elem.matches("img") && _elem.naturalHeight > ($(window).height() * 1.25))
+        _elem.setAttribute("style", "max-height: unset !important;");
+    browser.runtime.sendMessage({name: "injectLightbox", elemText: _elem.outerHTML});
 };
 
 const attachChildEvents = async (elem, id, index) => {
