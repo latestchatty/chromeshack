@@ -8,12 +8,16 @@ processReplyEvent.addHandler((item, root) => {
     let refreshedBtn = item.querySelector(".refresh > a");
     // try to fix busted nuLOL tag data loading when replying
     if (rootPostRefreshBtn) {
-        delayPromise(250)
-            // get fresh tag data for the thread
-            .then(Promise.resolve(rootPostRefreshBtn.click()))
-            // ... then re-open the refreshed post
+        // 1) force a refresh of all tag data for this root thread
+        // 2) re-open the oneliner of the new reply
+        // 3) refresh the tag data for the new reply
+        // 4) ensure the reply is visible
+        Promise.resolve(rootPostRefreshBtn.click())
+        .then(delayPromise(250)
             .then(Promise.resolve(refreshedOL.click()))
-            .then(delayPromise(0).then(refreshedBtn.click()))
-            .catch(e => console.log("Something went wrong:", e));
+            .then(Promise.resolve(refreshedBtn.click()))
+            .then(Promise.resolve(scrollToElement(item)))
+        )
+        .catch(e => console.log("Something went wrong:", e))
     }
 });
