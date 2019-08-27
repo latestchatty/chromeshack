@@ -26,10 +26,10 @@
     max-width: var(--max-media-item-width);
 }
 .iframe-spacer iframe {
-    height: 480px;
-    width: 854px;
-    min-width: calc(480 * 0.5)px;
-    min-height: calc(854 * 0.5)px;
+    min-width: calc(480 * 0.5)px !important;
+    min-height: calc(854 * 0.5)px !important;
+    max-height: 480px !important;
+    max-width: 854px !important;
 }
 .iframe-container,
 .yt-container,

@@ -131,7 +131,7 @@ const mediaContainerInsert = (elem, link, id, index) => {
     // abstracted helper for manipulating the media-container grid from a post
     let expando = link.querySelector("div.expando");
     let hasMedia = expando.matches(".embedded");
-    let postBody = link.closest(".postbody");
+    let postBody = link.parentNode.matches("span") ? link.closest("span") : link.closest(".postbody");
     if (hasMedia) return toggleMediaItem(link);
     attachChildEvents(elem, id, index);
     // always insert media embeds next to their expando

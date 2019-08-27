@@ -8,22 +8,19 @@ let VideoLoader = {
         let _isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(url);
         let _isXboxDVR = /https?:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w-]+)\/video\/([\w-]+)/i.exec(url);
         // youtube videos and/or playlists (vid id: $1, playlist id: $2, offset: $3)
-        let _isYoutube = /https?:\/\/(?:.*\.)?youtu(?:(?:\.be|be\.[A-Za-z]{2,4})\/(?:watch.+?v?=([\w-]+)(?:&list=([\w-]+))?(?:.*(&t=[\w-]+))?|playlist\?list=([\w-]+))|\.be\/([\w-]+)$)/i.exec(
-            url
-        );
+        let _isYoutube = /https?:\/\/(?:.+\.)?youtube\..+\/(?:watch.+?v?=([\w-]+)(?:&list=([\w-]+))?(?:.*&t=(\d+))?|playlist\?list=([\w-]+))/i.exec(url);
+        let _isYoutubeShort = /https?:\/\/youtu\.be\/([\w-]+)(?:\?t=(\d+))?/i.exec(url);
         // twitch channels, videos, and clips (with time offset)
-        let _isTwitch = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w-]+)(?:.*?t=(\w+))?|collections\/([\w-]+))|([\w-]+)))/i.exec(
-            url
-        );
+        let _isTwitch = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w-]+)(?:.*?t=(\w+))?|collections\/([\w-]+))|([\w-]+)))/i.exec(url);
         let _isMixer = /https:\/\/(?:.+\.)?mixer\.com\/([\w-]+)(\?vod=[\w-]+|\?clip=[\w-]+)?/i.exec(url);
         let _isFacebook = /https:\/\/(?:.+\.)?facebook.(?:.+?)\/.+\/videos\/(\d+)\/?/i.exec(url);
 
-        if (_isYoutube) {
+        if (_isYoutube || _isYoutubeShort) {
             return {
                 type: 1,
-                video: _isYoutube[1] || _isYoutube[5],
-                playlist: _isYoutube[2] || _isYoutube[4],
-                offset: _isYoutube[3]
+                video: _isYoutube && _isYoutube[1] || _isYoutubeShort && _isYoutubeShort[1],
+                playlist: _isYoutube && _isYoutube[2],
+                offset: _isYoutube && _isYoutube[3] || _isYoutubeShort && _isYoutubeShort[2]
             };
         } else if (_isTwitch) {
             // twitch channels
@@ -103,10 +100,9 @@ let VideoLoader = {
         let timeOffset = videoObj.offset ? `&start=${videoObj.offset}` : "";
 
         if (video_id && video_playlist)
-            video_src = `https://www.youtube.com/embed/videoseries?v=${video_id}&list=${video_playlist}&autoplay=1${timeOffset}`;
-        else if (!video_id && video_playlist)
-            video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&autoplay=1`;
-        else if (video_id) video_src = `https://www.youtube.com/embed/${video_id}?autoplay=1${timeOffset}`;
+            video_src = `https://www.youtube.com/embed/${video_id}?list=${video_playlist}&autoplay=1${timeOffset}`;
+        else if (video_id)
+            video_src = `https://www.youtube.com/embed/${video_id}?autoplay=1${timeOffset}`;
         else if (video_playlist)
             video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&autoplay=1`;
 
