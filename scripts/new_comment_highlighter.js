@@ -1,8 +1,8 @@
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 let NewCommentHighlighter = {
     async highlight() {
-        // only highlight if less than 3 hours have passed
-        if (!await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 3)) {
+        // only highlight if less than 6 hours have passed
+        if (!await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 6)) {
             let last_id = await getSetting("new_comment_highlighter_last_id");
             let new_last_id = NewCommentHighlighter.findLastID();
             // only highlight if we wouldn't highlight everything on the page
