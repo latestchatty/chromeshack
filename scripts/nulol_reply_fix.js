@@ -3,6 +3,7 @@
  */
 
 processReplyEvent.addHandler((item, root) => {
+    console.log("processReplyEvent:", item, root);
     let rootPostRefreshBtn = root.querySelector(".fullpost.op .refresh > a");
     let refreshedOL = item.querySelector("span.oneline_body");
     let refreshedBtn = item.querySelector(".refresh > a");
@@ -12,12 +13,13 @@ processReplyEvent.addHandler((item, root) => {
         // 2) re-open the oneliner of the new reply
         // 3) refresh the tag data for the new reply
         // 4) ensure the reply is visible
-        Promise.resolve(rootPostRefreshBtn.click())
-        .then(delayPromise(250)
-            .then(Promise.resolve(refreshedOL.click()))
-            .then(Promise.resolve(refreshedBtn.click()))
-            .then(Promise.resolve(scrollToElement(item)))
-        )
+        delayPromise(0)
+            .then(Promise.resolve(rootPostRefreshBtn.click()))
+            .then(delayPromise(250)
+                .then(Promise.resolve(refreshedOL.click()))
+                .then(Promise.resolve(refreshedBtn.click()))
+                .then(Promise.resolve(scrollToElement(item)))
+            )
         .catch(e => console.log("Something went wrong:", e))
     }
 });

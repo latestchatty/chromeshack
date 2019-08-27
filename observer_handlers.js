@@ -1,5 +1,5 @@
 let ChromeShack = {
-    isPostReplyMutation: false,
+    isPostReplyMutation: null,
 
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
@@ -10,8 +10,11 @@ let ChromeShack = {
                         // flag indicated the user has triggered a fullpost reply
                         if (mutation.previousSibling && mutation.removedNodes &&
                             mutation.previousSibling.matches(".fullpost") &&
-                            mutation.removedNodes[0].matches(".inlinereply"))
-                            ChromeShack.isPostReplyMutation = true;
+                            mutation.removedNodes[0].matches(".inlinereply")) {
+                            let target = mutation.target.closest("li[id^='item_']");
+                            let parentId = target && parseInt(target.id.substr(5));
+                            ChromeShack.isPostReplyMutation = parentId || null;
+                        }
                     } catch (err) { /* eat exceptions here */ }
 
                     let added_nodes = mutation.addedNodes;
@@ -30,8 +33,8 @@ let ChromeShack = {
                                 ChromeShack.processPost(elem, id);
                             }
                             // the user posted a reply and the thread has refreshed
-                            if (elem && elem.matches("div.threads") && ChromeShack.isPostReplyMutation)
-                                ChromeShack.processReply(elem);
+                            if (elem && ChromeShack.isPostReplyMutation)
+                                ChromeShack.processReply(ChromeShack.isPostReplyMutation);
 
                             // check specifically for the postbox being added
                             let changed_id = addedNode && addedNode.id;
@@ -81,12 +84,14 @@ let ChromeShack = {
         processPostBoxEvent.raise(postbox);
     },
 
-    processReply(threadElem) {
-        let refreshedPost = threadElem.querySelector("li li.sel.last");
-        let rootPost = refreshedPost.closest(".root");
-        // pass along our refreshed post and root post elements
-        processReplyEvent.raise(refreshedPost, rootPost);
-        ChromeShack.isPostReplyMutation = false;
+    processReply(parentId) {
+        if (parentId) {
+            let refreshedPost = document.querySelector(`li#item_${parentId} li.last`);
+            let rootPost = refreshedPost.closest(".root");
+            // pass along our refreshed post and root post elements
+            processReplyEvent.raise(refreshedPost, rootPost);
+        }
+        ChromeShack.isPostReplyMutation = null;
     },
 
     processRefresh(e) {
