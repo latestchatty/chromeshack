@@ -2,13 +2,9 @@ let ChattyNews = {
     async checkTime(delayInMs) {
         let curTime = new Date().getTime();
         let lastFetchTime = await getSetting("chatty_news_lastfetchtime");
-        if (!lastFetchTime) {
-            // cache our time on a fresh start
-            await setSetting("chatty_news_lastfetchtime", curTime);
-            return true;
-        }
-        let diffTime = curTime - lastFetchTime;
-        if (diffTime > delayInMs) {
+        let diffTime = Math.abs(curTime - lastFetchTime);
+        if (!lastFetchTime || diffTime > delayInMs) {
+            // update if necessary or start fresh
             await setSetting("chatty_news_lastfetchtime", curTime);
             return true;
         }
