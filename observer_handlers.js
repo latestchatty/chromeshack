@@ -87,9 +87,11 @@ let ChromeShack = {
     processReply(parentId) {
         if (parentId) {
             let refreshedPost = document.querySelector(`li#item_${parentId} .sel.last`);
-            let rootPost = refreshedPost.closest(".root");
-            // pass along our refreshed post and root post elements
-            processReplyEvent.raise(refreshedPost, rootPost);
+            if (refreshedPost) {
+                let rootPost = refreshedPost.closest(".root");
+                // pass along our refreshed post and root post elements
+                processReplyEvent.raise(refreshedPost, rootPost);
+            }
         }
         ChromeShack.isPostReplyMutation = null;
     },
