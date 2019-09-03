@@ -25,6 +25,13 @@ let GetPost = {
                     // hack-ish way of "parsing" string to DOM (sanitized!)
                     postDiv.appendChild(data);
                     postDiv = postDiv.childNodes[1];
+                    // honor spoiler tags' click event when embedded
+                    spoilerTag = postDiv && postDiv.querySelector("span.jt_spoiler");
+                    if (spoilerTag) {
+                        spoilerTag.addEventListener("click", e => {
+                            e.target.setAttribute("class", "jt_spoiler_clicked");
+                        });
+                    }
                     // nuke fullpost class as we don't want
                     // chatview.js to interact with posts it's
                     // not meant to handle
