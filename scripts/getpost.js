@@ -39,6 +39,11 @@ let GetPost = {
                     postDiv.setAttribute("id", `getpost_${postId}-${index}`);
                     toggleMediaItem(link);
                     link.parentNode.insertBefore(postDiv, link.nextSibling);
+                    // workaround to enable media embeds in embedded chatty posts
+                    const item = document.querySelector(`li#item_${postId}`);
+                    const root = item && item.closest(".root");
+                    const root_id = root && root.id.substr(5);
+                    if (item && root_id) ChromeShack.processPost(item, root_id);
                 });
             }
         }
