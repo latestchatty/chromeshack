@@ -37,6 +37,16 @@ const objContains = (needle, haystack) => {
     return false;
 };
 
+const objContainsProperty = (key, obj) => Object.prototype.hasOwnProperty.call(obj, key);
+
+const objConditionalFilter = (disallowed, obj) => {
+    return Object.keys(obj)
+        .filter(k => !disallowed.includes(k))
+        .reduce((o, k) => {
+            return { ...o, [k]: obj[k] };
+        }, {});
+};
+
 const superTrim = string => {
     return string.replace(/^\s+|\s+$/g, "");
 };

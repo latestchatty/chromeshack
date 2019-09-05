@@ -340,7 +340,86 @@ const saveOptions = async (e) => {
     }
 };
 
-const clearSettings = (e) => resetSettings().then(loadOptions).then(saveOptions(e));
+const clearSettings = (e) => resetSettings()
+    .then(loadOptions)
+    .then(saveOptions(e))
+    .then(() => {
+        let settings_field = document.getElementById("import_export_field");
+        if (settings_field) settings_field.value = "";
+        handleImportExportField(); // force a field update
+    });
+
+/*
+ *  Support import/export of the settings store
+*/
+const exportSettings = settingsField => {
+    if (settingsField) {
+        getSettings().then(settings => {
+            // strip unnecessary cached keys
+            const disallowed = [
+                "chatty_news_lastfetchdata",
+                "chatty_news_lastfetchtime",
+                "last_highlight_time",
+                "new_comment_highlighter_last_id"
+            ];
+            settingsField.value = JSON.stringify(objConditionalFilter(disallowed, settings));
+            handleImportExportField(); // force a field update
+            settingsField.select();
+            document.execCommand("copy");
+            alert("Copied current settings to clipboard!");
+        });
+    }
+};
+
+const importSettings = settingsField => {
+    try {
+        let parsedSettings = settingsField && JSON.parse(superTrim(settingsField.value));
+        if (parsedSettings)
+            resetSettings().then(setSettings(parsedSettings).then(alert("Successfully imported settings!")));
+    } catch (e) {
+        console.log(e);
+        alert("Something went wrong when importing, check the console!");
+    }
+};
+
+const handleImportExportField = () => {
+    const field = document.getElementById("import_export_field");
+    const importExportBtn = document.getElementById("import_export_btn");
+    let result = parseSettingsString(field.value);
+    if (result) importExportBtn.textContent = "Import Settings";
+    else importExportBtn.textContent = "Export To Clipboard";
+};
+
+const handleImportExportSettings = () => {
+    const field_limit = 5 * 1000 * 1000;
+    let importExportField = document.getElementById("import_export_field");
+    let field_val = importExportField && importExportField.value;
+    if (field_val && field_val.length > field_limit) {
+        // truncate to 5 MiB (max of extension storage)
+        alert("Warning! Settings input must be less than 5MiB in size!");
+        string = string.substring(0, field_limit);
+        importExportField.value = string;
+    }
+    if (importExportField && importExportField.value.length > 0)
+        importSettings(importExportField);
+    else if (importExportField)
+        exportSettings(importExportField);
+};
+
+const parseSettingsString = (string) => {
+    // rudimentary way of checking if a settings string is a valid JSON object
+    try {
+        let parsed = string && string.length > 0 && JSON.parse(superTrim(string));
+        if (parsed && objContainsProperty("version", parsed)) return string;
+        return false;
+    } catch (e) {
+        alert("Input is not a valid settings string!");
+        document.getElementById("import_export_field").value = "";
+        handleImportExportField(); // force a field update
+        console.log(e);
+        return false;
+    }
+};
 
 
 /*
@@ -357,8 +436,10 @@ const trackChanges = () => {
 document.addEventListener("DOMContentLoaded", async () => {
     await loadOptions();
     trackChanges();
-    document.getElementById("clear_settings").addEventListener("click", clearSettings);
     document.getElementById("add_highlight_group").addEventListener("click", addHighlightGroup);
+    document.getElementById("import_export_field").addEventListener("input", handleImportExportField);
+    document.getElementById("import_export_btn").addEventListener("click", handleImportExportSettings);
+    document.getElementById("clear_settings").addEventListener("click", clearSettings);
     document.getElementById("rls_notes").addEventListener("click", () => {
         browser.tabs.create({ url: browser.runtime.getURL("release_notes.html") });
         return false;

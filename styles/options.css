@@ -130,3 +130,16 @@ p.info {
 p.indent {
     margin-left: 25px;
 }
+
+.import_export_area {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 125px;
+    margin: 0.25em 0.1em;
+}
+textarea#import_export_field {
+    flex: 1 auto;
+    word-break: break-all;
+    resize: none;
+ }

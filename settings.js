@@ -221,6 +221,8 @@ const getSettingsLegacy = () => {
 
 const setSetting = async (key, val) => await browser.storage.local.set({[key]: val});
 
+const setSettings = async (obj) => await browser.storage.local.set(obj);
+
 const removeSetting = (key) => browser.storage.local.remove(key);
 
 const resetSettings = () => browser.storage.local.clear();
