@@ -357,6 +357,7 @@ const exportSettings = settingsField => {
         getSettings().then(settings => {
             // strip unnecessary cached keys
             const disallowed = [
+                "collapsed_threads",
                 "chatty_news_lastfetchdata",
                 "chatty_news_lastfetchtime",
                 "last_highlight_time",
