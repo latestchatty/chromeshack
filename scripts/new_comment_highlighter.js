@@ -50,7 +50,7 @@ let NewCommentHighlighter = {
     getPostsAfter(last_id) {
         // grab all the posts with post ids after the last post id we've seen
         return [...document.querySelectorAll("li[id^='item_']")]
-            .filter(x => parseInt(x.id.substr(5)) > last_id);
+            .filter(x => parseInt(x.id.substr(5)) >= last_id);
     },
 
     findLastID() {
