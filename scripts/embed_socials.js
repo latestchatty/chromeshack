@@ -321,6 +321,7 @@ let EmbedSocials = {
         };
 
         let postUrl = `https://www.instagram.com/p/${socialId}/`;
+        const errMsg = "This account or post has been made private or cannot be found";
         let result = await new Promise((resolve, reject) =>
             browser.runtime
                 .sendMessage({
@@ -349,9 +350,13 @@ let EmbedSocials = {
                         };
                         resolve(instgrmObj);
                     } else {
-                        alert("This account or post has been made private or cannot be found!");
-                        reject(false);
+                        alert(errMsg);
+                        return resolve(null);
                     }
+                })
+                .catch(e => {
+                    alert(errMsg);
+                    console.log(e);
                 })
         );
         return result;
