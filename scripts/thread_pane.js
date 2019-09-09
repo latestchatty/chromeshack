@@ -47,17 +47,11 @@ let ThreadPane = {
             );
             $cardDiv.append($('<div class="cs_thread_pane_root_author">').text(rootAuthor));
 
-            if (isRefreshPending) {
-                $cardDiv.addClass("cs_thread_pane_card_refresh_pending");
-            } else if ($opDiv.hasClass("fpmod_nws")) {
-                $cardDiv.addClass("cs_thread_pane_card_nws");
-            } else if ($opDiv.hasClass("fpmod_informative")) {
-                $cardDiv.addClass("cs_thread_pane_card_informative");
-            } else if ($opDiv.hasClass("fpmod_political")) {
-                $cardDiv.addClass("cs_thread_pane_card_political");
-            } else {
-                $cardDiv.addClass("cs_thread_pane_card_ontopic");
-            }
+            if (isRefreshPending) $cardDiv.addClass("cs_thread_pane_card_refresh_pending");
+            else if ($opDiv.hasClass("fpmod_nws")) $cardDiv.addClass("cs_thread_pane_card_nws");
+            else if ($opDiv.hasClass("fpmod_informative")) $cardDiv.addClass("cs_thread_pane_card_informative");
+            else if ($opDiv.hasClass("fpmod_political")) $cardDiv.addClass("cs_thread_pane_card_political");
+            else $cardDiv.addClass("cs_thread_pane_card_ontopic");
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
             $rootPostBodyDiv.find("a").replaceWith(function() {
@@ -66,6 +60,8 @@ let ThreadPane = {
             });
             // remove media containers from Thread Pane parent
             $rootPostBodyDiv.find(".media-container").remove();
+            // remove embedded chatty post containers from Thread Pane parent
+            $rootPostBodyDiv.find(".getPost").remove();
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
@@ -113,11 +109,8 @@ let ThreadPane = {
                 setTimeout(() => {
                     let elemFits = elementFitsViewport(li_root);
                     // scroll to fit thread or newest reply if applicable
-                    if (elemFits) {
-                        scrollToElement(li_root, true);
-                    } else {
-                        scrollToElement($li);
-                    }
+                    if (elemFits) scrollToElement(li_root, true);
+                    else scrollToElement($li);
 
                     $opDiv.addClass("cs_flash_animation");
                     $li.addClass("cs_flash_animation");
@@ -138,7 +131,7 @@ let ThreadPane = {
     },
 
     cloneRootPostBody(opDiv, threadId) {
-        const $rootPostbodyDiv = opDiv.find("div.postbody");
+        const $rootPostbodyDiv = opDiv.find("div.postbody").first();
         if ($rootPostbodyDiv.length !== 1) {
             throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
         }
@@ -151,9 +144,10 @@ let ThreadPane = {
         // there as well
         const $rootAuthor = $opDiv.find(`
             div.postmeta span.author span.user a,
-            div.postmeta span.author span.user`);
+            div.postmeta span.author span.user
+        `);
         return $rootAuthor.contents().filter(function() {
-            return this.nodeType == 3;
+            return this.nodeType === 3;
         })[0].nodeValue;
     },
 
@@ -195,9 +189,7 @@ let ThreadPane = {
         while (!$post.hasClass("threads")) {
             if ($post[0].nodeName.toUpperCase() === "LI" && $post[0].id.startsWith("item_")) {
                 const postId = parseInt($post[0].id.substring("item_".length));
-                if (postId === threadId) {
-                    break;
-                }
+                if (postId === threadId) break;
 
                 $oneline = $($post.find("div.oneline")[0]);
                 const postAuthor = $($oneline.find("span.oneline_user")[0]).text();
