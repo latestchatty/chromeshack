@@ -3,11 +3,11 @@
  */
 
 // https://stackoverflow.com/a/25873123
-const randomHsl = () => `hsla(${getRandomNum(0, 360, 3)}, ${getRandomNum(50, 100, 3)}%, ${getRandomNum(50, 100, 3)}%, 1)`;
+const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(50, 100)}%, ${getRandomNum(33, 75)}%, ${getRandomNum(0.5, 1, 2)})`;
 
 const getRandomInt = (min, max) => Math.floor(Math.random() * (Math.ceil(max) - Math.floor(min))) + Math.ceil(min);
 
-const getRandomNum = (min, max, precision) => (Math.random() * (max - min) + min).toPrecision(precision ? precision : 1);
+const getRandomNum = (min, max, precision) => parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
 
 const trimName = (name) => name.trim().replace(/[\W\s]+/g, "").toLowerCase();
 
@@ -62,6 +62,10 @@ const delayedTextUpdate = (e) => {
         let groupLabel = groupElem.querySelector(".group_label");
         let realGroupName = groupLabel.dataset.name;
         let updatedGroup = getHighlightGroup(groupElem);
+        let updatedCSSField = groupElem.querySelector(".group_css textarea");
+        let cssSplotch = groupElem.querySelector(".test_css span");
+        if (updatedCSSField.value.length > 0)
+            cssSplotch.setAttribute("style", superTrim(updatedCSSField.value));
         await setHighlightGroup(realGroupName, updatedGroup);
         groupLabel.dataset.name = updatedGroup.name;
     }, 500);
@@ -95,6 +99,9 @@ const addHighlightGroup = (e, group) => {
         </div>
         <div class="group_css">
             <textarea id="${trimmedName}_css"/>${group.css}</textarea>
+            <div class="test_css">
+                <span id="${trimmedName}_splotch" style="${group.css}" title="Click to try a new color">A</span>
+            </div>
         </div>
     `;
     if (group.built_in) {
@@ -156,6 +163,25 @@ const addHighlightGroup = (e, group) => {
         let removeBtn = groupElem.querySelector("#option_del");
         if (selected > -1) removeBtn.removeAttribute("disabled");
         else if (selected === -1) removeBtn.setAttribute("disabled", "");
+    });
+    // let the user switch colors by clicking the preview splotch
+    groupElem.querySelector(".test_css span").addEventListener("click", (e) => {
+        let group = e.target.closest("#highlight_group");
+        let styleField = group.querySelector(".group_css textarea");
+        let firstColor;
+        let style = styleField.value.replace(/((?:\s*?)color:.+?;)/gim, (m, g1) => {
+            // allow only two color rules, the original and our test rule
+            if (!firstColor) {
+                firstColor = g1;
+                return g1;
+            }
+            else return "";
+        });
+        console.log(firstColor);
+        console.log(style);
+        style = `${style} color: ${randomHsl()} !important;`;
+        styleField.value = superTrim(style);
+        delayedTextUpdate(e); // fire off a css field update
     });
     // handle changes on mutable text fields with a debounce
     let textfields = [...groupElem.querySelectorAll(".group_css textarea, .group_label")];
