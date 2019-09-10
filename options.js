@@ -177,10 +177,7 @@ const addHighlightGroup = (e, group) => {
             }
             else return "";
         });
-        console.log(firstColor);
-        console.log(style);
-        style = `${style} color: ${randomHsl()} !important;`;
-        styleField.value = superTrim(style);
+        styleField.value = superTrim(`${style} color: ${randomHsl()} !important;`);
         delayedTextUpdate(e); // fire off a css field update
     });
     // handle changes on mutable text fields with a debounce
