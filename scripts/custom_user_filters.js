@@ -9,13 +9,20 @@ let CustomUserFilters = {
     },
 
     removeOLsFromUserId(id) {
-        let olDivs = [...document.querySelectorAll(`div.olauthor_${id}`)];
-        for (let ol of olDivs || []) {
-            let postLi = ol.parentNode;
-            let isOLOfParent = ol.parentNode.parentNode.parentNode.matches(".root");
-            if (!isOLOfParent && postLi.tagName === "LI")
-                postLi.parentNode.removeChild(postLi);
-        }
+        getSetting("cuf_hide_fullposts").then(hideFPs => {
+            let postElems;
+            if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
+            else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];
+            for (let post of postElems || []) {
+                let ol = post.matches(".oneline:not(.op)") && post;
+                let fp = hideFPs && post.matches(".fullpost") && post;
+                let root = fp && fp.closest(".root");
+                if (ol && ol.parentNode.matches("li"))
+                    ol.parentNode.removeChild(post);
+                else if (fp && root && document.querySelector(".threads"))
+                    root.parentNode.removeChild(root);
+            }
+        });
     },
 
     applyFilter() {

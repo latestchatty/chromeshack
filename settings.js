@@ -17,6 +17,7 @@ let DefaultSettings = {
     collapsed_threads: [],
 
     user_filters: [],
+    cuf_hide_fullposts: false,
 
     highlight_groups: [
         {name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow;"},

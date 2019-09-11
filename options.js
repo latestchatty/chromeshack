@@ -273,7 +273,12 @@ const showUserFilters = async () => {
     delFilterBtn.addEventListener("click", removeUserFilter);
     usersLst.removeEventListener("change", filterOptionsChanged);
     usersLst.addEventListener("change", filterOptionsChanged);
+    let fullpostHider = document.getElementById("cuf_hide_fullposts");
+    fullpostHider.checked = await getSetting(fullpostHider.id);
+    fullpostHider.addEventListener("change", hideFullpostsChanged);
 };
+
+const hideFullpostsChanged = (e) => setSetting(e.target.id, e.target.checked);
 
 const filterOptionsChanged = (e) => {
     let filterElem = e.target.closest("#custom_user_filters_settings");
@@ -287,6 +292,8 @@ const getUserFilters = async () => {
     // serialize user filters to extension storage
     let usersLst = document.getElementById("filtered_users");
     let users = [...usersLst.options].map(x => x.text);
+    let fullpostHider = document.getElementById("cuf_hide_fullposts");
+    if (fullpostHider) await setSetting(fullpostHider.id, fullpostHider.checked);
     return await setSetting("user_filters", users);
 };
 

@@ -39,6 +39,11 @@ div#content {
 div[id$='_settings'].hidden {
     display: none !important;
 }
+div.suboption {
+    display: flex;
+    align-items: center;
+    margin: -5px 0 0.65em -3px;
+}
 
 /* highlight users styling */
 #highlight_users_settings {
