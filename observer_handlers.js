@@ -64,19 +64,20 @@ let ChromeShack = {
         browser.runtime.sendMessage({ name: "chatViewFix" });
         // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
         browser.runtime.sendMessage({ name: "scrollByKeyFix" });
-
-        // feed the refresh-post event handler
-        let refreshBtns = [...document.querySelectorAll("div.refresh a, a.closepost, a.showpost")];
-        for (let btn of refreshBtns || []) {
-            btn.removeEventListener("click", ChromeShack.processRefresh);
-            btn.addEventListener("click", ChromeShack.processRefresh);
-        }
     },
 
     processPost(item, root_id) {
         let ul = item.parentNode;
         let div = ul.parentNode;
         let is_root_post = div.className.indexOf("root") >= 0;
+
+        // feed the refresh-post event handler for each post
+        let refreshBtns = [...document.querySelectorAll("div.refresh a, a.closepost, a.showpost:not(.hidden)")];
+        for (let btn of refreshBtns || []) {
+            btn.removeEventListener("click", ChromeShack.processRefresh);
+            btn.addEventListener("click", ChromeShack.processRefresh);
+        }
+
         processPostEvent.raise(item, root_id, is_root_post);
     },
 
@@ -97,10 +98,15 @@ let ChromeShack = {
     },
 
     processRefresh(e) {
-        let refreshed = e.target.closest(".fullpost"); // pass the nearest parent
+        let refreshed = e.target.closest("li[id^='item_']");
+        let refreshedId = refreshed.id.substr(5);
+        let root = e.target.closest(".root > ul > li");
+        let rootId = root.id.substr(5);
         let refreshFrame = document.getElementById("dom_iframe");
         const loadHandler = () => {
-            processRefreshEvent.raise(refreshed);
+            let refreshedPost = document.getElementById(`item_${refreshedId}`);
+            let rootPost = document.getElementById(`root_${rootId}`);
+            processRefreshEvent.raise(refreshedPost, rootPost);
             refreshFrame.removeEventListener("load", loadHandler);
         };
         refreshFrame.removeEventListener("load", loadHandler);
