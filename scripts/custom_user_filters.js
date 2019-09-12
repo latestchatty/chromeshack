@@ -11,15 +11,17 @@ let CustomUserFilters = {
     removeOLsFromUserId(id) {
         getSetting("cuf_hide_fullposts").then(hideFPs => {
             let postElems;
+            let rootChildren = [...document.querySelectorAll(".threads > .root")];
             if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
             else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];
             for (let post of postElems || []) {
-                let ol = post.matches(".oneline:not(.op)") && post;
+                let ol = post.matches(".oneline") && post;
                 let fp = hideFPs && post.matches(".fullpost") && post;
                 let root = fp && fp.closest(".root");
                 if (ol && ol.parentNode.matches("li"))
                     ol.parentNode.removeChild(post);
-                else if (fp && root && document.querySelector(".threads"))
+                else if (fp && root && rootChildren && rootChildren.length > 1)
+                    // only remove root if we're in thread mode
                     root.parentNode.removeChild(root);
             }
         });
