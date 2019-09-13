@@ -3,6 +3,8 @@ let ChromeShack = {
 
     isPostRefreshMutation: null,
 
+    listenForTagData: false,
+
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = mutationsList => {
@@ -29,7 +31,8 @@ let ChromeShack = {
                                 let target = mutation.target.closest("li[id^='item_']");
                                 ChromeShack.isPostReplyMutation = target ? parseInt(target.id.substr(5)) : null;
                         }
-                        else if (mutation.target.matches("span.tag-container") &&
+                        else if (ChromeShack.listenForTagData &&
+                            mutation.target.matches("span.tag-container") &&
                             mutation.target.parentNode.childElementCount === 7) {
                                 // raise an event when tag data looks like it's fully loaded
                                 ChromeShack.processTagDataLoaded(mutation.target);
@@ -67,8 +70,8 @@ let ChromeShack = {
         };
         let observer = new MutationObserver(observer_handler);
         observer.observe(document, { characterData: true, subtree: true, childList: true });
-
         ChromeShack.processFullPosts();
+        fullPostsCompletedEvent.addHandler(ChromeShack.processFullPostsCompleted);
     },
 
     processFullPosts() {
@@ -83,6 +86,11 @@ let ChromeShack = {
         browser.runtime.sendMessage({ name: "chatViewFix" });
         // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
         browser.runtime.sendMessage({ name: "scrollByKeyFix" });
+    },
+
+    processFullPostsCompleted() {
+        // avoid processing tag mutations until all fullposts have loaded
+        ChromeShack.listenForTagData = true;
     },
 
     processPost(item, root_id) {
