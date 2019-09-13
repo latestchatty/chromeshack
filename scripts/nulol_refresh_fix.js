@@ -18,7 +18,6 @@ processReplyEvent.addHandler((item, root) => {
             .then(Promise.resolve(rootPostRefreshBtn.click()))
             .then(delayPromise(250)
                 .then(Promise.resolve(refreshedOL.click()))
-                .then(Promise.resolve(refreshedBtn.click()))
                 .then(Promise.resolve(addDatasetVal(threadsContainer, "refreshed", rootId)))
                 .then(Promise.resolve(scrollToElement(item)))
             )
@@ -29,16 +28,17 @@ processReplyEvent.addHandler((item, root) => {
 /*
  *  Attempt to workaround busted nuLOL API data loading behavior when refreshing
  */
+
 processRefreshEvent.addHandler((item, root) => {
     let rootPostRefreshBtn = root.querySelector(".fullpost.op .refresh > a");
     let refreshedOL = item.querySelector("span.oneline_body");
     let refreshedBtn = item.querySelector(".refresh > a");
     let threadsContainer = document.querySelector(".threads");
     let rootId = root.id.substr(5);
-    // avoid reprocessing already refreshed thread upon mutation (also catches replies)
+    // avoid reprocessing already refreshed thread upon mutation (also catches post-reply refreshes)
     if (datasetHas(threadsContainer, "refreshed", rootId))
         removeDatasetVal(threadsContainer, "refreshed", rootId);
-    else if (refreshedBtn && rootPostRefreshBtn) {
+    else if (refreshedBtn && rootPostRefreshBtn && item !== root) {
         delayPromise(0)
             .then(Promise.resolve(rootPostRefreshBtn.click()))
             .then(delayPromise(250)
