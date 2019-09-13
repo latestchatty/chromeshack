@@ -29,5 +29,6 @@ if (!window.eventsInitialized) {
     var processPostBoxEvent = new Event();
     var processReplyEvent = new Event();
     var processRefreshEvent = new Event();
+    var processTagDataLoadedEvent = new Event();
     window.eventsInitialized = true;
 }

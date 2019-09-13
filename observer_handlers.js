@@ -29,6 +29,11 @@ let ChromeShack = {
                                 let target = mutation.target.closest("li[id^='item_']");
                                 ChromeShack.isPostReplyMutation = target ? parseInt(target.id.substr(5)) : null;
                         }
+                        else if (mutation.target.matches("span.tag-container") &&
+                            mutation.target.parentNode.childElementCount === 7) {
+                                // raise an event when tag data looks like it's fully loaded
+                                ChromeShack.processTagDataLoaded(mutation.target);
+                        }
                     } catch (err) { /* eat exceptions here */ }
 
                     let added_nodes = mutation.addedNodes;
@@ -109,6 +114,12 @@ let ChromeShack = {
             e.target && e.target.closest(".root > ul > li");
         processRefreshEvent.raise(refreshedPost, rootPost);
         ChromeShack.isPostRefreshMutation = null;
+    },
+
+    processTagDataLoaded(item) {
+        let post = item && item.closest("li[id^='item_']");
+        let root = post && post.closest(".root > ul > li");
+        processTagDataLoadedEvent.raise(post, root);
     },
 };
 

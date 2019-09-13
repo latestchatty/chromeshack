@@ -400,10 +400,6 @@ const JSONToFormData = jsonStr => {
     return null;
 };
 
-const delayPromise = (timeout, value) => new Promise(
-    r => setTimeout(r.bind(null, value), timeout)
-);
-
 const addDatasetVal = (elem, fieldname, val) => {
     let dataset = elem && elem.getAttribute(fieldname);
     if (dataset && dataset.length > 0) elem.setAttribute(fieldname, `,${val}`);
