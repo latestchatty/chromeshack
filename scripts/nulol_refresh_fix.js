@@ -43,7 +43,6 @@ processRefreshEvent.addHandler((item, root) => {
             .then(Promise.resolve(rootPostRefreshBtn.click()))
             .then(delayPromise(250)
                 .then(Promise.resolve(refreshedOL.click()))
-                .then(Promise.resolve(refreshedBtn.click()))
                 .then(Promise.resolve(addDatasetVal(threadsContainer, "refreshed", rootId)))
             )
         .catch(e => console.log("Something went wrong after refresh:", e))
