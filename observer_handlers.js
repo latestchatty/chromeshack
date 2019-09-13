@@ -64,7 +64,6 @@ let ChromeShack = {
         observer.observe(document, { characterData: true, subtree: true, childList: true });
 
         ChromeShack.processFullPosts();
-        processRefreshedEvent.addHandler(ChromeShack.processRefreshed);
     },
 
     processFullPosts() {

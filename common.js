@@ -403,3 +403,20 @@ const JSONToFormData = jsonStr => {
 const delayPromise = (timeout, value) => new Promise(
     r => setTimeout(r.bind(null, value), timeout)
 );
+
+const addDatasetVal = (elem, fieldname, val) => {
+    let dataset = elem && elem.getAttribute(fieldname);
+    if (dataset && dataset.length > 0) elem.setAttribute(fieldname, `,${val}`);
+    else if (elem) elem.setAttribute(fieldname, val);
+};
+
+const removeDatasetVal = (elem, fieldname, val) => {
+    let dataset = elem && elem.getAttribute(fieldname);
+    let idx = dataset && dataset.indexOf(val);
+    if (elem && idx >= 0) elem.setAttribute(fieldname, dataset.replace(val, ""));
+};
+
+const datasetHas = (elem, fieldname, val) => {
+    let curVal = elem && elem.getAttribute(fieldname);
+    return curVal && curVal.indexOf(val) >= 0;
+};
