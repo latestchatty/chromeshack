@@ -28,15 +28,17 @@ let Collapse = {
     },
 
     close(e, id) {
-        browser.runtime.sendMessage({ name: "collapseThread", id });
+        collapseThread(id);
     },
 
     show(e, id) {
-        browser.runtime.sendMessage({ name: "unCollapseThread", id });
+        unCollapseThread(id);
         if (e.target.parentNode.querySelector(".closepost:not(.hidden)") &&
             e.target.matches(".showpost.hidden")) {
                 // feed the refresh-thread event handler when uncollapsing
-                ChromeShack.processRefresh({ target: e.target });
+                let post = e.target.closest("li[id^='item_']");
+                let root = e.target.closest(".root > ul > li");
+                if (post) ChromeShack.processRefresh(post, root, true);
             }
     }
 };

@@ -20,30 +20,6 @@ const migrateSettings = async () => {
     await setSetting("version", current_version);
 };
 
-const collapseThread = id => {
-    let MAX_LENGTH = 100;
-    getSetting("collapsed_threads", []).then(collapsed => {
-        if (collapsed.indexOf(id) < 0) {
-            collapsed.unshift(id);
-
-            // remove a bunch if it gets too big
-            if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
-
-            setSetting("collapsed_threads", collapsed);
-        }
-    });
-};
-
-const unCollapseThread = id => {
-    getSetting("collapsed_threads", []).then(collapsed => {
-        let index = collapsed.indexOf(id);
-        if (index >= 0) {
-            collapsed.splice(index, 1);
-            setSetting("collapsed_threads", collapsed);
-        }
-    });
-};
-
 const addContextMenus = () => {
     // get rid of any old and busted context menus
     browser.contextMenus.removeAll();
@@ -145,9 +121,7 @@ const showCommentHistoryClick = (info, tab) => {
 };
 
 browser.runtime.onMessage.addListener(async (request, sender) => {
-    if (request.name === "collapseThread") return Promise.resolve(collapseThread(request.id));
-    else if (request.name === "unCollapseThread") return Promise.resolve(unCollapseThread(request.id));
-    else if (request.name === "launchIncognito")
+    if (request.name === "launchIncognito")
         // necessary for opening nsfw links in an incognito window
         return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
     else if (request.name === "allowedIncognitoAccess")

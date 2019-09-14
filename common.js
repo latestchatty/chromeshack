@@ -416,3 +416,27 @@ const datasetHas = (elem, fieldname, val) => {
     let curVal = elem && elem.getAttribute(fieldname);
     return curVal && curVal.indexOf(val) >= 0;
 };
+
+const collapseThread = id => {
+    let MAX_LENGTH = 100;
+    getSetting("collapsed_threads", []).then(collapsed => {
+        if (collapsed.indexOf(id) < 0) {
+            collapsed.unshift(id);
+
+            // remove a bunch if it gets too big
+            if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
+
+            setSetting("collapsed_threads", collapsed);
+        }
+    });
+};
+
+const unCollapseThread = id => {
+    getSetting("collapsed_threads", []).then(collapsed => {
+        let index = collapsed.indexOf(id);
+        if (index >= 0) {
+            collapsed.splice(index, 1);
+            setSetting("collapsed_threads", collapsed);
+        }
+    });
+};
