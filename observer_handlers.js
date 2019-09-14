@@ -9,6 +9,7 @@ let ChromeShack = {
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = mutationsList => {
             for (let mutation of mutationsList) {
+                console.log(mutation);
                 if (mutation.type === "childList") {
                     try {
                         if (mutation.target.matches("div.threads") &&
@@ -31,11 +32,9 @@ let ChromeShack = {
                                 let target = mutation.target.closest("li[id^='item_']");
                                 ChromeShack.isPostReplyMutation = target ? parseInt(target.id.substr(5)) : null;
                         }
-                        else if (ChromeShack.listenForTagData &&
-                            mutation.target.matches("span.tag-container") &&
-                            mutation.target.parentNode.childElementCount === 7) {
-                                // raise an event when tag data looks like it's fully loaded
-                                ChromeShack.processTagDataLoaded(mutation.target);
+                        else if (mutation.target.matches("span.tag-container")) {
+                                // raise an event when tag data elements are loaded into the DOM
+                                ChromeShack.processTagDataLoaded(mutation.target.parentNode);
                         }
                     } catch (err) { /* eat exceptions here */ }
 
@@ -46,8 +45,8 @@ let ChromeShack = {
                             let elem = addedNode.parentNode;
                             let source_id = elem && elem.id;
                             // starts with "root", they probably refreshed the thread
-                            if (addedNode.classList && objContains("root", addedNode.classList))
-                                ChromeShack.processFullPosts();
+                            /* if (addedNode.classList && objContains("root", addedNode.classList))
+                                ChromeShack.processFullPosts(); */
                             // starts with "item_", they probably clicked on a reply
                             if (source_id && source_id.indexOf("item_") === 0) {
                                 // grab the id from the old node, since the new node doesn't contain the id
@@ -71,7 +70,6 @@ let ChromeShack = {
         let observer = new MutationObserver(observer_handler);
         observer.observe(document, { characterData: true, subtree: true, childList: true });
         ChromeShack.processFullPosts();
-        fullPostsCompletedEvent.addHandler(ChromeShack.processFullPostsCompleted);
     },
 
     processFullPosts() {
@@ -86,11 +84,6 @@ let ChromeShack = {
         browser.runtime.sendMessage({ name: "chatViewFix" });
         // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
         browser.runtime.sendMessage({ name: "scrollByKeyFix" });
-    },
-
-    processFullPostsCompleted() {
-        // avoid processing tag mutations until all fullposts have loaded
-        ChromeShack.listenForTagData = true;
     },
 
     processPost(item, root_id) {
@@ -127,7 +120,9 @@ let ChromeShack = {
     processTagDataLoaded(item) {
         let post = item && item.closest("li[id^='item_']");
         let root = post && post.closest(".root > ul > li");
-        processTagDataLoadedEvent.raise(post, root);
+        let tagElems = [...item.querySelectorAll(".tag-container.non-zero[attr='data-tc'], .tag-container")];
+        // only raise the event if it looks like tag data is finished loading
+        if (tagElems.length > 0) processTagDataLoadedEvent.raise(post, root);
     },
 };
 

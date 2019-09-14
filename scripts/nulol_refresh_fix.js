@@ -9,16 +9,17 @@ processReplyEvent.addHandler((item, root) => {
     let threadsContainer = document.querySelector(".threads");
     let rootId = root.id.substr(5);
     const replyHandler = () => {
+        processTagDataLoadedEvent.removeHandler(replyHandler);
         addDatasetVal(threadsContainer, "refreshed", rootId);
         refreshedOL.click();
-        scrollToElement(item);
-        processTagDataLoadedEvent.removeHandler(replyHandler);
+        refreshedBtn.click();
+        if (!elementIsVisible(item)) scrollToElement(item);
     };
     if (refreshedBtn && rootPostRefreshBtn) {
         // 1) force a refresh of all tag data for this root thread
         // 2) re-open the oneliner of the new reply
+        // 3) force a refresh of the open reply
         // 4) ensure the reply is visible
-        processTagDataLoadedEvent.removeHandler(replyHandler);
         processTagDataLoadedEvent.addHandler(replyHandler);
         rootPostRefreshBtn.click();
     }
@@ -35,20 +36,15 @@ processRefreshEvent.addHandler((item, root) => {
     let threadsContainer = document.querySelector(".threads");
     let rootId = root.id.substr(5);
     const refreshHandler = () => {
-        if (datasetHas(threadsContainer, "refreshed", rootId))
-            removeDatasetVal(threadsContainer, "refreshed", rootId);
-        else if (refreshedBtn && rootPostRefreshBtn && item !== root) {
-            addDatasetVal(threadsContainer, "refreshed", rootId);
-            refreshedOL.click();
-            processTagDataLoadedEvent.removeHandler(refreshHandler);
-        }
+        processTagDataLoadedEvent.removeHandler(refreshHandler);
+        addDatasetVal(threadsContainer, "refreshed", rootId);
+        refreshedOL.click();
     };
     // avoid reprocessing already refreshed thread upon mutation (also catches post-reply refreshes)
     if (datasetHas(threadsContainer, "refreshed", rootId))
         removeDatasetVal(threadsContainer, "refreshed", rootId);
     else if (refreshedBtn && rootPostRefreshBtn && item !== root) {
         // similar to the reply workaround except we avoid scrolling
-        processTagDataLoadedEvent.removeHandler(refreshHandler);
         processTagDataLoadedEvent.addHandler(refreshHandler);
         rootPostRefreshBtn.click();
     }
