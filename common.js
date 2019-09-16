@@ -440,3 +440,27 @@ const unCollapseThread = id => {
         }
     });
 };
+
+const locatePostRefs = (elem) => {
+    if (elem) {
+        // locate post container relative to an any internal post element
+        let post = elem.closest("li[id^='item_'].sel, li li[id^='item_'].sel");
+        // locate root thread container relative to any post container
+        let root = post && post.closest(".root > ul > li");
+        if (!post) {
+            // try in reverse if the first method fails
+            root = elem.closest(".root > ul > li");
+            post = root.querySelector("li li[id^='item_'].sel");
+        }
+        if (post && root) return { post, root };
+    }
+    return null;
+};
+
+const postContainsTags = (post) => {
+    if (post) {
+        let updatedTags = [...post.querySelectorAll(".tag-container[data-tc]:not([data-tc='0']")];
+        return updatedTags && updatedTags.length > 0 ? true : false;
+    }
+    return false;
+};
