@@ -7,7 +7,7 @@ let ChromeShack = {
 
     hasInitialized: false,
 
-    debugEvents: true,
+    debugEvents: false,
 
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
@@ -15,7 +15,7 @@ let ChromeShack = {
             try {
                 //console.log(mutationsList);
                 for (let mutation of mutationsList) {
-                    if (ChromeShack.debugEvents) console.log(mutation);
+                    //if (ChromeShack.debugEvents) console.log(mutation);
                     // flag indicated the user has triggered a fullpost reply
                     if (
                         elementMatches(mutation.previousSibling, ".fullpost") &&
@@ -98,10 +98,7 @@ let ChromeShack = {
             let { lastPostId } = ChromeShack.isPostRefreshMutation || {};
             post = lastPostId && document.querySelector(`li#item_${lastPostId}`);
         }
-        if (post || root) {
-            processPostRefreshEvent.raise(post, root, postHasTags, rootHasTags);
-            if (root && !post) processPostEvent.raise(root);
-        }
+        if (post || root) processPostRefreshEvent.raise(post, root, postHasTags, rootHasTags);
         // since we're done refreshing remove this thread from our tracking list
         delete ChromeShack.refreshingThreads[rootId];
         ChromeShack.isPostRefreshMutation = {};

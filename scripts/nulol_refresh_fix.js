@@ -30,9 +30,13 @@ const NuLOLFix = {
         let rootId = root && root.id.substr(5);
         let oneline = post && post.querySelector(".oneline_body");
         let matched = ChromeShack.refreshingThreads[rootId];
-        if (oneline && matched) {
-            console.log("attempting to reopen the last open post:", post, root, matched);
-            oneline.click();
+        if (matched) {
+            if (oneline) {
+                console.log("attempting to reopen the last open post:", post, root, matched);
+                oneline.click();
+            }
+            // raise the processPost event on the root post so listeners are notified
+            processPostEvent.raise(root);
         }
     }
 };
