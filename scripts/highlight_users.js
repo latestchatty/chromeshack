@@ -1,5 +1,5 @@
 let HighlightUsers = {
-    userRegex: /(?:olauthor_|fpauthor_)(\d+)+?[\s\S]+?(?:(?:class="user">.*?>(.*?)<\/a>|oneline_user ">(.*?)\<\/))[\s\S]+?(?:.*?\/(moderator)\.png")?/gi,
+    userRegex: /(?:<div class="oneline.*?olauthor_(\d+))[\s\S]+?<span class="oneline_user.*>(\w+)<\/span><img(?:.*?(moderator)?")>/gi,
 
     cache: [],
 
@@ -15,9 +15,8 @@ let HighlightUsers = {
         for (let i of matches) {
             let id = i[1];
             // don't scrape the Shame Switchers name extension
-            let name = i[2] && i[2].split(" - ")[0] ||
-                i[3] && i[3].split(" - ")[0];
-            let mod = !!i[4];
+            let name = i[2] && i[2].split(" - ")[0];
+            let mod = !!i[3];
             // only include unique ids (can be the same username)
             if (!uniques.find(v => v.id === id)) uniques.push({ id, name, mod });
         }
@@ -44,7 +43,7 @@ let HighlightUsers = {
             }
         }
         // don't highlight current user as mod/employee/dev
-        css += " div.oneline a.this_user{color: rgb(0, 191, 243) !important;}";
+        css += " span.this_user { color: rgb(0, 191, 243) !important; }";
         insertStyle(css, "highlighted-users");
     },
 
