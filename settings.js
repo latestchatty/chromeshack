@@ -1,4 +1,4 @@
-let DefaultSettings = {
+const DefaultSettings = {
     enabled_scripts: [
         "shrink_user_icons",
         "reduced_color_user_icons",
@@ -202,9 +202,7 @@ const removeEnabled = async (key) => {
 
 const getSettings = async () => {
     let settings = await browser.storage.local.get();
-    if (isEmpty(settings))
-        return await browser.storage.local.set(DefaultSettings)
-            .then(browser.storage.local.get);
+    if (isEmpty(settings)) return await browser.storage.local.set(DefaultSettings).then(browser.storage.local.get);
     return settings;
 };
 
@@ -213,8 +211,7 @@ const getSettingsLegacy = () => {
     for (let key of Object.keys(settings) || []) {
         if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
             settings[key] = JSON.parse(settings[key]);
-        else if (!isNaN(parseFloat(JSON.parse(settings[key]))))
-            settings[key] = parseFloat(JSON.parse(settings[key]));
+        else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
         else settings[key] = JSON.parse(settings[key]);
     }
     return settings;
@@ -247,29 +244,25 @@ const setHighlightGroup = async (groupName, obj) => {
 
 const removeHighlightGroup = async (groupName) => {
     // for removing a highlight group while preserving record order
-    let result = (await getSetting("highlight_groups"))
-        .filter((x) => x.name !== groupName);
+    let result = (await getSetting("highlight_groups")).filter((x) => x.name !== groupName);
     // return the new records Promise from the store
     return setSetting("highlight_groups", result).then(getSetting("highlight_groups"));
 };
 
 const getMutableHighlights = async () => {
-    return (await getSetting("highlight_groups"))
-        .filter(x => !x.built_in && x.users);
+    return (await getSetting("highlight_groups")).filter((x) => !x.built_in && x.users);
 };
 
 const highlightsContains = async (username) => {
     // return all group matches based on username
-    return (await getMutableHighlights())
-        .filter(x =>
-            x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
-        );
+    return (await getMutableHighlights()).filter((x) =>
+        x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
+    );
 };
 
 const highlightGroupContains = async (groupName, username) => {
     let groups = await highlightsContains(username);
-    if (groups.length > 0)
-        for (let group of groups || []) if (group.name === groupName) return group;
+    if (groups.length > 0) for (let group of groups || []) if (group.name === groupName) return group;
     return false;
 };
 
@@ -277,8 +270,7 @@ const removeHighlightUser = async (groupName, username) => {
     let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
     group = group.length > 0 ? group[0] : null;
     if (group) {
-        let mutated = group.users
-            .filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase()));
+        let mutated = group.users.filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase()));
         group.users = mutated;
         return await setHighlightGroup(group.name, group);
     }
@@ -295,13 +287,14 @@ const addHighlightUser = async (groupName, username) => {
 };
 
 const filtersContains = async (username) => {
-    return (await getSetting("user_filters"))
-        .find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) || false;
+    return (
+        (await getSetting("user_filters")).find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) ||
+        false
+    );
 };
 
 const removeFilter = async (username) => {
-    let mutated = (await getSetting("user_filters"))
-        .filter((y) => y.toLowerCase() !== username.toLowerCase());
+    let mutated = (await getSetting("user_filters")).filter((y) => y.toLowerCase() !== username.toLowerCase());
     await setSetting("user_filters", mutated);
 };
 

@@ -1,4 +1,4 @@
-const stripHtml = html => {
+const stripHtml = (html) => {
     // respect carriage returns
     let result = html.replace(/<br.*?>/gi, "\n");
     return result.replace(/(<([^>]+)>)/gi, "");
@@ -11,18 +11,14 @@ const insertStyle = (css, containerName) => {
         style.id = containerName;
         style.appendChild(document.createTextNode(css));
         document.getElementsByTagName("head")[0].appendChild(style);
-    }
-    else if (style.id) style.innerHTML = css;
+    } else if (style.id) style.innerHTML = css;
 };
 
 const objContains = (needle, haystack) => {
     // tests if an object (or nested object) contains a matching value (or prop)
     // since objects can contains Arrays test for them too
     if (isEmpty(haystack)) return false;
-    else if (Array.isArray(haystack) && haystack.includes(needle) ||
-        haystack === needle)
-        return needle;
-
+    else if ((Array.isArray(haystack) && haystack.includes(needle)) || haystack === needle) return needle;
     for (let v of Object.values(haystack)) {
         if (v instanceof Object) {
             let _objResult = objContains(needle, v);
@@ -41,17 +37,17 @@ const objContainsProperty = (key, obj) => Object.prototype.hasOwnProperty.call(o
 
 const objConditionalFilter = (disallowed, obj) => {
     return Object.keys(obj)
-        .filter(k => !disallowed.includes(k))
+        .filter((k) => !disallowed.includes(k))
         .reduce((o, k) => {
-            return { ...o, [k]: obj[k] };
+            return {...o, [k]: obj[k]};
         }, {});
 };
 
-const superTrim = string => {
+const superTrim = (string) => {
     return string.replace(/^\s+|\s+$/g, "");
 };
 
-const isEmpty = obj => {
+const isEmpty = (obj) => {
     return obj === null || obj === undefined || (obj && Object.keys(obj).length === 0 && obj.constructor === Object);
 };
 
@@ -69,29 +65,29 @@ const xhrRequestLegacy = (url, optionsObj) => {
             if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1) {
                 resolve(xhr.response);
             }
-            reject({ status: this.status, statusText: xhr.statusText });
+            reject({status: this.status, statusText: xhr.statusText});
         };
         xhr.onerror = () => {
-            reject({ status: this.status, statusText: xhr.statusText });
+            reject({status: this.status, statusText: xhr.statusText});
         };
         xhr.send();
     });
 };
 
-const fetchSafeLegacy = ({ url, fetchOpts, parseType }) => {
+const fetchSafeLegacy = ({url, fetchOpts, parseType}) => {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
         xhrRequestLegacy(url, fetchOpts)
-            .then(res => {
+            .then((res) => {
                 let result = res && parseFetchResponse(res, parseType);
                 if (result) resolve(result);
                 return reject(res);
             })
-            .catch(err => reject(err))
+            .catch((err) => reject(err));
     });
 };
 
-const fetchSafe = ({ url, fetchOpts, parseType }) => {
+const fetchSafe = ({url, fetchOpts, parseType}) => {
     // used for sanitizing fetches
     // fetchOpts gets destructured in 'xhrRequest()'
     // modeObj gets destructured into override bools:
@@ -101,18 +97,18 @@ const fetchSafe = ({ url, fetchOpts, parseType }) => {
     // NOTE: HTML type gets sanitized to a document fragment
     return new Promise((resolve, reject) =>
         fetch(url, fetchOpts)
-            .then(async res => {
-                let result = res && (res.ok || res.statusText === "OK") &&
-                    parseFetchResponse((await res).text(), parseType);
+            .then(async (res) => {
+                let result =
+                    res && (res.ok || res.statusText === "OK") && parseFetchResponse((await res).text(), parseType);
                 if (result) return resolve(result);
                 return reject(res);
             })
-            .catch(err => reject(err))
+            .catch((err) => reject(err))
     );
 };
 
 const parseFetchResponse = async (textPromise, parseType) => {
-    const { chattyPics, instagram, html, chattyRSS } = parseType || {};
+    const {chattyPics, instagram, html, chattyRSS} = parseType || {};
     const text = await textPromise;
     try {
         // sanitize Instagram graphQL cache to JSON
@@ -133,7 +129,7 @@ const parseFetchResponse = async (textPromise, parseType) => {
             // return a list of links if applicable
             if (_resElemArr || _resElemVal)
                 return _resElemArr
-                    ? _resElemArr.value.split("\n").filter(x => x !== "")
+                    ? _resElemArr.value.split("\n").filter((x) => x !== "")
                     : _resElemVal && [_resElemVal.value];
         }
         // sanitize and return as Shacknews RSS article list
@@ -169,7 +165,7 @@ const getCookieValue = (name, defaultValue) => {
     return ret;
 };
 
-const generatePreview = postText => {
+const generatePreview = (postText) => {
     // simple replacements
     //postText = postText.replace(/&/g, "&amp;"); // breaks Astral encoding
     postText = postText.replace(/</g, "&lt;");
@@ -179,27 +175,27 @@ const generatePreview = postText => {
     postText = postText.replace(/\r/g, "<br>");
 
     let complexReplacements = {
-        red: { from: ["r{", "}r"], to: ['<span class="jt_red">', "</span>"] },
-        green: { from: ["g{", "}g"], to: ['<span class="jt_green">', "</span>"] },
-        blue: { from: ["b{", "}b"], to: ['<span class="jt_blue">', "</span>"] },
-        yellow: { from: ["y{", "}y"], to: ['<span class="jt_yellow">', "</span>"] },
-        olive: { from: ["e\\[", "\\]e"], to: ['<span class="jt_olive">', "</span>"] },
-        lime: { from: ["l\\[", "\\]l"], to: ['<span class="jt_lime">', "</span>"] },
-        orange: { from: ["n\\[", "\\]n"], to: ['<span class="jt_orange">', "</span>"] },
-        pink: { from: ["p\\[", "\\]p"], to: ['<span class="jt_pink">', "</span>"] },
-        quote: { from: ["q\\[", "\\]q"], to: ['<span class="jt_quote">', "</span>"] },
-        sample: { from: ["s\\[", "\\]s"], to: ['<span class="jt_sample">', "</span>"] },
-        strike: { from: ["-\\[", "\\]-"], to: ['<span class="jt_strike">', "</span>"] },
-        italic1: { from: ["i\\[", "\\]i"], to: ["<i>", "</i>"] },
-        italic2: { from: ["\\/\\[", "\\]\\/"], to: ["<i>", "</i>"] },
-        bold1: { from: ["b\\[", "\\]b"], to: ["<b>", "</b>"] },
-        bold2: { from: ["\\*\\[", "\\]\\*"], to: ["<b>", "</b>"] },
-        underline: { from: ["_\\[", "\\]_"], to: ["<u>", "</u>"] },
+        red: {from: ["r{", "}r"], to: ['<span class="jt_red">', "</span>"]},
+        green: {from: ["g{", "}g"], to: ['<span class="jt_green">', "</span>"]},
+        blue: {from: ["b{", "}b"], to: ['<span class="jt_blue">', "</span>"]},
+        yellow: {from: ["y{", "}y"], to: ['<span class="jt_yellow">', "</span>"]},
+        olive: {from: ["e\\[", "\\]e"], to: ['<span class="jt_olive">', "</span>"]},
+        lime: {from: ["l\\[", "\\]l"], to: ['<span class="jt_lime">', "</span>"]},
+        orange: {from: ["n\\[", "\\]n"], to: ['<span class="jt_orange">', "</span>"]},
+        pink: {from: ["p\\[", "\\]p"], to: ['<span class="jt_pink">', "</span>"]},
+        quote: {from: ["q\\[", "\\]q"], to: ['<span class="jt_quote">', "</span>"]},
+        sample: {from: ["s\\[", "\\]s"], to: ['<span class="jt_sample">', "</span>"]},
+        strike: {from: ["-\\[", "\\]-"], to: ['<span class="jt_strike">', "</span>"]},
+        italic1: {from: ["i\\[", "\\]i"], to: ["<i>", "</i>"]},
+        italic2: {from: ["\\/\\[", "\\]\\/"], to: ["<i>", "</i>"]},
+        bold1: {from: ["b\\[", "\\]b"], to: ["<b>", "</b>"]},
+        bold2: {from: ["\\*\\[", "\\]\\*"], to: ["<b>", "</b>"]},
+        underline: {from: ["_\\[", "\\]_"], to: ["<u>", "</u>"]},
         spoiler: {
             from: ["o\\[", "\\]o"],
             to: ['<span class="jt_spoiler" onclick="return doSpoiler(event);">', "</span>"]
         },
-        code: { from: ["\\/{{", "}}\\/"], to: ['<pre class="jt_code">', "</pre>"] }
+        code: {from: ["\\/{{", "}}\\/"], to: ['<pre class="jt_code">', "</pre>"]}
     };
 
     // replace matching pairs first
@@ -236,15 +232,15 @@ const debounce = (cb, delay) => {
             cb.apply(_cxt, _args);
         }, delay);
     };
-}
+};
 
 function scrollToElement(elem, toFitBool) {
     // don't use an arrow function here (for injection purposes)
     if (typeof jQuery === "function" && elem instanceof jQuery) {
         elem = elem[0];
     }
-    if (toFitBool) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
-    else $("html, body").animate({ scrollTop: $(elem).offset().top - $(window).height() / 4 }, 0);
+    if (toFitBool) $("html, body").animate({scrollTop: $(elem).offset().top - 54}, 0);
+    else $("html, body").animate({scrollTop: $(elem).offset().top - $(window).height() / 4}, 0);
 }
 
 function elementIsVisible(elem, partialBool) {
@@ -260,24 +256,24 @@ function elementIsVisible(elem, partialBool) {
     return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
 
-const elementFitsViewport = elem => {
+const elementFitsViewport = (elem) => {
     if (typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     let elemHeight = elem.getBoundingClientRect().height;
     let visibleHeight = window.innerHeight;
     return elemHeight < visibleHeight;
 };
 
-const convertUrlToLink = text => {
+const convertUrlToLink = (text) => {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target="_blank">$1</a>');
 };
 
-const removeChildren = elem => {
+const removeChildren = (elem) => {
     // https://stackoverflow.com/a/42658543
     while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 };
 
-const sanitizeToFragment = html => {
-    return DOMPurify.sanitize(html, { RETURN_DOM_FRAGMENT: true, RETURN_DOM_IMPORT: true });
+const sanitizeToFragment = (html) => {
+    return DOMPurify.sanitize(html, {RETURN_DOM_FRAGMENT: true, RETURN_DOM_IMPORT: true});
 };
 
 const safeInnerHTML = (text, targetNode) => {
@@ -294,18 +290,15 @@ const safeJSON = (text) => {
         let obj = JSON.parse(text);
         const iterate = (subval) => {
             if (Array.isArray(subval)) {
-                for (let child of subval)
-                    child = DOMPurify.sanitize(child);
+                for (let child of subval) child = DOMPurify.sanitize(child);
             } else if (typeof subval === Object) {
-                for (let val of Object.values(subval))
-                    subval = DOMPurify.sanitize(val);
+                for (let val of Object.values(subval)) subval = DOMPurify.sanitize(val);
             }
             return subval;
         };
 
         for (let val of Object.values(obj) || []) {
-            if (Array.isArray(val) || typeof val === Object)
-                val = iterate(val);
+            if (Array.isArray(val) || typeof val === Object) val = iterate(val);
             else val = DOMPurify.sanitize(val);
         }
         return obj;
@@ -313,7 +306,7 @@ const safeJSON = (text) => {
     return null;
 };
 
-const parseShackRSS = rssText => {
+const parseShackRSS = (rssText) => {
     let result = [];
     if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
         let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
@@ -337,23 +330,23 @@ const parseShackRSS = rssText => {
     return null;
 };
 
-const isHTML = text => {
+const isHTML = (text) => {
     // https://stackoverflow.com/a/15458968
-    if (!text || text && isJSON(text)) return false;
+    if (!text || (text && isJSON(text))) return false;
     let doc = new DOMParser().parseFromString(text, "text/html");
-    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+    return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 };
 
-const isJSON = text => {
+const isJSON = (text) => {
     try {
         if (text && JSON.parse(text)) return true;
     } catch (err) {
         return false;
     }
-}
+};
 
-const FormDataToJSON = async fd => {
-    const FileToObject = async fileData => {
+const FormDataToJSON = async (fd) => {
+    const FileToObject = async (fileData) => {
         const reader = new FileReader();
         reader.readAsDataURL(fileData);
         return new Promise((resolve, reject) => {
@@ -365,12 +358,12 @@ const FormDataToJSON = async fd => {
     let _fd = [];
     for (let [k, v] of fd) {
         let _file = await FileToObject(v);
-        _fd.push({ key: k, filename: v.name, data: _file });
+        _fd.push({key: k, filename: v.name, data: _file});
     }
     return JSON.stringify(_fd);
 };
 
-const JSONToFormData = jsonStr => {
+const JSONToFormData = (jsonStr) => {
     const Base64ToFile = (filename, baseStr) => {
         // https://stackoverflow.com/a/5100158
         let byteString;
@@ -387,7 +380,7 @@ const JSONToFormData = jsonStr => {
         for (let i = 0; i < byteString.length; i++) {
             ia[i] = byteString.charCodeAt(i);
         }
-        return new File([ia], filename, { type: mimeString });
+        return new File([ia], filename, {type: mimeString});
     };
 
     let _obj = JSON.parse(jsonStr);
@@ -400,39 +393,20 @@ const JSONToFormData = jsonStr => {
     return null;
 };
 
-const addDatasetVal = (elem, fieldname, val) => {
-    let dataset = elem && elem.getAttribute(fieldname);
-    if (dataset && dataset.length > 0) elem.setAttribute(fieldname, `,${val}`);
-    else if (elem) elem.setAttribute(fieldname, val);
-};
-
-const removeDatasetVal = (elem, fieldname, val) => {
-    let dataset = elem && elem.getAttribute(fieldname);
-    let idx = dataset && dataset.indexOf(val);
-    if (elem && idx >= 0) elem.setAttribute(fieldname, dataset.replace(val, ""));
-};
-
-const datasetHas = (elem, fieldname, val) => {
-    let curVal = elem && elem.getAttribute(fieldname);
-    return curVal && curVal.indexOf(val) >= 0;
-};
-
-const collapseThread = id => {
+const collapseThread = (id) => {
     let MAX_LENGTH = 100;
-    getSetting("collapsed_threads", []).then(collapsed => {
+    getSetting("collapsed_threads", []).then((collapsed) => {
         if (collapsed.indexOf(id) < 0) {
             collapsed.unshift(id);
-
             // remove a bunch if it gets too big
             if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
-
             setSetting("collapsed_threads", collapsed);
         }
     });
 };
 
-const unCollapseThread = id => {
-    getSetting("collapsed_threads", []).then(collapsed => {
+const unCollapseThread = (id) => {
+    getSetting("collapsed_threads", []).then((collapsed) => {
         let index = collapsed.indexOf(id);
         if (index >= 0) {
             collapsed.splice(index, 1);
@@ -441,26 +415,20 @@ const unCollapseThread = id => {
     });
 };
 
-const locatePostRefs = (elem) => {
+const locatePostRefs = (elem)  => {
     if (elem) {
-        // locate post container relative to an any internal post element
-        let post = elem.closest("li[id^='item_'].sel, li li[id^='item_'].sel");
-        // locate root thread container relative to any post container
-        let root = post && post.closest(".root > ul > li");
-        if (!post) {
-            // try in reverse if the first method fails
-            root = elem.closest(".root > ul > li");
-            post = root.querySelector("li li[id^='item_'].sel");
-        }
-        if (post && root) return { post, root };
+        let root = elem.closest(".root");
+        let closestContainer = root.closest("li[id^='item_']");
+        let post = closestContainer && !closestContainer.matches(".root > ul > li") ?
+            closestContainer :
+            root.querySelector("li li.sel");
+        return {post, root: root.querySelector("ul > li")};
     }
     return null;
 };
 
-const postContainsTags = (post) => {
-    if (post) {
-        let updatedTags = [...post.querySelectorAll(".tag-container[data-tc]:not([data-tc='0']")];
-        return updatedTags && updatedTags.length > 0 ? true : false;
-    }
-    return false;
-};
+const elementMatches = (elem, selector) => elem && elem.nodeType !== 3 && elem.matches(selector) ? elem : null;
+
+const elementQuerySelector = (elem, selector) => elem && elem.nodeType !== 3 ? elem.querySelector(selector) : null;
+
+const elementQuerySelectorAll = (elem, selector) => elem && elem.nodeType !== 3 ? elem.querySelectorAll(selector) : null;

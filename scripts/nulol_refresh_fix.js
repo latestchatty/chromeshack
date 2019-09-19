@@ -1,36 +1,40 @@
 /*
- *  Attempt to workaround Chatty's nuLOL API data not loading after replying/refreshing
+ *  Attempt to workaround Chatty's nuLOL API data not loading after replying/refreshing posts
  */
 
-processReplyEvent.addHandler((item, root) => {
-    let post = item.matches("div.threads li[id^='item_']") && item;
-    let _root = root.matches("div.threads .root > ul > li") && root;
-    // pass the event info along to the refresh event below
-    if (post) processRefreshEvent.raise(post, _root);
-});
+const NuLOLFix = {
+    install() {
+        // intercept intent events (refresh/reply) that include the post and root ids
+        processRefreshIntentEvent.addHandler(NuLOLFix.preRefreshHandler);
+        // intercept the event that fires after tag data has loaded
+        processPostRefreshEvent.addHandler(NuLOLFix.postRefreshHandler);
+    },
 
-processRefreshEvent.addHandler((item, root, override) => {
-    let threadsContainer = document.querySelector(".threads");
-    let refreshedId = item.id.substr(5);
-    let rootId = root.id.substr(5);
-    const tagsLoadedHandler = (target) => {
-        processTagDataLoadedEvent.removeHandler(tagsLoadedHandler);
-        if (!elementIsVisible(target)) scrollToElement(target);
-    };
-    const refreshHandler = () => {
-        let refreshed = document.querySelector(`div.threads li#item_${refreshedId}`);
-        let refreshedOL = refreshed && refreshed.querySelector("span.oneline_body");
-        processTagDataLoadedEvent.removeHandler(refreshHandler);
-        addDatasetVal(threadsContainer, "refreshed", rootId);
-        processTagDataLoadedEvent.addHandler(() => tagsLoadedHandler(refreshed));
-        refreshedOL.click();
-    };
-    // avoid reprocessing already refreshed thread upon mutation
-    if (datasetHas(threadsContainer, "refreshed", rootId))
-        removeDatasetVal(threadsContainer, "refreshed", rootId);
-    else if (item !== root || override) {
-        let rootPostRefreshBtn = root.querySelector(".fullpost.op .refresh > a");
-        processTagDataLoadedEvent.addHandler(refreshHandler);
-        rootPostRefreshBtn.click();
+    preRefreshHandler(postId, rootId) {
+        // click the root refresh to refresh tag data for the whole thread
+        let _postId = postId && typeof postId !== "string" ? postId.id.substr(5) : postId;
+        let _rootId = rootId && typeof rootId !== "string" ? rootId.id.substr(5) : rootId;
+        let root = document.querySelector(`#root_${_rootId} > ul > li`);
+        let rootRefreshBtn = root && root.querySelector(".refresh > a");
+        let matched = ChromeShack.refreshingThreads[_rootId];
+        // don't rerun this if we're already refreshing
+        if (rootRefreshBtn && !matched) {
+            console.log("attempting to refresh the thread tag data:", root);
+            matched = {postId: _postId, rootId: _rootId};
+            rootRefreshBtn.click();
+        }
+    },
+
+    postRefreshHandler(post, root) {
+        // reopen the saved post
+        let rootId = root && root.id.substr(5);
+        let oneline = post && post.querySelector(".oneline_body");
+        let matched = ChromeShack.refreshingThreads[rootId];
+        if (oneline && matched) {
+            console.log("attempting to reopen the last open post:", post, root, matched);
+            oneline.click();
+        }
     }
-});
+};
+
+fullPostsCompletedEvent.addHandler(NuLOLFix.install);

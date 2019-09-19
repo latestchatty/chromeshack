@@ -1,29 +1,35 @@
 let Collapse = {
-    toggle(item, id, is_root_post) {
-        // only process for root posts
-        if (is_root_post) {
-            let root = document.getElementById(`root_${id}`);
-            // root should never be null, but check anyway
-            if (root) {
-                let postmeta = item.querySelector("div.postmeta");
-                let close = postmeta.querySelector("a.closepost");
-                let show = postmeta.querySelector("a.showpost");
-                close.addEventListener("click", (e) => {
-                    Collapse.close(e, id);
-                });
-                show.addEventListener("click", (e) => {
-                    Collapse.show(e, id);
-                });
+    collapseHandler(e) {
+        let collapse = elementMatches(e.target, "a.closepost");
+        let uncollapse = elementMatches(e.target, "a.showpost");
+        if (collapse) {
+            let {post, root} = locatePostRefs(collapse);
+            let rootId = root && root.id.substr(5);
+            if (ChromeShack.debugEvents) console.log("ran collapse handler:", rootId, collapse);
+            Collapse.close(e, rootId);
+        } else if (uncollapse) {
+            let {post, root} = locatePostRefs(uncollapse);
+            let rootId = root && root.id.substr(5);
+            if (ChromeShack.debugEvents) console.log("ran uncollapse handler:", rootId, uncollapse);
+            Collapse.show(e, rootId);
+        }
+    },
 
-                // this thread should be collapsed
-                getSetting("collapsed_threads").then(collapsed => {
-                    if (objContains(id, collapsed)) {
-                        root.classList.add("collapsed");
-                        show.setAttribute("class", "showpost");
-                        close.setAttribute("class", "closepost hidden");
-                    }
-                });
-            }
+    toggle(post, id, is_root_post) {
+        // only process for root posts
+        if (post && is_root_post) {
+            let root = post.closest("div.root");
+            let close = post.querySelector("a.closepost");
+            let show = post.querySelector("a.showpost");
+            document.addEventListener("click", Collapse.collapseHandler);
+            // check if thread should be collapsed
+            getSetting("collapsed_threads").then((collapsed) => {
+                if (objContains(id, collapsed)) {
+                    root.classList.add("collapsed");
+                    close.setAttribute("class", "closepost hidden");
+                    show.setAttribute("class", "showpost");
+                }
+            });
         }
     },
 
@@ -33,14 +39,17 @@ let Collapse = {
 
     show(e, id) {
         unCollapseThread(id);
-        if (e.target.parentNode.querySelector(".closepost:not(.hidden)") &&
-            e.target.matches(".showpost.hidden")) {
-                // feed the refresh-thread event handler when uncollapsing
-                let post = e.target.closest("li[id^='item_']");
-                let root = e.target.closest(".root > ul > li");
-                if (post) ChromeShack.processRefresh(post, root, true);
+        if (e.target.parentNode.querySelector(".closepost:not(.hidden)") && e.target.matches(".showpost.hidden")) {
+            // feed the refresh-thread event handler when uncollapsing
+            let {post, root} = locatePostRefs(e.target);
+            let postId = post && post.id.substr(5);
+            let rootId = root && root.id.substr(5);
+            if (postId || rootId) {
+                if (ChromeShack.debugEvents) console.log("refreshing root post after uncollapse:", post, root);
+                processRefreshIntentEvent.raise(postId, rootId);
             }
+        }
     }
 };
 
-processPostEvent.addHandler(Collapse.toggle)
+processPostEvent.addHandler(Collapse.toggle);
