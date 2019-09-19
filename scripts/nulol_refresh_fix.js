@@ -33,6 +33,10 @@ const NuLOLFix = {
             if (oneline) {
                 if (ChromeShack.debugEvents) console.log("attempting to reopen the last open post:", post, root, matched);
                 oneline.click();
+                if (matched.from_reply) {
+                    if (ChromeShack.debugEvents) console.log("trying to scroll reply into view:", post, matched);
+                    scrollToElement(post);
+                }
             }
             // raise the processPost event on the root post so listeners are notified
             processPostEvent.raise(root);

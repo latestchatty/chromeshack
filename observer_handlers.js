@@ -71,13 +71,13 @@ let ChromeShack = {
             let rootId = root && root.id.substr(5);
             root.classList.add("refreshing");
             if (ChromeShack.debugEvents) console.log("raising processRefreshIntentEvent:", openPostId, rootId, is_root);
-            processRefreshIntentEvent.raise(openPostId, rootId, is_root);
+            processRefreshIntentEvent.raise(openPostId, rootId, is_root, !!ChromeShack.isPostReplyMutation);
         }
     },
 
-    refreshIntentHandler(lastPostId, lastRootId, is_root) {
+    refreshIntentHandler(lastPostId, lastRootId, is_root, from_reply) {
         // make sure to save the ids of the open posts so we can reopen them later
-        ChromeShack.isPostRefreshMutation = {lastPostId, lastRootId, is_root};
+        ChromeShack.isPostRefreshMutation = {lastPostId, lastRootId, is_root, from_reply};
         // keep track of what's being refreshed
         ChromeShack.refreshingThreads[lastRootId] = ChromeShack.isPostRefreshMutation;
         // listen for when tag data gets mutated (avoid duplicates!)
@@ -159,7 +159,7 @@ let ChromeShack = {
                 if (ChromeShack.debugEvents) console.log("raising processReplyEvent:", post, root);
                 processReplyEvent.raise(post, root);
                 // also raise the refresh intent event to alert listeners that we want to refresh (nuLOL fix)
-                processRefreshIntentEvent.raise(postId, rootId, is_root);
+                processRefreshIntentEvent.raise(postId, rootId, is_root, !!ChromeShack.isPostReplyMutation);
             }
         }
         ChromeShack.isPostReplyMutation = null;
