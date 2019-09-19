@@ -63,12 +63,13 @@ let ChromeShack = {
         let root = clickedElem && clickedElem.closest(".root > ul > li");
         let rootId = root && root.id.substr(5);
         // check the NuLOLFix refresh list to make sure we don't reprocess the thread
-        if (clickedElem && !ChromeShack.refreshingThreads[rootId]) {
+        if (clickedElem && !ChromeShack.refreshingThreads[rootId] && !elementMatches(root, ".refreshing")) {
             let nearestPost = clickedElem.closest("li[id^='item_']");
             let is_root = nearestPost && nearestPost.parentNode.parentNode.matches(".root");
             let openPostId = !is_root && nearestPost && nearestPost.id.substr(5);
             let root = clickedElem.closest(".root > ul > li");
             let rootId = root && root.id.substr(5);
+            root.classList.add("refreshing");
             if (ChromeShack.debugEvents) console.log("raising processRefreshIntentEvent:", openPostId, rootId, is_root);
             processRefreshIntentEvent.raise(openPostId, rootId, is_root);
         }
@@ -95,7 +96,7 @@ let ChromeShack = {
             console.log("raising processPostRefreshEvent:", post, root, postHasTags, rootHasTags);
         if (!post) {
             // if we're called from a reply handler that can't pass a postId then find it ourselves
-            let { lastPostId } = ChromeShack.isPostRefreshMutation || {};
+            let {lastPostId} = ChromeShack.isPostRefreshMutation || {};
             post = lastPostId && document.querySelector(`li#item_${lastPostId}`);
         }
         if (post || root) processPostRefreshEvent.raise(post, root, postHasTags, rootHasTags);

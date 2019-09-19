@@ -19,8 +19,7 @@ const NuLOLFix = {
         let matched = ChromeShack.refreshingThreads[_rootId];
         // don't rerun this if we're already refreshing
         if (rootRefreshBtn && !matched) {
-            console.log("attempting to refresh the thread tag data:", root);
-            matched = {postId: _postId, rootId: _rootId};
+            if (ChromeShack.debugEvents) console.log("attempting to refresh the thread tag data:", root);
             rootRefreshBtn.click();
         }
     },
@@ -32,7 +31,7 @@ const NuLOLFix = {
         let matched = ChromeShack.refreshingThreads[rootId];
         if (matched) {
             if (oneline) {
-                console.log("attempting to reopen the last open post:", post, root, matched);
+                if (ChromeShack.debugEvents) console.log("attempting to reopen the last open post:", post, root, matched);
                 oneline.click();
             }
             // raise the processPost event on the root post so listeners are notified
