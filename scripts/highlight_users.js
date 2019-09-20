@@ -1,5 +1,5 @@
 let HighlightUsers = {
-    userRegex: /(?:<div class="oneline.+?olauthor_(\d+))[\s\S]+?class="oneline_user.+?>(.+?)<\/span(?:.+?title="(moderator)?">)?/gi,
+    userRegex: /(?:<div class=\\?"oneline.+?olauthor_(\d+))[\s\S]+?class=\\?"oneline_user.+?>(.+?)<\/span(?:.+?alt=\\?"(moderator)?\\?")?/gi,
 
     cache: [],
 
