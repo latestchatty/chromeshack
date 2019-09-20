@@ -94,6 +94,7 @@ input[type='text']:read-only {
 
 .group_css {
     display: flex;
+    max-width: 98%;
 }
 .group_css textarea {
     flex: 1 auto;
@@ -102,24 +103,25 @@ input[type='text']:read-only {
     min-width: 300px;
     max-width: 350px;
     max-height: 750px;
-    padding: 5px;
-    margin-bottom: 0.5em;
+    padding: 4px;
+    margin: 0 0.15em 0.5em 0;
 }
 /* styling for CSS test splotch */
 .test_css {
     display: flex;
-    background-color: black !important;
-    margin: 0 2px 5px 0;
+    background-color: #121212 !important;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    height: 42px;
-    width: 42px;
+    margin: 0;
+    padding: 0 2px;
+    max-height: 36px;
+    width: 36px;
 }
 .test_css span {
     font-family: var(--font-family);
-    font-size: 30px;
+    font-size: 26px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

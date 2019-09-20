@@ -3,7 +3,7 @@
  */
 
 // https://stackoverflow.com/a/25873123
-const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(50, 100)}%, ${getRandomNum(33, 75)}%, ${getRandomNum(0.5, 1, 2)})`;
+const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(25, 100)}%, ${getRandomNum(35, 60)}%, 1)`;
 
 const getRandomInt = (min, max) => Math.floor(Math.random() * (Math.ceil(max) - Math.floor(min))) + Math.ceil(min);
 
@@ -100,7 +100,7 @@ const addHighlightGroup = (e, group) => {
         <div class="group_css">
             <textarea id="${trimmedName}_css"/>${group.css}</textarea>
             <div class="test_css">
-                <span id="${trimmedName}_splotch" style="${group.css}" title="Click to try a new color">A</span>
+                <span id="${trimmedName}_splotch" style="${group.css}" title="Click to try a new color">Aa</span>
             </div>
         </div>
     `;
