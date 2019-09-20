@@ -29,7 +29,6 @@ if (!window.eventsInitialized) {
     var processPostBoxEvent = new Event();
     var processReplyEvent = new Event();
     var processRefreshIntentEvent = new Event();
-    var processRefreshEvent = new Event();
     var processPostRefreshEvent = new Event();
     var processEmptyTagsLoadedEvent = new Event();
     var processTagDataLoadedEvent = new Event();

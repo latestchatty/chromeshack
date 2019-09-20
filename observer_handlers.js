@@ -7,7 +7,7 @@ let ChromeShack = {
 
     hasInitialized: false,
 
-    debugEvents: false,
+    debugEvents: true,
 
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
@@ -81,8 +81,6 @@ let ChromeShack = {
         // keep track of what's being refreshed
         ChromeShack.refreshingThreads[lastRootId] = ChromeShack.isPostRefreshMutation;
         // listen for when tag data gets mutated (avoid duplicates!)
-        processEmptyTagsLoadedEvent.removeHandler(ChromeShack.postRefreshHandler);
-        processTagDataLoadedEvent.removeHandler(ChromeShack.postRefreshHandler);
         processEmptyTagsLoadedEvent.addHandler(ChromeShack.postRefreshHandler);
         processTagDataLoadedEvent.addHandler(ChromeShack.postRefreshHandler);
     },
@@ -163,16 +161,6 @@ let ChromeShack = {
             }
         }
         ChromeShack.isPostReplyMutation = null;
-    },
-
-    processRefresh(lastPostId, lastRootId) {
-        let post = lastPostId && document.querySelector(`li#item_${lastPostId}`);
-        let root = lastRootId && document.querySelector(`#root_${lastRootId} > ul > li`);
-        let postIsRoot = post === root;
-        if (post && root) {
-            console.log("raising processRefreshEvent:", post, root, postIsRoot);
-            processRefreshEvent.raise(post, root, postIsRoot);
-        }
     }
 };
 

@@ -65,6 +65,6 @@ let NewCommentHighlighter = {
 addDeferredHandler(enabledContains("new_comment_highlighter"), res => {
     if (res) {
         NewCommentHighlighter.highlight();
-        processRefreshEvent.addHandler(NewCommentHighlighter.highlight);
+        processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
     }
 });

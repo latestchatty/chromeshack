@@ -117,7 +117,7 @@ let HighlightPendingPosts = {
         if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
-        processRefreshEvent.addHandler(refreshElem => {
+        processPostRefreshEvent.addHandler(refreshElem => {
             HighlightPendingPosts.updatePendings();
             HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
         });

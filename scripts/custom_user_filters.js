@@ -47,7 +47,7 @@ let CustomUserFilters = {
 
 addDeferredHandler(enabledContains("custom_user_filters"), res => {
     if (res) {
-        processRefreshEvent.addHandler(CustomUserFilters.applyFilter);
+        processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
         CustomUserFilters.applyFilter();
     }
 });
