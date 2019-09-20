@@ -10,17 +10,17 @@ const NuLOLFix = {
         processPostRefreshEvent.addHandler(NuLOLFix.postRefreshHandler);
         // intercept the post-tag data event batch
         processTagDataLoadedEvent.addHandler(NuLOLFix.postTagDataHandler);
+        processEmptyTagsLoadedEvent.addHandler(NuLOLFix.postTagDataHandler);
     },
 
     preRefreshHandler(postId, rootId) {
         // click the root refresh to refresh tag data for the whole thread
-        let _postId = postId && typeof postId !== "string" ? postId.id.substr(5) : postId;
         let _rootId = rootId && typeof rootId !== "string" ? rootId.id.substr(5) : rootId;
         let root = document.querySelector(`#root_${_rootId} > ul > li`);
         let rootRefreshBtn = root && root.querySelector(".refresh > a");
         let matched = ChromeShack.refreshingThreads[_rootId];
         // don't rerun this if we're already refreshing
-        if (rootRefreshBtn && !matched && !root.classList.contains("refreshing")) {
+        if (rootRefreshBtn && !matched) {
             if (ChromeShack.debugEvents) console.log("attempting to refresh the thread tag data:", root);
             rootRefreshBtn.click();
         }

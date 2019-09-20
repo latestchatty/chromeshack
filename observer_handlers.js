@@ -16,12 +16,11 @@ let ChromeShack = {
         const observer_handler = (mutationsList) => {
             try {
                 if (
-                    ChromeShack.debugEvents &&
                     mutationsList[0].type === "attributes" &&
                     elementMatches(mutationsList[0].target, ".tag-container, .lol-tags")
                 ) {
                     let lastMutation = mutationsList[mutationsList.length - 1].target.closest("li[id^='item_']");
-                    if (lastMutation) return ChromeShack.processTagsLoaded(lastMutation)
+                    if (lastMutation) return ChromeShack.processTagsLoaded(lastMutation);
                 }
                 for (let mutation of mutationsList) {
                     //if (ChromeShack.debugEvents && mutation.type !== "attributes") console.log(mutation);
@@ -54,7 +53,12 @@ let ChromeShack = {
             }
         };
         let observer = new MutationObserver(observer_handler);
-        observer.observe(document, {characterData: true, subtree: true, attributeFilter: ["data-tc", "data-uc"], childList: true});
+        observer.observe(document, {
+            characterData: true,
+            subtree: true,
+            attributeFilter: ["data-tc", "data-uc"],
+            childList: true
+        });
 
         ChromeShack.processFullPosts();
 
@@ -138,8 +142,7 @@ let ChromeShack = {
         if (!ChromeShack.falseTagEvent) {
             ChromeShack.falseTagEvent = true;
             return; // avoid processing false-positive tag events
-        }
-        else if (ChromeShack.falseTagEvent) {
+        } else if (ChromeShack.falseTagEvent) {
             let {post, root} = locatePostRefs(item);
             let rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
             let postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
