@@ -11,7 +11,7 @@ let CustomUserFilters = {
     },
 
     removeOLsFromUserId(id) {
-        getSetting("cuf_hide_fullposts").then(hideFPs => {
+        getSetting("cuf_hide_fullposts").then(async (hideFPs) => {
             let postElems;
             if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
             else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];
@@ -21,9 +21,13 @@ let CustomUserFilters = {
                 let root = fp && fp.closest(".root");
                 if (ol && ol.parentNode.matches("li"))
                     ol.parentNode.removeChild(post);
-                else if (fp && root && CustomUserFilters.rootPostCount > 2)
+                else if (fp && root && CustomUserFilters.rootPostCount > 2) {
                     // only remove root if we're in thread mode
                     root.parentNode.removeChild(root);
+                    if (await enabledContains("thread_pane") && refreshThreadPane !== undefined) {
+                        refreshThreadPane(); // don't forget to update the thread pane
+                    }
+                }
             }
         });
     },

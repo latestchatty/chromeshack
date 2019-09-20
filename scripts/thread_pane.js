@@ -2,7 +2,7 @@ let refreshThreadPane;
 let ThreadPane = {
     install() {
         // regenerate the thread pane when the user refreshes a thread.
-        processRefreshEvent.addHandler(() => refreshThreadPane);
+        processPostRefreshEvent.addHandler(() => refreshThreadPane);
 
         // Only install on the main /chatty page, not an individual thread.
         if (document.getElementById("newcommentbutton") === null) return;
