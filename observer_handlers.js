@@ -7,15 +7,24 @@ let ChromeShack = {
 
     hasInitialized: false,
 
-    debugEvents: true,
+    falseTagEvent: false,
+
+    debugEvents: false,
 
     install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList) => {
             try {
-                //console.log(mutationsList);
+                if (
+                    ChromeShack.debugEvents &&
+                    mutationsList[0].type === "attributes" &&
+                    elementMatches(mutationsList[0].target, ".tag-container, .lol-tags")
+                ) {
+                    let lastMutation = mutationsList[mutationsList.length - 1].target.closest("li[id^='item_']");
+                    if (lastMutation) return ChromeShack.processTagsLoaded(lastMutation)
+                }
                 for (let mutation of mutationsList) {
-                    //if (ChromeShack.debugEvents) console.log(mutation);
+                    //if (ChromeShack.debugEvents && mutation.type !== "attributes") console.log(mutation);
                     // flag indicated the user has triggered a fullpost reply
                     if (
                         elementMatches(mutation.previousSibling, ".fullpost") &&
@@ -31,16 +40,13 @@ let ChromeShack = {
                         if (elementMatches(addedNode, "div.root") && ChromeShack.isPostReplyMutation) {
                             ChromeShack.processReply(ChromeShack.isPostReplyMutation);
                         }
+                        // check for opening a fullpost
                         if (elementMatches(addedNode.parentNode, "li[id^='item_']")) {
                             // grab the id from the old node, since the new node doesn't contain the id
                             ChromeShack.processPost(addedNode.parentNode, addedNode.parentNode.id.substr(5));
                         }
                         // check for the postbox
                         if (elementMatches(addedNode, "#postbox")) ChromeShack.processPostBox(addedNode);
-                        if (elementMatches(addedNode, "span.lol-tags, div.lol-tags")) {
-                            let lastMutation = mutationsList[mutationsList.length - 1].addedNodes[0].parentNode;
-                            if (lastMutation) return ChromeShack.processTagsLoaded(lastMutation);
-                        }
                     }
                 }
             } catch (e) {
@@ -48,7 +54,7 @@ let ChromeShack = {
             }
         };
         let observer = new MutationObserver(observer_handler);
-        observer.observe(document, {characterData: true, subtree: true, childList: true});
+        observer.observe(document, {characterData: true, subtree: true, attributeFilter: ["data-tc", "data-uc"], childList: true});
 
         ChromeShack.processFullPosts();
 
@@ -129,19 +135,26 @@ let ChromeShack = {
     },
 
     processTagsLoaded(item) {
-        let {post, root} = locatePostRefs(item);
-        let rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
-        let postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
-        let rootHasTags = rootUpdatedTags ? rootUpdatedTags.length > 0 : false;
-        let postHasTags = postUpdatedTags ? postUpdatedTags.length > 0 : false;
-        if ((post || root) && (postHasTags || rootHasTags)) {
-            if (ChromeShack.debugEvents)
-                console.log("raising processTagDataLoadedEvent:", post, root, postHasTags, rootHasTags);
-            processTagDataLoadedEvent.raise(post, root, postHasTags, rootHasTags);
-        } else if (post || root) {
-            if (ChromeShack.debugEvents)
-                console.log("raising processEmptyTagsLoadedEvent:", post, root, postHasTags, rootHasTags);
-            processEmptyTagsLoadedEvent.raise(post, root, postHasTags, rootHasTags);
+        if (!ChromeShack.falseTagEvent) {
+            ChromeShack.falseTagEvent = true;
+            return; // avoid processing false-positive tag events
+        }
+        else if (ChromeShack.falseTagEvent) {
+            let {post, root} = locatePostRefs(item);
+            let rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
+            let postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
+            let rootHasTags = rootUpdatedTags ? rootUpdatedTags.length > 0 : false;
+            let postHasTags = postUpdatedTags ? postUpdatedTags.length > 0 : false;
+            if ((post || root) && (postHasTags || rootHasTags)) {
+                if (ChromeShack.debugEvents)
+                    console.log("raising processTagDataLoadedEvent:", post, root, postHasTags, rootHasTags);
+                processTagDataLoadedEvent.raise(post, root, postHasTags, rootHasTags);
+            } else if (post || root) {
+                if (ChromeShack.debugEvents)
+                    console.log("raising processEmptyTagsLoadedEvent:", post, root, postHasTags, rootHasTags);
+                processEmptyTagsLoadedEvent.raise(post, root, postHasTags, rootHasTags);
+            }
+            ChromeShack.falseTagEvent = false;
         }
     },
 

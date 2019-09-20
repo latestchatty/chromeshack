@@ -8,6 +8,8 @@ const NuLOLFix = {
         processRefreshIntentEvent.addHandler(NuLOLFix.preRefreshHandler);
         // intercept the event that fires after tag data has loaded
         processPostRefreshEvent.addHandler(NuLOLFix.postRefreshHandler);
+        // intercept the post-tag data event batch
+        processTagDataLoadedEvent.addHandler(NuLOLFix.postTagDataHandler);
     },
 
     preRefreshHandler(postId, rootId) {
@@ -18,7 +20,7 @@ const NuLOLFix = {
         let rootRefreshBtn = root && root.querySelector(".refresh > a");
         let matched = ChromeShack.refreshingThreads[_rootId];
         // don't rerun this if we're already refreshing
-        if (rootRefreshBtn && !matched) {
+        if (rootRefreshBtn && !matched && !root.classList.contains("refreshing")) {
             if (ChromeShack.debugEvents) console.log("attempting to refresh the thread tag data:", root);
             rootRefreshBtn.click();
         }
@@ -30,16 +32,35 @@ const NuLOLFix = {
         let oneline = post && post.querySelector(".oneline_body");
         let matched = ChromeShack.refreshingThreads[rootId];
         if (matched) {
-            if (oneline) {
-                if (ChromeShack.debugEvents) console.log("attempting to reopen the last open post:", post, root, matched);
+            if (oneline && matched.from_reply) {
+                // try to make sure replies are scrolled into view
                 oneline.click();
-                if (matched.from_reply) {
-                    if (ChromeShack.debugEvents) console.log("trying to scroll reply into view:", post, matched);
-                    scrollToElement(post);
-                }
+                if (ChromeShack.debugEvents) console.log("trying to scroll reply into view:", post, matched);
+                scrollToElement(post);
             }
             // raise the processPost event on the root post so listeners are notified
             processPostEvent.raise(root);
+        }
+    },
+
+    postTagDataHandler(post, root) {
+        // prevent duplicate tag counts from being shown after a refresh
+        let postTagCounts = post && post.querySelectorAll("span.tag-counts");
+        let rootTagCounts = root && root.querySelectorAll(".root > ul > li > .fullpost span.tag-counts");
+        // hide everything but the first .tag-counts container (post & root)
+        for (let i = 1; postTagCounts && i < postTagCounts.length && postTagCounts.length > 1; i++) {
+            if (!postTagCounts[i].classList.contains("hidden")) {
+                if (ChromeShack.debugEvents)
+                    console.log("cleaning up post tagline after nuLOL tag update:", postTagCounts[i], i);
+                postTagCounts[i].classList.add("hidden");
+            }
+        }
+        for (let j = 1; rootTagCounts && j < rootTagCounts.length && rootTagCounts.length > 1; j++) {
+            if (!rootTagCounts[j].classList.contains("hidden")) {
+                if (ChromeShack.debugEvents)
+                    console.log("cleaning up root tagline after nuLOL tag update:", rootTagCounts[j], j);
+                rootTagCounts[j].classList.add("hidden");
+            }
         }
     }
 };
