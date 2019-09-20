@@ -103,10 +103,6 @@ let ImageUpload = {
             $(item).find("#uploadFields").toggleClass("hidden", ImageUpload.uploadShown);
             let text = !ImageUpload.uploadShown ? "Hide Image Uploader" : "Show Image Uploader";
             $(item).find(".showImageUploadLink").html(text);
-
-            // scroll to our elements contextually
-            if (ImageUpload.uploadShown) scrollToElement(e.target);
-            else scrollToElement(e.target.closest("#frm_body"));
             return false;
         });
 
