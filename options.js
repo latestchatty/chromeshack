@@ -384,16 +384,22 @@ const clearSettings = (e) => resetSettings()
 */
 const exportSettings = settingsField => {
     if (settingsField) {
-        getSettings().then(settings => {
+        getSettings().then(async (settings) => {
             // strip unnecessary cached keys
             const disallowed = [
+                "highlight_groups",
                 "collapsed_threads",
                 "chatty_news_lastfetchdata",
                 "chatty_news_lastfetchtime",
                 "last_highlight_time",
                 "new_comment_highlighter_last_id"
             ];
-            settingsField.value = JSON.stringify(objConditionalFilter(disallowed, settings));
+            const sanitizedGroups = settings.highlight_groups.filter(x => !x.built_in) || [];
+            const sanitizedSettings = objConditionalFilter(disallowed, settings);
+            const exportable = sanitizedGroups.length > 0 ?
+                JSON.stringify({...sanitizedSettings, highlight_groups: sanitizedGroups}) :
+                JSON.stringify(sanitizedSettings);
+            settingsField.value = exportable;
             handleImportExportField(); // force a field update
             settingsField.select();
             document.execCommand("copy");
@@ -405,8 +411,19 @@ const exportSettings = settingsField => {
 const importSettings = settingsField => {
     try {
         let parsedSettings = settingsField && JSON.parse(superTrim(settingsField.value));
-        if (parsedSettings)
-            resetSettings().then(setSettings(parsedSettings).then(alert("Successfully imported settings!")));
+        let defaults = {...DefaultSettings};
+        // combine default and parsed highlight groups intelligently
+        let reducedGroups = parsedSettings.highlight_groups ?
+            parsedSettings.highlight_groups.reduce((acc, v) => {
+                let foundIdx = acc.findIndex(y => y.name === v.name);
+                if (foundIdx > -1) acc[foundIdx] = v;
+                else acc.push(v);
+                return acc;
+            }, defaults.highlight_groups) : defaults.highlight_groups;
+        parsedSettings.highlight_groups = reducedGroups;
+        let combinedSettings = {...defaults, ...parsedSettings};
+        if (combinedSettings)
+            resetSettings().then(setSettings(combinedSettings).then(alert("Successfully imported settings!")));
     } catch (e) {
         console.log(e);
         alert("Something went wrong when importing, check the console!");
