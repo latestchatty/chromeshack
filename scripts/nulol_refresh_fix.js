@@ -45,8 +45,8 @@ const NuLOLFix = {
 
     postTagDataHandler(post, root) {
         // prevent duplicate tag counts from being shown after a refresh
-        let postTagCounts = post && post.querySelectorAll("span.tag-counts");
-        let rootTagCounts = root && root.querySelectorAll(".root > ul > li > .fullpost span.tag-counts");
+        let postTagCounts = post && post.querySelectorAll("span.tag-counts:not(.hidden)");
+        let rootTagCounts = root && root.querySelectorAll(".root > ul > li > .fullpost span.tag-counts:not(.hidden)");
         // hide everything but the first .tag-counts container (post & root)
         for (let i = 1; postTagCounts && i < postTagCounts.length && postTagCounts.length > 1; i++) {
             if (!postTagCounts[i].classList.contains("hidden")) {
@@ -61,6 +61,25 @@ const NuLOLFix = {
                     console.log("cleaning up root tagline after nuLOL tag update:", rootTagCounts[j], j);
                 rootTagCounts[j].classList.add("hidden");
             }
+        }
+        // move the taglines to the correct parent to "fix" Chatty behavior
+        let rootAuthorLine = root && root.querySelector("span.author");
+        let postAuthorLine = post && post.querySelector("span.author");
+        if (
+            rootAuthorLine &&
+            rootTagCounts &&
+            rootTagCounts.length > 0 &&
+            rootTagCounts[0].matches("span.user .tag-counts")
+        ) {
+            rootAuthorLine.appendChild(rootTagCounts[0]);
+        }
+        if (
+            postAuthorLine &&
+            postTagCounts &&
+            postTagCounts.length > 0 &&
+            postTagCounts[0].matches("span.user .tag-counts")
+        ) {
+            postAuthorLine.appendChild(postTagCounts[0]);
         }
     }
 };
