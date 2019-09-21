@@ -11,7 +11,7 @@ let CustomUserFilters = {
     },
 
     removeOLsFromUserId(id) {
-        getSetting("cuf_hide_fullposts").then(async (hideFPs) => {
+        getEnabledSuboptions("cuf_hide_fullposts").then(async (hideFPs) => {
             let postElems;
             if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
             else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];

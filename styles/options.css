@@ -44,6 +44,9 @@ div.suboption {
     align-items: center;
     margin: -5px 0 0.65em -3px;
 }
+div.suboption.indent {
+    margin: 0 0 0.75em 1.6em;
+}
 
 /* highlight users styling */
 #highlight_users_settings {

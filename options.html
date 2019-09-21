@@ -76,6 +76,10 @@
                 <label for="embed_socials">Embed social links</label>
             </p>
             <p class="indent info">Replace links to Twitter and Instagram with embedded posts.</p>
+            <div class="suboption indent" id="embed_socials_settings">
+                <input type="checkbox" class="suboption" id="es_show_tweet_threads" />
+                <label for="es_show_tweet_threads">Show Twitter threads when opening Twitter links.</label>
+            </div>
 
             <p>
                 <input type="checkbox" class="script_check" id="getpost" />
@@ -176,7 +180,7 @@
         <p class="info">Removes posts/replies authored by matched users.</p>
         <div id="custom_user_filters_settings" class="hidden">
             <div class="suboption">
-                <input type="checkbox" id="cuf_hide_fullposts" />
+                <input type="checkbox" class="suboption" id="cuf_hide_fullposts" />
                 <label for="cuf_hide_fullposts">Hide root posts authored by matched users</label>
             </div>
             <select class="custom_user_filter_options" id="filtered_users" multiple></select>

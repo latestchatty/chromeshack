@@ -37,21 +37,23 @@ let EmbedSocials = {
         let tweetObj = await EmbedSocials.fetchTweet(socialId);
         let tweetElem = EmbedSocials.renderTweet(parentLink, tweetObj, postId, index);
         let tweetContainer = document.createElement("div");
-        if (tweetObj.tweetParentId) {
-            let mutated = await EmbedSocials.fetchTweetParents(tweetObj);
-            // stack the tweets (oldest to newest)
-            tweetContainer.id = `loader_${postId}-${index}`;
-            tweetContainer.classList.add("media-container");
-            for (let tweetParent of mutated.tweetParents || []) {
-                let tweetParentElem = EmbedSocials.renderTweet(parentLink, tweetParent, postId, index);
-                tweetContainer.appendChild(tweetParentElem);
+        getEnabledSuboptions("es_show_tweet_threads").then(async (showThreads) => {
+            if (showThreads && tweetObj.tweetParentId) {
+                let mutated = await EmbedSocials.fetchTweetParents(tweetObj);
+                // stack the tweets (oldest to newest)
+                tweetContainer.id = `loader_${postId}-${index}`;
+                tweetContainer.classList.add("media-container");
+                for (let tweetParent of mutated.tweetParents || []) {
+                    let tweetParentElem = EmbedSocials.renderTweet(parentLink, tweetParent, postId, index);
+                    tweetContainer.appendChild(tweetParentElem);
+                }
+                tweetContainer.appendChild(tweetElem);
             }
-            tweetContainer.appendChild(tweetElem);
-        }
-        mediaContainerInsert(
-            tweetContainer.childElementCount > 0 ? tweetContainer : tweetElem,
-            parentLink, postId, index
-        );
+            mediaContainerInsert(
+                tweetContainer.childElementCount > 0 ? tweetContainer : tweetElem,
+                parentLink, postId, index
+            );
+        });
     },
 
     async renderTweetObj(response) {

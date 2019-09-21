@@ -14,10 +14,13 @@ const DefaultSettings = {
         "post_preview"
     ],
 
+    enabled_suboptions: [
+        "cuf_hide_fullposts"
+    ],
+
     collapsed_threads: [],
 
     user_filters: [],
-    cuf_hide_fullposts: true,
 
     highlight_groups: [
         {name: "Original Poster", enabled: true, built_in: true, css: "font-weight: bold; color: yellow;"},
@@ -198,6 +201,24 @@ const removeEnabled = async (key) => {
     let scripts = (await getEnabled()) || [];
     scripts = scripts.filter((x) => x !== key);
     return await setSetting("enabled_scripts", scripts);
+};
+
+const getEnabledSuboptions = async (key) => {
+    let enabled = (await getSetting("enabled_suboptions")) || [];
+    if (!key) return enabled;
+    return enabled && enabled.find((v) => v === key);
+};
+
+const setEnabledSuboption = async (key) => {
+    let options = (await getEnabledSuboptions()) || [];
+    if (!options.includes(key) && key.length > 0) options.push(key);
+    return await setSetting("enabled_suboptions", options);
+};
+
+const removeEnabledSuboption = async (key) => {
+    let options = (await getEnabledSuboptions()) || [];
+    options = options.filter((x) => x !== key);
+    return await setSetting("enabled_suboptions", options);
 };
 
 const getSettings = async () => {

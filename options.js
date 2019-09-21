@@ -273,12 +273,12 @@ const showUserFilters = async () => {
     delFilterBtn.addEventListener("click", removeUserFilter);
     usersLst.removeEventListener("change", filterOptionsChanged);
     usersLst.addEventListener("change", filterOptionsChanged);
-    let fullpostHider = document.getElementById("cuf_hide_fullposts");
+    /* let fullpostHider = document.getElementById("cuf_hide_fullposts");
     fullpostHider.checked = await getSetting(fullpostHider.id);
-    fullpostHider.addEventListener("change", hideFullpostsChanged);
+    fullpostHider.addEventListener("change", hideFullpostsChanged); */
 };
 
-const hideFullpostsChanged = (e) => setSetting(e.target.id, e.target.checked);
+/* const hideFullpostsChanged = (e) => setSetting(e.target.id, e.target.checked); */
 
 const filterOptionsChanged = (e) => {
     let filterElem = e.target.closest("#custom_user_filters_settings");
@@ -331,36 +331,52 @@ const removeUserFilter = async (e) => {
 const getEnabledScripts = async () => {
     // serialize checkbox/option state to extension storage
     let enabled = [];
-    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    let enabledSuboptions = [];
+    let checkboxes = [...document.querySelectorAll(`
+        input[type='checkbox'].script_check,
+        input[type='checkbox'].suboption
+    `)];
     for (let checkbox of checkboxes) {
-        if (checkbox.checked) {
+        if (elementMatches(checkbox, ".script_check") && checkbox.checked) {
             // put non-boolean save supports here
             if (checkbox.id === "enable_notifications") await updateNotificationOptions();
             enabled.push(checkbox.id);
+        } else if (elementMatches(checkbox, ".suboption")) {
+            if (checkbox.checked) enabledSuboptions.push(checkbox.id);
         }
     }
     await setSetting("enabled_scripts", enabled);
+    await setSetting("enabled_suboptions", enabledSuboptions);
     return enabled;
 };
 
 const loadOptions = async () => {
     // deserialize extension storage to options state
     let scripts = await getEnabled();
-    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    let checkboxes = [...document.querySelectorAll(`
+        input[type='checkbox'].script_check,
+        input[type='checkbox'].suboption
+    `)];
     for (let script of scripts) {
         for (let checkbox of checkboxes) {
-            if (checkbox.id === script) checkbox.checked = true;
-            let settingsChild = document.querySelector(`div#${checkbox.id}_settings`);
-            if (checkbox.checked && settingsChild)
-                settingsChild.classList.remove("hidden");
-            else if (!checkbox.checked && settingsChild)
-                settingsChild.classList.add("hidden");
+            if (elementMatches(checkbox, ".script_check")) {
+                if (checkbox.id === script) checkbox.checked = true;
+                let settingsChild = document.querySelector(`div#${checkbox.id}_settings`);
+                if (checkbox.checked && settingsChild)
+                    settingsChild.classList.remove("hidden");
+                else if (!checkbox.checked && settingsChild)
+                    settingsChild.classList.add("hidden");
+            } else if (elementMatches(checkbox, ".suboption")) {
+                let option = await getEnabledSuboptions(checkbox.id);
+                if (option) checkbox.checked = true;
+            }
         }
         // put non-boolean load supports here
         if (script === "enable_notifications") await updateNotificationOptions();
         else if (script === "highlight_users") await showHighlightGroups();
         else if (script === "custom_user_filters") await showUserFilters();
     }
+    console.log(await getSettings());
 };
 
 const saveOptions = async (e) => {
@@ -474,7 +490,10 @@ const parseSettingsString = (string) => {
  * Options Event Handling Stuff
  */
 const trackChanges = () => {
-    let checkboxes = [...document.querySelectorAll("input[type='checkbox'].script_check")];
+    let checkboxes = [...document.querySelectorAll(`
+        input[type='checkbox'].script_check,
+        input[type='checkbox'].suboption
+    `)];
     for (let checkbox of checkboxes || []) {
         checkbox.removeEventListener("change", saveOptions);
         checkbox.addEventListener("change", saveOptions);
