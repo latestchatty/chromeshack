@@ -44,6 +44,10 @@ let ChromeShack = {
                             // grab the id from the old node, since the new node doesn't contain the id
                             ChromeShack.processPost(addedNode.parentNode, addedNode.parentNode.id.substr(5));
                         }
+                        // check for tags loading after a fullpost
+                        if (elementMatches(addedNode.parentNode, "span.user")) {
+                            ChromeShack.tagsLoadedHandler(addedNode);
+                        }
                         // check for the postbox
                         if (elementMatches(addedNode, "#postbox")) ChromeShack.processPostBox(addedNode);
                     }
@@ -113,6 +117,23 @@ let ChromeShack = {
         ChromeShack.isPostRefreshMutation = {};
     },
 
+    tagsLoadedHandler(item) {
+        let {post, root} = locatePostRefs(item);
+        let rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
+        let postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
+        let rootHasTags = rootUpdatedTags ? rootUpdatedTags.length > 0 : false;
+        let postHasTags = postUpdatedTags ? postUpdatedTags.length > 0 : false;
+        if ((post || root) && (postHasTags || rootHasTags)) {
+            if (ChromeShack.debugEvents)
+                console.log("raising processTagDataLoadedEvent:", post, root, postHasTags, rootHasTags);
+            processTagDataLoadedEvent.raise(post, root, postHasTags, rootHasTags);
+        } else if (post || root) {
+            if (ChromeShack.debugEvents)
+                console.log("raising processEmptyTagsLoadedEvent:", post, root, postHasTags, rootHasTags);
+            processEmptyTagsLoadedEvent.raise(post, root, postHasTags, rootHasTags);
+        }
+    },
+
     processFullPosts() {
         // process fullposts
         let items = [...document.querySelectorAll("div.fullpost")];
@@ -143,20 +164,7 @@ let ChromeShack = {
             ChromeShack.falseTagEvent = true;
             return; // avoid processing false-positive tag events
         } else if (ChromeShack.falseTagEvent) {
-            let {post, root} = locatePostRefs(item);
-            let rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
-            let postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
-            let rootHasTags = rootUpdatedTags ? rootUpdatedTags.length > 0 : false;
-            let postHasTags = postUpdatedTags ? postUpdatedTags.length > 0 : false;
-            if ((post || root) && (postHasTags || rootHasTags)) {
-                if (ChromeShack.debugEvents)
-                    console.log("raising processTagDataLoadedEvent:", post, root, postHasTags, rootHasTags);
-                processTagDataLoadedEvent.raise(post, root, postHasTags, rootHasTags);
-            } else if (post || root) {
-                if (ChromeShack.debugEvents)
-                    console.log("raising processEmptyTagsLoadedEvent:", post, root, postHasTags, rootHasTags);
-                processEmptyTagsLoadedEvent.raise(post, root, postHasTags, rootHasTags);
-            }
+            ChromeShack.tagsLoadedHandler(item);
             ChromeShack.falseTagEvent = false;
         }
     },
