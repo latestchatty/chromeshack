@@ -273,12 +273,7 @@ const showUserFilters = async () => {
     delFilterBtn.addEventListener("click", removeUserFilter);
     usersLst.removeEventListener("change", filterOptionsChanged);
     usersLst.addEventListener("change", filterOptionsChanged);
-    /* let fullpostHider = document.getElementById("cuf_hide_fullposts");
-    fullpostHider.checked = await getSetting(fullpostHider.id);
-    fullpostHider.addEventListener("change", hideFullpostsChanged); */
 };
-
-/* const hideFullpostsChanged = (e) => setSetting(e.target.id, e.target.checked); */
 
 const filterOptionsChanged = (e) => {
     let filterElem = e.target.closest("#custom_user_filters_settings");
@@ -376,7 +371,6 @@ const loadOptions = async () => {
         else if (script === "highlight_users") await showHighlightGroups();
         else if (script === "custom_user_filters") await showUserFilters();
     }
-    console.log(await getSettings());
 };
 
 const saveOptions = async (e) => {
