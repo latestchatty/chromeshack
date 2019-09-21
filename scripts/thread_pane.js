@@ -148,7 +148,7 @@ let ThreadPane = {
         `);
         return $rootAuthor.contents().filter(function() {
             return this.nodeType === 3;
-        })[0].nodeValue;
+        })[0].nodeValue.split(" - ")[0];
     },
 
     parseThreadId(threadDiv) {
