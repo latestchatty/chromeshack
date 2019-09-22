@@ -1,15 +1,18 @@
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 let NewCommentHighlighter = {
     async highlight() {
-        if (!await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 3)) {
-            // highlight if less than 3 hours has passed
+        // only highlight if less than 2 hours have passed
+        if (!await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2)) {
             let last_id = await getSetting("new_comment_highlighter_last_id");
             let new_last_id = NewCommentHighlighter.findLastID();
-            if (last_id) NewCommentHighlighter.highlightPostsAfter(last_id);
+            if (last_id && new_last_id > last_id)
+                NewCommentHighlighter.highlightPostsAfter(last_id);
+            // update with our current oldest id for the next check cycle
             if (!last_id || new_last_id > last_id)
                 await setSetting("new_comment_highlighter_last_id", new_last_id);
-            await NewCommentHighlighter.checkTime(null, true); // update time
-        } else await setSetting("last_highlight_time", new Date().getTime());
+        }
+        // reset our check time to avoid highlighting the whole page
+        await NewCommentHighlighter.checkTime(null, true);
     },
 
     async checkTime(delayInMs, refresh) {
@@ -47,7 +50,7 @@ let NewCommentHighlighter = {
     getPostsAfter(last_id) {
         // grab all the posts with post ids after the last post id we've seen
         return [...document.querySelectorAll(".root > ul > li li[id^='item_']")]
-            .filter(x => parseInt(x.id.substr(5)) >= last_id);
+            .filter(x => parseInt(x.id.substr(5)) > last_id);
     },
 
     findLastID() {
