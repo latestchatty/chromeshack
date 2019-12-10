@@ -235,20 +235,18 @@ const debounce = (cb, delay) => {
 };
 
 function scrollToElement(elem, toFitBool) {
+    if (!elem || !elem[0]) return false;
     // don't use an arrow function here (for injection purposes)
-    if (typeof jQuery === "function" && elem instanceof jQuery) {
-        elem = elem[0];
-    }
+    if (typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     if (toFitBool) $("html, body").animate({scrollTop: $(elem).offset().top - 54}, 0);
     else $("html, body").animate({scrollTop: $(elem).offset().top - $(window).height() / 4}, 0);
 }
 
 function elementIsVisible(elem, partialBool) {
+    if (!elem || !elem[0]) return false;
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility
-    if (typeof jQuery === "function" && elem instanceof jQuery) {
-        elem = elem[0];
-    }
+    if (typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     let rect = elem.getBoundingClientRect();
     let visibleHeight = window.innerHeight;
     if (partialBool) return rect.top <= visibleHeight && rect.top + rect.height >= 0;
@@ -257,6 +255,7 @@ function elementIsVisible(elem, partialBool) {
 }
 
 const elementFitsViewport = (elem) => {
+    if (!elem || !elem[0]) return false;
     if (typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     let elemHeight = elem.getBoundingClientRect().height;
     let visibleHeight = window.innerHeight;
