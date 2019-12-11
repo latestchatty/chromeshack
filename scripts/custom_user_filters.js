@@ -30,21 +30,23 @@ let CustomUserFilters = {
                 root.parentNode.removeChild(root);
             }
         }
-        // refresh just in case the removed post(s) would be shown in thread pane
-        if (await enabledContains("thread_pane") &&
-            typeof refreshThreadPane === "function" && postElems && postElems.length > 0)
-            refreshThreadPane(); // don't forget to update the thread pane
     },
 
     applyFilter() {
         getSetting("user_filters").then(async filteredUsers => {
             if (!filteredUsers || filteredUsers.length === 0) return;
             CustomUserFilters.rootPostCount = document.querySelector(".threads").childElementCount;
+            let hasMatched;
             for (let filteredUser of filteredUsers) {
-                let userMatches = CustomUserFilters.resolveUser(filteredUser);
-                for (let userMatch of userMatches)
+                for (let userMatch of CustomUserFilters.resolveUser(filteredUser) || []) {
                     await CustomUserFilters.removeOLsFromUserId(userMatch.id);
+                    hasMatched = userMatch;
+                }
             }
+            // refresh threadpane after removing posts to avoid unnecessary redraws
+            if (await enabledContains("thread_pane") &&
+                typeof refreshThreadPane === "function" && hasMatched && hasMatched.length > 0)
+                refreshThreadPane(); // don't forget to update the thread pane
         });
     }
 };
