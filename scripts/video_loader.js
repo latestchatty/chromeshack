@@ -55,16 +55,18 @@ let VideoLoader = {
         }
     },
 
-    async createIframePlayer(link, videoObj, postId, index) {
-        const getStreamableLink = async (shortcode) => {
-            let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-            let json = await fetchSafe({
-                url: `https://api.streamable.com/videos/${shortcode}`,
-                fetchOpts: { headers: { Authorization: __obf } }
-            }); // sanitized in common.js!
-            return json.files.mp4.url || "";
-        };
+    async getStreamableLink(shortcode) {
+        let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
+        let json = await browser.runtime.sendMessage({
+            name: "corbFetch",
+            url: `https://api.streamable.com/videos/${shortcode}`,
+            fetchOpts: { headers: { Authorization: __obf } }
+        }); // sanitized in common.js!
+        let url_match = json && json.embed_code ? /src\="(.*?)"/.exec(json.embed_code) : "";
+        return url_match ? url_match[1] : "";
+    },
 
+    async createIframePlayer(link, videoObj, postId, index) {
         // handle both Streamable and XboxDVR Iframe embed types
         let user = videoObj.user;
         let video_id = videoObj.video || "";
@@ -72,7 +74,7 @@ let VideoLoader = {
 
         if (videoObj.type === 3) {
             // Streamable.com iFrame
-            video_src = await getStreamableLink(video_id);
+            video_src = await VideoLoader.getStreamableLink(video_id);
         } else if (videoObj.type === 4) {
             // XboxDVR iFrame
             video_src = `https://xboxdvr.com/gamer/${user}/video/${video_id}/embed`;
