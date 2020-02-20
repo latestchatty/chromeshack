@@ -26,3 +26,7 @@ https://github.com/nolimits4web/swiper/blob/v4.5.0/dist/css/swiper.min.css
 https://github.com/mozilla/webextension-polyfill/releases/tag/0.4.0
 https://github.com/mozilla/webextension-polyfill/blob/0.4.0/src/browser-polyfill.js
 https://unpkg.com/webextension-polyfill@0.4.0/dist/browser-polyfill.js
+
+# luxon 1.22.0 (MIT)
+https://github.com/moment/luxon/releases/tag/1.22.0
+https://moment.github.io/luxon/global/luxon.min.js
