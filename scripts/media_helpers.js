@@ -140,8 +140,8 @@ const mediaContainerInsert = (elem, link, id, index) => {
 };
 
 const createMediaElem = (href, postId, index, override) => {
-    let _animExt = /\.(mp4|gifv|webm)/i.test(href);
-    let _staticExt = /\.(jpe?g|gif|png)/i.test(href);
+    let _animExt = /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
+    let _staticExt = /\.(jpe?g|gif|png)|tenor\.(gif|png)$/i.test(href);
     let _elem;
     if (_animExt) {
         _elem = document.createElement("video");

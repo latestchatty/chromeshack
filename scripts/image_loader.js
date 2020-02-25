@@ -6,6 +6,7 @@ let ImageLoader = {
     imgurRegex: /https?:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)*([\w-]+)(?:#([\w-]+))?/i,
     gfycatRegex: /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i,
     giphyRegex: /https?:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*-)?([\w-]+)/i,
+    tenorRegex: /https:\/\/(tenor\.com\/view\/[\w-]+?(\d{7,})|media\.tenor\.com\/videos\/(\w{32})\/(mp4|webm))/i,
     dropboxImgRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gif|webp)\\?/i,
     dropboxVidRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:mp4|gifv|webm)\\?/i,
     // common image host patterns
@@ -24,7 +25,8 @@ let ImageLoader = {
                 ImageLoader.gfycatRegex.test(href) ||
                 ImageLoader.giphyRegex.test(href) ||
                 ImageLoader.dropboxVidRegex.test(href) ||
-                ImageLoader.vidRegex.test(href)
+                ImageLoader.vidRegex.test(href) ||
+                ImageLoader.tenorRegex.test(href)
             )
                 return true;
             return false;
@@ -77,6 +79,7 @@ let ImageLoader = {
                 else if (parsedPost.src.match(/gfycat/)) ImageLoader.createGfycat(link, postId, index);
                 else if (parsedPost.src.match(/giphy/)) ImageLoader.createGiphy(link, postId, index);
                 else if (parsedPost.src.match(/dropbox/)) ImageLoader.createDropboxVid(link, postId, index);
+                else if (parsedPost.src.match(/tenor/)) ImageLoader.createTenor(link, postId, index);
                 else if ((src = ImageLoader.vidRegex.exec(link.href)) !== null) {
                     appendMedia({
                         src: [src[0]],
@@ -230,6 +233,47 @@ let ImageLoader = {
         } else {
             console.log(`An error occurred parsing the Giphy url: ${link.href}`);
         }
+    },
+
+    async resolveTenor(mediaId) {
+        let __obf = atob("UE9JODJZS1NWRENQ");
+        if (mediaId) {
+            let response = await fetchSafe({
+                url: `https://api.tenor.com/v1/gifs?ids=${mediaId}&key=${__obf}&limit=1`
+            });
+            if (response && response.results[0].media[0].webm.url)
+                return [response.results[0].media[0].webm.url];
+        }
+        return null;
+    },
+
+    async createTenor(link, postId, index) {
+        // we only support Tenor WEBM/MP4/GIF links here
+        let _matchTenor = ImageLoader.tenorRegex.exec(link.href);
+        if (_matchTenor && _matchTenor[3]) {
+            // Tenor WEBM/MP4 (skip resolver)
+            let src = [_matchTenor[0]];
+            appendMedia({
+                src,
+                link,
+                postId,
+                index,
+                type: {forceAppend: true}
+            });
+        } else if (_matchTenor && _matchTenor[2]) {
+            // Tenor GIF (resolve to WEBM)
+            let src = await ImageLoader.resolveTenor(_matchTenor[2]);
+            if (src)
+                appendMedia({
+                    src,
+                    link,
+                    postId,
+                    index,
+                    type: {forceAppend: true}
+                });
+        } else {
+            console.log(`An error occurred parsing the Tenor url: ${link.href}`);
+        }   
     }
 };
 
