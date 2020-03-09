@@ -33,14 +33,14 @@ let ImageUpload = {
                     <a class="showImageUploadLink">Hide Image Uploader</a>
                     <div id="uploadFields" class="">
                         <div class="uploadFilters">
-                            <input type="radio" name="imgUploadSite" id="uploadChatty" checked="checked">
-                            <input type="radio" name="imgUploadSite" id="uploadImgur">
+                            <input type="radio" name="imgUploadSite" id="uploadImgur" checked="checked">
                             <input type="radio" name="imgUploadSite" id="uploadGfycat">
+                            <input type="radio" name="imgUploadSite" id="uploadChatty">
 
                             <div class="uploadRadioLabels">
-                                <label class="chatty" for="uploadChatty">Chattypics</label>
                                 <label class="imgur" for="uploadImgur">Imgur</label>
                                 <label class="gfycat" for="uploadGfycat">Gfycat</label>
+                                <label class="chatty" for="uploadChatty">Chattypics</label>
                             </div>
                         </div>
                         <div id="uploadDropArea">
@@ -115,60 +115,20 @@ let ImageUpload = {
         const debouncedKeyup = debounce(val => {
             loadFileUrl(val);
         }, 1500);
-        $(template).find("#urlUploadInput").keyup(function() {
+        $(template).find("#urlUploadInput").keyup(function () {
             debouncedKeyup(this.value);
         });
 
-        // toggle entry fields based on hoster
-        $(template).find("#uploadChatty").click(() => {
-            toggleSnippetControls(0);
-            // chattypics can take multiple files at once
-            $(item).find("#fileUploadInput").attr("multiple");
-            $(item).find("#fileChooserLink").text("Choose some files");
-            $(item).find(".uploadDropLabel").text("or drop some here...");
+        // toggle entry fields based on hoster tab clicked
+        $(template).find("#uploadImgur").click(() => toggleHosterTab("imgur", item));
+        $(template).find("#uploadGfycat").click(() => toggleHosterTab("gfycat", item));
+        $(template).find("#uploadChatty").click(() => toggleHosterTab("chattypics", item));
 
-            $(item).find("#urlUploadInput").toggleClass("hidden", $(item).find("#uploadChatty").is(":checked"));
-            $(item).find("#fileUploadInput").attr("accept", "image/*");
-            clearFileData(true);
-        });
-        $(template).find("#uploadGfycat, #uploadImgur").click(() => {
-            // gfycat and imgur only allow one file at a time
-            $(item).find("#fileUploadInput").removeAttr("multiple");
-            $(item).find("#fileChooserLink").text("Choose a file");
-            $(item).find(".uploadDropLabel").text("or drop one here...");
-            // gfycat allows images and videos
-            if ($(this).is("#uploadGfycat")) {
-                $(item).find("#fileUploadInput").attr("accept", "image/*,video/*");
-                let typeObj = isValidUrl(ImageUpload.formFileUrl);
-                if ($(item).find("#urlUploadSnippetBox").is(":checked") && typeObj && typeObj.type == 1) {
-                    toggleSnippetControls(1);
-                } else if ($(item).find("#urlUploadSnippetBox").is(":checked")) {
-                    toggleSnippetControls(2);
-                } else {
-                    toggleSnippetControls(0);
-                }
-                toggleUrlBox(1);
-            } else if ($(this).is("#uploadImgur")) {
-                // imgur allows images and mp4s
-                $(item).find("#fileUploadInput").attr("accept", "image/*,video/mp4");
-                toggleSnippetControls(0);
-                toggleUrlBox(0);
-            }
-            toggleUrlBox(1);
-            if (ImageUpload.formFileUrl.length > 7) {
-                // contextually unhide if we have content
-                toggleDragOver(1);
-                toggleContextLine(1);
-            }
-            // force a revalidation of the url input box
-            loadFileUrl($(item).find("#urlUploadInput").val());
-        });
-
-        $(template).find("#urlUploadSnippetBox").click(() => {
+        $(template).find("#urlUploadSnippetBox").click(function () {
             if ($(this).is(":checked")) toggleSnippetControls(1);
             else toggleSnippetControls(2);
         });
-        $(template).find("#urlUploadSnippetStart, #urlUploadSnippetDuration").on("input", e => {
+        $(template).find("#urlUploadSnippetStart, #urlUploadSnippetDuration").on("input", function (e) {
             // tries to sanitize inputs
             let _ret = isValidNumber($(this).val(), $(this).attr("min"), $(this).attr("max"));
             $(this).val(_ret);
@@ -198,7 +158,8 @@ let ImageUpload = {
             clearFileData();
             // cancel our repeater(s) if busy
             doFormTimer(true);
-            if (formUploadRepeater != null) clearInterval(formUploadRepeater);
+            if (ImageUpload.formUploadRepeater)
+                clearInterval(ImageUpload.formUploadRepeater);
             delayedRemoveUploadMessage("silver", "Cancelling...", null, 3000);
         });
 
@@ -219,10 +180,62 @@ let ImageUpload = {
         });
         // add the finished template to the postbox
         $(item).find("#postform").append(template);
+        // set Imgur as the default host
+        toggleHosterTab("imgur", item);
 
         /*
          * SUPPORT FUNCS
          */
+        function toggleHosterTab(hoster, elem) {
+            switch (hoster) {
+                case "imgur":
+                    // imgur allows images and mp4s
+                    $(elem).find("#fileUploadInput").attr("accept", "image/*,video/mp4");
+                    $(elem).find("#fileUploadInput").removeAttr("multiple");
+                    $(elem).find("#fileChooserLink").text("Choose a file");
+                    $(elem).find(".uploadDropLabel").text("or drop one here...");
+                    toggleSnippetControls(0);
+                    toggleUrlBox(1);
+                    if (ImageUpload.formFileUrl.length > 7) {
+                        // contextually unhide if we have content
+                        toggleDragOver(1);
+                        toggleContextLine(1);
+                    }
+                    break;
+                case "gfycat":
+                    $(elem).find("#fileUploadInput").removeAttr("multiple");
+                    $(elem).find("#fileChooserLink").text("Choose a file");
+                    $(elem).find(".uploadDropLabel").text("or drop one here...");
+                    // gfycat allows images and videos
+                    $(elem).find("#fileUploadInput").attr("accept", "image/*,video/*");
+                    let typeObj = isValidUrl(ImageUpload.formFileUrl);
+                    if ($(elem).find("#urlUploadSnippetBox").is(":checked") && typeObj && typeObj.type == 1)
+                        toggleSnippetControls(1);
+                    else if ($(elem).find("#urlUploadSnippetBox").is(":checked"))
+                        toggleSnippetControls(2);
+                    else
+                        toggleSnippetControls(0);
+                    toggleUrlBox(1);
+                    break;
+                case "chattypics":
+                    toggleUrlBox(0);
+                    toggleSnippetControls(0);
+                    // chattypics can take multiple files at once
+                    $(elem).find("#fileUploadInput").attr("multiple");
+                    $(elem).find("#fileChooserLink").text("Choose some files");
+                    $(elem).find(".uploadDropLabel").text("or drop some here...");
+
+                    $(elem).find("#urlUploadInput").toggleClass("hidden", $(elem).find("#uploadChatty").is(":checked"));
+                    $(elem).find("#fileUploadInput").attr("accept", "image/*");
+                    clearFileData(true);
+                    break;
+                default:
+                    break;
+            }
+            // force a revalidation of the url input box
+            loadFileUrl($(elem).find("#urlUploadInput").val());
+        }
+
         function inputIsImageList(files) {
             if (files.length > 0) {
                 for (let i = 0; i < files.length; i++) {
@@ -647,7 +660,8 @@ let ImageUpload = {
                     }
                     doFormTimer(true);
                 });
-                clearInterval(ImageUpload.formUploadRepeater);
+                if (ImageUpload.formUploadRepeater)
+                    clearInterval(ImageUpload.formUploadRepeater);
                 return;
             }
 
@@ -729,7 +743,7 @@ let ImageUpload = {
         }
 
         function doFormTimer(override) {
-            if (override && ImageUpload.formUploadTimer != null) {
+            if (override && ImageUpload.formUploadTimer) {
                 ImageUpload.formUploadElapsed = 0;
                 clearInterval(ImageUpload.formUploadTimer);
                 return;
