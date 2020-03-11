@@ -92,10 +92,10 @@ const pollNotifications = async () => {
             }
             setTimeout(pollNotifications, 60000);
         })
-        .catch(async err => {
-            console.log(err);
-            setTimeout(pollNotifications, 60000);
-        });
+            .catch(async err => {
+                console.log(err);
+                setTimeout(pollNotifications, 60000);
+            });
     } else if (!(await getEnabled("enable_notifications"))) {
         // disable the detached guid
         await setSetting("notificationuid", "");
@@ -150,7 +150,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
 
                 if (res) {
                     browser.tabs
-                        .executeScript(null, { file: "ext/basiclightbox/basicLightbox-5.0.2.min.js" })
+                        .executeScript(null, { file: "ext/basiclightbox/basicLightbox.min.js" })
                         .then(injectLightboxFunc);
                 } else {
                     injectLightboxFunc();
@@ -164,7 +164,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             .then(res => {
                 if (res) {
                     browser.tabs
-                        .executeScript(null, { file: "ext/swiper/swiper-4.5.0.min.js" })
+                        .executeScript(null, { file: "ext/swiper/swiper.js" })
                         .then(() =>
                             browser.tabs
                                 .executeScript(null, { code: `var _carouselSelect = "${request.select}";` })
@@ -197,8 +197,8 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                 },
                 parseType: request.parseType
             })
-            .then(resolve)
-            .catch(reject);
+                .then(resolve)
+                .catch(reject);
         });
     }
 
@@ -223,7 +223,7 @@ browser.webRequest.onHeadersReceived.addListener(responseListener, { urls: ["htt
 
 addContextMenus();
 
-(async() => {
+(async () => {
     // attempt to update version settings
     await migrateSettings();
 

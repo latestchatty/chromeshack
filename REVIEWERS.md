@@ -11,6 +11,8 @@ All other features besides "Push Notifications" may be used while logged out.
 - Username: "chromeshack-tester"
 - Password: "PASSWORD GOES HERE"
 
+NOTE: please read the REVIEWERS.md file for information on third-party libraries sourced by this extension.
+
 ## Note to maintainers
 
 If these instructions are updated, then the new instructions must be pasted into AMO here under Technical Details - Whiteboard: https://addons.mozilla.org/en-US/developers/addon/chromeshack/edit

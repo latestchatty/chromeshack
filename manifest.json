@@ -10,8 +10,8 @@
     },
     "background": {
         "scripts": [
-            "ext/webextension-polyfill/browser-polyfill-0.4.0.min.js",
-            "ext/dompurify/purify-1.0.11.min.js",
+            "ext/webextension-polyfill/browser-polyfill.js",
+            "ext/dompurify/purify.js",
             "common.js",
             "init_events.js",
             "settings.js",
@@ -30,10 +30,10 @@
     "content_scripts": [
         {
             "js": [
-                "ext/webextension-polyfill/browser-polyfill-0.4.0.min.js",
-                "ext/dompurify/purify-1.0.11.min.js",
-                "ext/jquery/jquery-3.4.1.min.js",
-                "ext/luxon/luxon-1.22.0.min.js",
+                "ext/webextension-polyfill/browser-polyfill.js",
+                "ext/dompurify/purify.js",
+                "ext/jquery/jquery-3.4.1.js",
+                "ext/luxon/luxon.js",
                 "scripts/jquery.drop.js",
                 "scripts/jquery.insert.js",
                 "scripts/sentence_parser.js",
@@ -108,10 +108,10 @@
         "https://*.shacknews.com/*"
     ],
     "web_accessible_resources": [
-        "ext/basiclightbox/basicLightbox-5.0.2.min.css",
-        "ext/basiclightbox/basicLightbox-5.0.2.min.js",
-        "ext/swiper/swiper-4.5.0.min.css",
-        "ext/swiper/swiper-4.5.0.min.js",
+        "ext/basiclightbox/basicLightbox.min.css",
+        "ext/basiclightbox/basicLightbox.min.js",
+        "ext/swiper/swiper.css",
+        "ext/swiper/swiper.js",
         "images/banners/offtopic.png",
         "images/banners/political.png",
         "images/banners/stupid.png",

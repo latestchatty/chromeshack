@@ -4,8 +4,8 @@
 <head>
     <title>Chrome Shack Options</title>
     <link rel="stylesheet" type="text/css" href="styles/options.css" />
-    <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill-0.4.0.min.js"></script>
-    <script type="text/javascript" src="ext/dompurify/purify-1.0.11.min.js"></script>
+    <script type="text/javascript" src="ext/webextension-polyfill/browser-polyfill.js"></script>
+    <script type="text/javascript" src="ext/dompurify/purify.js"></script>
     <script type="text/javascript" src="init_events.js"></script>
     <script type="text/javascript" src="settings.js"></script>
     <script type="text/javascript" src="common.js"></script>
@@ -100,7 +100,8 @@
                 <label for="nws_incognito">Open NWS links in incognito mode</label>
             </p>
             <p class="indent info">
-                When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window. Firefox users must enable "Run in Private Windows" in the addon settings.
+                When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a
+                normal window. Firefox users must enable "Run in Private Windows" in the addon settings.
             </p>
             <p>
                 <input type="checkbox" class="script_check" id="dinogegtik" />
@@ -124,7 +125,8 @@
             <label for="enable_notifications">Push Notifications</label>
         </h2>
         <p class="info">
-            Use the WinChatty notification service to receive notifications when new posts matching specific criteria are made, even when Chrome is closed. You must restart your browser after enabling notifications.
+            Use the WinChatty notification service to receive notifications when new posts matching specific criteria
+            are made, even when Chrome is closed. You must restart your browser after enabling notifications.
         </p>
         <div id="enable_notifications_settings" class="hidden">
             <p>
@@ -217,7 +219,8 @@
         </h2>
         <p class="info">Import/export Chrome Shack settings via clipboard.</p>
         <div class="import_export_area">
-            <textarea id="import_export_field" placeholder="Paste a settings string here for import or click Export..."></textarea>
+            <textarea id="import_export_field"
+                placeholder="Paste a settings string here for import or click Export..."></textarea>
         </div>
         <button id="import_export_btn">
             Export to clipboard

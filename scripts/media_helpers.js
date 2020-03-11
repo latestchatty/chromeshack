@@ -10,7 +10,7 @@ const getEmbedInfo = (link) => {
     if (_linkInfo && _linkInfo.length > 1) {
         let _id = _linkInfo[1];
         let _idx = _linkInfo[2];
-        return {id: _id, index: _idx};
+        return { id: _id, index: _idx };
     }
 };
 
@@ -51,7 +51,7 @@ const toggleVideoState = (elem, stateObj) => {
         video.currentTime = 0;
     };
 
-    let {state, mute} = stateObj || {};
+    let { state, mute } = stateObj || {};
     if (elem == null) return;
     let video = elem.matches("video[id^='loader_']") ? elem : elem.querySelector("video[id^='loader_']");
     // if forced then play and avoid social embeds
@@ -187,12 +187,12 @@ const createIframe = (src, type, postId, index) => {
     return null;
 };
 
-const appendMedia = ({src, link, postId, index, type}) => {
+const appendMedia = ({ src, link, postId, index, type }) => {
     // compile our media items into a given container element
     // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
     let mediaElem = document.createElement("div");
     mediaElem.setAttribute("class", "media-container");
-    let {forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed} = type || {};
+    let { forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed } = type || {};
     if (Array.isArray(src) && src.length > 0) {
         let nodeList = [];
         for (let item of src) {
@@ -223,7 +223,7 @@ const appendMedia = ({src, link, postId, index, type}) => {
  *  Misc. Functions
  */
 
-const insertScript = ({elem, filePath, code, id, overwrite}) => {
+const insertScript = ({ elem, filePath, code, id, overwrite }) => {
     // insert a script that executes synchronously (caution!)
     let _elem = elem ? elem : document.getElementsByTagName("head")[0];
     let _script = document.getElementById(id);
@@ -270,12 +270,12 @@ const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
 
 const insertCarousel = (elem) => {
     let head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("swiper-4.5.0.min.css") == -1) {
+    if (head.innerHTML.indexOf("swiper.css") == -1) {
         // make sure we have necessary css injected
         let carouselCSS = document.createElement("link");
         carouselCSS.rel = "stylesheet";
         carouselCSS.type = "text/css";
-        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper-4.5.0.min.css");
+        carouselCSS.href = browser.runtime.getURL("ext/swiper/swiper.css");
         head.appendChild(carouselCSS);
     }
     let carouselContainer = document.createElement("div");
@@ -302,18 +302,18 @@ const insertCarousel = (elem) => {
     }
     carouselContainer.appendChild(elem);
     // inject via background script (sendMessage)
-    browser.runtime.sendMessage({name: "injectCarousel", select: `#${carouselContainer.id}.swiper-container`});
+    browser.runtime.sendMessage({ name: "injectCarousel", select: `#${carouselContainer.id}.swiper-container` });
     return carouselContainer;
 };
 
 const insertLightbox = (elem) => {
     let head = document.getElementsByTagName("head")[0];
-    if (head.innerHTML.indexOf("basicLightbox-5.0.2.min.css") == -1) {
+    if (head.innerHTML.indexOf("basicLightbox.min.css") == -1) {
         // make sure we have necessary css injected
         let lightboxCSS = document.createElement("link");
         lightboxCSS.rel = "stylesheet";
         lightboxCSS.type = "text/css";
-        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox-5.0.2.min.css");
+        lightboxCSS.href = browser.runtime.getURL("ext/basiclightbox/basicLightbox.min.css");
         head.appendChild(lightboxCSS);
     }
     let _elem = elem.cloneNode(true);
@@ -321,7 +321,7 @@ const insertLightbox = (elem) => {
     // y-axis overflow scrolling is enabled via CSS to handle this
     if (_elem.matches("img") && _elem.naturalHeight > ($(window).height() * 1.25))
         _elem.setAttribute("style", "max-height: unset !important;");
-    browser.runtime.sendMessage({name: "injectLightbox", elemText: _elem.outerHTML});
+    browser.runtime.sendMessage({ name: "injectLightbox", elemText: _elem.outerHTML });
 };
 
 const attachChildEvents = async (elem, id, index) => {
@@ -344,7 +344,7 @@ const attachChildEvents = async (elem, id, index) => {
                             !e.target.closest(".twitter-container, .instgrm-embed")
                         ) {
                             e.target.setAttribute("initialPlay", "");
-                            toggleVideoState(e.target, {state: true, mute: true});
+                            toggleVideoState(e.target, { state: true, mute: true });
                             // unsubscribe to avoid retriggering after video loads
                             e.target.removeEventListener("canplaythrough", canPlayCallback);
                         }
@@ -365,7 +365,7 @@ const attachChildEvents = async (elem, id, index) => {
                         if (e.which === 2 && lightboxed) {
                             e.preventDefault();
                             // pause our current video before re-opening it
-                            if (e.target.nodeName === "VIDEO") toggleVideoState(e.target, {state: false});
+                            if (e.target.nodeName === "VIDEO") toggleVideoState(e.target, { state: false });
                             // reopen this element in a lightbox overlay
                             insertLightbox(e.target);
                             return false;
