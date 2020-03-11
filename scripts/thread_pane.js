@@ -35,6 +35,10 @@ let ThreadPane = {
 
             const rootAuthor = ThreadPane.parseRootAuthor($opDiv);
             const $rootBodyDiv = ThreadPane.cloneRootPostBody($opDiv, threadId);
+
+            // skip this root post if it contains no data
+            if (rootAuthor.length === 0 || $rootBodyDiv[0].innerText.length === 0) continue;
+
             const rootBodyHtml = ThreadPane.getHtmlWithTrimmedLineBreaks($rootBodyDiv);
             const postCount = ThreadPane.parseThreadPostCount($threadDiv, threadId);
             const { parentIsRoot, mostRecentSubtree } = ThreadPane.parseMostRecentPosts($threadDiv, threadId);
@@ -54,7 +58,7 @@ let ThreadPane = {
             else $cardDiv.addClass("cs_thread_pane_card_ontopic");
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find("a").replaceWith(function() {
+            $rootPostBodyDiv.find("a").replaceWith(function () {
                 // exclude expando children
                 return $(`<span class="cs_thread_pane_link">${this.href}</span>`);
             });
@@ -146,9 +150,12 @@ let ThreadPane = {
             div.postmeta span.author span.user a,
             div.postmeta span.author span.user
         `);
-        return $rootAuthor.contents().filter(function() {
-            return this.nodeType === 3;
-        })[0].nodeValue.split(" - ")[0];
+        // avoid exploding on an empty root post
+        if ($rootAuthor.length !== 0) {
+            return $rootAuthor.contents().filter(function () {
+                return this.nodeType === 3;
+            })[0].nodeValue.split(" - ")[0];
+        } else "";
     },
 
     parseThreadId(threadDiv) {
