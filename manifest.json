@@ -81,8 +81,6 @@
             "matches": [
                 "*://shacknews.com/chatty*",
                 "*://www.shacknews.com/chatty*",
-                "*://shacknews.com/article/*",
-                "*://www.shacknews.com/article/*",
                 "*://shacknews.com/tags-*",
                 "*://www.shacknews.com/tags-*"
             ],
