@@ -10,7 +10,8 @@ let ImageLoader = {
     dropboxImgRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gif|webp)\\?/i,
     dropboxVidRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:mp4|gifv|webm)\\?/i,
     // common image host patterns
-    chattypicsRegex: /https?:\/\/(?:.*?\.)?chattypics\.com\/viewer\.php/i,
+    chattypicsRegex1: /https?:\/\/(?:.*?\.)?chattypics\.com\/viewer\.php/i,
+    chattypicsRegex2: /https?:\/\/chattypics\.com\/files\/.*\.jpe?g/i,
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i,
 
     loadImages(item) {
@@ -39,8 +40,10 @@ let ImageLoader = {
                 return href;
             }
             // change shackpics image page into image
-            else if (ImageLoader.chattypicsRegex.test(href))
+            else if (ImageLoader.chattypicsRegex1.test(href))
                 return href.replace(/viewer\.php\?file=/, "files/");
+            else if (ImageLoader.chattypicsRegex2.test(href))
+                return href.replace("http:", "https:"); // force HTTPS Chattypics fetches
             // distinguish between twitter cdn types
             else if ((m = ImageLoader.twimgRegex.exec(href)) !== null) {
                 if (m[3]) return `${m[1]}${m[4] || m[2]}.${m[3]}`;
@@ -64,7 +67,7 @@ let ImageLoader = {
         };
 
         if (isVideo(href)) return { type: 2, src: href };
-        else if (isImage(href)) return { type: 1, src: [ getImageUrl(href) ] };
+        else if (isImage(href)) return { type: 1, src: [getImageUrl(href)] };
     },
 
     toggleImage(e, parsedPost, postId, index) {
@@ -86,7 +89,7 @@ let ImageLoader = {
                         link,
                         postId,
                         index,
-                        type: {forceAppend: true}
+                        type: { forceAppend: true }
                     });
                 }
             } else if (parsedPost && parsedPost.type === 1 && parsedPost.src) {
@@ -95,7 +98,7 @@ let ImageLoader = {
                     link,
                     postId,
                     index,
-                    type: {forceAppend: true}
+                    type: { forceAppend: true }
                 });
             } else throw Error("Could not parse the given image link:", link.href);
         }
@@ -108,7 +111,7 @@ let ImageLoader = {
             link,
             postId,
             index,
-            type: {forceAppend: true}
+            type: { forceAppend: true }
         });
     },
 
@@ -161,7 +164,7 @@ let ImageLoader = {
                     link,
                     postId,
                     index,
-                    type: {forceAppend: true}
+                    type: { forceAppend: true }
                 });
             } else {
                 throw new Error(`Could not resolve Imgur shortcode from: ${link}`);
@@ -185,7 +188,7 @@ let ImageLoader = {
                             link,
                             postId,
                             index,
-                            type: {forceAppend: true}
+                            type: { forceAppend: true }
                         });
                     } else {
                         throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
@@ -193,7 +196,7 @@ let ImageLoader = {
                 });
             } else {
                 // fallback to older XHR method for Firefox for this endpoint
-                fetchSafeLegacy({url}).then((json) => {
+                fetchSafeLegacy({ url }).then((json) => {
                     // sanitized in common.js!
                     if (json && json.gfyItem.mobileUrl != null) {
                         appendMedia({
@@ -201,15 +204,15 @@ let ImageLoader = {
                             link,
                             postId,
                             index,
-                            type: {forceAppend: true}
+                            type: { forceAppend: true }
                         });
                     } else {
                         throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
                     }
                 })
-                .catch((err) => {
-                    console.log(err);
-                });
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }
         } else {
             console.log(`An error occurred parsing the Gfycat url: ${link.href}`);
@@ -228,7 +231,7 @@ let ImageLoader = {
                 link,
                 postId,
                 index,
-                type: {forceAppend: true}
+                type: { forceAppend: true }
             });
         } else {
             console.log(`An error occurred parsing the Giphy url: ${link.href}`);
@@ -258,7 +261,7 @@ let ImageLoader = {
                 link,
                 postId,
                 index,
-                type: {forceAppend: true}
+                type: { forceAppend: true }
             });
         } else if (_matchTenor && _matchTenor[2]) {
             // Tenor GIF (resolve to WEBM)
@@ -269,11 +272,11 @@ let ImageLoader = {
                     link,
                     postId,
                     index,
-                    type: {forceAppend: true}
+                    type: { forceAppend: true }
                 });
         } else {
             console.log(`An error occurred parsing the Tenor url: ${link.href}`);
-        }   
+        }
     }
 };
 
