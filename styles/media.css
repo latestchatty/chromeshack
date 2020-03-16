@@ -1,99 +1,102 @@
 /* basic rules for styling media/socials children */
 :root {
-    --gutter-size: 6px;
-    --min-media-col-size: calc(33% - var(--gutter-size));
-    --max-media-col-size: calc(50% - var(--gutter-size));
-    --min-media-item-height: 200px;
-    --max-media-item-height: 720px;
-    --min-media-item-width: 300px;
-    --max-media-item-width: 854px;
-    --min-media-row-size: 200px;
-    --max-media-row-size: 640px;
-    --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --gutter-size: 6px;
+  --min-media-col-size: calc(33% - var(--gutter-size));
+  --max-media-col-size: calc(50% - var(--gutter-size));
+  --min-media-item-height: 200px;
+  --max-media-item-height: 720px;
+  --min-media-item-width: 300px;
+  --max-media-item-width: 854px;
+  --min-media-row-size: 200px;
+  --max-media-row-size: 640px;
+  --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .media-container.hidden {
-    display: none !important;
+  display: none !important;
 }
 .medialoader video:not(.swiper-slide),
 .medialoader img:not(.swiper-slide) {
-    outline: none !important;
-    box-sizing: border-box;
-    object-fit: contain !important;
-    min-height: var(--min-media-item-height);
-    max-height: var(--max-media-item-height);
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-media-item-width);
+  outline: none !important;
+  box-sizing: border-box;
+  object-fit: contain !important;
+  min-height: var(--min-media-item-height);
+  max-height: var(--max-media-item-height);
+  min-width: var(--min-media-item-width);
+  max-width: var(--max-media-item-width);
+}
+.iframe-spacer {
+  /* restrict iframes (YT, et al) to 854x480 or less */
+  max-width: var(--max-media-item-width) !important;
+  max-height: 480px !important;
 }
 .iframe-spacer iframe {
-    min-width: calc(480 * 0.5)px !important;
-    min-height: calc(854 * 0.5)px !important;
-    max-height: 480px !important;
-    max-width: 854px !important;
+  min-width: calc(480 * 0.5) px !important;
+  min-height: calc(854 * 0.5) px !important;
 }
 .iframe-container,
 .yt-container,
 .twitch-container {
-    position: relative;
-    /* 16:9 for 854x480 */
-    padding-bottom: 56.21%;
-    height: 0;
+  position: relative;
+  /* 16:9 for 854x480 */
+  padding-bottom: 56.21%;
+  height: 0;
 }
 .iframe-container iframe,
 .yt-container iframe,
 .twitch-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* expando toggle button (.expando -> .expando.collapso) */
 .postbody a.embedded {
-    color: rgb(61, 154, 154) !important;
+  color: rgb(61, 154, 154) !important;
 }
 div.expando {
-    display: inline-block !important;
-    text-decoration: none !important;
-    color: white !important;
-    font-size: 13px;
-    font-weight: 100;
-    position: relative;
-    margin-right: 6px;
-    top: 2px;
-    left: 5px;
+  display: inline-block !important;
+  text-decoration: none !important;
+  color: white !important;
+  font-size: 13px;
+  font-weight: 100;
+  position: relative;
+  margin-right: 6px;
+  top: 2px;
+  left: 5px;
 }
 /* end expando */
 
 /* customizations for carousel */
 :not(div.instgrm-container) .swiper-container,
 .swiper-container.medialoader {
-    /* workaround for non-instagram responsiveness */
-    margin: unset !important;
+  /* workaround for non-instagram responsiveness */
+  margin: unset !important;
 }
 .swiper-container.instgrm-embed {
-    max-width: var(--max-social-item-width);
+  max-width: var(--max-social-item-width);
 }
 .medialoader video.swiper-slide,
 .medialoader img.swiper-slide {
-    object-fit: contain !important;
-    max-width: var(--max-media-item-width);
+  object-fit: contain !important;
+  max-width: var(--max-media-item-width);
 }
 img.swiper-slide,
 video.swiper-slide {
-    outline: none !important;
+  outline: none !important;
 }
 .swiper-button-next,
 .swiper-button-prev {
-    opacity: 0.5 !important;
+  opacity: 0.5 !important;
 }
 .swiper-button-disabled {
-    opacity: 0.2 !important;
+  opacity: 0.2 !important;
 }
 
 /* fix z-index of lightbox so header bar doesn't cover it */
 div.basicLightbox {
-    z-index: 99999;
-    overflow-y: scroll;
+  z-index: 99999;
+  overflow-y: scroll;
 }
