@@ -6,3 +6,5 @@ artifacts
 .web-extension-id
 .eslintrc*
 Session.vim
+dist.crx
+dist.pem
