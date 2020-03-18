@@ -15,7 +15,7 @@ import {
 
 const NuLOLFix = {
     install() {
-        fullPostsCompletedEvent.addHandler(NuLOLFix.install);
+        fullPostsCompletedEvent.addHandler(NuLOLFix.apply);
     },
 
     apply() {
