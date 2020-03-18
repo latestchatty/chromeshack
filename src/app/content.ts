@@ -52,7 +52,7 @@ Promise.all([
     HighlightPendingPosts.install(),
     NewCommentHighlighter.install(),
     PostPreview.install(),
-    EmbedSocials.install(),
+    EmbedSocials.install()
     //ThreadPane.install(),
 ]).then(() => {
     PostStyling.install();

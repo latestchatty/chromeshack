@@ -3,13 +3,11 @@
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "editor.formatOnSave": true,
-    "prettier.tabWidth": 4,
-    "prettier.printWidth": 120,
-    "prettier.trailingComma": "all",
-    "prettier.arrowParens": "always",
-    "prettier.bracketSpacing": true,
-    "markdownlint.config": {
-        "MD001": false,
-        "MD030": false
+    "eslint.enable": true,
+    "eslint.run": "onType",
+    "eslint.packageManager": "npm",
+    "eslint.alwaysShowStatus": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
     }
 }
