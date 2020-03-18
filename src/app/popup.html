@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chrome Shack Options</title>
+        <link rel="stylesheet" type="text/css" href="popup.css" />
+        <script type="text/javascript" src="popup.js"></script>
+        <meta charset="UTF-8" />
+    </head>
+
+    <body>
+        <div id="content">
+            <h2><label>[lol] Tags</label></h2>
+            <div>
+                <p>
+                    <label>
+                        <input type="checkbox" class="script_check" id="hide_tagging_buttons" />
+                        Hide tagging buttons
+                    </label>
+                </p>
+                <p>
+                    <label>
+                        <input type="checkbox" class="script_check" id="hide_tag_counts" />
+                        Hide tag counts
+                    </label>
+                </p>
+            </div>
+
+            <h2><label>User Flair</label></h2>
+            <div>
+                <p>
+                    <label>
+                        <input type="checkbox" class="script_check" id="shrink_user_icons" />
+                        Shrink user icons
+                    </label>
+                </p>
+                <p>
+                    <label>
+                        <input type="checkbox" class="script_check" id="reduced_color_user_icons" />
+                        Reduced color user icons
+                    </label>
+                </p>
+            </div>
+
+            <h2>
+                <label>Multimedia Embedding</label>
+            </h2>
+            <p class="info">Show multimedia links inline when clicked.</p>
+            <div>
+                <!-- TODO: FIX LIGHTBOX AND CAROUSEL
+                <p>
+                    <input type="checkbox" class="script_check" id="image_loader_newtab" />
+                    <label for="image_loader_newtab">Middle-click opens media lightbox</label>
+                </p>
+                <p class="indent info">
+                    Opens embedded media in a fullscreen overlay when middle-clicked.
+                </p>
+
+                <p>
+                    <input type="checkbox" class="script_check" id="image_loader" />
+                    <label for="image_loader">Embed images</label>
+                </p>
+                <p class="indent info">
+                    Replace links to images with a thumbnail/video of the source.
+                </p>
+                -->
+
+                <p>
+                    <input type="checkbox" class="script_check" id="video_loader" />
+                    <label for="video_loader">Embed videos</label>
+                </p>
+                <p class="indent info">
+                    Replace links to some video hosters with the video, clip, or playlist itself.
+                </p>
+                <p class="indent info">
+                    Supported: Youtube, Twitch.tv, Facebook Video, Mixer, Streamable, and XboxDVR.
+                </p>
+
+                <p>
+                    <input type="checkbox" class="script_check" id="embed_socials" />
+                    <label for="embed_socials">Embed social links</label>
+                </p>
+                <p class="indent info">
+                    Replace links to Twitter and Instagram with embedded posts.
+                </p>
+                <div class="suboption indent" id="embed_socials_settings">
+                    <input type="checkbox" class="suboption" id="es_show_tweet_threads" />
+                    <label for="es_show_tweet_threads">Show Twitter threads when opening Twitter links.</label>
+                </div>
+
+                <p>
+                    <input type="checkbox" class="script_check" id="getpost" />
+                    <label for="getpost">Embed posts</label>
+                </p>
+                <p class="indent info">
+                    When clicking a link to a Shacknews post, show the post inline rather than in a new window.
+                </p>
+            </div>
+
+            <h2>
+                <label>Post Enhancements</label>
+            </h2>
+            <p class="info">
+                Various enhancements to the display of expanded posts.
+            </p>
+            <div>
+                <p>
+                    <input type="checkbox" class="script_check" id="nws_incognito" />
+                    <label for="nws_incognito">Open NWS links in incognito mode</label>
+                </p>
+                <p class="indent info">
+                    When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a
+                    normal window. Firefox users must enable "Run in Private Windows" in the addon settings.
+                </p>
+                <p>
+                    <input type="checkbox" class="script_check" id="dinogegtik" />
+                    <label for="dinogegtik">Dino gegtik</label>
+                </p>
+                <p class="indent info">
+                    Replace boring gegtik posts with a comic strip.
+                </p>
+                <p>
+                    <input type="checkbox" class="script_check" id="sparkly_comic" />
+                    <label for="sparkly_comic">Sparkly comic</label>
+                </p>
+                <p class="indent info">
+                    Replace sparkly posts with a comic strip.
+                </p>
+                <p>
+                    <input type="checkbox" class="script_check" id="switchers" />
+                    <label for="switchers">Shame Switchers</label>
+                </p>
+                <p class="indent info">
+                    Show the original username of shackers who changed names.
+                </p>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="enable_notifications" />
+                <label for="enable_notifications">Push Notifications</label>
+            </h2>
+            <p class="info">
+                Use the WinChatty notification service to receive notifications when new posts matching specific
+                criteria are made, even when Chrome is closed. You must restart your browser after enabling
+                notifications.
+            </p>
+            <div id="enable_notifications_settings" class="hidden">
+                <p>
+                    <a href="https://winchatty.com/v2/notifications/ui/configure" target="_blank"
+                        >Change notification options...</a
+                    >
+                </p>
+            </div>
+
+            <h2>
+                <label>Highlighting</label>
+            </h2>
+            <p class="info">
+                Color highlighting within the tree of thread replies.
+            </p>
+            <div>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_pending_new_posts" />
+                    <label for="highlight_pending_new_posts">
+                        Highlight refresh button when new posts are available
+                    </label>
+                </p>
+                <p class="indent info">
+                    Use the WinChatty push service to highlight threads that have received new replies that you need to
+                    refresh to see. A button at the top of the chatty indicates how many threads have new posts and,
+                    upon clicking the button, will take you to the next thread with new posts.
+                </p>
+                <p>
+                    <input type="checkbox" class="script_check" id="new_comment_highlighter" />
+                    <label for="new_comment_highlighter">
+                        Highlight new posts since last refresh
+                    </label>
+                </p>
+                <p class="indent info">
+                    After refreshing the chatty or an individual thread, show a blue bar next to posts which are new.
+                </p>
+                <p>
+                    <input type="checkbox" class="script_check" id="highlight_users" />
+                    <label for="highlight_users">
+                        Highlight users
+                    </label>
+                </p>
+                <p class="indent info">
+                    Highlight usernames in various colors to indicate their membership in user-specified groups.
+                </p>
+                <div id="highlight_users_settings" class="hidden">
+                    <div id="highlight_groups"></div>
+                    <button id="add_highlight_group">Add Group</button>
+                </div>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="custom_user_filters" />
+                <label for="custom_user_filters">Custom User Filters</label>
+            </h2>
+            <p class="info">Removes posts/replies authored by matched users.</p>
+            <div id="custom_user_filters_settings" class="hidden">
+                <div class="suboption">
+                    <input type="checkbox" class="suboption" id="cuf_hide_fullposts" />
+                    <label for="cuf_hide_fullposts">Hide root posts authored by matched users</label>
+                </div>
+                <select class="custom_user_filter_options" id="filtered_users" multiple></select>
+                <div class="custom_user_filter_inputs">
+                    <input type="text" id="new_user_filter_text" />
+                    <button id="add_user_filter_btn">Add</button>
+                    <button id="remove_user_filter_btn" disabled>Remove</button>
+                </div>
+            </div>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="thread_pane" />
+                <label for="thread_pane">Two-Pane Layout</label>
+            </h2>
+            <p class="info">
+                Quickly jump to other threads using a separate pane to the left of the chatty, similar to the tablet
+                modes in the mobile clients.
+            </p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="post_preview" />
+                <label for="post_preview">Post Preview</label>
+            </h2>
+            <p class="info">
+                Allow previewing a post, with full Shacktag formatting, before submitting the post.
+            </p>
+
+            <h2>
+                <input type="checkbox" class="script_check" id="chatty_news" />
+                <label for="chatty_news">Chatty News</label>
+            </h2>
+            <p class="info">
+                Adds a recent Shacknews articles box to the top of the Chatty.
+            </p>
+
+            <h2>
+                <label>Import/Export Settings</label>
+            </h2>
+            <p class="info">
+                Import/export Chrome Shack settings via clipboard.
+            </p>
+            <div class="import_export_area">
+                <textarea
+                    id="import_export_field"
+                    placeholder="Paste a settings string here for import or click Export..."
+                ></textarea>
+            </div>
+            <button id="import_export_btn">
+                Export to clipboard
+            </button>
+
+            <h2>
+                <label>Reset to Default</label>
+            </h2>
+            <p class="info">
+                Reset your settings to Chrome Shack's defaults. All of your changes will be lost!
+            </p>
+            <button id="clear_settings">
+                Reset
+            </button>
+
+            <h2>
+                <label>Release Notes</label>
+            </h2>
+            <p class="info">
+                Review the Chrome Shack release notes for this version.
+            </p>
+            <button id="rls_notes">
+                Release Notes
+            </button>
+        </div>
+    </body>
+</html>

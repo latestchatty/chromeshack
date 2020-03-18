@@ -1,5 +1,7 @@
 .idea*
-web-ext-artifacts
+node_modules
+dist
+artifacts
 # make sure to use --id option when signing!
 .web-extension-id
 .eslintrc*

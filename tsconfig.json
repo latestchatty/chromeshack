@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "allowSyntheticDefaultImports": true,
+        "sourceMap": true,
+        "target": "esnext",
+        "module": "commonjs",
+        "jsx": "react"
+    },
+    "exclude": ["node_modules"],
+    "presets": ["@babel/env", "@babel/typescript"],
+    "plugins": ["@babel/proposal-class-properties"]
+}

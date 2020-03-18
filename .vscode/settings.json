@@ -1,5 +1,15 @@
 {
     "editor.tabSize": 4,
     "files.eol": "\n",
-    "files.insertFinalNewline": true
+    "files.insertFinalNewline": true,
+    "editor.formatOnSave": true,
+    "prettier.tabWidth": 4,
+    "prettier.printWidth": 120,
+    "prettier.trailingComma": "all",
+    "prettier.arrowParens": "always",
+    "prettier.bracketSpacing": true,
+    "markdownlint.config": {
+        "MD001": false,
+        "MD030": false
+    }
 }

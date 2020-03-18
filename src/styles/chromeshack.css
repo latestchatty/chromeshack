@@ -1,0 +1,363 @@
+div.pin {
+    display: inline;
+    float: none;
+    padding-left: 10px;
+    font-size: 14px !important;
+}
+
+a.pin_button {
+    color: #16ff60;
+    padding: 0 0.25em !important;
+    text-decoration: underline !important;
+    font-weight: normal !important;
+}
+
+/* post preview */
+#previewArea {
+    display: block;
+    border: 1px solid #aeae9b;
+    padding: 5px 0 5px 5px;
+    background: #222;
+    height: 200px;
+    width: 99%;
+    overflow: wrap;
+}
+
+/* moderator tags */
+div.fpmod_offtopic {
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #7d7d7d !important;
+}
+
+div.fpmod_political {
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #f8a500 !important;
+}
+
+div.fpmod_stupid {
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #379700 !important;
+}
+
+div.fpmod_informative {
+    background-position: right top;
+    background-repeat: no-repeat;
+    border-top: 1px solid #00bff3 !important;
+}
+
+/* new comment marker */
+span.newcommenthighlighter {
+    border-left-color: #0099ff;
+    border-left-width: thin;
+    border-left-style: solid;
+    padding-left: 2px;
+}
+
+/* get post */
+div.getPost {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    min-height: 1;
+    max-width: 97%;
+    border: 1px #2f8484 solid;
+    background-color: #1d1d1d;
+}
+div.getPost > div.fullpost {
+    border: unset;
+}
+div.getPost div.postbody {
+    margin: 0.25em 0.25em 1em 1.5em;
+}
+div.getPost.hidden {
+    display: none !important;
+}
+
+div.getPost div.refresh,
+div.getPost div.reply,
+div.getPost div.postmeta a.closepost {
+    display: none;
+}
+
+div.getPost span.user a {
+    text-decoration: none;
+}
+
+/* shack userpopup */
+body .in,
+.base-level {
+    overflow: visible !important;
+}
+.userDropdown.hidden {
+    display: none;
+}
+span.author {
+    position: relative !important;
+}
+div.threads ul ul span.author ul {
+    margin-left: 0;
+    background-image: none;
+    bottom: auto;
+}
+div.threads ul ul li span.author li {
+    padding-left: 0;
+    background-image: none;
+}
+.userDropdown {
+    position: absolute !important;
+    top: 28px;
+    left: 0;
+    width: auto !important;
+    background: #222 !important;
+    z-index: 9999;
+    text-align: left;
+    border: 1px solid #333;
+    box-shadow: 3px 3px 4px #000;
+    font-weight: normal;
+    font-size: 12px;
+    padding: 0 !important;
+}
+.user a .userDropdown {
+    top: 1.5em;
+    left: 0;
+}
+.userDropdown li,
+.userDropdown #filter-list li:not(.userDropdown-separator) {
+    overflow: hidden;
+    background: #222 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-image: none !important;
+    display: block !important;
+    width: 100% !important;
+    line-height: 2.5em;
+    border-bottom: 1px solid #333 !important;
+    z-index: 9999;
+}
+.userDropdown li.userDropdown-separator {
+    border-bottom: 1px solid #666 !important;
+}
+.userDropdown li a,
+.userDropdown li div {
+    display: block;
+    width: 100% !important;
+    white-space: nowrap;
+    padding: 4px 12px !important;
+    margin: 0 !important;
+    color: #ddd !important;
+    font-weight: normal !important;
+    font-size: 12px !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    text-align: left !important;
+}
+.userDropdown li a:hover,
+.userDropdown li div:hover {
+    color: #fff;
+    background-color: #524a60 !important;
+}
+
+/* fix for shack legends being cut off */
+p.rules {
+    margin: 3px;
+}
+
+/* make it easier to see what button is highlighted, give them some space */
+
+button {
+    margin-right: 2px !important;
+    margin-left: 2px !important;
+    color: #555555 !important;
+}
+
+button:focus {
+    color: #000000 !important;
+}
+
+div.pinnedPosts {
+    border: 1px #3f5190 solid;
+    margin-top: 20px;
+    /*-webkit-border-radius: 10px;*/
+    padding-right: 6px;
+}
+
+div.pinnedLoading {
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-top: 20px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+span.pinnedLoading {
+    vertical-align: middle;
+}
+
+img.pinnedLoading {
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+a.chromeshack_options_link {
+    position: absolute;
+    top: 6px;
+    left: 14px;
+}
+a.chromeshack_options_link.singlepost {
+    position: relative;
+    top: 0 !important;
+    left: 0 !important;
+}
+
+span.postbox_rules_divider {
+    padding-left: 8px;
+    padding-right: 8px;
+    color: #41a9a9;
+}
+
+p.rules {
+    font-size: 12px !important;
+}
+
+button#previewButton {
+    background-color: #a5a59c;
+    border-color: #b5b5ac;
+}
+
+button#previewButton:hover {
+    background-color: #e9e9de;
+    border-color: #ffffff;
+}
+
+div.post_length_counter_text {
+    font-size: 10px;
+    color: #c0c0c0;
+    margin-top: -10px;
+}
+
+/* pending post highlighter */
+#post_highlighter_container {
+    display: flex;
+    position: relative;
+    z-index: 9999;
+    /*  resets */
+    padding: 0;
+    margin: 0;
+    top: -26px;
+    left: 196px;
+}
+#post_highlighter_container.hidden {
+    display: none !important;
+}
+a#jump_to_new_post {
+    display: inline-flex;
+    position: absolute;
+    align-self: center;
+    justify-self: center;
+    justify-content: center;
+    align-content: center;
+    border: 1px solid #555;
+    background: #908a9d;
+    font-size: 20px;
+    font-weight: 600;
+    color: white;
+    font-family: "Shack Sans", sans-serif;
+    -webkit-user-select: none;
+    padding: 4px 3px 2px 2px;
+    white-space: nowrap;
+    cursor: pointer;
+    line-height: 16px;
+}
+@media (min-width: 1024px) {
+    /* pinned & unpinned desktop modes */
+    header:not(.pinned) a#jump_to_new_post {
+        top: -9px;
+        left: 70px;
+    }
+    header.pinned a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
+}
+@media (max-width: 1024px) {
+    /* pinned mobile mode */
+    a#jump_to_new_post {
+        top: -2px;
+        left: 0px;
+    }
+}
+#post_highlighter_container a#jump_to_new_post:hover {
+    background-color: #5c5070;
+    border-color: #6f6088;
+}
+a.refresh_pending {
+    /* override post refresh button */
+    background: skyblue;
+    border-radius: 10px;
+    width: 14px !important;
+    height: 15px !important;
+}
+
+/* various hacks */
+
+/* ensure the pop-in of the lol tags doesn't cause the post to get taller */
+div.fullpost .lol-tags {
+    height: 18px !important;
+    margin-top: -5px !important;
+}
+
+body.hide_tagging_buttons .lol-tags {
+    display: none !important;
+}
+
+body.hide_tag_counts div.read-only-tags {
+    display: none !important;
+}
+
+/* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
+will un-shrink it if the shrink setting is not enabled */
+body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
+    opacity: 0.75;
+    width: 10px;
+    height: 10px;
+    vertical-align: text-top;
+}
+
+/* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
+only for users who want to see bright colors. */
+body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
+    filter: grayscale(75%);
+}
+
+a:hover > img.chatty-user-icons {
+    opacity: 1;
+    filter: none;
+}
+
+/* on the comments below articles the lol tag buttons are ridiculous */
+div.article-chatty span.lol-tags {
+    display: none !important;
+}
+
+/* don't let the lol counts cause the oneline to get taller */
+div.read-only-tags {
+    height: 1px;
+}
+
+/* emoji tagline on the postbox form */
+#postform fieldset p.emoji-tagline {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 12px;
+    margin: 0 !important;
+}
+p.emoji-tagline > span {
+    font-weight: bold;
+    font-style: italic;
+    padding: 0 0.5em 0 0.5em;
+}
