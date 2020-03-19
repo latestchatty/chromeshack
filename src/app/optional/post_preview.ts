@@ -9,11 +9,11 @@ const PostPreview = {
 
     async install() {
         return enabledContains("post_preview").then((res) => {
-            if (res) processPostBoxEvent.addHandler(PostPreview.install);
+            if (res) processPostBoxEvent.addHandler(PostPreview.apply);
         });
     },
 
-    apply(item) {
+    apply(item: HTMLElement) {
         // script is already injected
         if (item.querySelector("#previewButton")) return;
         let postButton = item.querySelector("#frm_submit");
@@ -28,78 +28,73 @@ const PostPreview = {
         previewArea.id = "previewArea";
         previewArea.style.display = "none";
         form_body.parentNode.insertBefore(previewArea, form_body);
-        processPostBoxEvent.addHandler((item) => PostPreview.installClickEvent(item));
+        PostPreview.installClickEvent(item);
     },
 
-    replyToggleHandler(e) {
-        if ((e.target && e.target.matches("div.closeform > a")) || e.target.matches("div.reply > a"))
-            PostPreview.state = 0;
+    replyToggleHandler(e: MouseEvent) {
+        const thisElem = <HTMLElement>e.target;
+        const clickableTag = thisElem.matches("#shacktags_legend_table td > a");
+        const replyBtn = thisElem.matches("div.reply > a");
+        const closestPostbox = <HTMLElement>thisElem.closest("li.sel")?.querySelector("div.postbox");
+        if (replyBtn && PostPreview.state === 1) PostPreview.enablePreview(closestPostbox);
+        else if (clickableTag) PostPreview.updatePreview(e);
     },
 
-    installClickEvent(item) {
-        let previewButton = item.querySelector("#previewButton");
-        let clickableTags = [...item.querySelectorAll("#shacktags_legend_table td > a")];
+    installClickEvent(item: HTMLElement) {
+        let previewButton = <HTMLButtonElement>item.querySelector("#previewButton");
         document.removeEventListener("click", PostPreview.replyToggleHandler);
         document.addEventListener("click", PostPreview.replyToggleHandler);
-        previewButton.addEventListener("click", PostPreview.togglePreview, true);
-        // include interactive tags legend as well
-        for (let t of clickableTags || []) {
-            ((item) =>
-                t.addEventListener(
-                    "click",
-                    () => {
-                        if (PostPreview.state === 1) {
-                            // only update preview if shown
-                            PostPreview.updatePreview(item);
-                        }
-                    },
-                    true,
-                ))(item);
-        }
+        previewButton.removeEventListener("click", PostPreview.togglePreview);
+        previewButton.addEventListener("click", PostPreview.togglePreview);
     },
 
-    togglePreview(item) {
-        if (PostPreview.state == 0) {
+    togglePreview(e: MouseEvent) {
+        if (PostPreview.state === 0) {
             PostPreview.state = 1;
-            PostPreview.enablePreview(item);
+            PostPreview.enablePreview(e);
         } else {
             PostPreview.state = 0;
-            PostPreview.disablePreview(item);
+            PostPreview.disablePreview(e);
         }
     },
 
-    enablePreview(item) {
-        if (item instanceof MouseEvent) item = (<HTMLElement>item.target).closest("div.postbox");
-        let form_body = item.querySelector("#frm_body");
-        let preview_box = item.querySelector("#previewArea");
-        if (!form_body || !preview_box) return;
-        preview_box.style.display = "block";
-        PostPreview.updatePreview(item);
-        form_body.addEventListener("keyup", PostPreview.updatePreview, true);
-        form_body.focus();
+    enablePreview(e: MouseEvent | HTMLElement) {
+        let thisElem: HTMLElement;
+        if (e instanceof MouseEvent) thisElem = (<HTMLElement>e.target).closest("div.postbox");
+        else thisElem = e;
+        const replyInput = <HTMLInputElement>thisElem.querySelector("#frm_body");
+        const previewBox = <HTMLInputElement>thisElem.querySelector("#previewArea");
+        if (!replyInput || !previewBox) return;
+        previewBox.style.display = "block";
+        PostPreview.updatePreview(thisElem);
+        replyInput.addEventListener("keyup", PostPreview.updatePreview, true);
+        replyInput.focus();
     },
 
-    disablePreview(item) {
-        if (item instanceof MouseEvent) item = (<HTMLElement>item.target).closest("div.postbox");
-        let form_body = item.querySelector("#frm_body");
-        let preview_box = item.querySelector("#previewArea");
-        if (!form_body || !preview_box) return;
-        preview_box.style.display = "none";
-        form_body.removeEventListener("keyup", PostPreview.updatePreview, true);
-        form_body.focus();
+    disablePreview(e: MouseEvent | HTMLElement) {
+        let thisElem: HTMLElement;
+        if (e instanceof MouseEvent) thisElem = (<HTMLElement>e.target).closest("div.postbox");
+        else thisElem = e;
+        const replyInput = <HTMLInputElement>thisElem.querySelector("#frm_body");
+        const previewBox = <HTMLInputElement>thisElem.querySelector("#previewArea");
+        if (!replyInput || !previewBox) return;
+        previewBox.style.display = "none";
+        replyInput.removeEventListener("keyup", PostPreview.updatePreview, true);
+        replyInput.focus();
     },
 
-    updatePreview(item) {
+    updatePreview(e) {
         if (PostPreview.previewTimer) clearTimeout(PostPreview.previewTimer);
-        PostPreview.previewTimer = setTimeout(() => PostPreview.delayedPreview(item), 250);
+        PostPreview.previewTimer = setTimeout(() => PostPreview.delayedPreview(e), 250);
     },
 
-    delayedPreview(item) {
-        if (item instanceof KeyboardEvent) item = (<HTMLElement>item.target).closest("div.postbox");
-        let form_body = item.querySelector("#frm_body");
-        let previewArea = item.querySelector("#previewArea");
-        if (!form_body || !previewArea) return;
-        safeInnerHTML(generatePreview(form_body.value), previewArea);
+    delayedPreview(e: KeyboardEvent | MouseEvent | HTMLElement) {
+        const thisElem =
+            e instanceof KeyboardEvent || e instanceof MouseEvent ? (<HTMLElement>e.target).closest("div.postbox") : e;
+        const replyInput = <HTMLInputElement>thisElem.querySelector("#frm_body");
+        const previewBox = <HTMLInputElement>thisElem.querySelector("#previewArea");
+        if (!replyInput || !previewBox) return;
+        safeInnerHTML(generatePreview(replyInput.value), previewBox);
     },
 };
 

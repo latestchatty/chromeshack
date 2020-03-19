@@ -21,7 +21,7 @@ export const isEmpty = (obj) => {
     return obj === null || obj === undefined || (obj && Object.keys(obj).length === 0 && obj.constructor === Object);
 };
 
-export const objContains = (needle: string | number, haystack: Object) => {
+export const objContains = (needle: string | number, haystack: object) => {
     // tests if an object (or nested object) contains a matching value (or prop)
     // since objects can contains Arrays test for them too
     if (isEmpty(haystack)) return false;
@@ -33,9 +33,7 @@ export const objContains = (needle: string | number, haystack: Object) => {
         } else if (Array.isArray(v)) {
             let _arrResult = objContains(needle, { ...v });
             if (_arrResult) return _arrResult;
-        } else if (v === needle) {
-            return v;
-        }
+        } else if (v === needle) return v;
     }
     return false;
 };
@@ -59,15 +57,13 @@ export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
         xhr.open(!isEmpty(optionsObj) ? optionsObj.method : "GET", url);
-        if (!isEmpty(optionsObj) && optionsObj.headers) {
-            for (let key of Object.keys(optionsObj.headers)) {
-                xhr.setRequestHeader(key, optionsObj.headers[key]);
-            }
-        }
+        if (!isEmpty(optionsObj) && optionsObj.headers)
+            for (let key of Object.keys(optionsObj.headers)) xhr.setRequestHeader(key, optionsObj.headers[key]);
+
         xhr.onload = function() {
-            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1) {
+            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
                 resolve(xhr.response);
-            }
+
             reject({ status: this.status, statusText: xhr.statusText });
         };
         xhr.onerror = function() {
@@ -105,7 +101,7 @@ export const fetchSafe = ({
 }: {
     url: string;
     fetchOpts?: RequestInit;
-    parseType?: Object;
+    parseType?: object;
 }) => {
     // used for sanitizing fetches
     // fetchOpts gets destructured in 'xhrRequest()'
@@ -134,11 +130,12 @@ export const parseFetchResponse = async (textPromise, parseType) => {
         if (instagram) {
             let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
             let instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-            if (instgrmGQL)
+            if (instgrmGQL) {
                 return {
                     metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
                     gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
                 };
+            }
         }
         // sanitize ChattyPics response to array of links
         else if (chattyPics) {
@@ -146,10 +143,11 @@ export const parseFetchResponse = async (textPromise, parseType) => {
             let _resElemArr = _resFragment.querySelector("#allLinksDirect");
             let _resElemVal = _resFragment.querySelector("#link11");
             // return a list of links if applicable
-            if (_resElemArr || _resElemVal)
+            if (_resElemArr || _resElemVal) {
                 return _resElemArr
                     ? _resElemArr.value.split("\n").filter((x) => x !== "")
                     : _resElemVal && [_resElemVal.value];
+            }
         }
         // sanitize and return as Shacknews RSS article list
         else if (chattyRSS && text) return parseShackRSS(text);
@@ -186,14 +184,10 @@ export const getCookieValue = (name, defaultValue) => {
 
 export const generatePreview = (postText) => {
     // simple replacements
-    //postText = postText.replace(/&/g, "&amp;"); // breaks Astral encoding
     postText = postText.replace(/</g, "&lt;");
     postText = postText.replace(/>/g, "&gt;");
-    postText = postText.replace(/\r\n/g, "<br>");
-    postText = postText.replace(/\n/g, "<br>");
-    postText = postText.replace(/\r/g, "<br>");
-
-    let complexReplacements = {
+    postText = postText.replace(/\r\n|\n|\r/g, "<br>");
+    const complexReplacements = {
         red: { from: ["r{", "}r"], to: ['<span class="jt_red">', "</span>"] },
         green: {
             from: ["g{", "}g"],
@@ -243,23 +237,22 @@ export const generatePreview = (postText) => {
         },
         code: {
             from: ["\\/{{", "}}\\/"],
-            to: ['<pre class="jt_code">', "</pre>"],
+            to: ['<pre class="codeblock">', "</span>"],
         },
     };
 
     // replace matching pairs first
-    for (let ix in complexReplacements) {
+    for (const ix in complexReplacements) {
         let rgx = new RegExp(complexReplacements[ix].from[0] + "(.*?)" + complexReplacements[ix].from[1], "g");
-        while (postText.match(rgx) !== null) {
+        while (postText.match(rgx) !== null)
             postText = postText.replace(rgx, complexReplacements[ix].to[0] + "$1" + complexReplacements[ix].to[1]);
-        }
     }
 
     // replace orphaned opening shacktags, close them at the end of the post.
     // this still has (at least) one bug, the shack code does care about nested tag order:
     // b[g{bold and green}g]b <-- correct
     // b[g{bold and green]b}g <-- }g is not parsed by the shack code
-    for (let ix in complexReplacements) {
+    for (const ix in complexReplacements) {
         let rgx = new RegExp(complexReplacements[ix].from[0], "g");
         while (postText.match(rgx) !== null) {
             postText = postText.replace(rgx, complexReplacements[ix].to[0]);
@@ -288,13 +281,14 @@ export function scrollToElement(elem, toFitBool?) {
     if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     else if (!elem) return false;
     if (toFitBool) jQuery("html, body").animate({ scrollTop: jQuery(elem).offset().top - 54 }, 0);
-    else
+    else {
         jQuery("html, body").animate(
             {
                 scrollTop: jQuery(elem).offset().top - jQuery(window).height() / 4,
             },
             0,
         );
+    }
 }
 
 export function elementIsVisible(elem, partialBool) {
@@ -353,9 +347,8 @@ export const safeJSON = (text) => {
                     return _arr;
                 } else if (val !== null && typeof val === "object") {
                     let _obj = {};
-                    for (let key in val) {
-                        _obj[key] = iterate(val[key]);
-                    }
+                    for (let key in val) _obj[key] = iterate(val[key]);
+
                     return _obj;
                 } else {
                     if (val === null) return null;
@@ -448,9 +441,8 @@ export const JSONToFormData = (jsonStr) => {
             .split(";")[0];
         // write the bytes of the string to a typed array
         let ia = new Uint8Array(byteString.length);
-        for (let i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
+        for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+
         return new File([ia], filename, { type: mimeString });
     };
 
@@ -509,12 +501,10 @@ export const elementQuerySelectorAll = (elem, selector) =>
 
 export const insertAtCaret = (field: HTMLInputElement, text: string) => {
     if (field.selectionStart || field.selectionStart === 0) {
-        var startPos = field.selectionStart;
-        var endPos = field.selectionEnd;
+        let startPos = field.selectionStart;
+        let endPos = field.selectionEnd;
         field.value = field.value.substring(0, startPos) + text + field.value.substring(endPos, field.value.length);
         field.selectionStart = startPos + text.length;
         field.selectionEnd = startPos + text.length;
-    } else {
-        field.value += text;
-    }
+    } else field.value += text;
 };

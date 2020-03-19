@@ -20,7 +20,16 @@ a.pin_button {
     background: #222;
     height: 200px;
     width: 99%;
-    overflow: wrap;
+    overflow-y: auto;
+}
+#previewArea pre.codeblock {
+    display: block;
+    font-family: monospace;
+    border-left: 1px solid #666;
+    padding: 3px 0 3px 10px;
+    margin: 5px 0 5px 10px;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
 }
 
 /* moderator tags */
