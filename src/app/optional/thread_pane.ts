@@ -191,30 +191,25 @@ const ThreadPane = {
 
     parseMostRecentPosts(threadDiv: JQuery<HTMLElement>, threadId) {
         const mostRecentSubtree = [];
-        let $mostRecentPost: JQuery<HTMLElement>;
-        let onelineNumber = 0;
-        let $post: JQuery<HTMLElement>;
-        // TODO: FIX $mostRecentPost
-        while ($mostRecentPost.length !== 1 && onelineNumber < 10)
-            $mostRecentPost = threadDiv.find("div.oneline" + onelineNumber++);
-
-        if ($mostRecentPost.length !== 1) {
-            // don't fail, it will cause the entire pane to disappear. better for it to look weird
-            return { parentIsRoot: true, mostRecentSubtree: [] };
+        let $mostRecentPost;
+        for (let i = 0; i < 10 && $mostRecentPost?.length !== 1; i++) {
+            $mostRecentPost = threadDiv.find(`div.oneline${i}`);
+            break;
         }
+        // don't fail, it will cause the entire pane to disappear. better for it to look weird
+        if ($mostRecentPost?.length !== 1) return { parentIsRoot: true, mostRecentSubtree: [] };
 
-        $post = $mostRecentPost;
-        while (!$post.hasClass("threads")) {
-            if ($post[0].nodeName.toUpperCase() === "LI" && $post[0].id.startsWith("item_")) {
-                const postId = parseInt($post[0].id.substring("item_".length));
+        while (!$mostRecentPost.hasClass("threads")) {
+            if ($mostRecentPost[0].nodeName.toUpperCase() === "LI" && $mostRecentPost[0].id.startsWith("item_")) {
+                const postId = parseInt($mostRecentPost[0].id.substring("item_".length));
                 if (postId === threadId) break;
 
-                const $oneline = $($post.find("div.oneline")[0]);
+                const $oneline = $($mostRecentPost.find("div.oneline")[0]);
                 const postAuthor = $($oneline.find("span.oneline_user")[0]).text();
                 const postPreviewHtml = $($oneline.find("span.oneline_body")[0]).html();
                 mostRecentSubtree.push({ postAuthor, postPreviewHtml, postId });
             }
-            $post = $post.parent();
+            $mostRecentPost = $mostRecentPost.parent();
         }
 
         // trim to at most 4 replies
