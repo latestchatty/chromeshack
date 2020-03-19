@@ -10,8 +10,8 @@ export const getEmbedInfo = (link) => {
     // resolves the postId and index of a link
     if (!link) return;
     let _link = link.querySelector("div.expando");
-    let _linkInfo = _link?.id.split(/[_-]/);
-    if (_linkInfo?.length > 1) {
+    let _linkInfo = _link && _link.id.split(/[_-]/);
+    if (_linkInfo && _linkInfo?.length > 1) {
         let _id = _linkInfo[1];
         let _idx = _linkInfo[2];
         return { id: _id, index: _idx };
@@ -30,9 +30,9 @@ export const getLinkRef = (embed) => {
 
 export const getEmbedRef = (link) => {
     // resolves the embed associated with a link (if any exist)
-    if (!link) return;
+    if (link == null) return;
     let infoObj = getEmbedInfo(link);
-    if (infoObj?.id && infoObj?.index) {
+    if (infoObj && infoObj.id && infoObj.index) {
         return document.querySelector(`
             #medialoader_${infoObj.id}-${infoObj.index},
             #iframe_${infoObj.id}-${infoObj.index},
@@ -57,7 +57,7 @@ export const toggleVideoState = (elem, stateObj?) => {
     };
 
     let { state, mute } = stateObj || {};
-    if (!elem) return;
+    if (elem == null) return;
     let video = elem.matches("video[id^='loader_']") ? elem : elem.querySelector("video[id^='loader_']");
     // if forced then play and avoid social embeds
     let excludedParent =
@@ -69,7 +69,7 @@ export const toggleVideoState = (elem, stateObj?) => {
         #twitter-quote-media-content
     `);
 
-    if ((video && (state || mute)) || !objContains("hidden", video?.closest(".media-container").classList)) {
+    if ((video && (state || mute)) || (video && !objContains("hidden", video.closest(".media-container").classList))) {
         if (state) play();
         else if (!excludedParent && video.paused) play();
         else pause();
@@ -81,7 +81,7 @@ export const toggleVideoState = (elem, stateObj?) => {
 
 export const toggleExpandoButton = (expando) => {
     // abstracted helper for toggling the state of a link-expando button from a post
-    if (!objContains("collapso", expando?.classList)) {
+    if (expando && !objContains("collapso", expando.classList)) {
         // override is the expando 'button' element
         expando.innerText = "\ue90d"; // circle-arrow-down
         return expando.classList.add("collapso");
@@ -97,7 +97,7 @@ export const toggleMediaItem = (link) => {
     let embed = getEmbedRef(link);
     if (!embed) return;
     let container = embed.closest(".media-container");
-    if (expando.matches(".embedded") && embed?.matches(".iframe-spacer")) {
+    if (expando.matches(".embedded") && embed && embed.matches(".iframe-spacer")) {
         // remove iframe directly to toggle media
         container.parentNode.removeChild(container);
         expando.classList.remove("embedded");
@@ -107,10 +107,13 @@ export const toggleMediaItem = (link) => {
         // just toggle the container  and link state
         if (!expando.matches(".embedded")) expando.classList.add("embedded");
         if (container?.childElementCount > 1) {
-            // toggle multiple children of placed media container (Twitter)
-            for (let child of container.children || []) {
-                if (child.matches(".hidden")) child.classList.remove("hidden");
-                else child.classList.add("hidden");
+            if (container.matches(".hidden")) container.classList.remove("hidden");
+            else {
+                // toggle multiple children of placed media container (Twitter)
+                for (let child of container.children || []) {
+                    if (child.matches(".hidden")) child.classList.remove("hidden");
+                    else child.classList.add("hidden");
+                }
             }
         } else if (embed.matches("div")) {
             if (embed.matches(".hidden")) embed.classList.remove("hidden");
@@ -161,7 +164,7 @@ export const createMediaElem = (href, postId, index, override?) => {
 };
 
 export const createIframe = (src, type, postId, index) => {
-    if (src?.length > 0) {
+    if (src && src.length > 0) {
         let video = document.createElement("div");
         let spacer = document.createElement("div");
         let iframe = document.createElement("iframe");
@@ -231,8 +234,8 @@ export const insertScript = (options) => {
     else if (overwrite && _script) _script.parentNode.removeChild(_script);
     _script = document.createElement("script");
     if (id) _script.setAttribute("id", id);
-    if (code?.length > 0) _script.textContent = code;
-    else if (filePath?.length > 0) _script.setAttribute("src", browser.runtime.getURL(filePath));
+    if (code && code.length > 0) _script.textContent = code;
+    else if (filePath && filePath.length > 0) _script.setAttribute("src", browser.runtime.getURL(filePath));
     else throw Error("Must pass a file path or code content in string format!");
     _elem.appendChild(_script);
 };
@@ -270,7 +273,7 @@ export const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
 export const attachChildEvents = async (elem, id, index) => {
     let childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
     let iframeElem = elem.querySelector("iframe");
-    if (!iframeElem && childElems?.length > 0) {
+    if (!iframeElem && childElems && childElems.length > 0) {
         // list of excluded containers
         let first_elem = <HTMLElement>childElems[0];
         let swiperEl = first_elem.closest(".swiper-wrapper");
@@ -280,7 +283,7 @@ export const attachChildEvents = async (elem, id, index) => {
         for (let item of childElems) {
             let this_elem = <HTMLElement>item;
             if (this_elem.nodeName === "IMG" || this_elem.nodeName === "VIDEO") {
-                if (childElems.length === 1) {
+                if (childElems.length == 1) {
                     // don't interfere with carousel media settings
                     const canPlayCallback = (e) => {
                         // autoplay videos (muted) when shown (except for social embeds)

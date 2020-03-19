@@ -4,7 +4,7 @@
     "description": "Collection of scripts for Shacknews.",
     "repository": "https://github.com/latestchatty/chromeshack",
     "scripts": {
-        "clean": "find dist/* -name \"*\" ! -name \"manifest.json\" -exec rm -rf {} \\;",
+        "clean": "rm -rf dist",
         "build:dev": "npx webpack-cli --config ./utils/webpack.config.dev.js --watch",
         "build:prod": "npm run clean && npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip",
         "webext": "npx web-ext run -s dist -u https://shacknews.com/chatty",
