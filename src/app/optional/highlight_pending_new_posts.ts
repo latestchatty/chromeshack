@@ -1,7 +1,7 @@
 import { enabledContains } from "../core/settings";
 import { fetchSafe, scrollToElement } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
-import ThreadPane from "./thread_pane";
+import { TP_Instance, CS_Instance } from "../content";
 
 interface PostEvents {
     eventId?: string;
@@ -39,9 +39,9 @@ const HighlightPendingPosts = {
             let a = document.querySelector(`li#item_${pending.threadId} div.fullpost div.refresh a`);
             if (a) a.classList.add("refresh_pending");
         }
-        if (refreshElem) HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
+        HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
         // if the Thread Pane script is loaded, then refresh the thread pane
-        (async () => await ThreadPane.install())();
+        if (TP_Instance.isEnabled) TP_Instance.apply();
     },
 
     fetchPendings() {
@@ -60,7 +60,10 @@ const HighlightPendingPosts = {
                     });
                 }
                 HighlightPendingPosts.pendings = newPendingEvents;
-                HighlightPendingPosts.updatePendings();
+                if (newPendingEvents.length > 0) {
+                    if (CS_Instance.debugEvents) console.log("Fetching pendings:", newPendingEvents);
+                    HighlightPendingPosts.updatePendings();
+                }
             }
             // Short delay in between loop iterations.
             setTimeout(HighlightPendingPosts.fetchPendings, 5000);
@@ -77,14 +80,14 @@ const HighlightPendingPosts = {
     },
 
     isCollapsed(elem) {
-        return elem && elem.closest("div.root.collapsed");
+        return elem?.closest("div.root.collapsed");
     },
 
     isPending(elem) {
-        return elem && elem.matches("a.refresh_pending") && elem.closest("div.refresh a") === elem;
+        return elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
     },
 
-    getNonCollapsedPendings(refreshElem) {
+    getNonCollapsedPendings(refreshElem?) {
         HighlightPendingPosts.excludeRefreshed(refreshElem);
         let pendings = [...document.querySelectorAll("a.refresh_pending")];
         let filtered = [];
@@ -118,7 +121,7 @@ const HighlightPendingPosts = {
         position.appendChild(starContainer);
     },
 
-    updateJumpToNewPostButton(refreshElem) {
+    updateJumpToNewPostButton(refreshElem?) {
         let button = document.getElementById("post_highlighter_container");
         let indicator = "★ ";
         let titleHasIndicator = document.title.startsWith(indicator);

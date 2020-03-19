@@ -1,7 +1,6 @@
 import { getSetting, getEnabledSuboptions, enabledContains } from "../core/settings";
 import { processPostRefreshEvent } from "../core/events";
-import { HU_Instance } from "../content";
-import ThreadPane from "./thread_pane";
+import { HU_Instance, TP_Instance } from "../content";
 
 const CustomUserFilters = {
     parsedUsers: [],
@@ -55,7 +54,7 @@ const CustomUserFilters = {
                 }
             }
             // refresh threadpane after removing posts to avoid unnecessary redraws
-            if (hasMatched && hasMatched.length > 0) ThreadPane.install(); // don't forget to update the thread pane
+            if (TP_Instance.isEnabled) TP_Instance.apply();
         });
     },
 };

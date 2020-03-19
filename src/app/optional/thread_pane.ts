@@ -1,13 +1,15 @@
 import { enabledContains } from "../core/settings";
-import { elementFitsViewport, scrollToElement } from "../core/common";
+import { elementFitsViewport, scrollToElement, isEmpty } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 
 const ThreadPane = {
+    isEnabled: false,
+
     async install() {
         return enabledContains("thread_pane").then((res) => {
             if (res) {
                 try {
-                    processPostRefreshEvent.removeHandler(ThreadPane.apply);
+                    ThreadPane.isEnabled = true;
                     processPostRefreshEvent.addHandler(ThreadPane.apply);
                     ThreadPane.apply();
                 } catch (e) {
@@ -192,10 +194,9 @@ const ThreadPane = {
     parseMostRecentPosts(threadDiv: JQuery<HTMLElement>, threadId) {
         const mostRecentSubtree = [];
         let $mostRecentPost;
-        for (let i = 0; i < 10 && $mostRecentPost?.length !== 1; i++) {
+        for (let i = 0; i < 10 && $mostRecentPost?.length !== 1; i++)
             $mostRecentPost = threadDiv.find(`div.oneline${i}`);
-            break;
-        }
+
         // don't fail, it will cause the entire pane to disappear. better for it to look weird
         if ($mostRecentPost?.length !== 1) return { parentIsRoot: true, mostRecentSubtree: [] };
 
