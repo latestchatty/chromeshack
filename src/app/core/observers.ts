@@ -13,10 +13,10 @@ import { elementMatches, locatePostRefs } from "./common";
 
 // provide an interface with optional properties
 interface PostRefreshMutation {
-    lastPostId?: Number;
-    lastRootId?: Number;
-    is_root?: Boolean;
-    from_reply?: Boolean;
+    lastPostId?: number;
+    lastRootId?: number;
+    is_root?: boolean;
+    from_reply?: boolean;
 }
 
 const ChromeShack = {
@@ -60,18 +60,17 @@ const ChromeShack = {
 
                     for (let addedNode of mutation.addedNodes || []) {
                         // the root post was swapped - they probably refreshed or replied to a thread
-                        if (elementMatches(addedNode, "div.root") && ChromeShack.isPostReplyMutation) {
+                        if (elementMatches(addedNode, "div.root") && ChromeShack.isPostReplyMutation)
                             ChromeShack.processReply(ChromeShack.isPostReplyMutation);
-                        }
+
                         // check for opening a fullpost
                         if (elementMatches(addedNode.parentNode, "li[id^='item_']")) {
                             // grab the id from the old node, since the new node doesn't contain the id
                             ChromeShack.processPost(addedNode.parentNode, addedNode.parentNode.id.substr(5));
                         }
                         // check for tags loading after a fullpost
-                        if (elementMatches(addedNode.parentNode, "span.user")) {
-                            ChromeShack.tagsLoadedHandler(addedNode);
-                        }
+                        if (elementMatches(addedNode.parentNode, "span.user")) ChromeShack.tagsLoadedHandler(addedNode);
+
                         // check for the postbox
                         if (elementMatches(addedNode, "#postbox")) ChromeShack.processPostBox(addedNode);
                     }
@@ -137,10 +136,11 @@ const ChromeShack = {
             console.log("raising processPostRefreshEvent:", post, root, postHasTags, rootHasTags);
         if (!post) {
             // if we're called from a reply handler that can't pass a postId then find it ourselves
-            if (ChromeShack.isPostRefreshMutation && ChromeShack.isPostRefreshMutation.lastPostId)
+            if (ChromeShack.isPostRefreshMutation && ChromeShack.isPostRefreshMutation.lastPostId) {
                 post =
                     ChromeShack.isPostRefreshMutation.lastPostId &&
                     document.querySelector(`li#item_${ChromeShack.isPostRefreshMutation.lastPostId}`);
+            }
         }
         if (post || root) processPostRefreshEvent.raise(post, root, postHasTags, rootHasTags);
         // since we're done refreshing remove this thread from our tracking list

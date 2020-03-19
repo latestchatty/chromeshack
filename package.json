@@ -4,8 +4,8 @@
     "description": "Collection of scripts for Shacknews.",
     "repository": "https://github.com/latestchatty/chromeshack",
     "scripts": {
-        "clean": "rm -rf dist",
-        "build:dev": "npm run clean && npx webpack-cli --config ./utils/webpack.config.dev.js --watch",
+        "clean": "find dist/* -name \"*\" ! -name \"manifest.json\" -exec rm -rf {} \\;",
+        "build:dev": "npx webpack-cli --config ./utils/webpack.config.dev.js --watch",
         "build:prod": "npm run clean && npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip",
         "webext": "npx web-ext run -s dist -u https://shacknews.com/chatty",
         "zip": "npx web-ext build -s ./dist -a ./artifacts -o",
@@ -18,10 +18,11 @@
     "devDependencies": {
         "@babel/cli": "^7.8.4",
         "@babel/core": "^7.8.7",
-        "@babel/plugin-proposal-class-properties": "^7.8.3",
         "@babel/preset-env": "^7.8.7",
         "@babel/preset-typescript": "^7.8.3",
         "@types/chrome": "0.0.75",
+        "@types/jquery": "^3.3.33",
+        "@types/luxon": "^1.21.0",
         "@typescript-eslint/eslint-plugin": "^2.23.0",
         "@typescript-eslint/parser": "^2.23.0",
         "copy-webpack-plugin": "^5.1.1",
@@ -54,7 +55,6 @@
         "webpack-merge": "^4.2.2"
     },
     "dependencies": {
-        "@types/jquery": "^3.3.33",
         "dompurify": "^2.0.8",
         "jquery": "^3.4.1",
         "luxon": "^1.22.0",

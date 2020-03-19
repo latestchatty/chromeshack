@@ -1,9 +1,9 @@
-interface ILiteEvent<T> {
+interface LiteEventInterface<T> {
     addHandler(handler: { (...args): void }): void;
     removeHandler(handler: { (...args): void }): void;
 }
 
-class LiteEvent<T> implements ILiteEvent<T> {
+class LiteEvent<T> implements LiteEventInterface<T> {
     private handlers: { (...args): void }[] = [];
 
     addHandler(handler: { (...args): void }): void {
@@ -18,7 +18,7 @@ class LiteEvent<T> implements ILiteEvent<T> {
         this.handlers.slice(0).forEach((h) => h(...args));
     }
 
-    expose(): ILiteEvent<T> {
+    expose(): LiteEventInterface<T> {
         return this;
     }
 }

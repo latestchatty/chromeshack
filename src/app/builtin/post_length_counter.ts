@@ -29,11 +29,12 @@ const PostLengthCounter = {
         let textCount = encodedText && EmojiPoster.countText(encodedText);
         let astralCount = encodedText && EmojiPoster.countAstrals(encodedText).astralsCount;
         let charCount = astralCount ? textCount + astralCount : textCount;
-        if (counter)
+        if (counter) {
             counter.innerText =
                 charCount > PostLengthCounter.MAX_POST_BYTES
                     ? "The post preview will be truncated."
                     : `Characters remaining in post preview: ${PostLengthCounter.MAX_POST_BYTES - charCount}`;
+        }
     },
 
     plcHandler(item: HTMLElement) {

@@ -99,24 +99,16 @@ const ThreadPane = {
                 $postDiv.append($('<div class="cs_thread_pane_reply_divider">').text(":"));
                 $postDiv.append($('<div class="cs_thread_pane_reply_author">').text(postAuthor));
                 const isMostRecentReply = i === mostRecentSubtree.length - 1;
-                if (isMostRecentReply) {
-                    $postDiv.addClass("cs_thread_pane_most_recent_reply");
-                }
+                if (isMostRecentReply) $postDiv.addClass("cs_thread_pane_most_recent_reply");
 
                 parentDiv.append($postDiv);
                 parentDiv = $postDiv;
             }
 
-            if (!parentIsRoot) {
-                $repliesDiv.addClass("cs_thread_pane_replies_not_at_root");
-            }
+            if (!parentIsRoot) $repliesDiv.addClass("cs_thread_pane_replies_not_at_root");
 
             let mostRecentPostId = threadId;
-            for (const { postId } of mostRecentSubtree) {
-                if (postId > mostRecentPostId) {
-                    mostRecentPostId = postId;
-                }
-            }
+            for (const { postId } of mostRecentSubtree) if (postId > mostRecentPostId) mostRecentPostId = postId;
 
             $cardDiv.click(() => {
                 const $li = $(`li#item_${mostRecentPostId}`);
@@ -153,9 +145,8 @@ const ThreadPane = {
 
     cloneRootPostBody(opDiv, threadId) {
         const $rootPostbodyDiv = opDiv.find("div.postbody").first();
-        if ($rootPostbodyDiv.length !== 1) {
-            throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
-        }
+        if ($rootPostbodyDiv.length !== 1) throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
+
         return $rootPostbodyDiv.clone();
     },
 
@@ -179,13 +170,12 @@ const ThreadPane = {
     },
 
     parseThreadId(threadDiv) {
-        if (!threadDiv.id.startsWith("root_")) {
+        if (!threadDiv.id.startsWith("root_"))
             throw new Error(`Did not expect the root div to have an element id of "${threadDiv.id}".`);
-        }
+
         const threadId = parseInt(threadDiv.id.substring("root_".length));
-        if (threadId < 1 || threadId > 50000000) {
-            throw new Error(`The thread ID of ${threadId} seems bogus.`);
-        }
+        if (threadId < 1 || threadId > 50000000) throw new Error(`The thread ID of ${threadId} seems bogus.`);
+
         return threadId;
     },
 
@@ -204,9 +194,9 @@ const ThreadPane = {
         let $mostRecentPost: JQuery<HTMLElement>;
         let onelineNumber = 0;
         let $post: JQuery<HTMLElement>;
-        while ($mostRecentPost.length !== 1 && onelineNumber < 10) {
+        // TODO: FIX $mostRecentPost
+        while ($mostRecentPost.length !== 1 && onelineNumber < 10)
             $mostRecentPost = threadDiv.find("div.oneline" + onelineNumber++);
-        }
 
         if ($mostRecentPost.length !== 1) {
             // don't fail, it will cause the entire pane to disappear. better for it to look weird
@@ -235,9 +225,7 @@ const ThreadPane = {
 
     uncapThread(threadId) {
         const $a = $(`#root_${threadId}`);
-        if ($a.hasClass("capped")) {
-            $a.removeClass("capped");
-        }
+        if ($a.hasClass("capped")) $a.removeClass("capped");
     },
 };
 

@@ -13,25 +13,21 @@ const DinoGegtik = {
         { x: 517, y: 5, width: 214, height: 150 },
         { x: 4, y: 246, width: 186, height: 67 },
         { x: 198, y: 246, width: 291, height: 66 },
-        { x: 496, y: 246, width: 234, height: 56 }
+        { x: 496, y: 246, width: 234, height: 56 },
     ],
     userMatch: null,
 
     async install() {
-        return enabledContains("dinogegtik").then(res => {
+        return enabledContains("dinogegtik").then((res) => {
             if (res) processPostEvent.addHandler(DinoGegtik.installComic);
         });
     },
 
     installComic(item, id) {
         let fullpost = item.querySelector("div.fullpost");
-        DinoGegtik.userMatch = HU_Instance.resolveUsers().filter(x => x.name === "gegtik")[0];
+        DinoGegtik.userMatch = HU_Instance.resolveUsers().filter((x) => x.name === "gegtik")[0];
         // we have a fullpost, and its className contains gegtik's user id
-        if (
-            fullpost &&
-            DinoGegtik.userMatch &&
-            fullpost.classList.contains(`fpauthor_${DinoGegtik.userMatch.id}`)
-        ) {
+        if (fullpost && DinoGegtik.userMatch && fullpost.classList.contains(`fpauthor_${DinoGegtik.userMatch.id}`)) {
             let comic_id = `dinogegtik_${id}`;
             // comic is already here!
             if (document.getElementById(comic_id)) return;
@@ -43,13 +39,10 @@ const DinoGegtik = {
             let comic_div = document.createElement("div");
             comic_div.id = comic_id;
             comic_div.className = "dinogegtik";
-            comic_div.style.backgroundImage = `url("${browser.runtime.getURL(
-                "../images/dinogegtik.png"
-            )}")`;
+            comic_div.style.backgroundImage = `url("${browser.runtime.getURL("../images/dinogegtik.png")}")`;
             comic_div.style.height = lines.length <= 3 ? "244px" : "487px";
             postBody.appendChild(comic_div);
-            let max =
-                lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
+            let max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
             for (let i = 0; i < max; i++) {
                 let panel = document.createElement("div");
                 panel.className = "panel";
@@ -74,7 +67,7 @@ const DinoGegtik = {
                 size--;
             }
         }, 200);
-    }
+    },
 };
 
 export default DinoGegtik;

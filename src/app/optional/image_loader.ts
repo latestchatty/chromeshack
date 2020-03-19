@@ -6,17 +6,17 @@ import { processExpandoLinks, toggleMediaItem, appendMedia } from "../core/media
 interface ImgurResponse {
     data: {
         images?: Array<{
-            mp4?: String;
-            link?: String;
+            mp4?: string;
+            link?: string;
         }>;
-        mp4?: String;
-        link?: String;
+        mp4?: string;
+        link?: string;
     };
 }
 
 interface GfycatResponse {
     gfyItem: {
-        mobileUrl: String;
+        mobileUrl: string;
     };
 }
 
@@ -24,7 +24,7 @@ interface TenorResponse {
     results?: Array<{
         media: Array<{
             webm: {
-                url: String;
+                url: string;
             };
         }>;
     }>;
@@ -47,7 +47,7 @@ const ImageLoader = {
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i,
 
     async install() {
-        return enabledContains("image_loader").then(res => {
+        return enabledContains("image_loader").then((res) => {
             if (res) processPostEvent.addHandler(ImageLoader.loadImages);
         });
     },
@@ -58,7 +58,7 @@ const ImageLoader = {
     },
 
     getMediaType(href) {
-        const isVideo = url => {
+        const isVideo = (url) => {
             if (
                 ImageLoader.imgurRegex.test(url) ||
                 ImageLoader.gfycatRegex.test(url) ||
@@ -70,18 +70,16 @@ const ImageLoader = {
                 return true;
             return false;
         };
-        const getImageUrl = url => {
+        const getImageUrl = (url) => {
             // change shackpics to chattypics
             let m;
             if (/shackpics\.com/.test(href)) {
                 url = url.replace(/shackpics\.com/, "chattypics.com");
-                if (/chattypics\.com\/viewer\.x/.test(url))
-                    url = url.replace(/viewer\.x/, "viewer.php");
+                if (/chattypics\.com\/viewer\.x/.test(url)) url = url.replace(/viewer\.x/, "viewer.php");
                 return url;
             }
             // change shackpics image page into image
-            else if (ImageLoader.chattypicsRegex1.test(url))
-                return url.replace(/viewer\.php\?file=/, "files/");
+            else if (ImageLoader.chattypicsRegex1.test(url)) return url.replace(/viewer\.php\?file=/, "files/");
             else if (ImageLoader.chattypicsRegex2.test(url)) return url.replace("http:", "https:");
             // force HTTPS Chattypics fetches
             // distinguish between twitter cdn types
@@ -95,7 +93,7 @@ const ImageLoader = {
             else if ((m = ImageLoader.imgRegex.exec(url)) !== null) return m[0] || url;
             return null;
         };
-        const isImage = url => {
+        const isImage = (url) => {
             // some urls don't end in jpeg/png/etc so the normal test won't work
             let src = getImageUrl(url);
             if (
@@ -115,28 +113,23 @@ const ImageLoader = {
         // left click only
         if (e.button == 0) {
             e.preventDefault();
-            let _expandoClicked =
-                e.target.classList !== undefined && objContains("expando", e.target.classList);
+            let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
             let link = _expandoClicked ? e.target.parentNode : e.target;
             let src;
             if (toggleMediaItem(link)) return;
             if (parsedPost && parsedPost.type === 2 && parsedPost.src) {
                 if (parsedPost.src.match(/imgur/)) ImageLoader.createImgur(link, postId, index);
-                else if (parsedPost.src.match(/gfycat/))
-                    ImageLoader.createGfycat(link, postId, index);
-                else if (parsedPost.src.match(/giphy/))
-                    ImageLoader.createGiphy(link, postId, index);
-                else if (parsedPost.src.match(/dropbox/))
-                    ImageLoader.createDropboxVid(link, postId, index);
-                else if (parsedPost.src.match(/tenor/))
-                    ImageLoader.createTenor(link, postId, index);
+                else if (parsedPost.src.match(/gfycat/)) ImageLoader.createGfycat(link, postId, index);
+                else if (parsedPost.src.match(/giphy/)) ImageLoader.createGiphy(link, postId, index);
+                else if (parsedPost.src.match(/dropbox/)) ImageLoader.createDropboxVid(link, postId, index);
+                else if (parsedPost.src.match(/tenor/)) ImageLoader.createTenor(link, postId, index);
                 else if ((src = ImageLoader.vidRegex.exec(link.href)) !== null) {
                     appendMedia({
                         src: [src[0]],
                         link,
                         postId,
                         index,
-                        type: { forceAppend: true }
+                        type: { forceAppend: true },
                     });
                 }
             } else if (parsedPost && parsedPost.type === 1 && parsedPost.src) {
@@ -145,7 +138,7 @@ const ImageLoader = {
                     link,
                     postId,
                     index,
-                    type: { forceAppend: true }
+                    type: { forceAppend: true },
                 });
             } else throw Error(`Could not parse the given image link: ${link.href}`);
         }
@@ -158,36 +151,31 @@ const ImageLoader = {
             link,
             postId,
             index,
-            type: { forceAppend: true }
+            type: { forceAppend: true },
         });
     },
 
     async createImgur(link, postId, index) {
-        const fetchImgur = url => {
+        const fetchImgur = (url) => {
             // sanitized in common.js!
             return fetchSafe({
                 url,
                 fetchOpts: {
-                    headers: { Authorization: "Client-ID c045579f61fc802" }
-                }
+                    headers: { Authorization: "Client-ID c045579f61fc802" },
+                },
             })
                 .then((response: ImgurResponse) => {
                     let _media = response && response.data;
                     let _items =
-                        response && Array.isArray(_media.images || _media)
-                            ? _media.images
-                            : _media.mp4 || _media.link;
+                        response && Array.isArray(_media.images || _media) ? _media.images : _media.mp4 || _media.link;
                     if (Array.isArray(_items) && _items.length > 0) {
                         let _media = [];
-                        for (let i of _items || []) {
-                            if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
-                        }
+                        for (let i of _items || []) if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
+
                         return _media;
-                    } else if (_items) {
-                        return [_items];
-                    }
+                    } else if (_items) return [_items];
                 })
-                .catch(err => console.log("Imgur resolution failure:", err.status || err));
+                .catch((err) => console.log("Imgur resolution failure:", err.status || err));
         };
 
         // resolve media shortcodes with failover (album-image > album > image)
@@ -197,10 +185,7 @@ const ImageLoader = {
         let imageHash = _matchShortcode && _matchShortcode[2];
         let _imageUrl = albumHash && !imageHash && `https://api.imgur.com/3/image/${albumHash}`;
         let _albumUrl = _imageUrl && _imageUrl.replace(/\/image\//, "/album/");
-        let _albumImageUrl =
-            imageHash &&
-            albumHash &&
-            `https://api.imgur.com/3/album/${albumHash}/image/${imageHash}`;
+        let _albumImageUrl = imageHash && albumHash && `https://api.imgur.com/3/album/${albumHash}/image/${imageHash}`;
 
         if (_matchShortcode) {
             // resolver priority: album-image > image > album
@@ -217,11 +202,9 @@ const ImageLoader = {
                     link,
                     postId,
                     index,
-                    type: { forceAppend: true }
+                    type: { forceAppend: true },
                 });
-            } else {
-                throw new Error(`Could not resolve Imgur shortcode from: ${link}`);
-            }
+            } else throw new Error(`Could not resolve Imgur shortcode from: ${link}`);
         }
     },
 
@@ -241,11 +224,9 @@ const ImageLoader = {
                             link,
                             postId,
                             index,
-                            type: { forceAppend: true }
+                            type: { forceAppend: true },
                         });
-                    } else {
-                        throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
-                    }
+                    } else throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
                 });
             } else {
                 // fallback to older XHR method for Firefox for this endpoint
@@ -258,21 +239,15 @@ const ImageLoader = {
                                 link,
                                 postId,
                                 index,
-                                type: { forceAppend: true }
+                                type: { forceAppend: true },
                             });
-                        } else {
-                            throw new Error(
-                                `Failed to get Gfycat object: ${link.href} = ${gfycat_id}`
-                            );
-                        }
+                        } else throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         console.log(err);
                     });
             }
-        } else {
-            console.log(`An error occurred parsing the Gfycat url: ${link.href}`);
-        }
+        } else console.log(`An error occurred parsing the Gfycat url: ${link.href}`);
     },
 
     createGiphy(link, postId, index) {
@@ -287,18 +262,16 @@ const ImageLoader = {
                 link,
                 postId,
                 index,
-                type: { forceAppend: true }
+                type: { forceAppend: true },
             });
-        } else {
-            console.log(`An error occurred parsing the Giphy url: ${link.href}`);
-        }
+        } else console.log(`An error occurred parsing the Giphy url: ${link.href}`);
     },
 
     async resolveTenor(mediaId) {
         let __obf = atob("UE9JODJZS1NWRENQ");
         if (mediaId) {
             let response: TenorResponse = await fetchSafe({
-                url: `https://api.tenor.com/v1/gifs?ids=${mediaId}&key=${__obf}&limit=1`
+                url: `https://api.tenor.com/v1/gifs?ids=${mediaId}&key=${__obf}&limit=1`,
             });
             let media = response && response.results[0].media[0].webm.url;
             return media;
@@ -317,23 +290,22 @@ const ImageLoader = {
                 link,
                 postId,
                 index,
-                type: { forceAppend: true }
+                type: { forceAppend: true },
             });
         } else if (_matchTenor && _matchTenor[2]) {
             // Tenor GIF (resolve to WEBM)
             let src = await ImageLoader.resolveTenor(_matchTenor[2]);
-            if (src)
+            if (src) {
                 appendMedia({
                     src,
                     link,
                     postId,
                     index,
-                    type: { forceAppend: true }
+                    type: { forceAppend: true },
                 });
-        } else {
-            console.log(`An error occurred parsing the Tenor url: ${link.href}`);
-        }
-    }
+            }
+        } else console.log(`An error occurred parsing the Tenor url: ${link.href}`);
+    },
 };
 
 export default ImageLoader;

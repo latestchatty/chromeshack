@@ -85,17 +85,16 @@ const NuLOLFix = {
             rootTagCounts &&
             rootTagCounts.length > 0 &&
             rootTagCounts[0].matches("span.user .tag-counts")
-        ) {
+        )
             rootAuthorLine.appendChild(rootTagCounts[0]);
-        }
+
         if (
             postAuthorLine &&
             postTagCounts &&
             postTagCounts.length > 0 &&
             postTagCounts[0].matches("span.user .tag-counts")
-        ) {
+        )
             postAuthorLine.appendChild(postTagCounts[0]);
-        }
     },
 };
 

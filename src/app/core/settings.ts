@@ -14,7 +14,7 @@ export const DefaultSettings = {
         "new_comment_highlighter",
         "highlight_users",
         "custom_user_filters",
-        "post_preview"
+        "post_preview",
     ],
 
     enabled_suboptions: ["cuf_hide_fullposts"],
@@ -28,13 +28,13 @@ export const DefaultSettings = {
             name: "Original Poster",
             enabled: true,
             built_in: true,
-            css: "font-weight: bold; color: yellow;"
+            css: "font-weight: bold; color: yellow;",
         },
         {
             name: "Mods",
             enabled: true,
             built_in: true,
-            css: "color: red !important;"
+            css: "color: red !important;",
         },
         {
             name: "Employees",
@@ -78,8 +78,8 @@ export const DefaultSettings = {
                 "beardedaxe",
                 "Crabs Jarrard",
                 "David Craddock",
-                "Charles Singletary Jr"
-            ]
+                "Charles Singletary Jr",
+            ],
         },
         {
             name: "Game Devs",
@@ -183,17 +183,17 @@ export const DefaultSettings = {
                 "robinchyo",
                 "Romsteady",
                 "drhazard", // Volition
-                "freakynipples69" // MindShaft
-            ]
+                "freakynipples69", // MindShaft
+            ],
         },
         {
             name: "Friends",
             enabled: true,
             built_in: false,
             css: "border: 1px dotted white !important;",
-            users: []
-        }
-    ]
+            users: [],
+        },
+    ],
 };
 
 /// GETTERS
@@ -207,21 +207,20 @@ export const getSetting = async (key, defaultVal?) => {
 export const getEnabled = async (key?) => {
     let enabled = (await getSetting("enabled_scripts")) || [];
     if (!key) return enabled;
-    return enabled && enabled.find(v => v === key);
+    return enabled && enabled.find((v) => v === key);
 };
 
 export const getEnabledSuboptions = async (key?) => {
     let enabled = (await getSetting("enabled_suboptions")) || [];
     if (!key) return enabled;
-    return enabled && enabled.find(v => v === key);
+    return enabled && enabled.find((v) => v === key);
 };
 
 export const getSettings = async () => {
     let settings = await browser.storage.local.get();
     if (common.isEmpty(settings))
-        return await browser.storage.local
-            .set(DefaultSettings)
-            .then(browser.storage.local.get);
+        return await browser.storage.local.set(DefaultSettings).then(browser.storage.local.get);
+
     return settings;
 };
 
@@ -230,44 +229,38 @@ export const getSettingsLegacy = () => {
     for (let key of Object.keys(settings) || []) {
         if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
             settings[key] = JSON.parse(settings[key]);
-        else if (!isNaN(parseFloat(JSON.parse(settings[key]))))
-            settings[key] = parseFloat(JSON.parse(settings[key]));
+        else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
         else settings[key] = JSON.parse(settings[key]);
     }
     return settings;
 };
 
 export const getMutableHighlights = async () => {
-    return (await getSetting("highlight_groups")).filter(
-        x => !x.built_in && x.users
-    );
+    return (await getSetting("highlight_groups")).filter((x) => !x.built_in && x.users);
 };
 
 /// SETTERS
 
-export const setEnabled = async key => {
+export const setEnabled = async (key) => {
     let scripts = (await getEnabled()) || [];
     if (!scripts.includes(key) && key.length > 0) scripts.push(key);
     return await setSetting("enabled_scripts", scripts);
 };
 
-export const setEnabledSuboption = async key => {
+export const setEnabledSuboption = async (key) => {
     let options = (await getEnabledSuboptions()) || [];
     if (!options.includes(key) && key.length > 0) options.push(key);
     return await setSetting("enabled_suboptions", options);
 };
 
-export const setSetting = async (key, val) =>
-    await browser.storage.local.set({ [key]: val });
+export const setSetting = async (key, val) => await browser.storage.local.set({ [key]: val });
 
-export const setSettings = async obj => await browser.storage.local.set(obj);
+export const setSettings = async (obj) => await browser.storage.local.set(obj);
 
 export const setHighlightGroup = async (groupName, obj) => {
     // for overwriting a specific highlight group by name
     let records = await getSetting("highlight_groups");
-    let indexMatch = records.findIndex(
-        x => x.name.toLowerCase() === groupName.toLowerCase()
-    );
+    let indexMatch = records.findIndex((x) => x.name.toLowerCase() === groupName.toLowerCase());
     // overwrite at index if applicable (append otherwise)
     if (indexMatch > -1) records[indexMatch] = obj;
     else records.push(obj);
@@ -276,97 +269,76 @@ export const setHighlightGroup = async (groupName, obj) => {
 
 /// REMOVERS
 
-export const removeEnabled = async key => {
+export const removeEnabled = async (key) => {
     let scripts = (await getEnabled()) || [];
-    scripts = scripts.filter(x => x !== key);
+    scripts = scripts.filter((x) => x !== key);
     return await setSetting("enabled_scripts", scripts);
 };
 
-export const removeEnabledSuboption = async key => {
+export const removeEnabledSuboption = async (key) => {
     let options = (await getEnabledSuboptions()) || [];
-    options = options.filter(x => x !== key);
+    options = options.filter((x) => x !== key);
     return await setSetting("enabled_suboptions", options);
 };
 
-export const removeSetting = key => browser.storage.local.remove(key);
+export const removeSetting = (key) => browser.storage.local.remove(key);
 
 export const resetSettings = () => browser.storage.local.clear();
 
-export const removeHighlightGroup = async groupName => {
+export const removeHighlightGroup = async (groupName) => {
     // for removing a highlight group while preserving record order
-    let result = (await getSetting("highlight_groups")).filter(
-        x => x.name !== groupName
-    );
+    let result = (await getSetting("highlight_groups")).filter((x) => x.name !== groupName);
     // return the new records Promise from the store
-    return setSetting("highlight_groups", result).then(
-        await getSetting("highlight_groups")
-    );
+    return setSetting("highlight_groups", result).then(await getSetting("highlight_groups"));
 };
 
 export const removeHighlightUser = async (groupName, username) => {
-    let group = (await getSetting("highlight_groups")).filter(
-        x => x.name === groupName
-    );
+    let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
     group = group.length > 0 ? group[0] : null;
     if (group) {
-        let mutated = group.users.filter(
-            x =>
-                x &&
-                x.toLowerCase() !== common.superTrim(username.toLowerCase())
-        );
+        let mutated = group.users.filter((x) => x && x.toLowerCase() !== common.superTrim(username.toLowerCase()));
         group.users = mutated;
         return await setHighlightGroup(group.name, group);
     }
 };
 
-export const removeFilter = async username => {
-    let mutated = (await getSetting("user_filters")).filter(
-        y => y.toLowerCase() !== username.toLowerCase()
-    );
+export const removeFilter = async (username) => {
+    let mutated = (await getSetting("user_filters")).filter((y) => y.toLowerCase() !== username.toLowerCase());
     await setSetting("user_filters", mutated);
 };
 
 /// CONTAINERS
 
-export const settingsContains = async key =>
-    common.objContains(key, await getSettings());
+export const settingsContains = async (key) => common.objContains(key, await getSettings());
 
-export const enabledContains = async key => {
+export const enabledContains = async (key) => {
     let enabled = await getEnabled();
     return enabled ? enabled.includes(key) : false;
 };
 
-export const highlightsContains = async username => {
+export const highlightsContains = async (username) => {
     // return all group matches based on username
-    return (await getMutableHighlights()).filter(x =>
-        x.users.find(
-            y => y.toLowerCase() === common.superTrim(username.toLowerCase())
-        )
+    return (await getMutableHighlights()).filter((x) =>
+        x.users.find((y) => y.toLowerCase() === common.superTrim(username.toLowerCase())),
     );
 };
 
 export const highlightGroupContains = async (groupName, username) => {
     let groups = await highlightsContains(username);
-    if (groups.length > 0)
-        for (let group of groups || [])
-            if (group.name === groupName) return group;
+    if (groups.length > 0) for (let group of groups || []) if (group.name === groupName) return group;
     return false;
 };
 
-export const filtersContains = async username => {
+export const filtersContains = async (username) => {
     return (
         (await getSetting("user_filters")).find(
-            x =>
-                x &&
-                x.toLowerCase() === common.superTrim(username.toLowerCase())
+            (x) => x && x.toLowerCase() === common.superTrim(username.toLowerCase()),
         ) || false
     );
 };
 
 export const addHighlightUser = async (groupName, username) => {
-    let group = (await getSetting("highlight_groups")).filter(
-        x => x.name === groupName
-    );
+    let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
     group = group.length > 0 ? group[0] : null;
     if (group) {
         let mutated = [...group.users, username];
@@ -375,7 +347,7 @@ export const addHighlightUser = async (groupName, username) => {
     }
 };
 
-export const addFilter = async username => {
+export const addFilter = async (username) => {
     if (!(await filtersContains(username))) {
         let mutated = [...(await getSetting("user_filters")), username];
         await setSetting("user_filters", mutated);

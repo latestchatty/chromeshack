@@ -206,17 +206,13 @@ const ImageUploader = {
         dropArea.addEventListener("drop", (e: DropEvent) => {
             e.preventDefault();
             let files = e.dataTransfer.items;
-            if (inputIsImageList(files)) {
-                loadFileData(files);
-            }
+            if (inputIsImageList(files)) loadFileData(files);
         });
         let uploadInput = template[0].querySelector("#fileUploadInput");
         uploadInput.addEventListener("change", (e) => {
             let this_chooser = <HTMLInputElement>e.target;
             let files: FileList = this_chooser.files;
-            if (inputIsImageList(files)) {
-                loadFileData(files);
-            }
+            if (inputIsImageList(files)) loadFileData(files);
         });
 
         $(template)
@@ -362,9 +358,7 @@ const ImageUploader = {
             if (files.length > 0) {
                 for (let i = 0; i < files.length; i++) {
                     // break and return false if any are not images
-                    if (!/image/.test(files[i].type)) {
-                        return false;
-                    }
+                    if (!/image/.test(files[i].type)) return false;
                 }
             }
 
@@ -373,35 +367,37 @@ const ImageUploader = {
 
         // shortcuts for uploader element state toggling
         function toggleDragOver(state) {
-            if (state == 0)
+            if (state == 0) {
                 $(item)
                     .find("#uploadDropArea")
                     .removeClass("dragOver");
-            else if (state == 1)
+            } else if (state == 1) {
                 $(item)
                     .find("#uploadDropArea")
                     .removeClass("dragOver")
                     .addClass("dragOver");
+            }
         }
         function toggleUrlBox(state) {
-            if (state == 0)
+            if (state == 0) {
                 $(item)
                     .find("#urlUploadInput")
                     .removeClass("hidden")
                     .addClass("hidden");
-            else if (state == 1)
+            } else if (state == 1) {
                 $(item)
                     .find("#urlUploadInput")
                     .removeClass("hidden");
-            else if (state == 3)
+            } else if (state == 3) {
                 $(item)
                     .find("#urlUploadInput")
                     .removeClass("valid");
-            else if (state == 4)
+            } else if (state == 4) {
                 $(item)
                     .find("#urlUploadInput")
                     .removeClass("valid")
                     .addClass("valid");
+            }
         }
         function toggleSnippetControls(state, wipe?) {
             if (wipe) {
@@ -452,26 +448,28 @@ const ImageUploader = {
             }
         }
         function toggleContextLine(state) {
-            if (state == 0)
+            if (state == 0) {
                 $(item)
                     .find(".contextLine")
                     .removeClass("hidden")
                     .addClass("hidden");
-            else if (state == 1)
+            } else if (state == 1) {
                 $(item)
                     .find(".contextLine")
                     .removeClass("hidden");
+            }
         }
         function toggleStatusLabel(state) {
-            if (state == 0)
+            if (state == 0) {
                 $(item)
                     .find("#uploadStatusLabel")
                     .removeClass("muted")
                     .addClass("muted");
-            else if (state == 1)
+            } else if (state == 1) {
                 $(item)
                     .find("#uploadStatusLabel")
                     .removeClass("muted");
+            }
         }
         // end shortcuts for uploader element toggling
 
@@ -723,9 +721,8 @@ const ImageUploader = {
             let fd = new FormData();
             if (isChattyPics) {
                 // Chattypics prefers php array format
-                for (let file of filesList) {
-                    fd.append("userfile[]", file);
-                }
+                for (let file of filesList) fd.append("userfile[]", file);
+
                 doChattyPicsUpload(fd);
             } else if (isImgur) {
                 fd.append("type", "file");
@@ -897,9 +894,8 @@ const ImageUploader = {
                         `${json.code} = ${json.errorMessage.description}`,
                         5000,
                     );
-                } else if (json.task == "NotFoundo") {
-                    delayedRemoveUploadMessage("red", "Failure!", null, 3000);
-                }
+                } else if (json.task == "NotFoundo") delayedRemoveUploadMessage("red", "Failure!", null, 3000);
+
                 console.log(`Gfycat endpoint error: ${json}`);
                 return true;
             }
@@ -915,14 +911,10 @@ const ImageUploader = {
                 .removeClass("hidden");
             statusLabel.css("color", color);
             statusLabelDetail.css("color", color);
-            if (spin) {
-                statusLabel.removeClass("spinner").addClass("spinner");
-            }
+            if (spin) statusLabel.removeClass("spinner").addClass("spinner");
 
             statusLabel.text(message);
-            if (detailMsg != undefined && detailMsg.length > 0) {
-                statusLabelDetail.text(detailMsg);
-            }
+            if (detailMsg != undefined && detailMsg.length > 0) statusLabelDetail.text(detailMsg);
         }
 
         function removeUploadMessage(value?) {

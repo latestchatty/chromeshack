@@ -10,14 +10,14 @@ const SparklyComic = {
     userMatch: null,
 
     async install() {
-        return enabledContains("sparkly_comic").then(res => {
+        return enabledContains("sparkly_comic").then((res) => {
             if (res) processPostEvent.addHandler(SparklyComic.installComic);
         });
     },
 
     installComic(item, id) {
         let fullpost = item.querySelector("div.fullpost");
-        SparklyComic.userMatch = HU_Instance.resolveUsers().filter(x => x.name === "sparkly")[0];
+        SparklyComic.userMatch = HU_Instance.resolveUsers().filter((x) => x.name === "sparkly")[0];
         // we have a fullpost, and its className contains sparkly's user id
         if (
             fullpost &&
@@ -41,7 +41,7 @@ const SparklyComic = {
                 let panel = document.createElement("div");
                 panel.className = "panel";
                 panel.style.backgroundImage = `url("${browser.runtime.getURL(
-                    "../images/sparkly/" + SparklyComic.getImage(lines[i], i, max)
+                    "../images/sparkly/" + SparklyComic.getImage(lines[i], i, max),
                 )}")`;
                 let s = document.createElement("span");
                 safeInnerHTML(lines[i], s);
@@ -66,7 +66,7 @@ const SparklyComic = {
         if (i === count - 1) return "sparkly3.jpg";
         // default sparkly
         return "sparkly1.jpg";
-    }
+    },
 };
 
 export default SparklyComic;

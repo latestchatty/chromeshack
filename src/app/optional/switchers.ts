@@ -14,13 +14,13 @@ const Switchers = {
         { old: "The Grolar Bear", new: "The Gorilla Bear" },
         { old: "jingletard", new: "Jingletardigrade" },
         { old: "ArB", new: "jingleArB" },
-        { old: "Rigor Morts", new: "dewhickey" }
+        { old: "Rigor Morts", new: "dewhickey" },
     ],
 
     resolved: [],
 
     async install() {
-        return enabledContains("switchers").then(res => {
+        return enabledContains("switchers").then((res) => {
             if (res) {
                 Switchers.cacheSwitchers();
                 processPostEvent.addHandler(Switchers.loadSwitchers);
@@ -35,15 +35,16 @@ const Switchers = {
             for (let offender of Switchers.offenders) {
                 let matchedOld = offender.old.toLowerCase() === user.name.toLowerCase();
                 let matchedNew = offender.new.toLowerCase() === user.name.toLowerCase();
-                if (matchedOld || matchedNew)
+                if (matchedOld || matchedNew) {
                     Switchers.resolved = [
                         ...Switchers.resolved,
                         {
                             id: user.id,
                             name: user.name,
-                            matched: matchedNew ? offender.old : offender.new
-                        }
+                            matched: matchedNew ? offender.old : offender.new,
+                        },
                     ];
+                }
             }
         }
     },
@@ -53,8 +54,7 @@ const Switchers = {
             let offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
             let offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
             let offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (let post of offenderPosts)
-                Switchers.rewritePost(post, offender.name, offender.matched);
+            for (let post of offenderPosts) Switchers.rewritePost(post, offender.name, offender.matched);
         }
     },
 
@@ -66,10 +66,8 @@ const Switchers = {
         else if (alt_span) alt_span.firstChild.textContent = newName;
         // Switchers don't deserve flair icons
         let user_icons = post.querySelectorAll("img.chatty-user-icons");
-        for (let icon of user_icons || []) {
-            icon.setAttribute("style", "display: none !important;");
-        }
-    }
+        for (let icon of user_icons || []) icon.setAttribute("style", "display: none !important;");
+    },
 };
 
 export default Switchers;

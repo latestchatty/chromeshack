@@ -6,7 +6,7 @@ import {
     addHighlightUser,
     removeHighlightUser,
     enabledContains,
-    getMutableHighlights
+    getMutableHighlights,
 } from "../core/settings";
 import { superTrim } from "../core/common";
 
@@ -35,7 +35,7 @@ const UserPopup = {
     toggleDropdowns(targetElem?) {
         const targetDD = targetElem ? targetElem.querySelector("ul.userDropdown") : null;
         let userDDs = [...document.querySelectorAll("ul.userDropdown")];
-        userDDs = userDDs.filter(x => x !== targetDD);
+        userDDs = userDDs.filter((x) => x !== targetDD);
         // toggle our targeted dropdown if it exists
         if (targetDD) UserPopup.toggleDropdown(targetDD);
         // hide all other dropdowns if clicking outside of their boundary
@@ -51,7 +51,7 @@ const UserPopup = {
         let li = document.createElement("li");
         if (className) li.className = className;
         // Prevent menu clicks from bubbling up
-        a.addEventListener("click", e => {
+        a.addEventListener("click", (e) => {
             e.stopPropagation();
         });
         li.appendChild(a);
@@ -99,11 +99,9 @@ const UserPopup = {
                 let filtersHas = await filtersContains(username);
                 let filterCustomItem = UserPopup.createFilterListItem(
                     `${filtersHas ? "Remove from" : "Add to"} Custom Filters`,
-                    "userDropDown-custom-filter"
+                    "userDropDown-custom-filter",
                 );
-                filterCustomItem.addEventListener("click", e =>
-                    UserPopup.handleFilterUser(e, username)
-                );
+                filterCustomItem.addEventListener("click", (e) => UserPopup.handleFilterUser(e, username));
                 container.appendChild(filterCustomItem);
             }
             if (await enabledContains("highlight_users")) {
@@ -111,13 +109,11 @@ const UserPopup = {
                 for (let group of highlightGroups || []) {
                     let groupContainsUser = await highlightGroupContains(group.name, username);
                     let filterHighlightsItem = UserPopup.createFilterListItem(
-                        `${groupContainsUser ? "Remove from" : "Add to"} Highlights Group: ${
-                            group.name
-                        }`,
-                        "userDropdown-highlights"
+                        `${groupContainsUser ? "Remove from" : "Add to"} Highlights Group: ${group.name}`,
+                        "userDropdown-highlights",
                     );
-                    filterHighlightsItem.addEventListener("click", e =>
-                        UserPopup.handleHighlightUser(e, group.name, username)
+                    filterHighlightsItem.addEventListener("click", (e) =>
+                        UserPopup.handleHighlightUser(e, group.name, username),
                     );
                     container.appendChild(filterHighlightsItem);
                 }
@@ -131,7 +127,7 @@ const UserPopup = {
         let ulUserDD = parentObj.querySelector("ul.userDropdown");
         if (!ulUserDD) {
             // Create UL that will house the dropdown menu
-            var ulUser = document.createElement("ul");
+            let ulUser = document.createElement("ul");
             ulUser.className = "userDropdown";
             // Scrub username
             let usernameTxt = encodeURIComponent(username);
@@ -141,11 +137,7 @@ const UserPopup = {
                 var parentAuthor = "Parent Author Search";
                 // Add the account link to the dropdown menu
                 ulUser.appendChild(
-                    UserPopup.createListItem(
-                        "Shack Account",
-                        "/settings",
-                        "userDropdown-lol userDropdown-separator"
-                    )
+                    UserPopup.createListItem("Shack Account", "/settings", "userDropdown-lol userDropdown-separator"),
                 );
             } else {
                 your = friendlyName + "'s";
@@ -167,37 +159,35 @@ const UserPopup = {
                 "https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=" +
                 usernameTxt +
                 "&chatty_filter=all&result_sort=postdate_desc";
-            ulUser.appendChild(
-                UserPopup.createListItem(parentAuthor, repliesUrl, "userDropdown-separator")
-            );
+            ulUser.appendChild(UserPopup.createListItem(parentAuthor, repliesUrl, "userDropdown-separator"));
             const wasWere = friendlyName === "You" ? "Were" : "Was";
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : Stuff " + friendlyName + " Wrote",
                     "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#authored_by_tab",
-                    "userDropdown-lol"
-                )
+                    "userDropdown-lol",
+                ),
             );
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : Stuff " + friendlyName + " Tagged",
                     "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#lold_by_tab",
-                    "userDropdown-lol"
-                )
+                    "userDropdown-lol",
+                ),
             );
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : " + your + " Fan Train",
                     "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#fan_club_tab",
-                    "userDropdown-lol"
-                )
+                    "userDropdown-lol",
+                ),
             );
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : " + wasWere + " " + friendlyName + " Ever Funny?",
                     "https://www.shacknews.com/tags-ever-funny?user=" + usernameTxt,
-                    "userDropdown-lol"
-                )
+                    "userDropdown-lol",
+                ),
             );
             // Add ulUser to the page
             parentObj.appendChild(ulUser);
@@ -206,14 +196,12 @@ const UserPopup = {
 
     install() {
         // Add catch-all event handlers for creating user dropdown menus
-        document.addEventListener("click", async e => {
+        document.addEventListener("click", async (e) => {
             // try to eat exceptions that are typically harmless
             try {
                 let this_elem = <HTMLElement>e.target;
                 let this_parent = <HTMLElement>this_elem.parentNode;
-                let sanitizedUser =
-                    this_parent.matches("span.user") &&
-                    superTrim(this_elem.innerText.split(" - ")[0]);
+                let sanitizedUser = this_parent.matches("span.user") && superTrim(this_elem.innerText.split(" - ")[0]);
                 // Post author clicked
                 if (this_parent.matches("span.user:not(.this-user)") && this_elem.matches("a")) {
                     e.preventDefault();
@@ -238,12 +226,8 @@ const UserPopup = {
                     UserPopup.toggleDropdowns(e.target);
                     if (!this_elem.querySelector("ul.userDropdown"))
                         UserPopup.displayUserMenu(this_elem, UserPopup.getShackUsername(), "You");
-                } else if (
-                    !this_elem.closest("ul.userDropdown") ||
-                    !this_elem.matches("a#userDropdownTrigger")
-                ) {
+                } else if (!this_elem.closest("ul.userDropdown") || !this_elem.matches("a#userDropdownTrigger"))
                     UserPopup.toggleDropdowns();
-                }
             } catch (e) {
                 console.log(e);
             }
@@ -251,12 +235,10 @@ const UserPopup = {
 
         if (UserPopup.getShackUsername()) {
             // Add custom dropdown stuff to the Account button
-            let $account = document.querySelector(
-                "header .header-bottom .tools ul li a[href='/settings']"
-            );
+            let $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
             $account.setAttribute("id", "userDropdownTrigger");
         }
-    }
+    },
 };
 
 export default UserPopup;

@@ -20,10 +20,10 @@ const EmojiPoster = {
             _postBtn.parentNode.replaceChild(_clonedPostBtn, _postBtn);
 
             // monkeypatch the submit and click events
-            ["click", "submit"].forEach(evt => {
+            ["click", "submit"].forEach((evt) => {
                 document.addEventListener(
                     evt,
-                    e => {
+                    (e) => {
                         const this_elem = <HTMLElement>e.target;
                         if (this_elem.matches("#frm_submit")) {
                             // block any remaining attached listeners
@@ -37,7 +37,7 @@ const EmojiPoster = {
                             }
                         }
                     },
-                    true
+                    true,
                 );
             });
 
@@ -52,10 +52,7 @@ const EmojiPoster = {
     },
 
     handleSubmit(postText) {
-        if (
-            EmojiPoster.countText(postText) > 5 ||
-            EmojiPoster.countAstrals(postText).astralsCount > 0
-        ) {
+        if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText).astralsCount > 0) {
             // normal post (either a single astral or some text)
             $("#frm_submit")
                 .attr("disabled", "disabled")
@@ -65,7 +62,7 @@ const EmojiPoster = {
                 $("#frm_submit")
                     .closest("div.root > ul > li")
                     .first()
-                    .attr("id")
+                    .attr("id"),
             ]);
             return false;
         } else {
@@ -79,10 +76,10 @@ const EmojiPoster = {
         // credit: Mathias Bynens (https://github.com/mathiasbynens/he)
         let _matchAstrals = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
         let _matchBMPs = /[\x01-\t\x0B\f\x0E-\x1F\x7F\x81\x8D\x8F\x90\x9D\xA0-\uFFFF]/g;
-        const escapeCP = codePoint => `&#x${codePoint.toString(16).toUpperCase()};`;
-        const escapeBmp = symbol => escapeCP(symbol.charCodeAt(0));
+        const escapeCP = (codePoint) => `&#x${codePoint.toString(16).toUpperCase()};`;
+        const escapeBmp = (symbol) => escapeCP(symbol.charCodeAt(0));
         return text
-            .replace(_matchAstrals, $0 => {
+            .replace(_matchAstrals, ($0) => {
                 let _high = $0.charCodeAt(0);
                 let _low = $0.charCodeAt(1);
                 let _cp = (_high - 0xd800) * 0x400 + _low - 0xdc00 + 0x10000;
@@ -105,7 +102,7 @@ const EmojiPoster = {
         let _astralTextLen = _astrals ? _astrals.reduce((t, v) => t + v.length, 0) : 0;
         // should return true text length of encoded entities with padding
         return { astralsLen: _astralTextLen, astralsCount: _astralCount };
-    }
+    },
 };
 
 export default EmojiPoster;

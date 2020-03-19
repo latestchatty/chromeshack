@@ -32,7 +32,7 @@ const Collapse = {
             let show = post.querySelector("a.showpost");
             document.addEventListener("click", Collapse.collapseHandler);
             // check if thread should be collapsed
-            getSetting("collapsed_threads").then(collapsed => {
+            getSetting("collapsed_threads").then((collapsed) => {
                 if (objContains(id, collapsed)) {
                     root.classList.add("collapsed");
                     close.setAttribute("class", "closepost hidden");
@@ -58,7 +58,7 @@ const Collapse = {
                 processRefreshIntentEvent.raise(postId, rootId);
             }
         }
-    }
+    },
 };
 
 export default Collapse;

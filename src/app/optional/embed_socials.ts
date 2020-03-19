@@ -152,9 +152,8 @@ let EmbedSocials = {
                         result.push({ type: "video", url: vidItem.url });
                         break; // bail on the first match (highest res)
                     }
-                } else if (item.type === "photo" && item.media_url_https) {
+                } else if (item.type === "photo" && item.media_url_https)
                     result.push({ type: "photo", url: item.media_url_https });
-                }
             });
             return result;
         };
@@ -192,7 +191,7 @@ let EmbedSocials = {
                 timestamp: new Date(Date.parse(response.created_at)).toLocaleString(),
                 userVerified: response.user.verified,
             };
-            if (response.quoted_status)
+            if (response.quoted_status) {
                 result = {
                     ...result,
                     tweetQuoted: {
@@ -205,6 +204,7 @@ let EmbedSocials = {
                             : [],
                     },
                 };
+            }
             if (response.in_reply_to_status_id_str)
                 result = { ...result, tweetParentId: response.in_reply_to_status_id_str };
         } else result = { unavailable: true };
@@ -340,9 +340,9 @@ let EmbedSocials = {
             });
             quotedMediaParent.appendChild(mediaContainer);
             quotedMediaParent.classList.remove("hidden");
-        } else if (tweetObj.tweetQuoted) {
+        } else if (tweetObj.tweetQuoted)
             templateElem.querySelector("#twitter-quote-content").classList.remove("hidden");
-        }
+
         return templateElem;
     },
 
@@ -352,9 +352,7 @@ let EmbedSocials = {
     async createInstagram(parentLink, socialId, postId, index) {
         // if we have an instagram postId use it to toggle our element rather than query
         let _target = parentLink.parentNode.querySelector(`#instgrm-container_${postId}-${index}`);
-        if (_target) {
-            return _target.classList.toggle("hidden");
-        }
+        if (_target) return _target.classList.toggle("hidden");
 
         let _instgrmObj = await EmbedSocials.fetchInstagramData(socialId);
         let _template = EmbedSocials.renderInstagram(_instgrmObj, parentLink, postId, index);
@@ -372,11 +370,9 @@ let EmbedSocials = {
                         collector.push(response.video_url ? response.video_url : response.display_resources[0].src);
                     });
                 });
-            } else if (parsedGQL.__typename === "GraphVideo") {
-                collector.push(parsedGQL.video_url);
-            } else if (parsedGQL.__typename === "GraphImage") {
-                collector.push(parsedGQL.display_resources[0].src);
-            }
+            } else if (parsedGQL.__typename === "GraphVideo") collector.push(parsedGQL.video_url);
+            else if (parsedGQL.__typename === "GraphImage") collector.push(parsedGQL.display_resources[0].src);
+
             return collector;
         };
         const tagifyInstgrmContent = (text) => {
@@ -493,9 +489,7 @@ let EmbedSocials = {
             _mediaContainer.classList.add("instgrm-embed");
             _embedTarget.appendChild(_mediaContainer);
             return fragment;
-        } else {
-            throw Error(`Something went wrong when constructing Instagram template for: ${parentLink}`);
-        }
+        } else throw Error(`Something went wrong when constructing Instagram template for: ${parentLink}`);
     },
 };
 

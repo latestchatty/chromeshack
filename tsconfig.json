@@ -1,12 +1,9 @@
 {
     "compilerOptions": {
-        "allowSyntheticDefaultImports": true,
-        "sourceMap": true,
-        "target": "esnext",
+        "target": "es2018",
+        "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
         "module": "commonjs",
-        "jsx": "react"
+        "sourceMap": true
     },
-    "exclude": ["node_modules"],
-    "presets": ["@babel/env", "@babel/typescript"],
-    "plugins": ["@babel/proposal-class-properties"]
+    "exclude": ["node_modules"]
 }

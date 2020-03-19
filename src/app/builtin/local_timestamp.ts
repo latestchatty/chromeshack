@@ -37,15 +37,11 @@ const LocalTimeStamp = {
             timestamp.innerText = nuTime;
 
             // remove only text child of postdate
-            for (let c of elm.childNodes) {
-                if (c.nodeType === 3) {
-                    c.remove();
-                }
-            }
+            for (let c of elm.childNodes) if (c.nodeType === 3) c.remove();
 
             if (!elm.querySelector("#local-time")) elm.appendChild(timestamp);
         }
-    }
+    },
 };
 
 export default LocalTimeStamp;

@@ -8,7 +8,7 @@ const HighlightUsers = {
     cache: [],
 
     install() {
-        enabledContains("highlight_users").then(res => {
+        enabledContains("highlight_users").then((res) => {
             if (res) {
                 fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
                 // refresh our styling state when refreshing a post
@@ -31,7 +31,7 @@ const HighlightUsers = {
             let name = i[2] && i[2].split(" - ")[0];
             let mod = !!i[3];
             // only include unique ids (can be the same username)
-            if (!uniques.find(v => v.id === id)) uniques.push({ id, name, mod });
+            if (!uniques.find((v) => v.id === id)) uniques.push({ id, name, mod });
         }
         HighlightUsers.cache = uniques.flat();
         return HighlightUsers.cache;
@@ -41,9 +41,8 @@ const HighlightUsers = {
         let css = "";
         for (let group of groups || []) {
             if (group.enabled) {
-                if (group.name === "Original Poster") {
-                    css += `div.oneline.op span.oneline_user { ${group.css} }`;
-                } else if (group.name === "Mods") {
+                if (group.name === "Original Poster") css += `div.oneline.op span.oneline_user { ${group.css} }`;
+                else if (group.name === "Mods") {
                     for (let { id, mod } of users) {
                         if (mod)
                             css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
@@ -63,11 +62,11 @@ const HighlightUsers = {
 
     applyFilter() {
         // we just need to run this once per page
-        return getSetting("highlight_groups").then(async groups => {
+        return getSetting("highlight_groups").then(async (groups) => {
             let users = await HighlightUsers.resolveUsers();
             HighlightUsers.gatherCSS(users, groups);
         });
-    }
+    },
 };
 
 export default HighlightUsers;

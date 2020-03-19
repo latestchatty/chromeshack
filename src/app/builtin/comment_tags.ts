@@ -63,7 +63,7 @@ const CommentTags = {
         let button = code_td.appendChild(document.createElement("a"));
         button.appendChild(document.createTextNode(opening_tag + "..." + closing_tag));
         button.href = "#";
-        button.addEventListener("click", e => {
+        button.addEventListener("click", (e) => {
             CommentTags.insertCommentTag(name, opening_tag, closing_tag);
             e.preventDefault();
         });
@@ -118,7 +118,7 @@ const CommentTags = {
 
         textarea.focus();
         textarea.scrollTop = scrollPosition;
-    }
+    },
 };
 
 export default CommentTags;

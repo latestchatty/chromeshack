@@ -4,7 +4,7 @@ import * as common from "./core/common";
 import * as settings from "./core/settings";
 
 interface Notification {
-    error?: Object;
+    error?: object;
     code?: string;
     messages?: [];
 }
@@ -164,21 +164,19 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                 code: `window.monkeyPatchCVF === undefined`,
             })
             .then((res) => {
-                if (res) {
-                    browser.tabs.executeScript({ file: "patches/chatViewFix.js" });
-                }
+                if (res) browser.tabs.executeScript({ file: "patches/chatViewFix.js" });
             })
             .catch((err) => console.log(err.message ? err.message : err));
     } else if (request.name === "scrollByKeyFix") {
         // scroll-by-key fix for Chatty
         return browser.tabs.executeScript(null, { file: "patches/scrollByKeyFix.js" }).catch((err) => console.log(err));
-    } else if (request.name === "corbFetch")
+    } else if (request.name === "corbFetch") {
         return common.fetchSafe({
             url: request.url,
             fetchOpts: request.fetchOpts,
             parseType: request.parseType,
         });
-    else if (request.name === "corbPost") {
+    } else if (request.name === "corbPost") {
         let _fd = await common.JSONToFormData(request.data);
         return new Promise((resolve, reject) => {
             return common

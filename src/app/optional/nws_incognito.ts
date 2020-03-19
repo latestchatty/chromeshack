@@ -31,24 +31,24 @@ const NwsIncognito = {
                 $(cloned).click((e) => {
                     // Note to reviewers: please refer to the top of this file for explanation
                     browser.runtime.sendMessage({ name: "allowedIncognitoAccess" }).then((result) => {
-                        if (!window.chrome && !result)
+                        if (!window.chrome && !result) {
                             alert(
                                 'This feature will not work unless you enable "Run in Private Windows" in the Chrome Shack addon settings for Firefox!',
                             );
+                        }
                         browser.runtime.sendMessage({ name: "launchIncognito", value: e.target.href });
                     });
                     return false;
                 });
 
                 // prevent reapplying
-                if (cloned.innerHTML.indexOf(" (Incognito)") == -1) {
-                    cloned.innerHTML += " (Incognito)";
-                }
+                if (cloned.innerHTML.indexOf(" (Incognito)") == -1) cloned.innerHTML += " (Incognito)";
+
                 $(links[iLink]).replaceWith(cloned);
 
                 // remove expando buttons for Incognito mode
                 let expando = links[iLink].querySelector("div.expando");
-                if (!!expando) expando.parentNode.removeChild(expando);
+                if (expando) expando.parentNode.removeChild(expando);
             }
         }
     },

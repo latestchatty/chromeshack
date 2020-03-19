@@ -21,7 +21,7 @@ const ChattyNews = {
             // cache each successful fetch for 15 minutes
             rss = await common.fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
-                parseType: { chattyRSS: true }
+                parseType: { chattyRSS: true },
             });
             await settings.setSetting("chatty_news_lastfetchdata", rss);
             //console.log("Refreshed ChattyNews cache:", rss);
@@ -45,7 +45,7 @@ const ChattyNews = {
     },
 
     install() {
-        settings.enabledContains("chatty_news").then(async res => {
+        settings.enabledContains("chatty_news").then(async (res) => {
             if (res) {
                 if (document.querySelector("div.chatty-news")) return;
                 let articleBox = document.querySelector(".article-body p:first-child");
@@ -62,7 +62,7 @@ const ChattyNews = {
                 articleBox.appendChild(newsBox);
             }
         });
-    }
+    },
 };
 
 export default ChattyNews;
