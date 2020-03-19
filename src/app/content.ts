@@ -8,6 +8,7 @@ import LocalTimeStamp from "./builtin/local_timestamp";
 import UserPopup from "./builtin/userpopup";
 import ImageUploader from "./builtin/image_uploader";
 import NuLOLFix from "./builtin/nulol_refresh_fix";
+import CodeTagFix from "./builtin/codetagfix";
 
 import ChattyNews from "./optional/chatty-news";
 import HighlightUsers from "./optional/highlight_users";
@@ -37,6 +38,7 @@ import "../styles/two_pane.css";
 // save some important refs for later
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
+export const TP_Instance = ThreadPane;
 
 Promise.all([
     // optional modules that rely on toggles
@@ -53,7 +55,7 @@ Promise.all([
     NewCommentHighlighter.install(),
     PostPreview.install(),
     EmbedSocials.install(),
-    ThreadPane.install(),
+    TP_Instance.install(),
 ]).then(() => {
     PostStyling.install();
     PostLengthCounter.install();
@@ -65,6 +67,7 @@ Promise.all([
     ImageUploader.install();
     UserPopup.install();
     NuLOLFix.install();
+    CodeTagFix.install();
     // always make sure the ChromeShack event observer is last
     CS_Instance.install();
 });

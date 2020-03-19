@@ -22,7 +22,7 @@ a.pin_button {
     width: 99%;
     overflow-y: auto;
 }
-#previewArea pre.codeblock {
+pre.codeblock {
     display: block;
     font-family: monospace;
     border-left: 1px solid #666;
