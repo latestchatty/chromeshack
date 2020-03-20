@@ -8,6 +8,7 @@ import { HU_Instance } from "../content";
 
 const Switchers = {
     offenders: [
+        { old: "gegtik", new: "boring gegtik" },
         { old: "thaperfectdrug", new: "Dave-A" },
         { old: "MagicWishMonkey", new: "MaximDiscord" },
         { old: "timaste", new: "timmytaste" },

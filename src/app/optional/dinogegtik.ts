@@ -15,7 +15,7 @@ const DinoGegtik = {
         { x: 198, y: 246, width: 291, height: 66 },
         { x: 496, y: 246, width: 234, height: 56 },
     ],
-    userMatch: null,
+    userMatches: [],
 
     async install() {
         return enabledContains("dinogegtik").then((res) => {
@@ -24,35 +24,38 @@ const DinoGegtik = {
     },
 
     installComic(item, id) {
-        let fullpost = item.querySelector("div.fullpost");
-        DinoGegtik.userMatch = HU_Instance.resolveUsers().filter((x) => x.name === "gegtik")[0];
+        const fullpost = item.querySelector("div.fullpost");
+        const targetUsernames = ["gegtik", "boring gegtik"];
+        DinoGegtik.userMatches = HU_Instance.resolveUsers().filter((x) => targetUsernames.includes(x.name));
         // we have a fullpost, and its className contains gegtik's user id
-        if (fullpost && DinoGegtik.userMatch && fullpost.classList.contains(`fpauthor_${DinoGegtik.userMatch.id}`)) {
-            let comic_id = `dinogegtik_${id}`;
-            // comic is already here!
-            if (document.getElementById(comic_id)) return;
-            let postBody = fullpost.querySelector("div.postbody");
-            let postBodyClone = postBody.cloneNode(true);
-            let expando = postBodyClone.querySelector("div.expando");
-            if (expando) expando.parentNode.removeChild(expando);
-            let lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
-            let comic_div = document.createElement("div");
-            comic_div.id = comic_id;
-            comic_div.className = "dinogegtik";
-            comic_div.style.backgroundImage = `url("${browser.runtime.getURL("../images/dinogegtik.png")}")`;
-            comic_div.style.height = lines.length <= 3 ? "244px" : "487px";
-            postBody.appendChild(comic_div);
-            let max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
-            for (let i = 0; i < max; i++) {
-                let panel = document.createElement("div");
-                panel.className = "panel";
-                panel.style.left = DinoGegtik.panels[i].x + "px";
-                panel.style.top = DinoGegtik.panels[i].y + "px";
-                panel.style.width = DinoGegtik.panels[i].width + "px";
-                panel.style.height = DinoGegtik.panels[i].height + "px";
-                safeInnerHTML(lines[i], panel);
-                comic_div.appendChild(panel);
-                DinoGegtik.resizePanelText(panel);
+        for (const match of DinoGegtik.userMatches) {
+            if (fullpost?.classList.contains(`fpauthor_${match.id}`)) {
+                let comic_id = `dinogegtik_${id}`;
+                // comic is already here!
+                if (document.getElementById(comic_id)) return;
+                let postBody = fullpost.querySelector("div.postbody");
+                let postBodyClone = postBody.cloneNode(true);
+                let expando = postBodyClone.querySelector("div.expando");
+                if (expando) expando.parentNode.removeChild(expando);
+                let lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
+                let comic_div = document.createElement("div");
+                comic_div.id = comic_id;
+                comic_div.className = "dinogegtik";
+                comic_div.style.backgroundImage = `url("${browser.runtime.getURL("../images/dinogegtik.png")}")`;
+                comic_div.style.height = lines.length <= 3 ? "244px" : "487px";
+                postBody.appendChild(comic_div);
+                let max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
+                for (let i = 0; i < max; i++) {
+                    let panel = document.createElement("div");
+                    panel.className = "panel";
+                    panel.style.left = DinoGegtik.panels[i].x + "px";
+                    panel.style.top = DinoGegtik.panels[i].y + "px";
+                    panel.style.width = DinoGegtik.panels[i].width + "px";
+                    panel.style.height = DinoGegtik.panels[i].height + "px";
+                    safeInnerHTML(lines[i], panel);
+                    comic_div.appendChild(panel);
+                    DinoGegtik.resizePanelText(panel);
+                }
             }
         }
     },
