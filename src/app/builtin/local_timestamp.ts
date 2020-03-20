@@ -1,45 +1,37 @@
-import * as luxon from "luxon";
+import { DateTime } from "luxon";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
+
+class GetTime {
+    static asDate = () => DateTime.local().toJSDate();
+    static asString = () => DateTime.local().toLocaleString(DateTime.DATETIME_MED);
+    static fromStrToDate = (dateStr: string) => new Date(Date.parse(dateStr));
+    static fromDateToString = (jsDate: Date) => DateTime.fromJSDate(jsDate).toLocaleString(DateTime.DATETIME_MED);
+}
 
 const LocalTimeStamp = {
     install() {
         processPostEvent.addHandler(LocalTimeStamp.adjustTime);
-        processPostRefreshEvent.addHandler(LocalTimeStamp.fixReplyTime);
+        processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
     },
 
-    parseTime(elm) {
-        let date = new Date();
-        let dstr = elm.innerText.toUpperCase();
-        let pos = dstr.indexOf("AM") + dstr.indexOf("PM") + 1;
-        dstr = dstr.substring(0, pos) + " " + dstr.substr(pos);
-        date.setTime(Date.parse(dstr));
-        let lx = luxon.DateTime.fromISO(date.toISOString());
-        let result = lx.toLocaleString(luxon.DateTime.DATETIME_MED);
-        return result; // try to respect localization
+    fixTime(rawDateStr: string) {
+        // usually in format: Jan 1, 1976, 12:01am PDST
+        // NOTE: The Chatty page can report wrong timestamps due to a nuChatty bug
+        const fixAMPM = rawDateStr.replace(/(am\s|pm\s)/, (m1) => ` ${m1.toUpperCase()}`);
+        return GetTime.fromDateToString(GetTime.fromStrToDate(fixAMPM));
     },
 
-    fixReplyTime(item) {
-        // the server reports a backwards timezone offset so let's try to fix it
-        let elm = item.querySelector("div.postdate");
-        if (elm) {
-            let dstr = elm.innerText.toUpperCase().split(" PST");
-            elm.innerText = `${dstr[0]} UTC+1`;
-            LocalTimeStamp.adjustTime(item);
-        }
-    },
-
-    adjustTime(item) {
-        let elm = item.querySelector("div.postdate");
-        if (elm) {
-            let nuTime = LocalTimeStamp.parseTime(elm);
+    adjustTime(item: HTMLElement) {
+        const postDate = <HTMLElement>item.querySelector("div.postdate");
+        const dateStr = postDate?.innerText;
+        if (dateStr) {
+            const localizedTime = LocalTimeStamp.fixTime(dateStr);
             let timestamp = document.createElement("span");
             timestamp.id = "local-time";
-            timestamp.innerText = nuTime;
-
+            timestamp.innerText = localizedTime;
             // remove only text child of postdate
-            for (let c of elm.childNodes) if (c.nodeType === 3) c.remove();
-
-            if (!elm.querySelector("#local-time")) elm.appendChild(timestamp);
+            for (let c of postDate.childNodes) if (c.nodeType === 3) c.remove();
+            if (!postDate.querySelector("#local-time")) postDate.appendChild(timestamp);
         }
     },
 };
