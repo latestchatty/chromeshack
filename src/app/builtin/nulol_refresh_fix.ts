@@ -15,7 +15,8 @@ import {
 
 const NuLOLFix = {
     install() {
-        fullPostsCompletedEvent.addHandler(NuLOLFix.apply);
+        // nuLOL tag refresh causes issues on Firefox so only apply to Chrome
+        window.chrome && fullPostsCompletedEvent.addHandler(NuLOLFix.apply);
     },
 
     apply() {
