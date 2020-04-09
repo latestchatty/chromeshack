@@ -370,3 +370,8 @@ p.emoji-tagline > span {
     font-style: italic;
     padding: 0 0.5em 0 0.5em;
 }
+
+/* try to blend background color on wide screens */
+body.side-menu {
+    background: rgb(113, 46, 62);
+}
