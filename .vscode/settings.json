@@ -4,9 +4,10 @@
     "files.insertFinalNewline": true,
     "editor.formatOnSave": true,
     "eslint.enable": true,
-    "eslint.run": "onType",
     "eslint.packageManager": "npm",
     "eslint.alwaysShowStatus": true,
+    "eslint.lintTask.enable": true,
+    "eslint.workingDirectories": ["./app"],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },

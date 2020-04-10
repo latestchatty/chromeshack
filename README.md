@@ -20,8 +20,9 @@ The full list of all scripts provided are as follows:
 
 -   `npm run build:dev` for auto-reloading the extension in Chrome/Firefox in dev mode
 -   `npm run build:prod` for building in production mode (for both Firefox and Chrome)
--   `npm run webext` for testing the extension in Firefox via `web-ext run`
--   `npm run lint` for running the AMO linter to audit production code
+-   `npm run lint` for running auto-fix linting through ESLint and Prettier (done during Production build)
+-   `npm run webext` for testing the extension in a clean Firefox profile via `web-ext run`
+-   `npm run extlint` for running the AMO linter to audit production code
 -   `npm run sign` for packing `dist/` into an XPI for upload to AMO
 
 #### Dependencies used in this project
@@ -32,3 +33,6 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [DOMPurify](https://github.com/cure53/DOMPurify)
 -   [Luxon](https://github.com/moment/luxon)
 -   [WebExtension-Polyfill](https://github.com/mozilla/webextension-polyfill)
+-   [React](https://github.com/facebook/react)
+-   [classNames](https://github.com/JedWatson/classnames)
+-   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
