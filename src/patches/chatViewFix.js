@@ -20,10 +20,7 @@ if (!document.getElementById("chatviewfix-wjs")) {
         } else {
             path_pieces = document.location.pathname.split("?");
             parent_url = path_pieces[0];
-            navigate_page_no_history(
-                d,
-                "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url
-            );
+            navigate_page_no_history(d, "/frame_chatty.x?root=" + b + "&id=" + f + "&parent_url=" + parent_url);
             return false;
         }
     }
@@ -39,35 +36,8 @@ if (!document.getElementById("chatviewfix-wjs")) {
         c.className = add_to_className(c.className, "hidden");
     }
 
-    function scrollToElement(elem, toFitBool) {
-        // don't use an arrow function here (for injection purposes)
-        if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
-        else if (!elem) return false;
-        if (toFitBool) {
-            $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
-        } else {
-            $("html, body").animate(
-                { scrollTop: $(elem).offset().top - $(window).height() / 4 },
-                0
-            );
-        }
-    }
-
-    function elementIsVisible(elem, partialBool) {
-        // don't use an arrow function here (for injection purposes)
-        // only check to ensure vertical visibility
-        if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
-        else if (!elem) return false;
-        let rect = elem.getBoundingClientRect();
-        let visibleHeight = window.innerHeight;
-        if (partialBool) return rect.top <= visibleHeight && rect.top + rect.height >= 0;
-        return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
-    }
-
     function scrollToItem(b) {
-        if (!elementIsVisible(b)) {
-            scrollToElement(b);
-        }
+        if (!elementIsVisible(b)) scrollToElement(b);
     }
     let chatViewFixElem = document.createElement("script");
     chatViewFixElem.id = "chatviewfix-wjs";
