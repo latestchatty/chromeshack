@@ -1,14 +1,23 @@
-import { getSetting, setSetting } from "./settings";
 import * as DOMPurify from "dompurify";
+
+import { getSetting, setSetting } from "./settings";
+import { imageFormats, videoFormats } from "../builtin/image-uploader/uploaderStore";
+
+declare global {
+    interface Window {
+        scrollToElement: Function;
+        elementIsVisible: Function;
+    }
+}
 
 export const stripHtml = (html) => {
     // respect carriage returns
-    let result = html.replace(/<br.*?>/gi, "\n");
+    const result = html.replace(/<br.*?>/gi, "\n");
     return result.replace(/(<([^>]+)>)/gi, "");
 };
 
 export const insertStyle = (css, containerName) => {
-    let style = document.querySelector(`style#${containerName}`) || document.createElement("style");
+    const style = document.querySelector(`style#${containerName}`) || document.createElement("style");
     if (!style.id) {
         style.setAttribute("type", "text/css");
         style.setAttribute("id", containerName);
@@ -17,21 +26,24 @@ export const insertStyle = (css, containerName) => {
     } else if (style.id) style.innerHTML = css;
 };
 
-export const isEmpty = (obj) => {
+export const isEmptyObj = (obj: object) => {
     return obj === null || obj === undefined || (obj && Object.keys(obj).length === 0 && obj.constructor === Object);
+};
+export const isEmptyArr = (arr: any[]) => {
+    return arr === null || arr === undefined || (Array.isArray(arr) && arr.length === 0);
 };
 
 export const objContains = (needle: string | number, haystack: object) => {
     // tests if an object (or nested object) contains a matching value (or prop)
     // since objects can contains Arrays test for them too
-    if (isEmpty(haystack)) return false;
+    if (isEmptyObj(haystack)) return false;
 
-    for (let v of Object.keys(haystack).map((key) => haystack[key])) {
+    for (const v of Object.keys(haystack).map((key) => haystack[key])) {
         if (v instanceof Object) {
-            let _objResult = objContains(needle, v);
+            const _objResult = objContains(needle, v);
             if (_objResult) return _objResult;
         } else if (Array.isArray(v)) {
-            let _arrResult = objContains(needle, { ...v });
+            const _arrResult = objContains(needle, { ...v });
             if (_arrResult) return _arrResult;
         } else if (v === needle) return v;
     }
@@ -55,18 +67,18 @@ export const superTrim = (string) => {
 export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
     // promisified legacy XHR helper using XMLHttpRequest()
     return new Promise((resolve, reject) => {
-        let xhr = new XMLHttpRequest();
-        xhr.open(!isEmpty(optionsObj) ? optionsObj.method : "GET", url);
-        if (!isEmpty(optionsObj) && optionsObj.headers)
-            for (let key of Object.keys(optionsObj.headers)) xhr.setRequestHeader(key, optionsObj.headers[key]);
+        const xhr = new XMLHttpRequest();
+        xhr.open(!isEmptyObj(optionsObj) ? optionsObj.method : "GET", url);
+        if (!isEmptyObj(optionsObj) && optionsObj.headers)
+            for (const key of Object.keys(optionsObj.headers)) xhr.setRequestHeader(key, optionsObj.headers[key]);
 
-        xhr.onload = function() {
+        xhr.onload = function () {
             if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
                 resolve(xhr.response);
 
             reject({ status: this.status, statusText: xhr.statusText });
         };
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             reject({ status: this.status, statusText: xhr.statusText });
         };
         xhr.send();
@@ -81,12 +93,12 @@ export const fetchSafeLegacy = ({
     url: string;
     fetchOpts?: object;
     parseType?: string;
-}) => {
+}): Promise<any> => {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
         xhrRequestLegacy(url, fetchOpts)
             .then((res) => {
-                let result = res && parseFetchResponse(res, parseType);
+                const result = res && parseFetchResponse(res, parseType);
                 if (result) resolve(result);
                 return reject(res);
             })
@@ -102,7 +114,7 @@ export const fetchSafe = ({
     url: string;
     fetchOpts?: RequestInit;
     parseType?: object;
-}) => {
+}): Promise<any> => {
     // used for sanitizing fetches
     // fetchOpts gets destructured in 'xhrRequest()'
     // modeObj gets destructured into override bools:
@@ -113,7 +125,7 @@ export const fetchSafe = ({
     return new Promise((resolve, reject) =>
         fetch(url, fetchOpts)
             .then(async (res) => {
-                let result =
+                const result =
                     res && (res.ok || res.statusText === "OK") && parseFetchResponse((await res).text(), parseType);
                 if (result) return resolve(result);
                 return reject(res);
@@ -128,8 +140,8 @@ export const parseFetchResponse = async (textPromise, parseType) => {
     try {
         // sanitize Instagram graphQL cache to JSON
         if (instagram) {
-            let metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-            let instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+            const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+            const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
             if (instgrmGQL) {
                 return {
                     metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
@@ -139,9 +151,9 @@ export const parseFetchResponse = async (textPromise, parseType) => {
         }
         // sanitize ChattyPics response to array of links
         else if (chattyPics) {
-            let _resFragment = sanitizeToFragment(text);
-            let _resElemArr = _resFragment.querySelector("#allLinksDirect");
-            let _resElemVal = _resFragment.querySelector("#link11");
+            const _resFragment = sanitizeToFragment(text);
+            const _resElemArr = _resFragment.querySelector("#allLinksDirect");
+            const _resElemVal = _resFragment.querySelector("#link11");
             // return a list of links if applicable
             if (_resElemArr || _resElemVal) {
                 return _resElemArr
@@ -152,12 +164,12 @@ export const parseFetchResponse = async (textPromise, parseType) => {
         // sanitize and return as Shacknews RSS article list
         else if (chattyRSS && text) return parseShackRSS(text);
         // explicitly sanitize (don't return fragment)
-        else if (html && text) return DOMPurify.sanitize(text);
+        else if (html && text) return DOMPurify.sanitize(text) as string;
         // sanitize and return as DOM fragment
-        else if (isHTML(text)) return sanitizeToFragment(text);
+        else if (isHTML(text)) return sanitizeToFragment(text) as DocumentFragment;
         // fallthrough: sanitize to JSON
         else if (isJSON(text)) {
-            let parsed = safeJSON(text);
+            const parsed = safeJSON(text);
             if (parsed) return parsed;
         }
         // fallthrough: Gfycat (assume OK)
@@ -171,9 +183,9 @@ export const parseFetchResponse = async (textPromise, parseType) => {
 
 export const getCookieValue = (name, defaultValue) => {
     let ret = defaultValue || "";
-    let cookies = document.cookie.split(";");
+    const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
-        let cookie = superTrim(cookies[i]).split("=");
+        const cookie = superTrim(cookies[i]).split("=");
         if (cookie[0] == name) {
             ret = cookie[1];
             break;
@@ -243,7 +255,7 @@ export const generatePreview = (postText) => {
 
     // replace matching pairs first
     for (const ix in complexReplacements) {
-        let rgx = new RegExp(complexReplacements[ix].from[0] + "(.*?)" + complexReplacements[ix].from[1], "g");
+        const rgx = new RegExp(complexReplacements[ix].from[0] + "(.*?)" + complexReplacements[ix].from[1], "g");
         while (postText.match(rgx) !== null)
             postText = postText.replace(rgx, complexReplacements[ix].to[0] + "$1" + complexReplacements[ix].to[1]);
     }
@@ -253,27 +265,13 @@ export const generatePreview = (postText) => {
     // b[g{bold and green}g]b <-- correct
     // b[g{bold and green]b}g <-- }g is not parsed by the shack code
     for (const ix in complexReplacements) {
-        let rgx = new RegExp(complexReplacements[ix].from[0], "g");
+        const rgx = new RegExp(complexReplacements[ix].from[0], "g");
         while (postText.match(rgx) !== null) {
             postText = postText.replace(rgx, complexReplacements[ix].to[0]);
             postText = postText + complexReplacements[ix].to[1];
         }
     }
     return convertUrlToLink(postText);
-};
-
-export const debounce = (cb, delay) => {
-    // even simpler debounce to prevent bugginess
-    let _debounce;
-    return function() {
-        // don't use an arrow function here (we need 'this')
-        const _cxt = this;
-        const _args = arguments;
-        clearTimeout(_debounce);
-        _debounce = setTimeout(() => {
-            cb.apply(_cxt, _args);
-        }, delay);
-    };
 };
 
 export function scrollToElement(elem, toFitBool?) {
@@ -290,23 +288,27 @@ export function scrollToElement(elem, toFitBool?) {
         );
     }
 }
+// expose scrollToElement globally (for chatViewFix.js)
+window.scrollToElement = scrollToElement;
 
 export function elementIsVisible(elem, partialBool) {
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility
     if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     else if (!elem) return false;
-    let rect = elem.getBoundingClientRect();
-    let visibleHeight = window.innerHeight;
+    const rect = elem.getBoundingClientRect();
+    const visibleHeight = window.innerHeight;
     if (partialBool) return rect.top <= visibleHeight && rect.top + rect.height >= 0;
     return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
+// expose elementIsVisible globally (for chatViewFix.js)
+window.elementIsVisible = elementIsVisible;
 
 export const elementFitsViewport = (elem) => {
     if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
     else if (!elem) return false;
-    let elemHeight = elem.getBoundingClientRect().height;
-    let visibleHeight = window.innerHeight;
+    const elemHeight = elem.getBoundingClientRect().height;
+    const visibleHeight = window.innerHeight;
     return elemHeight < visibleHeight;
 };
 
@@ -327,8 +329,8 @@ export const sanitizeToFragment = (html) => {
 };
 
 export const safeInnerHTML = (text, targetNode) => {
-    let sanitizedContent = sanitizeToFragment(text);
-    let targetRange = document.createRange();
+    const sanitizedContent = sanitizeToFragment(text);
+    const targetRange = document.createRange();
     targetRange.selectNodeContents(targetNode);
     targetRange.deleteContents();
     // replace innerHTML assign with sanitized insert
@@ -341,14 +343,13 @@ export const safeJSON = (text) => {
             const obj = JSON.parse(text);
             const result = {};
             const iterate = (val) => {
-                if (Array.isArray(val) && typeof val === "object") {
-                    let _arr = [];
+                if (val && Array.isArray(val)) {
+                    const _arr = [];
                     for (const subval of val) _arr.push(iterate(subval));
                     return _arr;
-                } else if (val !== null && typeof val === "object") {
+                } else if (val && typeof val === "object" && Object.keys(val).length > 0) {
                     let _obj = {};
-                    for (let key in val) _obj[key] = iterate(val[key]);
-
+                    for (const key in val) _obj[key] = iterate(val[key]);
                     return _obj;
                 } else {
                     if (val === null) return null;
@@ -370,16 +371,16 @@ export const safeJSON = (text) => {
     return null;
 };
 
-export const parseShackRSS = (rssText) => {
-    let result = [];
+export const parseShackRSS = (rssText): object[] => {
+    const result = [];
     if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
-        let items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
-        for (let i of items || []) {
-            let title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
-            let link = i.match(/<link>(.+?)<\/link>/im);
-            let date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
-            let content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
-            let medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
+        const items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
+        for (const i of items || []) {
+            const title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
+            const link = i.match(/<link>(.+?)<\/link>/im);
+            const date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
+            const content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
+            const medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
             result.push({
                 title: title ? DOMPurify.sanitize(title[1]) : "",
                 link: link ? DOMPurify.sanitize(link[1]) : "",
@@ -390,14 +391,14 @@ export const parseShackRSS = (rssText) => {
         }
     }
     // sanitize our resulting response
-    if (!isEmpty(result)) return result;
+    if (!isEmptyArr(result)) return result;
     return null;
 };
 
 export const isHTML = (text) => {
     // https://stackoverflow.com/a/15458968
     if (!text || (text && isJSON(text))) return false;
-    let doc = new DOMParser().parseFromString(text, "text/html");
+    const doc = new DOMParser().parseFromString(text, "text/html");
     return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 };
 
@@ -419,10 +420,11 @@ export const FormDataToJSON = async (fd) => {
         });
     };
 
-    let _fd = [];
-    for (let [k, v] of fd) {
-        let _file = await FileToObject(v);
-        _fd.push({ key: k, filename: v.name, data: _file });
+    const _fd = [];
+    for (const [k, v] of fd) {
+        const _file = v instanceof File && (await FileToObject(v));
+        if (_file) _fd.push({ key: k, filename: v.name, data: _file });
+        else _fd.push({ key: k, value: v });
     }
     return JSON.stringify(_fd);
 };
@@ -435,10 +437,7 @@ export const JSONToFormData = (jsonStr) => {
         else byteString = unescape(baseStr.split(",")[1]);
 
         // separate out the mime component
-        let mimeString = baseStr
-            .split(",")[0]
-            .split(":")[1]
-            .split(";")[0];
+        const mimeString = baseStr.split(",")[0].split(":")[1].split(";")[0];
         // write the bytes of the string to a typed array
         let ia = new Uint8Array(byteString.length);
         for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
@@ -446,18 +445,19 @@ export const JSONToFormData = (jsonStr) => {
         return new File([ia], filename, { type: mimeString });
     };
 
-    let _obj = JSON.parse(jsonStr);
-    let _fd = new FormData();
-    for (let key of Object.keys(_obj)) {
-        let _file = Base64ToFile(_obj[key].filename, _obj[key].data);
-        _fd.append(_obj[key].key, _file);
+    const _obj = JSON.parse(jsonStr);
+    const _fd = new FormData();
+    for (const key of Object.keys(_obj)) {
+        const _file = _obj[key].data?.startsWith("data:") && Base64ToFile(_obj[key].filename, _obj[key].data);
+        if (_file) _fd.append(_obj[key].key, _file);
+        else _fd.append(_obj[key].key, _obj[key].value);
     }
     if (!_fd.entries().next().done) return _fd;
     return null;
 };
 
 export const collapseThread = (id) => {
-    let MAX_LENGTH = 100;
+    const MAX_LENGTH = 100;
     getSetting("collapsed_threads", []).then((collapsed) => {
         if (collapsed.indexOf(id) < 0) {
             collapsed.unshift(id);
@@ -470,7 +470,7 @@ export const collapseThread = (id) => {
 
 export const unCollapseThread = (id) => {
     getSetting("collapsed_threads", []).then((collapsed) => {
-        let index = collapsed.indexOf(id);
+        const index = collapsed.indexOf(id);
         if (index >= 0) {
             collapsed.splice(index, 1);
             setSetting("collapsed_threads", collapsed);
@@ -480,9 +480,9 @@ export const unCollapseThread = (id) => {
 
 export const locatePostRefs = (elem) => {
     if (elem) {
-        let root = elem.closest(".root");
-        let closestContainer = root.closest("li[id^='item_']");
-        let post =
+        const root = elem.closest(".root");
+        const closestContainer = root.closest("li[id^='item_']");
+        const post =
             closestContainer && !closestContainer.matches(".root > ul > li")
                 ? closestContainer
                 : root.querySelector("li li.sel");
@@ -501,10 +501,65 @@ export const elementQuerySelectorAll = (elem, selector) =>
 
 export const insertAtCaret = (field: HTMLInputElement, text: string) => {
     if (field.selectionStart || field.selectionStart === 0) {
-        let startPos = field.selectionStart;
-        let endPos = field.selectionEnd;
+        const startPos = field.selectionStart || 0;
+        const endPos = field.selectionEnd || 0;
         field.value = field.value.substring(0, startPos) + text + field.value.substring(endPos, field.value.length);
         field.selectionStart = startPos + text.length;
         field.selectionEnd = startPos + text.length;
     } else field.value += text;
+};
+
+export const appendLinksToField = (field: HTMLInputElement, links: string[]) => {
+    if (links.length > 1) {
+        // delimit array of strings by newline
+        const _links = links
+            .map((v, i) => {
+                if (i === 0) return `\n\n${v}\n`;
+                else return `${v}`;
+            })
+            .join("");
+        // append multiple links at the bottom of existing input field
+        field.value += _links;
+    } else if (links.length === 1) {
+        // append a single link at the current text caret position
+        insertAtCaret(field, links[0]);
+    }
+};
+
+export const getFileCount = (fileList): string => {
+    const files = fileList && Array.from(fileList);
+    return files && files.length > 0 ? `${files.length} files` : "";
+};
+
+export const matchFileFormat = (input: File): number => {
+    const _imgFormats = imageFormats.split(",");
+    const _vidFormats = videoFormats.split(",");
+    const _imgMatched = _imgFormats.filter((fmt) => fmt === input.type);
+    const _vidMatched = _vidFormats.filter((fmt) => fmt === input.type);
+    if (_imgMatched) return 0;
+    else if (_vidMatched) return 1;
+    return -1;
+};
+
+export const packValidTypes = (types: string, fileList: File[]) => {
+    /// only include files that match a mime type list
+    // a string with comma delimited mime types
+    const typeArr = types.split(",");
+    // returns a File array with only matching file types in it
+    const files: File[] = [...fileList].filter((f) => typeArr.includes(f.type));
+    return files;
+};
+
+export const isUrlArr = (dataArr) => {
+    // every element of this array must contain a URL formatted string
+    if (!isEmptyArr(dataArr)) {
+        for (const i of dataArr)
+            if (typeof i !== "string" || !i.startsWith("https://") || !i.startsWith("http://")) return false;
+    }
+    return true;
+};
+export const isFileArr = (dataArr) => {
+    // every element of this array must contain a File object
+    if (!isEmptyArr(dataArr)) for (const i of dataArr) if (!(i instanceof File)) return false;
+    return true;
 };
