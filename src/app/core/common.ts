@@ -135,22 +135,11 @@ export const fetchSafe = ({
 };
 
 export const parseFetchResponse = async (textPromise, parseType) => {
-    const { chattyPics, instagram, html, chattyRSS } = parseType || {};
+    const { chattyPics, html, chattyRSS } = parseType || {};
     const text = await textPromise;
     try {
-        // sanitize Instagram graphQL cache to JSON
-        if (instagram) {
-            const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-            const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-            if (instgrmGQL) {
-                return {
-                    metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
-                    gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
-                };
-            }
-        }
         // sanitize ChattyPics response to array of links
-        else if (chattyPics) {
+        if (chattyPics) {
             const _resFragment = sanitizeToFragment(text);
             const _resElemArr = _resFragment.querySelector("#allLinksDirect");
             const _resElemVal = _resFragment.querySelector("#link11");
@@ -348,7 +337,7 @@ export const safeJSON = (text) => {
                     for (const subval of val) _arr.push(iterate(subval));
                     return _arr;
                 } else if (val && typeof val === "object" && Object.keys(val).length > 0) {
-                    let _obj = {};
+                    const _obj = {};
                     for (const key in val) _obj[key] = iterate(val[key]);
                     return _obj;
                 } else {
@@ -439,7 +428,7 @@ export const JSONToFormData = (jsonStr) => {
         // separate out the mime component
         const mimeString = baseStr.split(",")[0].split(":")[1].split(";")[0];
         // write the bytes of the string to a typed array
-        let ia = new Uint8Array(byteString.length);
+        const ia = new Uint8Array(byteString.length);
         for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
 
         return new File([ia], filename, { type: mimeString });
@@ -558,8 +547,26 @@ export const isUrlArr = (dataArr) => {
     }
     return true;
 };
+
 export const isFileArr = (dataArr) => {
     // every element of this array must contain a File object
     if (!isEmptyArr(dataArr)) for (const i of dataArr) if (!(i instanceof File)) return false;
     return true;
+};
+
+export const classNames = (...args) => {
+    /// pass a string or object to assemble classes based on truthiness
+    /// e.g.: classNames("a", { very: true, convenient: true, function: false });
+    /// produces: "a very convenient"
+    const result = [];
+    for (const arg of args) {
+        if (typeof arg === "object" && arg !== null) {
+            const reduced = Object.keys(arg).reduce((pk, k) => {
+                if (arg[k]) pk.push(k);
+                return pk;
+            }, []);
+            reduced.forEach((i) => result.push(i));
+        } else if (typeof arg === "string" && arg !== null && arg) result.push(arg);
+    }
+    return !isEmptyArr(result) ? result.join(" ") : "";
 };

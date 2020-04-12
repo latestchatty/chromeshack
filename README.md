@@ -34,5 +34,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [Luxon](https://github.com/moment/luxon)
 -   [WebExtension-Polyfill](https://github.com/mozilla/webextension-polyfill)
 -   [React](https://github.com/facebook/react)
--   [classNames](https://github.com/JedWatson/classnames)
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
