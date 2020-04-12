@@ -561,11 +561,8 @@ export const classNames = (...args) => {
     const result = [];
     for (const arg of args) {
         if (typeof arg === "object" && arg !== null) {
-            const reduced = Object.keys(arg).reduce((pk, k) => {
-                if (arg[k]) pk.push(k);
-                return pk;
-            }, []);
-            reduced.forEach((i) => result.push(i));
+            const keys = Object.keys(arg);
+            for (const k of keys) if (arg[k]) result.push(k);
         } else if (typeof arg === "string" && arg !== null && arg) result.push(arg);
     }
     return !isEmptyArr(result) ? result.join(" ") : "";
