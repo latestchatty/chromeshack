@@ -30,23 +30,23 @@ const DinoGegtik = {
         // we have a fullpost, and its className contains gegtik's user id
         for (const match of DinoGegtik.userMatches) {
             if (fullpost?.classList.contains(`fpauthor_${match.id}`)) {
-                let comic_id = `dinogegtik_${id}`;
+                const comic_id = `dinogegtik_${id}`;
                 // comic is already here!
                 if (document.getElementById(comic_id)) return;
-                let postBody = fullpost.querySelector("div.postbody");
-                let postBodyClone = postBody.cloneNode(true);
-                let expando = postBodyClone.querySelector("div.expando");
+                const postBody = fullpost.querySelector("div.postbody");
+                const postBodyClone = postBody.cloneNode(true);
+                const expando = postBodyClone.querySelector("div.expando");
                 if (expando) expando.parentNode.removeChild(expando);
-                let lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
-                let comic_div = document.createElement("div");
+                const lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
+                const comic_div = document.createElement("div");
                 comic_div.id = comic_id;
                 comic_div.className = "dinogegtik";
                 comic_div.style.backgroundImage = `url("${browser.runtime.getURL("../images/dinogegtik.png")}")`;
                 comic_div.style.height = lines.length <= 3 ? "244px" : "487px";
                 postBody.appendChild(comic_div);
-                let max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
+                const max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
                 for (let i = 0; i < max; i++) {
-                    let panel = document.createElement("div");
+                    const panel = document.createElement("div");
                     panel.className = "panel";
                     panel.style.left = DinoGegtik.panels[i].x + "px";
                     panel.style.top = DinoGegtik.panels[i].y + "px";

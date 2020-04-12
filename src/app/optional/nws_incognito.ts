@@ -1,4 +1,5 @@
 import * as browser from "webextension-polyfill";
+
 import { enabledContains } from "../core/settings";
 import { processPostEvent } from "../core/events";
 
@@ -17,15 +18,15 @@ const NwsIncognito = {
         });
     },
     hookToNwsPosts(item) {
-        let allLinks = [];
-        let nwsPost = item.querySelector("div.fpmod_nws");
+        const allLinks = [];
+        const nwsPost = item.querySelector("div.fpmod_nws");
         if (nwsPost) {
-            let postBody = nwsPost.querySelector("div.postbody");
-            let links = postBody.getElementsByTagName("a");
+            const postBody = nwsPost.querySelector("div.postbody");
+            const links = postBody.getElementsByTagName("a");
             for (let iLink = 0; iLink < links.length; iLink++) {
                 //Clone the link to get rid of any handlers that were put on it before (like the inline image loader)
                 //Of course, that relies on it being done before this.  So... yeah.
-                let cloned = links[iLink].cloneNode(true);
+                const cloned = links[iLink].cloneNode(true);
                 //Add href to collection for open all.
                 allLinks.push(cloned.href);
                 $(cloned).click((e) => {
@@ -36,7 +37,10 @@ const NwsIncognito = {
                                 'This feature will not work unless you enable "Run in Private Windows" in the Chrome Shack addon settings for Firefox!',
                             );
                         }
-                        browser.runtime.sendMessage({ name: "launchIncognito", value: e.target.href });
+                        browser.runtime.sendMessage({
+                            name: "launchIncognito",
+                            value: e.target.href,
+                        });
                     });
                     return false;
                 });
@@ -47,7 +51,7 @@ const NwsIncognito = {
                 $(links[iLink]).replaceWith(cloned);
 
                 // remove expando buttons for Incognito mode
-                let expando = links[iLink].querySelector("div.expando");
+                const expando = links[iLink].querySelector("div.expando");
                 if (expando) expando.parentNode.removeChild(expando);
             }
         }

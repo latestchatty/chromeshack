@@ -6,12 +6,12 @@ const CommentTags = {
     },
 
     installCommentTags() {
-        let postform = document.getElementById("postform");
+        const postform = document.getElementById("postform");
         if (postform) {
-            let table = document.createElement("table");
+            const table = document.createElement("table");
             table.id = "shacktags_legend_table";
             table.style.display = "table";
-            let tbody = table.appendChild(document.createElement("tbody"));
+            const tbody = table.appendChild(document.createElement("tbody"));
 
             let row = tbody.appendChild(document.createElement("tr"));
             CommentTags.addTag(row, "red", "r{", "}r", "jt_red");
@@ -45,22 +45,22 @@ const CommentTags = {
             CommentTags.addTag(row, "multisync", "p[", "]p", "jt_pink");
             CommentTags.addTag(row, "code", "/{{", "}}/", "jt_code");
 
-            let shacktag_legends = document.getElementById("shacktags_legend");
-            let original_shacktags_legend_table = document.getElementById("shacktags_legend_table");
+            const shacktag_legends = document.getElementById("shacktags_legend");
+            const original_shacktags_legend_table = document.getElementById("shacktags_legend_table");
             shacktag_legends.removeChild(original_shacktags_legend_table);
             shacktag_legends.appendChild(table);
         }
     },
 
     addTag(row, name, opening_tag, closing_tag, class_name, click?) {
-        let name_td = row.appendChild(document.createElement("td"));
-        let span = name_td.appendChild(document.createElement("span"));
+        const name_td = row.appendChild(document.createElement("td"));
+        const span = name_td.appendChild(document.createElement("span"));
         span.className = class_name;
         span.appendChild(document.createTextNode(name));
         if (click && click.length > 0) name_td.setAttribute("onclick", click);
 
-        let code_td = row.appendChild(document.createElement("td"));
-        let button = code_td.appendChild(document.createElement("a"));
+        const code_td = row.appendChild(document.createElement("td"));
+        const button = code_td.appendChild(document.createElement("a"));
         button.appendChild(document.createTextNode(opening_tag + "..." + closing_tag));
         button.href = "#";
         button.addEventListener("click", (e) => {
@@ -70,11 +70,11 @@ const CommentTags = {
     },
 
     insertCommentTag(name, opening_tag, closing_tag) {
-        let textarea = <HTMLInputElement>document.getElementById("frm_body");
-        let scrollPosition = textarea.scrollTop;
+        const textarea = <HTMLInputElement>document.getElementById("frm_body");
+        const scrollPosition = textarea.scrollTop;
 
-        let start = textarea.selectionStart;
-        let end = textarea.selectionEnd;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
 
         let input;
         if (end > start) input = textarea.value.substring(start, end);
@@ -87,7 +87,7 @@ const CommentTags = {
 
         // clean up the input
         let whiteSpaceBefore = false;
-        let whiteSpaceAfter = false;
+        const whiteSpaceAfter = false;
         if (name == "code") {
             whiteSpaceBefore = /^\s\s*/.test(input);
             whiteSpaceBefore = /\s\s*$/.test(input);

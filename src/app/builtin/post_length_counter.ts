@@ -13,8 +13,8 @@ const PostLengthCounter = {
         // script is already injected
         if (item.querySelector(".post_length_counter_text")) return;
         // install a div at the top of the post box
-        let position = item.querySelector("div.csubmit");
-        let child = document.createElement("div");
+        const position = item.querySelector("div.csubmit");
+        const child = document.createElement("div");
         if (!position) return;
         child.setAttribute("class", "post_length_counter_text");
         position.parentNode.insertBefore(child, position);
@@ -22,13 +22,13 @@ const PostLengthCounter = {
     },
 
     update(item) {
-        let counter = item.querySelector("div.post_length_counter_text");
-        let textarea = item.querySelector("textarea#frm_body");
-        let rawPostText = textarea && textarea.value;
-        let encodedText = rawPostText && EmojiPoster.handleEncoding(rawPostText);
-        let textCount = encodedText && EmojiPoster.countText(encodedText);
-        let astralCount = encodedText && EmojiPoster.countAstrals(encodedText).astralsCount;
-        let charCount = astralCount ? textCount + astralCount : textCount;
+        const counter = item.querySelector("div.post_length_counter_text");
+        const textarea = item.querySelector("textarea#frm_body");
+        const rawPostText = textarea && textarea.value;
+        const encodedText = rawPostText && EmojiPoster.handleEncoding(rawPostText);
+        const textCount = encodedText && EmojiPoster.countText(encodedText);
+        const astralCount = encodedText && EmojiPoster.countAstrals(encodedText).astralsCount;
+        const charCount = astralCount ? textCount + astralCount : textCount;
         if (counter) {
             counter.innerText =
                 charCount > PostLengthCounter.MAX_POST_BYTES

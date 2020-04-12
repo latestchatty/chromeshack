@@ -8,7 +8,7 @@ const CodeTagFix = {
     apply(item: HTMLElement) {
         if (item) {
             const codetags = [...item.querySelectorAll("pre.jt_code")];
-            for (let codetag of codetags) {
+            for (const codetag of codetags) {
                 (<HTMLElement>codetag).classList.remove("jt_code");
                 codetag.classList.add("codeblock");
             }

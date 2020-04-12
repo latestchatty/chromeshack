@@ -15,8 +15,8 @@ const NewCommentHighlighter = {
     async highlight() {
         // only highlight if less than 2 hours have passed
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
-            let last_id = await getSetting("new_comment_highlighter_last_id");
-            let new_last_id = NewCommentHighlighter.findLastID();
+            const last_id = await getSetting("new_comment_highlighter_last_id");
+            const new_last_id = NewCommentHighlighter.findLastID();
             if (last_id && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id);
             // update with our current oldest id for the next check cycle
             if (!last_id || new_last_id >= last_id) await setSetting("new_comment_highlighter_last_id", new_last_id);
@@ -26,9 +26,9 @@ const NewCommentHighlighter = {
     },
 
     async checkTime(delayInMs, refresh?) {
-        let curTime = new Date().getTime();
-        let lastHighlightTime = await getSetting("last_highlight_time");
-        let diffTime = lastHighlightTime && Math.abs(curTime - lastHighlightTime);
+        const curTime = new Date().getTime();
+        const lastHighlightTime = await getSetting("last_highlight_time");
+        const diffTime = lastHighlightTime && Math.abs(curTime - lastHighlightTime);
         if (refresh || !lastHighlightTime || (diffTime && diffTime > delayInMs)) {
             await setSetting("last_highlight_time", curTime);
             return true;
@@ -37,9 +37,9 @@ const NewCommentHighlighter = {
     },
 
     highlightPostsAfter(last_id) {
-        let new_posts = NewCommentHighlighter.getPostsAfter(last_id);
-        for (let post of new_posts || []) {
-            let preview = post.querySelector(".oneline_body");
+        const new_posts = NewCommentHighlighter.getPostsAfter(last_id);
+        for (const post of new_posts || []) {
+            const preview = post.querySelector(".oneline_body");
             if (preview && !preview.classList.contains("newcommenthighlighter"))
                 preview.classList.add("newcommenthighlighter");
         }
@@ -48,11 +48,11 @@ const NewCommentHighlighter = {
 
     displayNewCommentCount(count) {
         if (count && count > 0) {
-            let commentDisplay = document.getElementById("chatty_settings");
-            let commentsCount =
+            const commentDisplay = document.getElementById("chatty_settings");
+            const commentsCount =
                 (<HTMLElement>commentDisplay.childNodes[4]).innerText != null &&
                 (<HTMLElement>commentDisplay.childNodes[4]).innerText.split(" ")[0];
-            let newComments = `${commentsCount} Comments (${count} New)`;
+            const newComments = `${commentsCount} Comments (${count} New)`;
             if (commentsCount) commentDisplay.childNodes[4].textContent = newComments;
         }
     },
@@ -68,7 +68,7 @@ const NewCommentHighlighter = {
         // 'oneline0' is applied to highlight the most recent post in each thread
         // we only want the first one, since the top post will contain the most recent
         // reply.
-        let post = document.querySelector("div.oneline0");
+        const post = document.querySelector("div.oneline0");
         return post ? parseInt((<HTMLElement>post.parentNode).id.substr(5)) : null;
     },
 };

@@ -24,16 +24,16 @@ const CustomUserFilters = {
 
     async removeOLsFromUserId(id) {
         let postElems;
-        let hideFPs = await getEnabledSuboptions("cuf_hide_fullposts");
+        const hideFPs = await getEnabledSuboptions("cuf_hide_fullposts");
         if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
         else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];
-        for (let post of postElems || []) {
-            let ol = post.matches(".oneline") && post;
-            let fp = hideFPs && post.matches(".fullpost") && post;
-            let root = fp && fp.closest(".root");
+        for (const post of postElems || []) {
+            const ol = post.matches(".oneline") && post;
+            const fp = hideFPs && post.matches(".fullpost") && post;
+            const root = fp && fp.closest(".root");
             if (ol && ol.parentNode.matches("li")) {
                 // remove all subreplies along with the matched post
-                let matchedNode = ol.parentNode;
+                const matchedNode = ol.parentNode;
                 while (matchedNode.firstChild) matchedNode.removeChild(matchedNode.firstChild);
             } else if (fp && root && CustomUserFilters.rootPostCount > 2) {
                 // only remove root if we're in thread mode
@@ -47,8 +47,8 @@ const CustomUserFilters = {
             if (!filteredUsers || filteredUsers.length === 0) return;
             CustomUserFilters.rootPostCount = document.querySelector(".threads").childElementCount;
             let hasMatched;
-            for (let filteredUser of filteredUsers) {
-                for (let userMatch of CustomUserFilters.resolveUser(filteredUser) || []) {
+            for (const filteredUser of filteredUsers) {
+                for (const userMatch of CustomUserFilters.resolveUser(filteredUser) || []) {
                     await CustomUserFilters.removeOLsFromUserId(userMatch.id);
                     hasMatched = userMatch;
                 }

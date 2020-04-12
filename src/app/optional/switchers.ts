@@ -31,11 +31,11 @@ const Switchers = {
 
     cacheSwitchers() {
         // resolve and cache all offenders on the page once on load
-        let users = HU_Instance.resolveUsers();
-        for (let user of users || []) {
-            for (let offender of Switchers.offenders) {
-                let matchedOld = offender.old.toLowerCase() === user.name.toLowerCase();
-                let matchedNew = offender.new.toLowerCase() === user.name.toLowerCase();
+        const users = HU_Instance.resolveUsers();
+        for (const user of users || []) {
+            for (const offender of Switchers.offenders) {
+                const matchedOld = offender.old.toLowerCase() === user.name.toLowerCase();
+                const matchedNew = offender.new.toLowerCase() === user.name.toLowerCase();
                 if (matchedOld || matchedNew) {
                     Switchers.resolved = [
                         ...Switchers.resolved,
@@ -51,23 +51,23 @@ const Switchers = {
     },
 
     loadSwitchers(item) {
-        for (let offender of Switchers.resolved || []) {
-            let offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
-            let offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
-            let offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (let post of offenderPosts) Switchers.rewritePost(post, offender.name, offender.matched);
+        for (const offender of Switchers.resolved || []) {
+            const offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
+            const offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
+            const offenderPosts = [...offenderOLs, ...offenderFPs];
+            for (const post of offenderPosts) Switchers.rewritePost(post, offender.name, offender.matched);
         }
     },
 
     rewritePost(post, name, oldName) {
-        let newName = `${name} - (${oldName})`;
-        let span = post.querySelector("span.oneline_user");
-        let alt_span = post.querySelector("span.user");
+        const newName = `${name} - (${oldName})`;
+        const span = post.querySelector("span.oneline_user");
+        const alt_span = post.querySelector("span.user");
         if (span) span.textContent = newName;
         else if (alt_span) alt_span.firstChild.textContent = newName;
         // Switchers don't deserve flair icons
-        let user_icons = post.querySelectorAll("img.chatty-user-icons");
-        for (let icon of user_icons || []) icon.setAttribute("style", "display: none !important;");
+        const user_icons = post.querySelectorAll("img.chatty-user-icons");
+        for (const icon of user_icons || []) icon.setAttribute("style", "display: none !important;");
     },
 };
 

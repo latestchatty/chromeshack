@@ -9,16 +9,16 @@ const Collapse = {
     },
 
     collapseHandler(e) {
-        let collapse = elementMatches(e.target, "a.closepost");
-        let uncollapse = elementMatches(e.target, "a.showpost");
+        const collapse = elementMatches(e.target, "a.closepost");
+        const uncollapse = elementMatches(e.target, "a.showpost");
         if (collapse) {
-            let { post, root } = locatePostRefs(collapse);
-            let rootId = root && root.id.substr(5);
+            const { post, root } = locatePostRefs(collapse);
+            const rootId = root && root.id.substr(5);
             if (ChromeShack.debugEvents) console.log("ran collapse handler:", rootId, collapse);
             Collapse.close(e, rootId);
         } else if (uncollapse) {
-            let { post, root } = locatePostRefs(uncollapse);
-            let rootId = root && root.id.substr(5);
+            const { post, root } = locatePostRefs(uncollapse);
+            const rootId = root && root.id.substr(5);
             if (ChromeShack.debugEvents) console.log("ran uncollapse handler:", rootId, uncollapse);
             Collapse.show(e, rootId);
         }
@@ -27,9 +27,9 @@ const Collapse = {
     toggle(post, id, is_root_post) {
         // only process for root posts
         if (post && is_root_post) {
-            let root = post.closest("div.root");
-            let close = post.querySelector("a.closepost");
-            let show = post.querySelector("a.showpost");
+            const root = post.closest("div.root");
+            const close = post.querySelector("a.closepost");
+            const show = post.querySelector("a.showpost");
             document.addEventListener("click", Collapse.collapseHandler);
             // check if thread should be collapsed
             getSetting("collapsed_threads").then((collapsed) => {
@@ -50,9 +50,9 @@ const Collapse = {
         unCollapseThread(id);
         if (e.target.parentNode.querySelector(".closepost:not(.hidden)") && e.target.matches(".showpost.hidden")) {
             // feed the refresh-thread event handler when uncollapsing
-            let { post, root } = locatePostRefs(e.target);
-            let postId = post && post.id.substr(5);
-            let rootId = root && root.id.substr(5);
+            const { post, root } = locatePostRefs(e.target);
+            const postId = post && post.id.substr(5);
+            const rootId = root && root.id.substr(5);
             if (postId || rootId) {
                 if (ChromeShack.debugEvents) console.log("refreshing root post after uncollapse:", post, root);
                 processRefreshIntentEvent.raise(postId, rootId);

@@ -1,4 +1,5 @@
 import * as browser from "webextension-polyfill";
+
 import { objContains } from "./common";
 import { settingsContains } from "./settings";
 
@@ -9,11 +10,11 @@ import { settingsContains } from "./settings";
 export const getEmbedInfo = (link) => {
     // resolves the postId and index of a link
     if (!link) return;
-    let _link = link.querySelector("div.expando");
-    let _linkInfo = _link && _link.id.split(/[_-]/);
+    const _link = link.querySelector("div.expando");
+    const _linkInfo = _link && _link.id.split(/[_-]/);
     if (_linkInfo && _linkInfo?.length > 1) {
-        let _id = _linkInfo[1];
-        let _idx = _linkInfo[2];
+        const _id = _linkInfo[1];
+        const _idx = _linkInfo[2];
         return { id: _id, index: _idx };
     }
 };
@@ -21,9 +22,9 @@ export const getEmbedInfo = (link) => {
 export const getLinkRef = (embed) => {
     // resolves the link of an embed in a postBody
     if (!embed) return;
-    let _embedInfo = embed.id.split(/[_-]/);
+    const _embedInfo = embed.id.split(/[_-]/);
     if (_embedInfo.length > 1) {
-        let _linkRef = document.querySelector(`div[id^='expando_${_embedInfo[1]}-${_embedInfo[2]}']`);
+        const _linkRef = document.querySelector(`div[id^='expando_${_embedInfo[1]}-${_embedInfo[2]}']`);
         return _linkRef.parentNode;
     }
 };
@@ -31,7 +32,7 @@ export const getLinkRef = (embed) => {
 export const getEmbedRef = (link) => {
     // resolves the embed associated with a link (if any exist)
     if (link == null) return;
-    let infoObj = getEmbedInfo(link);
+    const infoObj = getEmbedInfo(link);
     if (infoObj && infoObj.id && infoObj.index) {
         return document.querySelector(`
             #medialoader_${infoObj.id}-${infoObj.index},
@@ -56,11 +57,11 @@ export const toggleVideoState = (elem, stateObj?) => {
         video.currentTime = 0;
     };
 
-    let { state, mute } = stateObj || {};
+    const { state, mute } = stateObj || {};
     if (elem == null) return;
-    let video = elem.matches("video[id^='loader_']") ? elem : elem.querySelector("video[id^='loader_']");
+    const video = elem.matches("video[id^='loader_']") ? elem : elem.querySelector("video[id^='loader_']");
     // if forced then play and avoid social embeds
-    let excludedParent =
+    const excludedParent =
         video &&
         video.closest(`
         .swiper-wrapper,
@@ -93,10 +94,10 @@ export const toggleExpandoButton = (expando) => {
 
 export const toggleMediaItem = (link) => {
     // abstracted helper for toggling media container items
-    let expando = link.querySelector("div.expando");
-    let embed = getEmbedRef(link);
+    const expando = link.querySelector("div.expando");
+    const embed = getEmbedRef(link);
     if (!embed) return;
-    let container = embed.closest(".media-container");
+    const container = embed.closest(".media-container");
     if (expando.matches(".embedded") && embed && embed.matches(".iframe-spacer")) {
         // remove iframe directly to toggle media
         container.parentNode.removeChild(container);
@@ -110,7 +111,7 @@ export const toggleMediaItem = (link) => {
             if (container.matches(".hidden")) container.classList.remove("hidden");
             else {
                 // toggle multiple children of placed media container (Twitter)
-                for (let child of container.children || []) {
+                for (const child of container.children || []) {
                     if (child.matches(".hidden")) child.classList.remove("hidden");
                     else child.classList.add("hidden");
                 }
@@ -135,8 +136,8 @@ export const toggleMediaItem = (link) => {
 
 export const mediaContainerInsert = (elem, link, id, index) => {
     // abstracted helper for manipulating the media-container grid from a post
-    let expando = link.querySelector("div.expando");
-    let hasMedia = expando.matches(".embedded");
+    const expando = link.querySelector("div.expando");
+    const hasMedia = expando.matches(".embedded");
     if (hasMedia) return toggleMediaItem(link);
     attachChildEvents(elem, id, index);
     // always insert media embeds next to their expando
@@ -146,8 +147,8 @@ export const mediaContainerInsert = (elem, link, id, index) => {
 };
 
 export const createMediaElem = (href, postId, index, override?) => {
-    let _animExt = /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
-    let _staticExt = /\.(jpe?g|gif|png)/i.test(href);
+    const _animExt = /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
+    const _staticExt = /\.(jpe?g|gif|png)/i.test(href);
     let mediaElem: HTMLElement;
     if (_animExt) {
         mediaElem = document.createElement("video");
@@ -165,9 +166,9 @@ export const createMediaElem = (href, postId, index, override?) => {
 
 export const createIframe = (src, type, postId, index) => {
     if (src && src.length > 0) {
-        let video = document.createElement("div");
-        let spacer = document.createElement("div");
-        let iframe = document.createElement("iframe");
+        const video = document.createElement("div");
+        const spacer = document.createElement("div");
+        const iframe = document.createElement("iframe");
         spacer.setAttribute("class", "iframe-spacer hidden");
         spacer.setAttribute("id", `loader_${postId}-${index}`);
 
@@ -196,17 +197,17 @@ export const createIframe = (src, type, postId, index) => {
 export const appendMedia = ({ src, link, postId, index, type }) => {
     // compile our media items into a given container element
     // overrides include: forceAppend, twttrEmbed, and instgrmEmbed
-    let mediaElem = document.createElement("div");
+    const mediaElem = document.createElement("div");
     mediaElem.setAttribute("class", "media-container");
-    let { forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed } = type || {};
+    const { forceAppend, twttrEmbed, instgrmEmbed, iframeEmbed } = type || {};
     if (Array.isArray(src) && src.length > 0) {
-        let nodeList = [];
-        for (let item of src) {
+        const nodeList = [];
+        for (const item of src) {
             if (iframeEmbed) nodeList.push(createIframe(src, iframeEmbed.type, postId, index));
             else if (instgrmEmbed || twttrEmbed) nodeList.push(createMediaElem(item, postId, index, true));
             else nodeList.push(createMediaElem(item, postId, index));
         }
-        for (let node of nodeList) mediaElem.appendChild(<HTMLElement>node);
+        for (const node of nodeList) mediaElem.appendChild(<HTMLElement>node);
         // only use carousel if we have multiple items
         if (nodeList.length > 1) mediaElem.setAttribute("id", `medialoader_${postId}-${index}`);
         // TODO: FIX CAROUSEL
@@ -226,9 +227,9 @@ export const appendMedia = ({ src, link, postId, index, type }) => {
  */
 
 export const insertScript = (options) => {
-    let { elem, filePath, code, id, overwrite } = options;
+    const { elem, filePath, code, id, overwrite } = options;
     // insert a script that executes synchronously (caution!)
-    let _elem = elem ? elem : document.getElementsByTagName("head")[0];
+    const _elem = elem ? elem : document.getElementsByTagName("head")[0];
     let _script = document.getElementById(id);
     if (id && !overwrite && document.getElementById(id)) return;
     else if (overwrite && _script) _script.parentNode.removeChild(_script);
@@ -244,7 +245,7 @@ export const createExpandoButton = (link, postId, index) => {
     // abstracted helper for appending an expando button to a link in a post
     if (link.querySelector("div.expando")) return;
     // process a link into a link container that includes a dynamic styled "button"
-    let expando = document.createElement("div");
+    const expando = document.createElement("div");
     expando.classList.add("expando");
     expando.id = `expando_${postId}-${index}`;
     expando.style.fontFamily = "Icon";
@@ -254,16 +255,16 @@ export const createExpandoButton = (link, postId, index) => {
 
 export const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
     for (let idx = 0; idx < linksArr.length; idx++) {
-        let link = linksArr[idx];
-        let parsed = linkParser(link.href);
+        const link = linksArr[idx];
+        const parsed = linkParser(link.href);
         if (parsed) {
             ((parsed, idx) => {
                 if (link.querySelector("div.expando")) return;
                 link.addEventListener("click", (e) => {
                     postProcesser(e, parsed, postId, idx);
                 });
-                let postBody = link.closest(".postbody");
-                let postId = postBody.closest("li[id^='item_']").id.substr(5);
+                const postBody = link.closest(".postbody");
+                const postId = postBody.closest("li[id^='item_']").id.substr(5);
                 createExpandoButton(link, postId, idx);
             })(parsed, idx);
         }
@@ -271,17 +272,17 @@ export const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
 };
 
 export const attachChildEvents = async (elem, id, index) => {
-    let childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
-    let iframeElem = elem.querySelector("iframe");
+    const childElems = Array.from(elem.querySelectorAll("video[id*='loader'], img[id*='loader']"));
+    const iframeElem = elem.querySelector("iframe");
     if (!iframeElem && childElems && childElems.length > 0) {
         // list of excluded containers
-        let first_elem = <HTMLElement>childElems[0];
-        let swiperEl = first_elem.closest(".swiper-wrapper");
-        let instgrmEl = first_elem.closest(".instgrm-embed");
-        let twttrEl = first_elem.closest(".twitter-container");
-        let lightboxed = await settingsContains("image_loader_newtab");
-        for (let item of childElems) {
-            let this_elem = <HTMLElement>item;
+        const first_elem = <HTMLElement>childElems[0];
+        const swiperEl = first_elem.closest(".swiper-wrapper");
+        const instgrmEl = first_elem.closest(".instgrm-embed");
+        const twttrEl = first_elem.closest(".twitter-container");
+        const lightboxed = await settingsContains("image_loader_newtab");
+        for (const item of childElems) {
+            const this_elem = <HTMLElement>item;
             if (this_elem.nodeName === "IMG" || this_elem.nodeName === "VIDEO") {
                 if (childElems.length == 1) {
                     // don't interfere with carousel media settings
@@ -314,9 +315,9 @@ export const attachChildEvents = async (elem, id, index) => {
                 // don't attach click-to-hide events to excluded containers
                 ((swiperEl, instgrmEl, twttrEl, lightboxed) => {
                     this_elem.addEventListener("mousedown", (e) => {
-                        let elem = <HTMLElement>e.target;
-                        let embed = elem.parentNode.querySelector(`#loader_${id}-${index}`);
-                        let link = getLinkRef(embed);
+                        const elem = <HTMLElement>e.target;
+                        const embed = elem.parentNode.querySelector(`#loader_${id}-${index}`);
+                        const link = getLinkRef(embed);
                         /* if (e.which === 2 && lightboxed) {
                             e.preventDefault();
                             // pause our current video before re-opening it

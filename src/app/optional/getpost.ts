@@ -13,12 +13,12 @@ const GetPost = {
     },
 
     getLinks(item) {
-        let links = [...item.querySelectorAll(".sel .postbody a")];
+        const links = [...item.querySelectorAll(".sel .postbody a")];
         if (links) processExpandoLinks(links, GetPost.isChattyLink, GetPost.getPost);
     },
 
     isChattyLink(href) {
-        let _isRootPost = /shacknews.com\/chatty\?id=\d+/i;
+        const _isRootPost = /shacknews.com\/chatty\?id=\d+/i;
         if (_isRootPost.test(href)) return true;
         return false;
     },
@@ -26,19 +26,19 @@ const GetPost = {
     getPost(e, parsedPost, postId, index) {
         if (e.button == 0) {
             e.preventDefault();
-            let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
-            let link = _expandoClicked ? e.target.parentNode : e.target;
+            const _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
+            const link = _expandoClicked ? e.target.parentNode : e.target;
             if (toggleMediaItem(link)) return;
-            let chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
-            let singlePost = chattyPostId && `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
+            const chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
+            const singlePost = chattyPostId && `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
             if (singlePost) {
                 fetchSafe({ url: singlePost }).then((data: HTMLElement) => {
-                    let postDiv = document.createElement("div");
+                    const postDiv = document.createElement("div");
                     // hack-ish way of "parsing" string to DOM (sanitized!)
                     postDiv.appendChild(data);
-                    let _postNode = <HTMLElement>postDiv.childNodes[1];
+                    const _postNode = <HTMLElement>postDiv.childNodes[1];
                     // honor spoiler tags' click event when embedded
-                    let spoilerTag = _postNode && _postNode.querySelector("span.jt_spoiler");
+                    const spoilerTag = _postNode && _postNode.querySelector("span.jt_spoiler");
                     if (spoilerTag) {
                         spoilerTag.addEventListener("click", (e) => {
                             (<HTMLElement>e.target).setAttribute("class", "jt_spoiler_clicked");
@@ -50,7 +50,7 @@ const GetPost = {
                     postDiv.setAttribute("class", "getPost");
                     postDiv.setAttribute("id", `getpost_${postId}-${index}`);
                     toggleMediaItem(link);
-                    let fullpost = postDiv.querySelector("div.fullpost");
+                    const fullpost = postDiv.querySelector("div.fullpost");
                     // strip any mod banners from this embedded post (they look weird)
                     const removedBanner = fullpost.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
                     if (removedBanner) fullpost.setAttribute("class", removedBanner);

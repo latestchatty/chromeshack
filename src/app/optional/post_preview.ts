@@ -16,15 +16,15 @@ const PostPreview = {
     apply(item: HTMLElement) {
         // script is already injected
         if (item.querySelector("#previewButton")) return;
-        let postButton = item.querySelector("#frm_submit");
-        let form_body = item.querySelector("#frm_body");
+        const postButton = item.querySelector("#frm_submit");
+        const form_body = item.querySelector("#frm_body");
         if (!postButton || !form_body) return;
-        let previewButton = document.createElement("button");
+        const previewButton = document.createElement("button");
         previewButton.id = "previewButton";
         previewButton.setAttribute("type", "button");
         previewButton.textContent = "Preview";
         postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
-        let previewArea = document.createElement("div");
+        const previewArea = document.createElement("div");
         previewArea.id = "previewArea";
         previewArea.style.display = "none";
         form_body.parentNode.insertBefore(previewArea, form_body);
@@ -41,7 +41,7 @@ const PostPreview = {
     },
 
     installClickEvent(item: HTMLElement) {
-        let previewButton = <HTMLButtonElement>item.querySelector("#previewButton");
+        const previewButton = <HTMLButtonElement>item.querySelector("#previewButton");
         document.removeEventListener("click", PostPreview.replyToggleHandler);
         document.addEventListener("click", PostPreview.replyToggleHandler);
         previewButton.removeEventListener("click", PostPreview.togglePreview);

@@ -33,10 +33,10 @@ const HighlightPendingPosts = {
     },
 
     updatePendings(refreshElem?) {
-        for (let pending of HighlightPendingPosts.pendings || []) {
+        for (const pending of HighlightPendingPosts.pendings || []) {
             // Received an event for a post we already have.
             if (document.getElementById(`item_${pending.postId}`)) continue;
-            let a = document.querySelector(`li#item_${pending.threadId} div.fullpost div.refresh a`);
+            const a = document.querySelector(`li#item_${pending.threadId} div.fullpost div.refresh a`);
             if (a) a.classList.add("refresh_pending");
         }
         HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
@@ -51,9 +51,9 @@ const HighlightPendingPosts = {
             // sanitized in common.js!
             if (json.events) {
                 HighlightPendingPosts.lastEventId = parseInt(json.lastEventId);
-                let newPosts = [...json.events.filter((x) => x.eventType === "newPost")];
-                let newPendingEvents = [];
-                for (let post of newPosts) {
+                const newPosts = [...json.events.filter((x) => x.eventType === "newPost")];
+                const newPendingEvents = [];
+                for (const post of newPosts) {
                     newPendingEvents.push({
                         postId: parseInt(post.eventData.postId),
                         threadId: parseInt(post.eventData.post.threadId),
@@ -72,8 +72,8 @@ const HighlightPendingPosts = {
 
     excludeRefreshed(refreshElem) {
         if (!refreshElem) return;
-        let closestId = refreshElem && refreshElem.closest("li[id^='item_']").id.substr(5);
-        let mutated = [
+        const closestId = refreshElem && refreshElem.closest("li[id^='item_']").id.substr(5);
+        const mutated = [
             ...HighlightPendingPosts.pendings.filter((x) => x.postId !== closestId || x.threadId !== closestId),
         ];
         HighlightPendingPosts.pendings = mutated;
@@ -89,9 +89,9 @@ const HighlightPendingPosts = {
 
     getNonCollapsedPendings(refreshElem?) {
         HighlightPendingPosts.excludeRefreshed(refreshElem);
-        let pendings = [...document.querySelectorAll("a.refresh_pending")];
-        let filtered = [];
-        for (let pending of pendings) {
+        const pendings = [...document.querySelectorAll("a.refresh_pending")];
+        const filtered = [];
+        for (const pending of pendings) {
             // include only non-refreshed/non-collapsed pendings
             if (HighlightPendingPosts.isPending(pending) && !HighlightPendingPosts.isCollapsed(pending))
                 filtered.push(pending);
@@ -100,18 +100,18 @@ const HighlightPendingPosts = {
     },
 
     installJumpToNewPostButton() {
-        let position = document.querySelector(".header-bottom .logo.alt");
-        let starContainer = document.createElement("div");
-        let star = document.createElement("a");
+        const position = document.querySelector(".header-bottom .logo.alt");
+        const starContainer = document.createElement("div");
+        const star = document.createElement("a");
         starContainer.setAttribute("id", "post_highlighter_container");
         starContainer.classList.add("hidden");
         star.setAttribute("id", "jump_to_new_post");
         star.addEventListener("click", (e) => {
             e.preventDefault();
             // simple incrementing carousel
-            let pendingLen = HighlightPendingPosts.marked.length;
-            let newIndex = (HighlightPendingPosts.lastIndex + 1 + pendingLen) % pendingLen;
-            let divPostItem =
+            const pendingLen = HighlightPendingPosts.marked.length;
+            const newIndex = (HighlightPendingPosts.lastIndex + 1 + pendingLen) % pendingLen;
+            const divPostItem =
                 HighlightPendingPosts.marked[newIndex] &&
                 HighlightPendingPosts.marked[newIndex].closest("li[id^='item_']");
             scrollToElement(divPostItem);
@@ -122,10 +122,10 @@ const HighlightPendingPosts = {
     },
 
     updateJumpToNewPostButton(refreshElem?) {
-        let button = document.getElementById("post_highlighter_container");
-        let indicator = "★ ";
-        let titleHasIndicator = document.title.startsWith(indicator);
-        let pendingPostBtn = document.getElementById("jump_to_new_post");
+        const button = document.getElementById("post_highlighter_container");
+        const indicator = "★ ";
+        const titleHasIndicator = document.title.startsWith(indicator);
+        const pendingPostBtn = document.getElementById("jump_to_new_post");
         HighlightPendingPosts.getNonCollapsedPendings(refreshElem);
         if (HighlightPendingPosts.marked.length > 0) {
             if (button) button.classList.remove("hidden");
@@ -141,7 +141,7 @@ const HighlightPendingPosts = {
         // Only install on the main /chatty page, not an individual thread.
         if (!document.getElementById("newcommentbutton")) return;
         // Only install on the first page of the chatty.
-        let aSelectedPages = document.getElementsByClassName("selected_page");
+        const aSelectedPages = document.getElementsByClassName("selected_page");
         if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread

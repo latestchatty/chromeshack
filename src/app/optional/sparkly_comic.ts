@@ -16,7 +16,7 @@ const SparklyComic = {
     },
 
     installComic(item, id) {
-        let fullpost = item.querySelector("div.fullpost");
+        const fullpost = item.querySelector("div.fullpost");
         SparklyComic.userMatch = HU_Instance.resolveUsers().filter((x) => x.name === "sparkly")[0];
         // we have a fullpost, and its className contains sparkly's user id
         if (
@@ -24,26 +24,26 @@ const SparklyComic = {
             SparklyComic.userMatch &&
             fullpost.classList.contains(`fpauthor_${SparklyComic.userMatch.id}`)
         ) {
-            let comic_id = `sparklycomic_${id}`;
+            const comic_id = `sparklycomic_${id}`;
             // comic is already here!
             if (document.getElementById(comic_id)) return;
-            let postBody = fullpost.querySelector("div.postbody");
-            let postBodyClone = postBody.cloneNode(true);
-            let expando = postBodyClone.querySelector("div.expando");
+            const postBody = fullpost.querySelector("div.postbody");
+            const postBodyClone = postBody.cloneNode(true);
+            const expando = postBodyClone.querySelector("div.expando");
             if (expando) expando.parentNode.removeChild(expando);
-            let lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
-            let comic_div = document.createElement("div");
+            const lines = SentenceParser.parseIntoLines(postBodyClone.innerHTML);
+            const comic_div = document.createElement("div");
             comic_div.id = comic_id;
             comic_div.className = "sparklycomic";
             postBody.appendChild(comic_div);
-            let max = lines.length;
+            const max = lines.length;
             for (let i = 0; i < max; i++) {
-                let panel = document.createElement("div");
+                const panel = document.createElement("div");
                 panel.className = "panel";
                 panel.style.backgroundImage = `url("${browser.runtime.getURL(
                     "../images/sparkly/" + SparklyComic.getImage(lines[i], i, max),
                 )}")`;
-                let s = document.createElement("span");
+                const s = document.createElement("span");
                 safeInnerHTML(lines[i], s);
                 panel.appendChild(s);
                 comic_div.appendChild(panel);

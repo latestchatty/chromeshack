@@ -1,5 +1,6 @@
 import * as browser from "webextension-polyfill";
-import * as common from "./common";
+
+import { isEmptyObj, superTrim, objContains } from "./common";
 
 export const DefaultSettings = {
     enabled_scripts: [
@@ -199,34 +200,33 @@ export const DefaultSettings = {
 /// GETTERS
 
 export const getSetting = async (key, defaultVal?) => {
-    let settings = await getSettings();
+    const settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
     return settings[key];
 };
 
 export const getEnabled = async (key?) => {
-    let enabled = (await getSetting("enabled_scripts")) || [];
+    const enabled = (await getSetting("enabled_scripts")) || [];
     if (!key) return enabled;
     return enabled && enabled.find((v) => v === key);
 };
 
 export const getEnabledSuboptions = async (key?) => {
-    let enabled = (await getSetting("enabled_suboptions")) || [];
+    const enabled = (await getSetting("enabled_suboptions")) || [];
     if (!key) return enabled;
     return enabled && enabled.find((v) => v === key);
 };
 
 export const getSettings = async () => {
-    let settings = await browser.storage.local.get();
-    if (common.isEmpty(settings))
-        return await browser.storage.local.set(DefaultSettings).then(browser.storage.local.get);
+    const settings = await browser.storage.local.get();
+    if (isEmptyObj(settings)) return await browser.storage.local.set(DefaultSettings).then(browser.storage.local.get);
 
     return settings;
 };
 
 export const getSettingsLegacy = () => {
-    let settings = { ...localStorage };
-    for (let key of Object.keys(settings) || []) {
+    const settings = { ...localStorage };
+    for (const key of Object.keys(settings) || []) {
         if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
             settings[key] = JSON.parse(settings[key]);
         else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
@@ -242,13 +242,13 @@ export const getMutableHighlights = async () => {
 /// SETTERS
 
 export const setEnabled = async (key) => {
-    let scripts = (await getEnabled()) || [];
+    const scripts = (await getEnabled()) || [];
     if (!scripts.includes(key) && key.length > 0) scripts.push(key);
     return await setSetting("enabled_scripts", scripts);
 };
 
 export const setEnabledSuboption = async (key) => {
-    let options = (await getEnabledSuboptions()) || [];
+    const options = (await getEnabledSuboptions()) || [];
     if (!options.includes(key) && key.length > 0) options.push(key);
     return await setSetting("enabled_suboptions", options);
 };
@@ -259,8 +259,8 @@ export const setSettings = async (obj) => await browser.storage.local.set(obj);
 
 export const setHighlightGroup = async (groupName, obj) => {
     // for overwriting a specific highlight group by name
-    let records = await getSetting("highlight_groups");
-    let indexMatch = records.findIndex((x) => x.name.toLowerCase() === groupName.toLowerCase());
+    const records = await getSetting("highlight_groups");
+    const indexMatch = records.findIndex((x) => x.name.toLowerCase() === groupName.toLowerCase());
     // overwrite at index if applicable (append otherwise)
     if (indexMatch > -1) records[indexMatch] = obj;
     else records.push(obj);
@@ -287,7 +287,7 @@ export const resetSettings = () => browser.storage.local.clear();
 
 export const removeHighlightGroup = async (groupName) => {
     // for removing a highlight group while preserving record order
-    let result = (await getSetting("highlight_groups")).filter((x) => x.name !== groupName);
+    const result = (await getSetting("highlight_groups")).filter((x) => x.name !== groupName);
     // return the new records Promise from the store
     return setSetting("highlight_groups", result).then(await getSetting("highlight_groups"));
 };
@@ -296,44 +296,43 @@ export const removeHighlightUser = async (groupName, username) => {
     let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
     group = group.length > 0 ? group[0] : null;
     if (group) {
-        let mutated = group.users.filter((x) => x && x.toLowerCase() !== common.superTrim(username.toLowerCase()));
+        const mutated = group.users.filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase()));
         group.users = mutated;
         return await setHighlightGroup(group.name, group);
     }
 };
 
 export const removeFilter = async (username) => {
-    let mutated = (await getSetting("user_filters")).filter((y) => y.toLowerCase() !== username.toLowerCase());
+    const mutated = (await getSetting("user_filters")).filter((y) => y.toLowerCase() !== username.toLowerCase());
     await setSetting("user_filters", mutated);
 };
 
 /// CONTAINERS
 
-export const settingsContains = async (key) => common.objContains(key, await getSettings());
+export const settingsContains = async (key) => objContains(key, await getSettings());
 
 export const enabledContains = async (key) => {
-    let enabled = await getEnabled();
+    const enabled = await getEnabled();
     return enabled ? enabled.includes(key) : false;
 };
 
 export const highlightsContains = async (username) => {
     // return all group matches based on username
     return (await getMutableHighlights()).filter((x) =>
-        x.users.find((y) => y.toLowerCase() === common.superTrim(username.toLowerCase())),
+        x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase())),
     );
 };
 
 export const highlightGroupContains = async (groupName, username) => {
-    let groups = await highlightsContains(username);
-    if (groups.length > 0) for (let group of groups || []) if (group.name === groupName) return group;
+    const groups = await highlightsContains(username);
+    if (groups.length > 0) for (const group of groups || []) if (group.name === groupName) return group;
     return false;
 };
 
 export const filtersContains = async (username) => {
     return (
-        (await getSetting("user_filters")).find(
-            (x) => x && x.toLowerCase() === common.superTrim(username.toLowerCase()),
-        ) || false
+        (await getSetting("user_filters")).find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) ||
+        false
     );
 };
 
@@ -341,7 +340,7 @@ export const addHighlightUser = async (groupName, username) => {
     let group = (await getSetting("highlight_groups")).filter((x) => x.name === groupName);
     group = group.length > 0 ? group[0] : null;
     if (group) {
-        let mutated = [...group.users, username];
+        const mutated = [...group.users, username];
         group.users = mutated;
         return await setHighlightGroup(group.name, group);
     }
@@ -349,7 +348,7 @@ export const addHighlightUser = async (groupName, username) => {
 
 export const addFilter = async (username) => {
     if (!(await filtersContains(username))) {
-        let mutated = [...(await getSetting("user_filters")), username];
+        const mutated = [...(await getSetting("user_filters")), username];
         await setSetting("user_filters", mutated);
     }
 };

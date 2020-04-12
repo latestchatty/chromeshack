@@ -22,15 +22,15 @@ const LocalTimeStamp = {
     },
 
     adjustTime(item: HTMLElement) {
-        const postDate = <HTMLElement>item.querySelector("div.postdate");
+        const postDate = <HTMLElement>item?.querySelector("div.postdate");
         const dateStr = postDate?.innerText;
         if (dateStr) {
             const localizedTime = LocalTimeStamp.fixTime(dateStr);
-            let timestamp = document.createElement("span");
+            const timestamp = document.createElement("span");
             timestamp.id = "local-time";
             timestamp.innerText = localizedTime;
             // remove only text child of postdate
-            for (let c of postDate.childNodes) if (c.nodeType === 3) c.remove();
+            for (const c of postDate.childNodes) if (c.nodeType === 3) c.remove();
             if (!postDate.querySelector("#local-time")) postDate.appendChild(timestamp);
         }
     },

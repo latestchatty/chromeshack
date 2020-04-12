@@ -1,35 +1,35 @@
-import * as settings from "../core/settings";
-import * as common from "../core/common";
+import { getSetting, setSetting, enabledContains } from "../core/settings";
+import { fetchSafe } from "../core/common";
 
 const ChattyNews = {
     async checkTime(delayInMs) {
-        let curTime = new Date().getTime();
-        let lastFetchTime = await settings.getSetting("chatty_news_lastfetchtime");
-        let diffTime = Math.abs(curTime - lastFetchTime);
+        const curTime = new Date().getTime();
+        const lastFetchTime = await getSetting("chatty_news_lastfetchtime");
+        const diffTime = Math.abs(curTime - lastFetchTime);
         if (!lastFetchTime || diffTime > delayInMs) {
             // update if necessary or start fresh
-            await settings.setSetting("chatty_news_lastfetchtime", curTime);
+            await setSetting("chatty_news_lastfetchtime", curTime);
             return true;
         }
         return false;
     },
 
     async populateNewsBox(container) {
-        let rss = await settings.getSetting("chatty_news_lastfetchdata");
-        let cachedRSS = await settings.getSetting("chatty_news_lastfetchdata");
+        let rss = await getSetting("chatty_news_lastfetchdata");
+        const cachedRSS = await getSetting("chatty_news_lastfetchdata");
         if (!cachedRSS || (await this.checkTime(1000 * 60 * 15))) {
             // cache each successful fetch for 15 minutes
-            rss = await common.fetchSafe({
+            rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
                 parseType: { chattyRSS: true },
             });
-            await settings.setSetting("chatty_news_lastfetchdata", rss);
+            await setSetting("chatty_news_lastfetchdata", rss);
             //console.log("Refreshed ChattyNews cache:", rss);
         }
 
-        let newsBox = container && container.querySelector("#recent-articles");
-        for (let item of rss || []) {
-            let newsItem = document.createElement("li");
+        const newsBox = container && container.querySelector("#recent-articles");
+        for (const item of rss || []) {
+            const newsItem = document.createElement("li");
             newsItem.innerHTML = /*html*/ `
                 <a
                     href="${item.link}"
@@ -45,10 +45,10 @@ const ChattyNews = {
     },
 
     install() {
-        settings.enabledContains("chatty_news").then(async (res) => {
+        enabledContains("chatty_news").then(async (res) => {
             if (res) {
                 if (document.querySelector("div.chatty-news")) return;
-                let articleBox = document.querySelector(".article-body p:first-child");
+                const articleBox = document.querySelector(".article-body p:first-child");
                 let newsBox = document.createElement("div");
                 newsBox.classList.add("chatty-news");
                 newsBox.innerHTML = /*html*/ `

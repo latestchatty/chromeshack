@@ -25,16 +25,16 @@ interface NotificationMessage {
 }
 
 const migrateSettings = async () => {
-    let legacy_settings = getSettingsLegacy();
-    let last_version = await getSetting("version", 0);
-    let current_version = parseFloat(browser.runtime.getManifest().version);
+    const legacy_settings = getSettingsLegacy();
+    const last_version = await getSetting("version", 0);
+    const current_version = parseFloat(browser.runtime.getManifest().version);
     if (legacy_settings && legacy_settings["version"] <= 1.63) {
         // quick reload from default settings of nustorage
         await resetSettings().then(getSettings);
         // preserve previous convertible filters and notifications state
-        let prevFilters = legacy_settings["user_filters"] || null;
-        let prevNotifyUID = legacy_settings["notificationuid"] || null;
-        let prevNotifyState = legacy_settings["notifications"] || null;
+        const prevFilters = legacy_settings["user_filters"] || null;
+        const prevNotifyUID = legacy_settings["notificationuid"] || null;
+        const prevNotifyState = legacy_settings["notifications"] || null;
         if (prevFilters) await setSetting("user_filters", prevFilters);
         if (prevNotifyUID && prevNotifyState) {
             await setSetting("notificationuid", prevNotifyUID);
@@ -132,17 +132,17 @@ const pollNotifications = async () => {
 
 const notificationClicked = (notificationId) => {
     if (notificationId.indexOf("ChromeshackNotification") > -1) {
-        let postId = notificationId.replace("ChromeshackNotification", "");
-        let url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
+        const postId = notificationId.replace("ChromeshackNotification", "");
+        const url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
         browser.tabs.create({ url: url });
         browser.notifications.clear(notificationId);
     }
 };
 
 const showCommentHistoryClick = (info, tab) => {
-    let match = /\/profile\/(.+)$/.exec(info.linkUrl);
+    const match = /\/profile\/(.+)$/.exec(info.linkUrl);
     if (match) {
-        let search_url = "https://winchatty.com/search?author=" + escape(match[1]);
+        const search_url = "https://winchatty.com/search?author=" + escape(match[1]);
         browser.tabs.create({
             windowId: tab.windowId,
             index: tab.index + 1,
@@ -178,7 +178,7 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
             parseType: request.parseType,
         });
     } else if (request.name === "corbPost") {
-        let _fd = await JSONToFormData(request.data);
+        const _fd = await JSONToFormData(request.data);
         return new Promise((resolve, reject) => {
             return fetchSafe({
                 url: request.url,

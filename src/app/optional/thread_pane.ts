@@ -1,5 +1,5 @@
 import { enabledContains } from "../core/settings";
-import { elementFitsViewport, scrollToElement, isEmpty } from "../core/common";
+import { elementFitsViewport, scrollToElement, isEmptyObj } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 
 const ThreadPane = {
@@ -77,7 +77,7 @@ const ThreadPane = {
             else $cardDiv.addClass("cs_thread_pane_card_ontopic");
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find("a").replaceWith(function() {
+            $rootPostBodyDiv.find("a").replaceWith(function () {
                 // exclude expando children
                 return $(`<span class="cs_thread_pane_link">${(<HTMLLinkElement>this).href}</span>`);
             });
@@ -122,7 +122,7 @@ const ThreadPane = {
                 $cardDiv.removeClass("cs_dim_animation");
 
                 setTimeout(() => {
-                    let elemFits = elementFitsViewport(li_root);
+                    const elemFits = elementFitsViewport(li_root);
                     // scroll to fit thread or newest reply if applicable
                     if (elemFits) scrollToElement(li_root, true);
                     else scrollToElement($li);
@@ -164,7 +164,7 @@ const ThreadPane = {
         if ($rootAuthor.length !== 0) {
             return $rootAuthor
                 .contents()
-                .filter(function() {
+                .filter(function () {
                     return this.nodeType === 3;
                 })[0]
                 .nodeValue.split(" - ")[0];
@@ -216,7 +216,10 @@ const ThreadPane = {
         // trim to at most 4 replies
         const maxReplies = 4;
         const parentIsRoot = mostRecentSubtree.length <= maxReplies;
-        return { parentIsRoot, mostRecentSubtree: mostRecentSubtree.slice(0, maxReplies) };
+        return {
+            parentIsRoot,
+            mostRecentSubtree: mostRecentSubtree.slice(0, maxReplies),
+        };
     },
 
     uncapThread(threadId) {

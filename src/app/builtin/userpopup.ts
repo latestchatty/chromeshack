@@ -39,16 +39,16 @@ const UserPopup = {
         // toggle our targeted dropdown if it exists
         if (targetDD) UserPopup.toggleDropdown(targetDD);
         // hide all other dropdowns if clicking outside of their boundary
-        for (let dd of userDDs) UserPopup.toggleDropdown(dd, true);
+        for (const dd of userDDs) UserPopup.toggleDropdown(dd, true);
     },
 
     createListItem(text?, url?, className?, target?) {
-        let a = document.createElement("a");
+        const a = document.createElement("a");
         a.href = "";
         if (url) a.href = url;
         if (target) a.target = target;
         if (text) a.appendChild(document.createTextNode(text));
-        let li = document.createElement("li");
+        const li = document.createElement("li");
         if (className) li.className = className;
         // Prevent menu clicks from bubbling up
         a.addEventListener("click", (e) => {
@@ -61,7 +61,7 @@ const UserPopup = {
     async handleFilterUser(e, username) {
         e.preventDefault();
         e.stopPropagation();
-        let filtersHas = await filtersContains(username);
+        const filtersHas = await filtersContains(username);
         if (!filtersHas) await addFilter(username);
         else await removeFilter(username);
         UserPopup.toggleDropdowns();
@@ -70,34 +70,34 @@ const UserPopup = {
     async handleHighlightUser(e, groupName, username) {
         e.preventDefault();
         e.stopPropagation();
-        let highlightsHas = await highlightGroupContains(groupName, username);
+        const highlightsHas = await highlightGroupContains(groupName, username);
         if (!highlightsHas) await addHighlightUser(groupName, username);
         else await removeHighlightUser(groupName, username);
         UserPopup.toggleDropdowns();
     },
 
     createFilterListItem(text, className) {
-        let item = document.createElement("div");
+        const item = document.createElement("div");
         if (text) item.appendChild(document.createTextNode(text));
-        let li = document.createElement("li");
+        const li = document.createElement("li");
         if (className) li.className = className;
         li.appendChild(item);
         return li;
     },
 
     async createFilterListItems(target, username) {
-        let ulUser = target;
-        let container = document.createElement("div");
+        const ulUser = target;
+        const container = document.createElement("div");
         container.id = "filter-list";
-        let separator = document.createElement("li");
+        const separator = document.createElement("li");
         separator.setAttribute("class", "userDropdown-separator");
         container.appendChild(separator);
-        let isApplied = ulUser.querySelector("#filter-list");
+        const isApplied = ulUser.querySelector("#filter-list");
         if (isApplied) isApplied.parentNode.removeChild(isApplied);
         if (ulUser) {
             if (await enabledContains("custom_user_filters")) {
-                let filtersHas = await filtersContains(username);
-                let filterCustomItem = UserPopup.createFilterListItem(
+                const filtersHas = await filtersContains(username);
+                const filterCustomItem = UserPopup.createFilterListItem(
                     `${filtersHas ? "Remove from" : "Add to"} Custom Filters`,
                     "userDropDown-custom-filter",
                 );
@@ -105,10 +105,10 @@ const UserPopup = {
                 container.appendChild(filterCustomItem);
             }
             if (await enabledContains("highlight_users")) {
-                let highlightGroups = await getMutableHighlights();
-                for (let group of highlightGroups || []) {
-                    let groupContainsUser = await highlightGroupContains(group.name, username);
-                    let filterHighlightsItem = UserPopup.createFilterListItem(
+                const highlightGroups = await getMutableHighlights();
+                for (const group of highlightGroups || []) {
+                    const groupContainsUser = await highlightGroupContains(group.name, username);
+                    const filterHighlightsItem = UserPopup.createFilterListItem(
                         `${groupContainsUser ? "Remove from" : "Add to"} Highlights Group: ${group.name}`,
                         "userDropdown-highlights",
                     );
@@ -124,17 +124,17 @@ const UserPopup = {
 
     displayUserMenu(parentObj, username, friendlyName) {
         // Create the dropdown menu if it doesn't already exist
-        let ulUserDD = parentObj.querySelector("ul.userDropdown");
+        const ulUserDD = parentObj.querySelector("ul.userDropdown");
         if (!ulUserDD) {
             // Create UL that will house the dropdown menu
-            let ulUser = document.createElement("ul");
+            const ulUser = document.createElement("ul");
             ulUser.className = "userDropdown";
             // Scrub username
-            let usernameTxt = encodeURIComponent(username);
+            const usernameTxt = encodeURIComponent(username);
+            let your = "Your";
+            let vanitySearch = "Vanity Search";
+            let parentAuthor = "Parent Author Search";
             if (friendlyName == "You") {
-                var your = "Your";
-                var vanitySearch = "Vanity Search";
-                var parentAuthor = "Parent Author Search";
                 // Add the account link to the dropdown menu
                 ulUser.appendChild(
                     UserPopup.createListItem("Shack Account", "/settings", "userDropdown-lol userDropdown-separator"),
@@ -146,16 +146,16 @@ const UserPopup = {
             }
 
             // Create menu items and add them to ulUser
-            let postsUrl = "https://www.shacknews.com/user/" + usernameTxt + "/posts";
+            const postsUrl = "https://www.shacknews.com/user/" + usernameTxt + "/posts";
             ulUser.appendChild(UserPopup.createListItem(your + " Posts", postsUrl));
 
-            let vanityUrl =
+            const vanityUrl =
                 "https://www.shacknews.com/search?chatty=1&type=4&chatty_term=" +
                 usernameTxt +
                 "&chatty_user=&chatty_author=&chatty_filter=all&result_sort=postdate_desc";
             ulUser.appendChild(UserPopup.createListItem(vanitySearch, vanityUrl));
 
-            let repliesUrl =
+            const repliesUrl =
                 "https://www.shacknews.com/search?chatty=1&type=4&chatty_term=&chatty_user=&chatty_author=" +
                 usernameTxt +
                 "&chatty_filter=all&result_sort=postdate_desc";
@@ -199,9 +199,10 @@ const UserPopup = {
         document.addEventListener("click", async (e) => {
             // try to eat exceptions that are typically harmless
             try {
-                let this_elem = <HTMLElement>e.target;
-                let this_parent = <HTMLElement>this_elem.parentNode;
-                let sanitizedUser = this_parent.matches("span.user") && superTrim(this_elem.innerText.split(" - ")[0]);
+                const this_elem = <HTMLElement>e.target;
+                const this_parent = <HTMLElement>this_elem.parentNode;
+                const sanitizedUser =
+                    this_parent?.matches("span.user") && superTrim(this_elem.innerText.split(" - ")[0]);
                 // Post author clicked
                 if (this_parent.matches("span.user:not(.this-user)") && this_elem.matches("a")) {
                     e.preventDefault();
@@ -209,8 +210,8 @@ const UserPopup = {
                     UserPopup.toggleDropdowns(e.target);
                     UserPopup.displayUserMenu(e.target, sanitizedUser, sanitizedUser);
                     // add filter options for fullpost usernames
-                    let usertext = this_elem.closest("span.user");
-                    let ulUserDD = usertext && usertext.querySelector("ul.userDropdown");
+                    const usertext = this_elem.closest("span.user");
+                    const ulUserDD = usertext && usertext.querySelector("ul.userDropdown");
                     await UserPopup.createFilterListItems(ulUserDD, sanitizedUser);
                 } else if (this_parent.matches("span.user.this-user") && this_elem.matches("a")) {
                     // OWN user name clicked as post author
@@ -235,7 +236,7 @@ const UserPopup = {
 
         if (UserPopup.getShackUsername()) {
             // Add custom dropdown stuff to the Account button
-            let $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
+            const $account = document.querySelector("header .header-bottom .tools ul li a[href='/settings']");
             $account.setAttribute("id", "userDropdownTrigger");
         }
     },

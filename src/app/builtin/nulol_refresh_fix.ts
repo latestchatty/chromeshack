@@ -31,10 +31,10 @@ const NuLOLFix = {
 
     preRefreshHandler(postId, rootId) {
         // click the root refresh to refresh tag data for the whole thread
-        let _rootId = rootId && typeof rootId !== "string" ? rootId.id.substr(5) : rootId;
-        let root = document.querySelector(`#root_${_rootId} > ul > li`);
-        let rootRefreshBtn = root && root.querySelector(".refresh > a");
-        let matched = CS_Instance.refreshingThreads[_rootId];
+        const _rootId = rootId && typeof rootId !== "string" ? rootId.id.substr(5) : rootId;
+        const root = document.querySelector(`#root_${_rootId} > ul > li`);
+        const rootRefreshBtn = root && root.querySelector(".refresh > a");
+        const matched = CS_Instance.refreshingThreads[_rootId];
         // don't rerun this if we're already refreshing
         if (rootRefreshBtn && !matched) {
             if (CS_Instance.debugEvents) console.log("attempting to refresh the thread tag data:", root);
@@ -44,9 +44,9 @@ const NuLOLFix = {
 
     postRefreshHandler(post, root) {
         // reopen the saved post
-        let rootId = root && root.id.substr(5);
-        let oneline = post && post.querySelector(".oneline_body");
-        let matched = CS_Instance.refreshingThreads[rootId];
+        const rootId = root && root.id.substr(5);
+        const oneline = post && post.querySelector(".oneline_body");
+        const matched = CS_Instance.refreshingThreads[rootId];
         if (matched) {
             if (oneline && matched.from_reply) {
                 // try to make sure replies are scrolled into view
@@ -61,8 +61,8 @@ const NuLOLFix = {
 
     postTagDataHandler(post, root) {
         // prevent duplicate tag counts from being shown after a refresh
-        let postTagCounts = post && post.querySelectorAll("span.tag-counts:not(.hidden)");
-        let rootTagCounts = root && root.querySelectorAll(".root > ul > li > .fullpost span.tag-counts:not(.hidden)");
+        const postTagCounts = post && post.querySelectorAll("span.tag-counts:not(.hidden)");
+        const rootTagCounts = root && root.querySelectorAll(".root > ul > li > .fullpost span.tag-counts:not(.hidden)");
         // hide everything but the first .tag-counts container (post & root)
         for (let i = 1; postTagCounts && i < postTagCounts.length && postTagCounts.length > 1; i++) {
             if (!postTagCounts[i].classList.contains("hidden")) {
@@ -79,8 +79,8 @@ const NuLOLFix = {
             }
         }
         // move the taglines to the correct parent to "fix" Chatty behavior
-        let rootAuthorLine = root && root.querySelector("span.author");
-        let postAuthorLine = post && post.querySelector("span.author");
+        const rootAuthorLine = root && root.querySelector("span.author");
+        const postAuthorLine = post && post.querySelector("span.author");
         if (
             rootAuthorLine &&
             rootTagCounts &&

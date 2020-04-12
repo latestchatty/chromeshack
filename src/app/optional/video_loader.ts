@@ -1,4 +1,5 @@
 import * as browser from "webextension-polyfill";
+
 import { objContains } from "../core/common";
 import { enabledContains } from "../core/settings";
 import { processExpandoLinks, toggleMediaItem, appendMedia, mediaContainerInsert } from "../core/media_helpers";
@@ -12,24 +13,24 @@ const VideoLoader = {
     },
 
     loadVideos(item) {
-        let links = [...item.querySelectorAll(".sel .postbody a")];
+        const links = [...item.querySelectorAll(".sel .postbody a")];
         if (links) processExpandoLinks(links, VideoLoader.getVideoType, VideoLoader.toggleVideo);
     },
 
     getVideoType(url) {
-        let _isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(url);
-        let _isXboxDVR = /https?:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w-]+)\/video\/([\w-]+)/i.exec(url);
+        const _isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(url);
+        const _isXboxDVR = /https?:\/\/(?:.*\.)?xboxdvr\.com\/gamer\/([\w-]+)\/video\/([\w-]+)/i.exec(url);
         // youtube videos and/or playlists (vid id: $1, playlist id: $2, offset: $3)
-        let _isYoutube = /https?:\/\/(?:.+\.)?youtube\..+\/(?:watch.+?v?=([\w-]+)(?:&list=([\w-]+))?(?:.*&t=(\d+))?|playlist\?list=([\w-]+))/i.exec(
+        const _isYoutube = /https?:\/\/(?:.+\.)?youtube\..+\/(?:watch.+?v?=([\w-]+)(?:&list=([\w-]+))?(?:.*&t=(\d+))?|playlist\?list=([\w-]+))/i.exec(
             url,
         );
-        let _isYoutubeShort = /https?:\/\/youtu\.be\/([\w-]+)(?:\?t=(\d+))?/i.exec(url);
+        const _isYoutubeShort = /https?:\/\/youtu\.be\/([\w-]+)(?:\?t=(\d+))?/i.exec(url);
         // twitch channels, videos, and clips (with time offset)
-        let _isTwitch = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w-]+)(?:.*?t=(\w+))?|collections\/([\w-]+))|([\w-]+)))/i.exec(
+        const _isTwitch = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|(?:.*\.)?twitch\.tv\/(?:.*?\/clip\/(\w+)|(?:videos\/([\w-]+)(?:.*?t=(\w+))?|collections\/([\w-]+))|([\w-]+)))/i.exec(
             url,
         );
-        let _isMixer = /https:\/\/(?:.+\.)?mixer\.com\/([\w-]+)(\?vod=[\w-]+|\?clip=[\w-]+)?/i.exec(url);
-        let _isFacebook = /https:\/\/(?:.+\.)?facebook.(?:.+?)\/.+\/videos\/(\d+)\/?/i.exec(url);
+        const _isMixer = /https:\/\/(?:.+\.)?mixer\.com\/([\w-]+)(\?vod=[\w-]+|\?clip=[\w-]+)?/i.exec(url);
+        const _isFacebook = /https:\/\/(?:.+\.)?facebook.(?:.+?)\/.+\/videos\/(\d+)\/?/i.exec(url);
 
         if (_isYoutube || _isYoutubeShort) {
             return {
@@ -60,8 +61,8 @@ const VideoLoader = {
         // left click only
         if (e.button == 0) {
             e.preventDefault();
-            let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
-            let link = _expandoClicked ? e.target.parentNode : e.target;
+            const _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
+            const link = _expandoClicked ? e.target.parentNode : e.target;
             if (toggleMediaItem(link)) return;
 
             if (videoObj && videoObj.type === 1) VideoLoader.createYoutube(link, videoObj, postId, index);
@@ -72,20 +73,20 @@ const VideoLoader = {
     },
 
     async getStreamableLink(shortcode) {
-        let __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-        let json = await browser.runtime.sendMessage({
+        const __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
+        const json = await browser.runtime.sendMessage({
             name: "corbFetch",
             url: `https://api.streamable.com/videos/${shortcode}`,
             fetchOpts: { headers: { Authorization: __obf } },
         }); // sanitized in common.js!
-        let url_match = json && json.embed_code ? /src\="(.*?)"/.exec(json.embed_code) : "";
+        const url_match = json && json.embed_code ? /src="(.*?)"/.exec(json.embed_code) : "";
         return url_match ? url_match[1] : "";
     },
 
     async createIframePlayer(link, videoObj, postId, index) {
         // handle both Streamable and XboxDVR Iframe embed types
-        let user = videoObj.user;
-        let video_id = videoObj.video || "";
+        const user = videoObj.user;
+        const video_id = videoObj.video || "";
         let video_src = "";
 
         if (videoObj.type === 3) {
@@ -103,7 +104,7 @@ const VideoLoader = {
         }
 
         if (video_src) {
-            let iframe = appendMedia({
+            const iframe = appendMedia({
                 src: [video_src],
                 link,
                 postId,
@@ -116,9 +117,9 @@ const VideoLoader = {
 
     createYoutube(link, videoObj, postId, index) {
         let video_src;
-        let video_id = videoObj.video;
-        let video_playlist = videoObj.playlist;
-        let timeOffset = videoObj.offset ? `&start=${videoObj.offset}` : "";
+        const video_id = videoObj.video;
+        const video_playlist = videoObj.playlist;
+        const timeOffset = videoObj.offset ? `&start=${videoObj.offset}` : "";
 
         if (video_id && video_playlist)
             video_src = `https://www.youtube.com/embed/${video_id}?list=${video_playlist}&autoplay=1${timeOffset}`;
@@ -127,7 +128,7 @@ const VideoLoader = {
             video_src = `https://www.youtube.com/embed/videoseries?list=${video_playlist}&autoplay=1`;
 
         if (video_src) {
-            let iframe = appendMedia({
+            const iframe = appendMedia({
                 src: [video_src],
                 link,
                 postId,
@@ -139,11 +140,11 @@ const VideoLoader = {
     },
 
     createTwitch(link, videoObj, postId, index) {
-        let video_id = videoObj.video;
-        let video_channel = videoObj.channel;
-        let video_collection = videoObj.collection;
-        let video_clip = videoObj.clip;
-        let timeOffset = videoObj.offset || 0;
+        const video_id = videoObj.video;
+        const video_channel = videoObj.channel;
+        const video_collection = videoObj.collection;
+        const video_clip = videoObj.clip;
+        const timeOffset = videoObj.offset || 0;
 
         let video_src;
         if (video_id)
@@ -155,7 +156,7 @@ const VideoLoader = {
         else if (video_clip) video_src = `https://clips.twitch.tv/embed?clip=${video_clip}&autoplay=true&muted=false`;
 
         if (video_src) {
-            let iframe = appendMedia({
+            const iframe = appendMedia({
                 src: [video_src],
                 link,
                 postId,
