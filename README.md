@@ -16,7 +16,7 @@ NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
 
 -   Production code is generated in the `dist/` folder by running `npm run build:prod`, along with a zip file in the `artifacts/` folder that is deployment ready (minus signing).
 
-The full list of all scripts provided are as follows:
+NPM commands are as follows:
 
 -   `npm run build:dev` for auto-reloading the extension in Chrome/Firefox in dev mode
 -   `npm run build:prod` for building in production mode (for both Firefox and Chrome)
