@@ -1,379 +1,271 @@
-/* start of image uploader stuff */
+:root {
+    --chatty-bg: rgba(20, 20, 20, 1);
+    --chatty-la: rgba(65, 170, 170, 1);
+
+    --postbox-bg: rgba(34, 34, 34, 1);
+    --postbox-fg: rgba(255, 255, 255, 0.15);
+    --postbox-abg: rgba(68, 68, 68, 0.5);
+    --postbox-afg: rgba(255, 255, 255, 0.75);
+    --postbox-afgh: white;
+
+    --postbox-brd: rgba(68, 68, 68, 0.65);
+    --postbox-abrd: rgba(68, 68, 68, 1);
+
+    --postbox-btnfg: rgba(85, 85, 85, 1);
+    --postbox-btnpbg: rgba(233, 233, 222, 1);
+    --postbox-btnsbg: rgba(165, 165, 156, 1);
+    --postbox-btnsbrd: rgba(181, 181, 172, 1);
+
+    --postbox-btnbg: rgba(233, 233, 222, 0.2);
+    --postbox-btnabg: rgba(233, 233, 222, 0.75);
+    --postbox-btnaclick: rgba(128, 128, 128, 0.85);
+
+    --postbox-vurl: rgba(0, 255, 0, 0.39);
+    --postbox-ivurl: rgba(255, 0, 0, 0.39);
+    --postbox-error: rgba(255, 0, 0, 0.75);
+}
 
 /* formatting containers for image uploader */
 .post_sub_container {
     /* postbox alignment container */
-    display: grid;
-    grid-template-areas: "c1 s1 c2 c2";
-}
-.uploadContainer {
-    /* image uploader alignment container */
-    grid-area: c2;
     display: flex;
-    flex-direction: column;
-    justify-self: right;
-    min-width: 350px;
-    max-width: 350px;
-}
-.uploadRadioLabels {
-    /* container for clickable radio filters */
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-rows: 1fr;
-}
-#uploadDropArea {
-    /* main image uploader content container */
-    border-style: dashed;
-    border-color: #666;
-    border-width: 2px;
-    border-radius: 4px;
-    max-width: 98%;
-    min-width: 0;
-    padding: 8px;
-}
-.uploadDropLabelArea {
-    /* top field in content area */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0.5em;
-    font-size: 14px;
-    color: #7c7c7c;
-    min-height: 62px;
-}
-#uploadDropArea .urlBox {
-    /* url box and snippet filter */
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    grid-template-rows: 1fr;
-    align-items: center;
-    justify-content: center;
-}
-#uploadDropArea .urlUploadSnippetControls {
-    /* snippet controls */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin: 0 5px 0 5px;
-}
-.contextLine {
-    /* buttons and file status */
-    display: grid;
-    grid-template-areas: "clc1 clc2";
-    align-items: center;
-    min-width: 1;
     width: 100%;
 }
-#errorLabels {
-    /* error status footer */
-    display: flex;
-    align-self: center;
-    align-items: center;
-    justify-content: center;
-    margin-top: 0.5em;
-    min-width: 1;
-    flex-basis: 98%;
+.post_sub_container .hidden {
+    display: none !important;
 }
 
-/* only apply shacktags legend overrides when injected */
-.post_sub_container #shacktags_legend {
-    grid-area: c1;
+#shacktags_legend {
+    margin: 0 auto auto 0 !important;
+    display: flex !important;
+    flex-direction: column;
+}
+#shacktags_legend_toggle {
+    width: 100%;
+}
+#shacktags_legend > a {
+    align-self: flex-end;
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 0 0.33em 0 !important;
+    padding: 0.25em !important;
+}
+#shacktags_legend_table {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.post_sub_container #react-container {
+    margin: 0 2px auto auto;
+    max-width: 400px;
+    min-width: 250px;
+    width: 100%;
+}
+span#toggleLabel {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    padding: 3px;
+    background-color: black;
+    color: var(--postbox-afgh);
+    width: 100%;
+    cursor: pointer;
+    margin: 0 0 0.33em 0;
+}
+span#toggleLabel:hover {
+    color: var(--chatty-la);
+    text-decoration: underline;
+}
+
+#uploader-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    min-width: 165px;
-}
-
-.post_sub_container #shacktags_legend_toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: black;
-    margin-bottom: 0.25em;
-    padding-right: 30%;
-}
-
-.post_sub_container #shacktags_legend_table {
-    margin-top: 0.33em !important;
-}
-
-.showImageUploadLink {
-    /* image uploader toggle */
-    display: flex;
-    background: black;
-    padding: 8px;
-    justify-content: center;
-}
-
-/* styled radio filters */
-.uploadRadioLabels label {
-    display: flex !important;
-    text-transform: none !important;
-    font-size: 14px;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5em 0.75em 0.5em 0.75em !important;
-    margin: 0 -1px 0 -1px;
-    margin-bottom: 1px;
-    border-style: solid none;
-    border-width: 2px;
-    border-color: #222;
-    border-radius: 4px;
-}
-.uploadRadioLabels label:first-child {
-    border-style: solid none solid solid;
-}
-.uploadRadioLabels label:last-child {
-    border-style: solid solid solid none;
-}
-#uploadChatty,
-#uploadGfycat,
-#uploadImgur {
-    display: none;
-}
-.uploadRadioLabels .gfycat,
-.uploadRadioLabels .imgur,
-.uploadRadioLabels .chatty {
-    font-weight: bold;
-}
-#uploadGfycat:checked ~ .uploadRadioLabels .gfycat,
-#uploadImgur:checked ~ .uploadRadioLabels .imgur,
-#uploadChatty:checked ~ .uploadRadioLabels .chatty {
-    color: #e9e9de !important;
-    font-weight: bold;
-    background: #333;
-    border-radius: 4px;
-}
-/* end styled radio filters */
-
-/* image uploader content area */
-.dragOver {
-    background-color: #222;
-}
-
-#fileChooserLink {
-    padding-right: 0.25em;
-}
-
-#uploadFields.hidden,
-#fileUploadInput {
-    display: none !important;
-}
-.urlInputBox.hidden,
-.contextLine.hidden {
-    visibility: hidden;
-}
-
-/* url bar and gfycat snippet controls */
-#uploadDropArea .urlBox #urlUploadInput {
-    grid-column: 1 / 3;
-    grid-row: 1 / 2;
-}
-#uploadDropArea .urlBox .urlUploadSnippetCheckbox {
-    grid-column: 3 / 4;
-    grid-row: 1 / 2;
-    position: relative;
-    min-width: 25px;
-    margin: 0 -6px 20px 10px;
-}
-#uploadDropArea .urlUploadSnippetControls div {
-    grid-column: 2 / 4;
-    grid-row: 1 / 2;
-}
-
-#uploadDropArea .urlBox input[type="text"]#urlUploadInput {
-    /* necessary to override stylesheet */
-    border: 1px dashed #444 !important;
-    color: #888 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    padding: 0.5em !important;
-    margin: 0 0 0.5em 0em !important;
-}
-#uploadDropArea .urlBox input[type="text"]#urlUploadInput.valid {
-    /* try to bring attention to valid url */
-    border: 1px dashed #666 !important;
-    color: #e9e9de !important;
-}
-input[type="checkbox"]#urlUploadSnippetBox {
-    /* some initial resets */
-    border: 1px dashed #444 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    text-transform: none !important;
-}
-
-#uploadDropArea .urlBox .urlUploadSnippetCheckbox.hidden {
-    display: none !important;
-}
-#uploadDropArea .urlUploadSnippetControls.hidden {
-    display: none !important;
-}
-
-#uploadDropArea .urlUploadSnippetControls input[type="text"]:focus {
-    outline: 0;
-}
-#uploadDropArea .urlUploadSnippetControls input[type="text"] {
-    border: 1px dashed #444 !important;
-    color: #888 !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    border-radius: 0 !important;
-    padding: 0.5em !important;
-    margin: 0 5px 0.5em 5px !important;
-    width: 65px !important;
-}
-#uploadDropArea .urlUploadSnippetControls .snippetControlsLabel {
-    font-size: 13px;
-    color: #888;
-    padding: 0 5px 0.5em 5px;
-}
-.urlUploadSnippetControls div {
-    display: flex;
+    width: 100%;
     align-self: center;
-    align-items: center;
-    justify-content: right;
-    padding: 0 5px 0 5px;
+    border-radius: 6px;
+    background-color: var(--chatty-bg);
+    border: 1px solid var(--postbox-brd);
 }
 
-/* styled checkbox */
-.urlUploadSnippetCheckbox {
-    position: relative;
-    padding: 0 0 6px 0;
-    margin-left: 4px;
+#tab-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
-.urlUploadSnippetCheckbox input {
-    top: 0;
-    left: 0;
-    z-index: 1;
+#tab-container .tab {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin: 0;
+    padding: 5px;
+    width: 100%;
     cursor: pointer;
-    opacity: 0;
-    position: absolute;
-    width: 15px;
-    height: 15px;
 }
-.urlUploadSnippetCheckbox .style-helper:before,
-.urlUploadSnippetCheckbox .style-helper:after {
-    position: absolute;
-    content: "";
-    transition: all 75ms;
+#tab-container .active {
+    background-color: var(--postbox-abg);
+    color: var(--postbox-afg);
 }
-.urlUploadSnippetCheckbox .style-helper:before {
-    top: 0;
-    left: 0;
-    width: 15px;
-    height: 15px;
-    border-radius: 1px;
-    color: silver;
-    border: 1px solid #666;
+#tab-container .active:first-child,
+#tab-container .inactive:first-child {
+    border-radius: 6px 0 0 0;
 }
-.urlUploadSnippetCheckbox .style-helper:after {
-    content: "\2713";
-    font-size: 13px;
-    left: 1px;
-    top: 0px;
-    color: silver;
-    transform: scale(0);
-    opacity: 0;
+#tab-container .active:last-child,
+#tab-container .inactive:last-child {
+    border-radius: 0 6px 0 0;
 }
-.urlUploadSnippetCheckbox input:checked + .style-helper:before {
-    border-color: #666;
+#tab-container .active:not(:first-child):not(:last-child),
+#tab-container .inactive:not(:first-child):not(:last-child) {
+    border-radius: 0;
 }
-.urlUploadSnippetCheckbox input:checked + .style-helper:before {
-    background-color: transparent !important;
-}
-.urlUploadSnippetCheckbox input:checked + .style-helper:after {
-    transform: scale(1);
-    opacity: 1;
+#tab-container .inactive {
+    border-radius: 0;
+    background-color: var(--postbox-bg);
+    color: var(--postbox-fg);
 }
 
-/* image uploader context line (buttons/file) */
-#uploadButtons {
-    grid-area: clc1;
+#uploader-body {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    padding: 4px 4px 6px 4px;
 }
-#uploadButtons.hidden {
-    display: none;
+#uploader-body > *:not(:first-child) {
+    margin-top: 5px;
 }
-#urlUploadButton,
-#cancelUploadButton {
-    grid-area: clc1;
-    background-color: #222;
-    border-radius: 4px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #555 !important;
-    color: #e9e9de !important;
-    font-weight: bold;
-    width: 100px;
-    height: 28px;
-    font-size: 12px;
-    font-weight: bold;
-    font-style: italic;
-}
-#cancelUploadButton.small {
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-style: normal !important;
-    width: 17px !important;
-    outline: 0;
-}
-
-#uploadStatusLabel {
+#dropArea {
+    display: flex;
     align-self: center;
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
-    font-style: italic;
-    color: #888;
-    word-wrap: break-word;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    justify-self: center;
+    justify-content: center;
+    align-items: center;
+    width: 99%;
+    height: 75px;
+    border: 2px dotted var(--postbox-brd);
 }
-#uploadStatusLabel.muted {
-    color: #555;
+#dropArea.active {
+    border: 2px dotted var(--postbox-btnfg);
+}
+#dropArea.disabled,
+#dropArea.disabled > span {
+    color: var(--postbox-abg);
+    border: none;
+    cursor: default;
+}
+#dropArea > span {
+    font-size: 16px;
+    font-style: italic;
+    color: var(--postbox-afg);
+    padding: 0.25em;
+}
+#dropArea:not(.disabled) > span:hover {
+    color: var(--postbox-afgh);
+    cursor: pointer;
 }
 
-/* upload error status labels */
-#errorStatusLabel {
-    font-weight: bold;
-    word-wrap: break-word;
-    color: #777;
-    min-width: 1;
-    flex: 0 0 auto;
+input[type="url"]#urlinput {
+    display: flex;
+    justify-self: center;
+    background-color: var(--postbox-bg);
+    color: var(--postbox-afg);
+    box-shadow: unset !important;
+    border: 1px solid var(--postbox-abrd);
+    border-radius: 3px;
+    width: 97%;
+    padding: 5px;
 }
-#errorStatusLabelDetail {
-    margin-left: 6px;
-    text-align: left;
+input[type="url"]#urlinput::placeholder {
     font-style: italic;
-    font-size: 12px;
-    color: #666;
-    word-wrap: break-word;
+    color: var(--postbox-fg);
+}
+input[type="url"]#urlinput:valid {
+    outline-color: var(--postbox-vurl);
+}
+input[type="url"]#urlinput:invalid {
+    outline-color: var(--postbox-ivurl);
+}
+
+#uploader-btns {
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    width: 100%;
+    margin-bottom: 2px;
+}
+#uploader-btns button {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    margin: 0 0.25em;
+    border: none;
+    background-color: var(--postbox-btnpbg);
+    color: var(--postbox-btnfg);
+    font-size: 13px;
+    font-weight: bold;
+    outline: none;
+    padding: 5px;
+    width: 100%;
+    cursor: pointer;
+}
+#uploader-btns:first-child {
+    margin: 0 0.25em 0 0 !important;
+}
+#uploader-btns:last-child {
+    margin: 0 0 0 0.25em !important;
+}
+#uploader-btns button:not(:disabled):hover {
+    background: var(--postbox-btnpbg) !important;
+}
+#uploader-btns button:active {
+    background-color: var(--postbox-btnaclick) !important;
+    color: black !important;
+}
+#uploader-btns button:disabled {
+    background-color: var(--postbox-btnbg);
+    color: var(--postbox-btnfg);
+    cursor: default;
+}
+#uploader-btns #cancel-btn:not(:disabled) {
+    background-color: var(--postbox-btnsbg);
+}
+
+#uploader-container #status {
+    display: flex;
+    align-items: baseline;
+    color: var(--postbox-afg);
+    text-decoration: none;
+    min-width: 0;
+    max-width: 100%;
+    padding: 0 0.15em;
+}
+#status span:first-child {
+    font-size: 14px;
+    margin-right: 0.5em;
+}
+#status #statusmsg {
+    font-size: 13px;
+}
+span.error {
+    color: var(--postbox-error);
+    font-style: italic;
+}
+span.truncate {
+    display: block;
     white-space: nowrap;
-    text-overflow: ellipsis;
     overflow: hidden;
-    min-width: 1;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
-#errorLabels.hidden {
-    display: none;
+/* fade out effect*/
+#uploader-container .fadeout {
+    animation: fadeOut 1s forwards;
+    animation-delay: 5s;
 }
-/* simple loading spinner */
-.spinner {
-    animation: loading 1s infinite;
-}
-@keyframes loading {
-    0% {
+@keyframes fadeOut {
+    from {
         opacity: 1;
     }
-    50% {
+    to {
         opacity: 0;
     }
-    100% {
-        opacity: 1;
-    }
 }
-/* end of image uploader stuff */

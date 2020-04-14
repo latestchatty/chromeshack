@@ -6,7 +6,7 @@ import ModBanners from "./builtin/mod_banners";
 import EmojiPoster from "./builtin/emoji_poster";
 import LocalTimeStamp from "./builtin/local_timestamp";
 import UserPopup from "./builtin/userpopup";
-import ImageUploader from "./builtin/image_uploader";
+import ImageUploader from "./builtin/image-uploader";
 import NuLOLFix from "./builtin/nulol_refresh_fix";
 import CodeTagFix from "./builtin/codetagfix";
 
@@ -27,13 +27,13 @@ import PostLengthCounter from "./builtin/post_length_counter";
 import PostPreview from "./optional/post_preview";
 import EmbedSocials from "./optional/embed_socials";
 
-import "../styles/chatty-news.css";
-import "../styles/chromeshack.css";
-import "../styles/comic_scripts.css";
-import "../styles/embed_socials.css";
-import "../styles/image_uploader.css";
-import "../styles/media.css";
-import "../styles/two_pane.css";
+require("../styles/chatty-news.css");
+require("../styles/chromeshack.css");
+require("../styles/comic_scripts.css");
+require("../styles/embed_socials.css");
+require("../styles/image_uploader.css");
+require("../styles/media.css");
+require("../styles/two_pane.css");
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;
@@ -64,10 +64,11 @@ Promise.all([
     CommentTags.install();
     Collapse.install();
     EmojiPoster.install();
-    ImageUploader.install();
     UserPopup.install();
     NuLOLFix.install();
     CodeTagFix.install();
+    ImageUploader.install();
+
     // always make sure the ChromeShack event observer is last
     CS_Instance.install();
 });

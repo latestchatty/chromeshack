@@ -1,13 +1,19 @@
 import * as DOMPurify from "dompurify";
 
 import { getSetting, setSetting } from "./settings";
-import { imageFormats, videoFormats } from "../builtin/image-uploader/uploaderStore";
 
+/// declare global functions for use in injected page code
 declare global {
     interface Window {
         scrollToElement: Function;
         elementIsVisible: Function;
     }
+}
+
+interface FetchArgs {
+    url: string;
+    fetchOpts?: RequestInit;
+    parseType?: object;
 }
 
 export const stripHtml = (html) => {
@@ -85,15 +91,7 @@ export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
     });
 };
 
-export const fetchSafeLegacy = ({
-    url,
-    fetchOpts,
-    parseType,
-}: {
-    url: string;
-    fetchOpts?: object;
-    parseType?: string;
-}): Promise<any> => {
+export const fetchSafeLegacy = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
     // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
     return new Promise((resolve, reject) => {
         xhrRequestLegacy(url, fetchOpts)
@@ -106,15 +104,7 @@ export const fetchSafeLegacy = ({
     });
 };
 
-export const fetchSafe = ({
-    url,
-    fetchOpts,
-    parseType,
-}: {
-    url: string;
-    fetchOpts?: RequestInit;
-    parseType?: object;
-}): Promise<any> => {
+export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
     // used for sanitizing fetches
     // fetchOpts gets destructured in 'xhrRequest()'
     // modeObj gets destructured into override bools:
@@ -132,6 +122,12 @@ export const fetchSafe = ({
             })
             .catch((err) => reject(err)),
     );
+};
+
+const waitToResolve = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitToFetchSafe = async (timeout, fetchArgs: FetchArgs) => {
+    await waitToResolve(timeout);
+    return await fetchSafe(fetchArgs);
 };
 
 export const parseFetchResponse = async (textPromise, parseType) => {
@@ -499,20 +495,17 @@ export const insertAtCaret = (field: HTMLInputElement, text: string) => {
 };
 
 export const appendLinksToField = (field: HTMLInputElement, links: string[]) => {
-    if (links.length > 1) {
-        // delimit array of strings by newline
-        const _links = links
-            .map((v, i) => {
-                if (i === 0) return `\n\n${v}\n`;
-                else return `${v}`;
-            })
-            .join("");
-        // append multiple links at the bottom of existing input field
-        field.value += _links;
-    } else if (links.length === 1) {
-        // append a single link at the current text caret position
-        insertAtCaret(field, links[0]);
-    }
+    /// try to append links to the bottom of text input field
+    const constructed: string = !isEmptyArr(links)
+        ? links
+              .reduce((pv, v, i) => {
+                  if (i === 0 && field.value.length > 0) pv.push(`\n\n${v}`);
+                  else pv.push(v);
+                  return pv;
+              }, [])
+              .join("")
+        : null;
+    if (constructed) insertAtCaret(field, constructed);
 };
 
 export const getFileCount = (fileList): string => {
@@ -520,11 +513,13 @@ export const getFileCount = (fileList): string => {
     return files && files.length > 0 ? `${files.length} files` : "";
 };
 
-export const matchFileFormat = (input: File): number => {
-    const _imgFormats = imageFormats.split(",");
-    const _vidFormats = videoFormats.split(",");
-    const _imgMatched = _imgFormats.filter((fmt) => fmt === input.type);
-    const _vidMatched = _vidFormats.filter((fmt) => fmt === input.type);
+export const matchFileFormat = (input: File, imgFormats: string, vidFormats: string): number => {
+    /// compares a File to image and video mime-type strings to determine general file type
+    const _imgFormats = imgFormats && imgFormats.length > 0 ? imgFormats.split(",") : null;
+    const _vidFormats = vidFormats && vidFormats.length > 0 ? vidFormats.split(",") : null;
+    if (!_imgFormats && !_vidFormats) return -1;
+    const _imgMatched = !isEmptyArr(_imgFormats) && _imgFormats.filter((fmt) => fmt === input.type);
+    const _vidMatched = !isEmptyArr(_vidFormats) && _vidFormats.filter((fmt) => fmt === input.type);
     if (_imgMatched) return 0;
     else if (_vidMatched) return 1;
     return -1;
@@ -541,16 +536,15 @@ export const packValidTypes = (types: string, fileList: File[]) => {
 
 export const isUrlArr = (dataArr) => {
     // every element of this array must contain a URL formatted string
-    if (!isEmptyArr(dataArr)) {
-        for (const i of dataArr)
-            if (typeof i !== "string" || !i.startsWith("https://") || !i.startsWith("http://")) return false;
-    }
+    for (const i of dataArr || [])
+        if (typeof i !== "string" || i.length <= 9 || !i.match(/^https?:\/\//i)) return false;
+
     return true;
 };
 
 export const isFileArr = (dataArr) => {
     // every element of this array must contain a File object
-    if (!isEmptyArr(dataArr)) for (const i of dataArr) if (!(i instanceof File)) return false;
+    for (const i of dataArr || []) if (!(i instanceof File)) return false;
     return true;
 };
 

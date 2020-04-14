@@ -3,22 +3,8 @@ import { enabledContains } from "../core/settings";
 import { objContains, fetchSafe, fetchSafeLegacy } from "../core/common";
 import { processExpandoLinks, toggleMediaItem, appendMedia } from "../core/media_helpers";
 
-interface ImgurResponse {
-    data: {
-        images?: Array<{
-            mp4?: string;
-            link?: string;
-        }>;
-        mp4?: string;
-        link?: string;
-    };
-}
-
-interface GfycatResponse {
-    gfyItem: {
-        mobileUrl: string;
-    };
-}
+import { doResolveGfycat } from "../builtin/api/gfycat";
+import { doResolveImgur } from "../builtin/api/imgur";
 
 interface TenorResponse {
     results?: Array<{
@@ -32,10 +18,10 @@ interface TenorResponse {
 
 const ImageLoader = {
     // general media detection patterns
-    imgRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w*@#$%^_&!()[\]{}'-]+\.(png|jpe?g|webp|gif))([&?].+?$|\w+)?/i,
-    vidRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w@#$%^_&!()[\]{}'-]+\.(mp4|gifv|webm))([&?].+?$|\w+)?/i,
+    imgRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-._@#$%^&!()[\]{}']+\.(png|jpe?g|webp|gif))([&?].+?$|\w+)?/i,
+    vidRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-._@#$%^&!()[\]{}']+\.(mp4|gifv|webm))([&?].+?$|\w+)?/i,
     // common media host patterns
-    imgurRegex: /https?:\/\/(?:.+?\.)?imgur\.com\/(?:.+?\/)*([\w-]+)(?:#([\w-]+))?/i,
+    imgurRegex: /https?:\/\/(?:.+?\.)?imgur\.com\/(?:(?:i\/)?(\w+?)\b\.|(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?|(\w+)$)?/i,
     gfycatRegex: /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i,
     giphyRegex: /https?:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*-)?([\w-]+)/i,
     tenorRegex: /https:\/\/(tenor\.com\/view\/[\w-]+?(\d{7,})|media\.tenor\.com\/videos\/(\w{32})\/(mp4|webm))/i,
@@ -43,7 +29,7 @@ const ImageLoader = {
     dropboxVidRegex: /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:mp4|gifv|webm)\\?/i,
     // common image host patterns
     chattypicsRegex1: /https?:\/\/(?:.*?\.)?chattypics\.com\/viewer\.php/i,
-    chattypicsRegex2: /https?:\/\/chattypics\.com\/files\/.*\.jpe?g/i,
+    chattypicsRegex2: /https?:\/\/chattypics\.com\/files\/.*\.(png|jpe?g|gif|webp)/i,
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i,
 
     async install() {
@@ -53,7 +39,7 @@ const ImageLoader = {
     },
 
     loadImages(item) {
-        let links = [...item.querySelectorAll(".sel .postbody a")];
+        const links = [...item.querySelectorAll(".sel .postbody a")];
         if (links) processExpandoLinks(links, ImageLoader.getMediaType, ImageLoader.toggleImage);
     },
 
@@ -80,8 +66,8 @@ const ImageLoader = {
             }
             // change shackpics image page into image
             else if (ImageLoader.chattypicsRegex1.test(url)) return url.replace(/viewer\.php\?file=/, "files/");
-            else if (ImageLoader.chattypicsRegex2.test(url)) return url.replace("http:", "https:");
             // force HTTPS Chattypics fetches
+            if (ImageLoader.chattypicsRegex2.test(url)) return url.replace("http:", "https:");
             // distinguish between twitter cdn types
             else if ((m = ImageLoader.twimgRegex.exec(url)) !== null) {
                 if (m[3]) return `${m[1]}${m[4] || m[2]}.${m[3]}`;
@@ -95,7 +81,7 @@ const ImageLoader = {
         };
         const isImage = (url) => {
             // some urls don't end in jpeg/png/etc so the normal test won't work
-            let src = getImageUrl(url);
+            const src = getImageUrl(url);
             if (
                 ImageLoader.twimgRegex.test(url) ||
                 ImageLoader.dropboxImgRegex.test(url) ||
@@ -113,8 +99,8 @@ const ImageLoader = {
         // left click only
         if (e.button == 0) {
             e.preventDefault();
-            let _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
-            let link = _expandoClicked ? e.target.parentNode : e.target;
+            const _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
+            const link = _expandoClicked ? e.target.parentNode : e.target;
             let src;
             if (toggleMediaItem(link)) return;
             if (parsedPost && parsedPost.type === 2 && parsedPost.src) {
@@ -145,7 +131,7 @@ const ImageLoader = {
     },
 
     createDropboxVid(link, postId, index) {
-        let src = [link.href.replace(/\?dl=0/i, "") + "?raw=1"];
+        const src = [link.href.replace(/\?dl=0/i, "") + "?raw=1"];
         appendMedia({
             src,
             link,
@@ -156,107 +142,53 @@ const ImageLoader = {
     },
 
     async createImgur(link, postId, index) {
-        const fetchImgur = (url) => {
-            // sanitized in common.js!
-            return fetchSafe({
-                url,
-                fetchOpts: {
-                    headers: { Authorization: "Client-ID c045579f61fc802" },
-                },
-            })
-                .then((response: ImgurResponse) => {
-                    let _media = response && response.data;
-                    let _items =
-                        response && Array.isArray(_media.images || _media) ? _media.images : _media.mp4 || _media.link;
-                    if (Array.isArray(_items) && _items.length > 0) {
-                        let _media = [];
-                        for (let i of _items || []) if (!!i.mp4 || !!i.link) _media.push(i.mp4 || i.link);
-
-                        return _media;
-                    } else if (_items) return [_items];
-                })
-                .catch((err) => console.log("Imgur resolution failure:", err.status || err));
-        };
-
         // resolve media shortcodes with failover (album-image > album > image)
         // causes some unnecessary fetches due to Imgur API silliness
-        let _matchShortcode = ImageLoader.imgurRegex.exec(link.href);
-        let albumHash = _matchShortcode && _matchShortcode[1];
-        let imageHash = _matchShortcode && _matchShortcode[2];
-        let _imageUrl = albumHash && !imageHash && `https://api.imgur.com/3/image/${albumHash}`;
-        let _albumUrl = _imageUrl && _imageUrl.replace(/\/image\//, "/album/");
-        let _albumImageUrl = imageHash && albumHash && `https://api.imgur.com/3/album/${albumHash}/image/${imageHash}`;
+        const _m = ImageLoader.imgurRegex.exec(link.href);
+        const albumId = _m[2] ? _m[2] : _m[4];
+        const imageId = _m[1] ? _m[1] : _m[3] || _m[4];
 
-        if (_matchShortcode) {
+        if (albumId || imageId) {
             // resolver priority: album-image > image > album
-            let _image = _imageUrl && (await fetchImgur(_imageUrl));
-            let _album = _albumUrl && (await fetchImgur(_albumUrl));
-            let _albumImage = _albumImageUrl && (await fetchImgur(_albumImageUrl));
-            if (
-                (_albumImage && _albumImage.length > 0) ||
-                (_image && _image.length > 0) ||
-                (_album && _album.length > 0)
-            ) {
+            const _imgur = await doResolveImgur({ imageId, albumId });
+            if (_imgur) {
                 appendMedia({
-                    src: _albumImage || _image || _album,
+                    src: _imgur,
                     link,
                     postId,
                     index,
                     type: { forceAppend: true },
                 });
-            } else throw new Error(`Could not resolve Imgur shortcode from: ${link}`);
+            }
         }
     },
 
     async createGfycat(link, postId, index) {
-        let _match = ImageLoader.gfycatRegex.exec(link.href);
+        const _match = ImageLoader.gfycatRegex.exec(link.href);
         // we can match against both direct and indirect links
-        let gfycat_id = (_match && _match[1]) || _match[2];
+        const gfycat_id = (_match && _match[1]) || (_match && _match[2]);
 
         if (gfycat_id) {
-            let url = `https://api.gfycat.com/v1/gfycats/${gfycat_id}`;
-            if (window.chrome) {
-                fetchSafe({ url }).then((json: GfycatResponse) => {
-                    // sanitized in common.js!
-                    if (json && json.gfyItem.mobileUrl != null) {
-                        appendMedia({
-                            src: [json.gfyItem.mobileUrl],
-                            link,
-                            postId,
-                            index,
-                            type: { forceAppend: true },
-                        });
-                    } else throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
+            const gfycat = await doResolveGfycat(gfycat_id);
+            if (gfycat) {
+                appendMedia({
+                    src: gfycat,
+                    link,
+                    postId,
+                    index,
+                    type: { forceAppend: true },
                 });
-            } else {
-                // fallback to older XHR method for Firefox for this endpoint
-                fetchSafeLegacy({ url })
-                    .then((json: GfycatResponse) => {
-                        // sanitized in common.js!
-                        if (json && json.gfyItem.mobileUrl != null) {
-                            appendMedia({
-                                src: [json.gfyItem.mobileUrl],
-                                link,
-                                postId,
-                                index,
-                                type: { forceAppend: true },
-                            });
-                        } else throw new Error(`Failed to get Gfycat object: ${link.href} = ${gfycat_id}`);
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                    });
             }
         } else console.log(`An error occurred parsing the Gfycat url: ${link.href}`);
     },
 
     createGiphy(link, postId, index) {
         // only use the alphanumeric id without the label
-        let _matchGiphy = ImageLoader.giphyRegex.exec(link.href);
-        let _giphyId = _matchGiphy && _matchGiphy[1];
+        const _matchGiphy = ImageLoader.giphyRegex.exec(link.href);
+        const _giphyId = _matchGiphy && _matchGiphy[1];
 
         if (_giphyId) {
-            let src = [`https://media.giphy.com/media/${_giphyId}/giphy.mp4`];
+            const src = [`https://media.giphy.com/media/${_giphyId}/giphy.mp4`];
             appendMedia({
                 src,
                 link,
@@ -268,12 +200,12 @@ const ImageLoader = {
     },
 
     async resolveTenor(mediaId) {
-        let __obf = atob("UE9JODJZS1NWRENQ");
+        const __obf = atob("UE9JODJZS1NWRENQ");
         if (mediaId) {
-            let response: TenorResponse = await fetchSafe({
+            const response: TenorResponse = await fetchSafe({
                 url: `https://api.tenor.com/v1/gifs?ids=${mediaId}&key=${__obf}&limit=1`,
             });
-            let media = response && response.results[0].media[0].webm.url;
+            const media = response && response.results[0].media[0].webm.url;
             return media;
         }
         return null;
@@ -281,10 +213,10 @@ const ImageLoader = {
 
     async createTenor(link, postId, index) {
         // we only support Tenor WEBM/MP4/GIF links here
-        let _matchTenor = ImageLoader.tenorRegex.exec(link.href);
+        const _matchTenor = ImageLoader.tenorRegex.exec(link.href);
         if (_matchTenor && _matchTenor[3]) {
             // Tenor WEBM/MP4 (skip resolver)
-            let src = [_matchTenor[0]];
+            const src = [_matchTenor[0]];
             appendMedia({
                 src,
                 link,
@@ -294,7 +226,7 @@ const ImageLoader = {
             });
         } else if (_matchTenor && _matchTenor[2]) {
             // Tenor GIF (resolve to WEBM)
-            let src = await ImageLoader.resolveTenor(_matchTenor[2]);
+            const src = await ImageLoader.resolveTenor(_matchTenor[2]);
             if (src) {
                 appendMedia({
                     src,
