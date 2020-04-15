@@ -6,8 +6,6 @@ const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
-    stats: "minimal",
-
     entry: {
         content: "./src/app/content.ts",
         background: "./src/app/background.ts",

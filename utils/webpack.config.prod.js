@@ -1,6 +1,7 @@
 /* eslint-disable */
 const common = require("./webpack.common");
 const TerserPlugin = require("terser-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const merge = require("webpack-merge");
 
 module.exports = merge(common, {
@@ -23,4 +24,6 @@ module.exports = merge(common, {
             }),
         ],
     },
+
+    plugins: [new CleanWebpackPlugin()],
 });

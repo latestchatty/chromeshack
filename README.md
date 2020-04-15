@@ -20,10 +20,9 @@ NPM commands are as follows:
 
 -   `npm run build:dev` for auto-reloading the extension in Chrome/Firefox in dev mode
 -   `npm run build:prod` for building in production mode (for both Firefox and Chrome)
--   `npm run clean` wipes out `dist/` (only run if absolutely necessary)
 -   `npm run lint` for running auto-fix linting through ESLint and Prettier
--   `npm run webext` for testing the extension in a clean Firefox profile via `web-ext run`
 -   `npm run extlint` for running the AMO linter to audit production code
+-   `npm run webext` for testing the extension in a clean Firefox profile via `web-ext run`
 -   `npm run sign` for packing `dist/` into a self-signed XPI for upload to AMO
 -   `npm run zip` for packing `dist/` for uploading to AMO or Chrome Store
 

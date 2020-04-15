@@ -4,14 +4,13 @@
     "description": "Collection of scripts for Shacknews.",
     "repository": "https://github.com/latestchatty/chromeshack",
     "scripts": {
-        "clean": "rm -rf dist",
-        "build:dev": "npx webpack-cli --config ./utils/webpack.config.dev.js --watch",
-        "build:prod": "npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip",
+        "extlint": "npx web-ext lint -s ./dist",
         "webext": "npx web-ext run -s dist -u https://shacknews.com/chatty",
-        "zip": "npx web-ext build -s ./dist -a ./artifacts -o",
         "lint": "npx eslint --fix ./src/app/**/*.{ts,tsx}",
-        "extlint": "npm run build && npx web-ext lint -s ./dist",
-        "sign": "npm run build && npx web-ext sign -s ./dist -a ./artifacts"
+        "zip": "npx web-ext build -s ./dist -a ./artifacts -o",
+        "sign": "npx web-ext sign -s ./dist -a ./artifacts",
+        "build:dev": "npx webpack-cli --config ./utils/webpack.config.dev.js",
+        "build:prod": "npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip"
     },
     "author": "Adam Hughes",
     "email": "arhughes@gmail.com",
@@ -28,6 +27,7 @@
         "@types/react-dom": "^16.9.6",
         "@typescript-eslint/eslint-plugin": "^2.27.0",
         "@typescript-eslint/parser": "^2.27.0",
+        "clean-webpack-plugin": "^3.0.0",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
         "eslint": "^6.8.0",
