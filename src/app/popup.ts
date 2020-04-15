@@ -7,6 +7,7 @@ import {
     elementMatches,
     objConditionalFilter,
     objContainsProperty,
+    safeInnerHTML,
 } from "./core/common";
 import * as settings from "./core/settings";
 
@@ -97,8 +98,8 @@ const addHighlightGroup = (e: Event, group?) => {
     const groupElem = document.createElement("div");
     const trimmedName = trimName(group.name);
     groupElem.id = "highlight_group";
-    groupElem.innerHTML = `
-        <div class="group_header">
+    safeInnerHTML(
+        `<div class="group_header">
             <input type="checkbox" ${group.enabled && "checked"} />
             <input
                 type="text"
@@ -122,8 +123,9 @@ const addHighlightGroup = (e: Event, group?) => {
             <div class="test_css">
                 <span id="${trimmedName}_splotch" style="${group.css}" title="Click to try a new color">Aa</span>
             </div>
-        </div>
-    `;
+        </div>`,
+        groupElem,
+    );
     if (group.built_in) {
         // hide mutation interactions if userlist is readonly
         groupElem.querySelector("#remove_group").setAttribute("style", "display: none;");

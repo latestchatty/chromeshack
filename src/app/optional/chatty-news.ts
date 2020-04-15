@@ -1,5 +1,5 @@
 import { getSetting, setSetting, enabledContains } from "../core/settings";
-import { fetchSafe } from "../core/common";
+import { fetchSafe, safeInnerHTML } from "../core/common";
 
 const ChattyNews = {
     async checkTime(delayInMs) {
@@ -30,7 +30,8 @@ const ChattyNews = {
         const newsBox = container && container.querySelector("#recent-articles");
         for (const item of rss || []) {
             const newsItem = document.createElement("li");
-            newsItem.innerHTML = /*html*/ `
+            safeInnerHTML(
+                /*html*/ `
                 <a
                     href="${item.link}"
                     title="${item.content}"
@@ -38,7 +39,9 @@ const ChattyNews = {
                 >
                     <span>${item.title}</span>
                 </a>
-            `;
+            `,
+                newsItem,
+            );
             newsBox.appendChild(newsItem);
         }
         return container;
@@ -51,11 +54,14 @@ const ChattyNews = {
             const articleBox = document.querySelector(".article-body p:first-child");
             let newsBox = document.createElement("div");
             newsBox.classList.add("chatty-news");
-            newsBox.innerHTML = /*html*/ `
+            safeInnerHTML(
+                /*html*/ `
                     <h2>Recent Articles</h2>
                     <hr class="chatty-news-sep" />
                     <div><ul id="recent-articles"></ul></div>
-                `;
+                `,
+                newsBox,
+            );
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             // force parent container to align newsbox next to twitch player
             articleBox.setAttribute("style", "display: flex;");

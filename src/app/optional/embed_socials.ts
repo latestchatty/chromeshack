@@ -1,6 +1,6 @@
 import * as browser from "webextension-polyfill";
 
-import { objContains, isEmptyObj } from "../core/common";
+import { objContains, isEmptyObj, safeInnerHTML } from "../core/common";
 import { processPostEvent } from "../core/events";
 import { processExpandoLinks, toggleMediaItem, mediaContainerInsert, appendMedia } from "../core/media_helpers";
 import { enabledContains, getEnabledSuboptions } from "../core/settings";
@@ -131,7 +131,7 @@ const EmbedSocials = {
             let postTextTagified = text.replace(/#(\w+)/gm, hashReplacer);
             postTextTagified = postTextTagified.replace(/@(\w+)/gm, atReplacer);
             postTextTagified = postTextTagified.replace(/(https:\/\/t.co\/\w+)/gim, mediaReplacer);
-            postTextContentElem.innerHTML = postTextTagified;
+            safeInnerHTML(postTextTagified, postTextContentElem);
             return postTextContentElem;
         };
 
@@ -212,7 +212,8 @@ const EmbedSocials = {
         tweetTemplateElem.setAttribute("class", "twitter-container hidden");
         tweetTemplateElem.setAttribute("id", `loader_${postId}-${index}`);
         if (tweetObj && !tweetObj.unavailable) {
-            tweetTemplateElem.innerHTML = /*html*/ `
+            safeInnerHTML(
+                /*html*/ `
             <div class="twitter-header">
                 <a href="${tweetObj.profilePicUrl}" id="profile-pic-link">
                     <img id="user-profile-pic" src="${tweetObj.profilePic}" />
@@ -249,11 +250,14 @@ const EmbedSocials = {
                     </div>
                 </div>
                 <div id="twitter-timestamp">${tweetObj.timestamp}</div>
-            </div>`;
+            </div>`,
+                tweetTemplateElem,
+            );
         } else {
-            tweetTemplateElem.innerHTML = /*html*/ `
-                <div class="twitter-403"><span>This tweet is unavailable.</span></div>
-            `;
+            safeInnerHTML(
+                /*html*/ `<div class="twitter-403"><span>This tweet is unavailable.</span></div>`,
+                tweetTemplateElem,
+            );
         }
         // compile media items into the "twitter-media-content" container
         const _compiledTemplate = EmbedSocials.compileTwitterMedia(

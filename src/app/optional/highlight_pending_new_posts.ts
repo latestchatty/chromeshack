@@ -140,8 +140,9 @@ const HighlightPendingPosts = {
         // Only install on the main /chatty page, not an individual thread.
         if (!document.getElementById("newcommentbutton")) return;
         // Only install on the first page of the chatty.
-        const aSelectedPages = document.getElementsByClassName("selected_page");
-        if (aSelectedPages.length === 0 || aSelectedPages[0].innerHTML !== "1") return;
+        const aSelectedPage = document.querySelector("a.selected_page") as HTMLLinkElement;
+        const pageMatch = aSelectedPage && /page=(\d+)$/i.exec(aSelectedPage.href);
+        if (pageMatch && pageMatch[1] !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
         processPostRefreshEvent.addHandler((refreshElem) => {

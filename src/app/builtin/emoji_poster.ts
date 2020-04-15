@@ -1,6 +1,7 @@
 /*eslint no-control-regex: 0*/
 import * as $ from "jquery";
 import { processPostBoxEvent } from "../core/events";
+import { safeInnerHTML } from "../core/common";
 
 /*
  * Encodes string Astrals (Emoji's) into prefixed HTML entities to
@@ -47,8 +48,10 @@ const EmojiPoster = {
             const _postFormParent = postBox.querySelector("#postform fieldset");
             const _emojiTaglineElem = document.createElement("p");
             _emojiTaglineElem.setAttribute("class", "emoji-tagline");
-            _emojiTaglineElem.innerHTML =
-                "Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.";
+            safeInnerHTML(
+                "Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.",
+                _emojiTaglineElem,
+            );
             _postFormParent.appendChild(_emojiTaglineElem);
         }
     },
