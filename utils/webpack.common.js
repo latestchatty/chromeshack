@@ -32,7 +32,7 @@ module.exports = {
             },
             {
                 test: /\.(sass|scss|css)$/i,
-                use: [MiniCssExtractPlugin.loader, "css-loader", "resolve-url-loader", "sass-loader"],
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
             },
         ],
     },
@@ -45,17 +45,12 @@ module.exports = {
             filename: "[name].css",
             chunkFilename: "[id].css",
         }),
-        new webpack.ProvidePlugin({
-            $: "jquery",
-            jQuery: "jquery",
-            "window.jQuery": "jquery",
-        }),
         new CopyPlugin([
             { from: "./src/images", to: "images" },
-            { from: "./src/patches", to: "patches" },
             { from: "./src/app/popup.html", to: "." },
             { from: "./src/release_notes.html", to: "." },
             { from: "./src/manifest.json", to: "." },
+            { from: "./*.md", to: "." },
         ]),
         new LicenseCheckerWebpackPlugin({
             outputFilename: "ThirdPartyLicenses.txt",

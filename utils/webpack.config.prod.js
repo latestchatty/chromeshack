@@ -13,6 +13,8 @@ module.exports = merge(common, {
         minimizer: [
             new TerserPlugin({
                 terserOptions: {
+                    keep_fnames: true,
+                    mangle: { reserved: ["jQuery", "$"] },
                     output: {
                         comments: false,
                     },

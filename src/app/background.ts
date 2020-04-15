@@ -12,6 +12,9 @@ import {
     removeEnabled,
 } from "./core/settings";
 
+import chatViewFix from "./patches/chatViewFix";
+import scrollByKeyFix from "./patches/scrollByKeyFix";
+
 interface Notification {
     error?: object;
     code?: string;
@@ -160,17 +163,10 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
         return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
     else if (request.name === "chatViewFix") {
         // scroll-to-post fix for Chatty
-        return browser.tabs
-            .executeScript(null, {
-                code: `window.monkeyPatchCVF === undefined`,
-            })
-            .then((res) => {
-                if (res) browser.tabs.executeScript({ file: "patches/chatViewFix.js" });
-            })
-            .catch((err) => console.log(err.message ? err.message : err));
+        return chatViewFix();
     } else if (request.name === "scrollByKeyFix") {
         // scroll-by-key fix for Chatty
-        return browser.tabs.executeScript(null, { file: "patches/scrollByKeyFix.js" }).catch((err) => console.log(err));
+        return scrollByKeyFix();
     } else if (request.name === "corbFetch") {
         return fetchSafe({
             url: request.url,

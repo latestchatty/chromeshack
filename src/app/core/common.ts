@@ -1,14 +1,7 @@
 import * as DOMPurify from "dompurify";
+import * as $ from "jquery";
 
 import { getSetting, setSetting } from "./settings";
-
-/// declare global functions for use in injected page code
-declare global {
-    interface Window {
-        scrollToElement: Function;
-        elementIsVisible: Function;
-    }
-}
 
 interface FetchArgs {
     url: string;
@@ -261,36 +254,32 @@ export const generatePreview = (postText) => {
 
 export function scrollToElement(elem, toFitBool?) {
     // don't use an arrow function here (for injection purposes)
-    if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
+    if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
-    if (toFitBool) jQuery("html, body").animate({ scrollTop: jQuery(elem).offset().top - 54 }, 0);
+    if (toFitBool) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
     else {
-        jQuery("html, body").animate(
+        $("html, body").animate(
             {
-                scrollTop: jQuery(elem).offset().top - jQuery(window).height() / 4,
+                scrollTop: $(elem).offset().top - $(window).height() / 4,
             },
             0,
         );
     }
 }
-// expose scrollToElement globally (for chatViewFix.js)
-window.scrollToElement = scrollToElement;
 
 export function elementIsVisible(elem, partialBool) {
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility
-    if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
+    if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
     const rect = elem.getBoundingClientRect();
     const visibleHeight = window.innerHeight;
     if (partialBool) return rect.top <= visibleHeight && rect.top + rect.height >= 0;
     return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
-// expose elementIsVisible globally (for chatViewFix.js)
-window.elementIsVisible = elementIsVisible;
 
 export const elementFitsViewport = (elem) => {
-    if (elem && typeof jQuery === "function" && elem instanceof jQuery) elem = elem[0];
+    if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
     const elemHeight = elem.getBoundingClientRect().height;
     const visibleHeight = window.innerHeight;

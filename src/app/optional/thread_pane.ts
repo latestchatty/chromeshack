@@ -1,5 +1,7 @@
+import * as $ from "jquery";
+
 import { enabledContains } from "../core/settings";
-import { elementFitsViewport, scrollToElement, isEmptyObj } from "../core/common";
+import { elementFitsViewport, scrollToElement } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 
 const ThreadPane = {

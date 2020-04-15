@@ -1,7 +1,10 @@
-/*
- * This monkeypatches nuChatty's broken scroll-post-by-A/Z functionality
- */
+import * as browser from "webextension-polyfill";
 
+const scrollByKeyFix = () =>
+    browser.tabs
+        .executeScript(null, {
+            code: /*javascript*/ `
+/// monkeypatch nuChatty's broken scroll-post-by-A/Z functionality
 if (!document.getElementById("scrollbykeyfix-wjs")) {
     function chat_onkeypress(b) {
         if (!b) {
@@ -13,7 +16,7 @@ if (!document.getElementById("scrollbykeyfix-wjs")) {
                 id = get_item_number_from_item_string(get_next_item_for_root(sLastClickedRoot, sLastClickedItem));
                 if (id != false) {
                     clickItem(sLastClickedRoot, id);
-                    let elem = document.querySelector(`li#item_${id} span.oneline_body`);
+                    let elem = document.querySelector(\`li#item_\${id} span.oneline_body\`);
                     elem.click();
                 }
             }
@@ -21,7 +24,7 @@ if (!document.getElementById("scrollbykeyfix-wjs")) {
                 id = get_item_number_from_item_string(get_prior_item_for_root(sLastClickedRoot, sLastClickedItem));
                 if (id != false) {
                     clickItem(sLastClickedRoot, id);
-                    let elem = document.querySelector(`li#item_${id} span.oneline_body`);
+                    let elem = document.querySelector(\`li#item_\${id} span.oneline_body\`);
                     elem.click();
                 }
             }
@@ -35,4 +38,7 @@ if (!document.getElementById("scrollbykeyfix-wjs")) {
     let bodyRef = document.getElementsByTagName("body")[0];
     bodyRef.appendChild(scrollByKeyFix);
     undefined;
-}
+}`,
+        })
+        .catch((err) => console.log(err));
+export default scrollByKeyFix;

@@ -257,9 +257,9 @@ export const processExpandoLinks = (linksArr, linkParser, postProcesser) => {
     for (let idx = 0; idx < linksArr.length; idx++) {
         const link = linksArr[idx];
         const parsed = linkParser(link.href);
+        if (link.querySelector("div.expando") || link.innerText.indexOf(" (Incognito)") > -1) return;
         if (parsed) {
             ((parsed, idx) => {
-                if (link.querySelector("div.expando")) return;
                 link.addEventListener("click", (e) => {
                     postProcesser(e, parsed, postId, idx);
                 });

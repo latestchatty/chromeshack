@@ -10,6 +10,7 @@ import ImageUploader from "./builtin/image-uploader";
 import NuLOLFix from "./builtin/nulol_refresh_fix";
 import CodeTagFix from "./builtin/codetagfix";
 
+import NwsIncognito from "./optional/nws_incognito";
 import ChattyNews from "./optional/chatty-news";
 import HighlightUsers from "./optional/highlight_users";
 import CustomUserFilters from "./optional/custom_user_filters";
@@ -56,8 +57,9 @@ Promise.all([
     PostPreview.install(),
     EmbedSocials.install(),
     TP_Instance.install(),
+    NwsIncognito.install(),
+    PostStyling.install(),
 ]).then(() => {
-    PostStyling.install();
     PostLengthCounter.install();
     ModBanners.install();
     LocalTimeStamp.install();
