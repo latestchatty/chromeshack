@@ -4,9 +4,9 @@ import { useRef, useEffect } from "react";
 import useUploaderStore, { UploaderState } from "./uploaderStore";
 import { ToggleChildren, Tab, DropArea, UrlInput, Button, StatusLine } from "./Components";
 
-import handleImgurUpload from "../api/imgur";
-import handleGfycatUpload from "../api/gfycat";
-import handleChattypicsUpload from "../api/chattypics";
+import handleImgurUpload from "../../core/api/imgur";
+import handleGfycatUpload from "../../core/api/gfycat";
+import handleChattypicsUpload from "../../core/api/chattypics";
 import { isEmptyArr, appendLinksToField } from "../../core/common";
 
 interface ImageUploaderAppProps {

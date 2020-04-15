@@ -7,9 +7,8 @@ import { processPostEvent } from "../core/events";
 
 const VideoLoader = {
     async install() {
-        return enabledContains("video_loader").then((res) => {
-            if (res) processPostEvent.addHandler(VideoLoader.loadVideos);
-        });
+        const is_enabled = await enabledContains("video_loader");
+        if (is_enabled) processPostEvent.addHandler(VideoLoader.loadVideos);
     },
 
     loadVideos(item) {

@@ -1,16 +1,7 @@
 import { Dispatch } from "react";
 
-import {
-    waitToFetchSafe,
-    fetchSafe,
-    fetchSafeLegacy,
-    isEmptyArr,
-    isFileArr,
-    isEmptyObj,
-    isUrlArr,
-    FormDataToJSON,
-} from "../../core/common";
-import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../image-uploader/uploaderStore";
+import { waitToFetchSafe, fetchSafe, fetchSafeLegacy, isFileArr, isEmptyObj, isUrlArr } from "../common";
+import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../../builtin/image-uploader/uploaderStore";
 
 const gfycatApiUrl = "https://api.gfycat.com/v1/gfycats"; // GET
 const gfycatStatusUrl = "https://api.gfycat.com/v1/gfycats/fetch/status"; // GET

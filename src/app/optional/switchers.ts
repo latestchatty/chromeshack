@@ -21,12 +21,11 @@ const Switchers = {
     resolved: [],
 
     async install() {
-        return enabledContains("switchers").then((res) => {
-            if (res) {
-                Switchers.cacheSwitchers();
-                processPostEvent.addHandler(Switchers.loadSwitchers);
-            }
-        });
+        const is_enabled = await enabledContains("switchers");
+        if (is_enabled) {
+            Switchers.cacheSwitchers();
+            processPostEvent.addHandler(Switchers.loadSwitchers);
+        }
     },
 
     cacheSwitchers() {

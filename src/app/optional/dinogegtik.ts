@@ -4,7 +4,7 @@ import { safeInnerHTML } from "../core/common";
 import { enabledContains } from "../core/settings";
 import { processPostEvent } from "../core/events";
 import { HU_Instance } from "../content";
-import SentenceParser from "./sentence_parser";
+import SentenceParser from "../core/sentence_parser";
 
 const DinoGegtik = {
     panels: [
@@ -18,9 +18,8 @@ const DinoGegtik = {
     userMatches: [],
 
     async install() {
-        return enabledContains("dinogegtik").then((res) => {
-            if (res) processPostEvent.addHandler(DinoGegtik.installComic);
-        });
+        const is_enabled = await enabledContains("dinogegtik");
+        if (is_enabled) processPostEvent.addHandler(DinoGegtik.installComic);
     },
 
     installComic(item, id) {

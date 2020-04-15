@@ -8,12 +8,11 @@ const CustomUserFilters = {
     rootPostCount: 0,
 
     async install() {
-        return enabledContains("custom_user_filters").then((res) => {
-            if (res) {
-                processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
-                CustomUserFilters.applyFilter();
-            }
-        });
+        const is_enabled = await enabledContains("custom_user_filters");
+        if (is_enabled) {
+            processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
+            CustomUserFilters.applyFilter();
+        }
     },
 
     resolveUser(username) {

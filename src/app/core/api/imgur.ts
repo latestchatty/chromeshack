@@ -1,14 +1,14 @@
 import * as browser from "webextension-polyfill";
 import { Dispatch } from "react";
 
-import { fetchSafe, matchFileFormat, isEmptyArr, FormDataToJSON } from "../../core/common";
+import { fetchSafe, matchFileFormat, isEmptyArr, FormDataToJSON } from "../common";
 import {
     imageFormats,
     videoFormats,
     UploaderAction,
     UploadSuccessPayload,
     UploadFailurePayload,
-} from "../image-uploader/uploaderStore";
+} from "../../builtin/image-uploader/uploaderStore";
 
 const imgurApiImageBaseUrl = "https://api.imgur.com/3/image";
 const imgurApiAlbumBaseUrl = "https://api.imgur.com/3/album";

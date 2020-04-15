@@ -1,8 +1,8 @@
 import * as browser from "webextension-polyfill";
 import { Dispatch } from "react";
 
-import { FormDataToJSON, isEmptyArr, isFileArr } from "../../core/common";
-import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../image-uploader/uploaderStore";
+import { FormDataToJSON, isEmptyArr, isFileArr } from "../common";
+import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../../builtin/image-uploader/uploaderStore";
 
 const chattyPicsUrl = "https://chattypics.com/upload.php";
 

@@ -7,14 +7,13 @@ const HighlightUsers = {
 
     cache: [],
 
-    install() {
-        enabledContains("highlight_users").then((res) => {
-            if (res) {
-                fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
-                // refresh our styling state when refreshing a post
-                processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
-            }
-        });
+    async install() {
+        const is_enabled = await enabledContains("highlight_users");
+        if (is_enabled) {
+            fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
+            // refresh our styling state when refreshing a post
+            processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
+        }
     },
 
     resolveUsers(refresh?) {

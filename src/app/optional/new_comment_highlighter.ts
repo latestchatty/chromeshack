@@ -4,12 +4,11 @@ import { processPostRefreshEvent } from "../core/events";
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 const NewCommentHighlighter = {
     async install() {
-        return enabledContains("new_comment_highlighter").then((res) => {
-            if (res) {
-                NewCommentHighlighter.highlight();
-                processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
-            }
-        });
+        const is_enabled = await enabledContains("new_comment_highlighter");
+        if (is_enabled) {
+            NewCommentHighlighter.highlight();
+            processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
+        }
     },
 
     async highlight() {

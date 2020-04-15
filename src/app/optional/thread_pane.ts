@@ -8,20 +8,19 @@ const ThreadPane = {
     isEnabled: false,
 
     async install() {
-        return enabledContains("thread_pane").then((res) => {
-            if (res) {
-                try {
-                    ThreadPane.isEnabled = true;
-                    processPostRefreshEvent.addHandler(ThreadPane.apply);
-                    ThreadPane.apply();
-                } catch (e) {
-                    console.log("Failed to install the thread_pane script:");
-                    console.log(e);
-                    $("div#cs_thread_pane").remove();
-                    $("body").removeClass("cs_thread_pane_enable");
-                }
+        const is_enabled = await enabledContains("thread_pane");
+        if (is_enabled) {
+            try {
+                ThreadPane.isEnabled = true;
+                processPostRefreshEvent.addHandler(ThreadPane.apply);
+                ThreadPane.apply();
+            } catch (e) {
+                console.log("Failed to install the thread_pane script:");
+                console.log(e);
+                $("div#cs_thread_pane").remove();
+                $("body").removeClass("cs_thread_pane_enable");
             }
-        });
+        }
     },
 
     apply() {

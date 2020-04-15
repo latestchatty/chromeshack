@@ -4,15 +4,14 @@ import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { safeInnerHTML } from "../core/common";
 import { HU_Instance } from "../content";
-import SentenceParser from "./sentence_parser";
+import SentenceParser from "../core/sentence_parser";
 
 const SparklyComic = {
     userMatch: null,
 
     async install() {
-        return enabledContains("sparkly_comic").then((res) => {
-            if (res) processPostEvent.addHandler(SparklyComic.installComic);
-        });
+        const is_enabled = await enabledContains("sparkly_comic");
+        if (is_enabled) processPostEvent.addHandler(SparklyComic.installComic);
     },
 
     installComic(item, id) {

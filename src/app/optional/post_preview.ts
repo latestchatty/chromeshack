@@ -8,9 +8,8 @@ const PostPreview = {
     previewTimer: null,
 
     async install() {
-        return enabledContains("post_preview").then((res) => {
-            if (res) processPostBoxEvent.addHandler(PostPreview.apply);
-        });
+        const is_enabled = await enabledContains("post_preview");
+        if (is_enabled) processPostBoxEvent.addHandler(PostPreview.apply);
     },
 
     apply(item: HTMLElement) {

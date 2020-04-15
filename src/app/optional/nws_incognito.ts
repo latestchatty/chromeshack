@@ -16,6 +16,7 @@ const NwsIncognito = {
         const is_enabled = await enabledContains("nws_incognito");
         if (is_enabled) processPostEvent.addHandler(NwsIncognito.hookToNwsPosts);
     },
+
     hookToNwsPosts(item) {
         const nwsLinks = [...item.querySelectorAll(".sel .fpmod_nws .postbody a, .op.fpmod_nws .postbody a")];
         for (const link of nwsLinks || []) {

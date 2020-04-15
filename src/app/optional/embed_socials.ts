@@ -31,9 +31,8 @@ interface TweetResponse {
 // Twitter and Instagram embedding support (WombatFromHell)
 const EmbedSocials = {
     async install() {
-        return enabledContains("embed_socials").then((res) => {
-            if (res) processPostEvent.addHandler(EmbedSocials.getLinks);
-        });
+        const is_enabled = await enabledContains("embed_socials");
+        if (is_enabled) processPostEvent.addHandler(EmbedSocials.getLinks);
     },
 
     getLinks(item) {

@@ -27,9 +27,8 @@ const HighlightPendingPosts = {
     marked: [],
 
     async install() {
-        return enabledContains("highlight_pending_new_posts").then((res) => {
-            if (res) HighlightPendingPosts.apply();
-        });
+        const is_enabled = await enabledContains("highlight_pending_new_posts");
+        if (is_enabled) HighlightPendingPosts.apply();
     },
 
     updatePendings(refreshElem?) {

@@ -1,32 +1,32 @@
 import ChromeShack from "./core/observers";
 
-import CommentTags from "./builtin/comment_tags";
-import Collapse from "./builtin/collapse";
-import ModBanners from "./builtin/mod_banners";
-import EmojiPoster from "./builtin/emoji_poster";
-import LocalTimeStamp from "./builtin/local_timestamp";
-import UserPopup from "./builtin/userpopup";
-import ImageUploader from "./builtin/image-uploader";
-import NuLOLFix from "./builtin/nulol_refresh_fix";
-import CodeTagFix from "./builtin/codetagfix";
-
-import NwsIncognito from "./optional/nws_incognito";
 import ChattyNews from "./optional/chatty-news";
-import HighlightUsers from "./optional/highlight_users";
 import CustomUserFilters from "./optional/custom_user_filters";
-import ThreadPane from "./optional/thread_pane";
-import VideoLoader from "./optional/video_loader";
-import ImageLoader from "./optional/image_loader";
-import Switchers from "./optional/switchers";
-import SparklyComic from "./optional/sparkly_comic";
 import DinoGegtik from "./optional/dinogegtik";
-import PostStyling from "./optional/post_style";
+import EmbedSocials from "./optional/embed_socials";
 import GetPost from "./optional/getpost";
 import HighlightPendingPosts from "./optional/highlight_pending_new_posts";
+import HighlightUsers from "./optional/highlight_users";
+import ImageLoader from "./optional/image_loader";
 import NewCommentHighlighter from "./optional/new_comment_highlighter";
-import PostLengthCounter from "./builtin/post_length_counter";
+import NwsIncognito from "./optional/nws_incognito";
 import PostPreview from "./optional/post_preview";
-import EmbedSocials from "./optional/embed_socials";
+import PostStyling from "./optional/post_style";
+import SparklyComic from "./optional/sparkly_comic";
+import Switchers from "./optional/switchers";
+import ThreadPane from "./optional/thread_pane";
+import VideoLoader from "./optional/video_loader";
+
+import CodeTagFix from "./builtin/codetagfix";
+import Collapse from "./builtin/collapse";
+import CommentTags from "./builtin/comment_tags";
+import EmojiPoster from "./builtin/emoji_poster";
+import ImageUploader from "./builtin/image-uploader";
+import LocalTimeStamp from "./builtin/local_timestamp";
+import ModBanners from "./builtin/mod_banners";
+import NuLOLFix from "./builtin/nulol_refresh_fix";
+import PostLengthCounter from "./builtin/post_length_counter";
+import UserPopup from "./builtin/userpopup";
 
 require("../styles/chatty-news.css");
 require("../styles/chromeshack.css");
@@ -43,33 +43,33 @@ export const TP_Instance = ThreadPane;
 
 Promise.all([
     // optional modules that rely on toggles
-    HU_Instance.install(),
-    CustomUserFilters.install(),
-    ImageLoader.install(),
-    VideoLoader.install(),
-    Switchers.install(),
     ChattyNews.install(),
-    SparklyComic.install(),
+    CustomUserFilters.install(),
     DinoGegtik.install(),
+    EmbedSocials.install(),
     GetPost.install(),
     HighlightPendingPosts.install(),
+    HU_Instance.install(),
+    ImageLoader.install(),
     NewCommentHighlighter.install(),
-    PostPreview.install(),
-    EmbedSocials.install(),
-    TP_Instance.install(),
     NwsIncognito.install(),
+    PostPreview.install(),
     PostStyling.install(),
+    SparklyComic.install(),
+    Switchers.install(),
+    TP_Instance.install(),
+    VideoLoader.install(),
 ]).then(() => {
-    PostLengthCounter.install();
-    ModBanners.install();
-    LocalTimeStamp.install();
-    CommentTags.install();
-    Collapse.install();
-    EmojiPoster.install();
-    UserPopup.install();
-    NuLOLFix.install();
     CodeTagFix.install();
+    Collapse.install();
+    CommentTags.install();
+    EmojiPoster.install();
     ImageUploader.install();
+    LocalTimeStamp.install();
+    ModBanners.install();
+    NuLOLFix.install();
+    PostLengthCounter.install();
+    UserPopup.install();
 
     // always make sure the ChromeShack event observer is last
     CS_Instance.install();

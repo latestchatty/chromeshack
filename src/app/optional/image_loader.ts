@@ -3,8 +3,8 @@ import { enabledContains } from "../core/settings";
 import { objContains, fetchSafe, fetchSafeLegacy } from "../core/common";
 import { processExpandoLinks, toggleMediaItem, appendMedia } from "../core/media_helpers";
 
-import { doResolveGfycat } from "../builtin/api/gfycat";
-import { doResolveImgur } from "../builtin/api/imgur";
+import { doResolveGfycat } from "../core/api/gfycat";
+import { doResolveImgur } from "../core/api/imgur";
 
 interface TenorResponse {
     results?: Array<{
@@ -33,9 +33,8 @@ const ImageLoader = {
     twimgRegex: /(https?:\/\/pbs\.twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i,
 
     async install() {
-        return enabledContains("image_loader").then((res) => {
-            if (res) processPostEvent.addHandler(ImageLoader.loadImages);
-        });
+        const is_enabled = await enabledContains("image_loader");
+        if (is_enabled) processPostEvent.addHandler(ImageLoader.loadImages);
     },
 
     loadImages(item) {

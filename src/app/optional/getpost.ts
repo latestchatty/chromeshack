@@ -7,9 +7,8 @@ import { CS_Instance } from "../content";
 // Inspired by dodob's old postget script.
 const GetPost = {
     async install() {
-        return enabledContains("getpost").then((res) => {
-            if (res) processPostEvent.addHandler(GetPost.getLinks);
-        });
+        const is_enabled = await enabledContains("getpost");
+        if (is_enabled) processPostEvent.addHandler(GetPost.getLinks);
     },
 
     getLinks(item) {

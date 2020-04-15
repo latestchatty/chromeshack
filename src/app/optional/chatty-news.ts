@@ -17,7 +17,7 @@ const ChattyNews = {
     async populateNewsBox(container) {
         let rss = await getSetting("chatty_news_lastfetchdata");
         const cachedRSS = await getSetting("chatty_news_lastfetchdata");
-        if (!cachedRSS || (await this.checkTime(1000 * 60 * 15))) {
+        if (!cachedRSS || (await ChattyNews.checkTime(1000 * 60 * 15))) {
             // cache each successful fetch for 15 minutes
             rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
@@ -44,24 +44,23 @@ const ChattyNews = {
         return container;
     },
 
-    install() {
-        enabledContains("chatty_news").then(async (res) => {
-            if (res) {
-                if (document.querySelector("div.chatty-news")) return;
-                const articleBox = document.querySelector(".article-body p:first-child");
-                let newsBox = document.createElement("div");
-                newsBox.classList.add("chatty-news");
-                newsBox.innerHTML = /*html*/ `
+    async install() {
+        const is_enabled = await enabledContains("chatty_news");
+        if (is_enabled) {
+            if (document.querySelector("div.chatty-news")) return;
+            const articleBox = document.querySelector(".article-body p:first-child");
+            let newsBox = document.createElement("div");
+            newsBox.classList.add("chatty-news");
+            newsBox.innerHTML = /*html*/ `
                     <h2>Recent Articles</h2>
                     <hr class="chatty-news-sep" />
                     <div><ul id="recent-articles"></ul></div>
                 `;
-                newsBox = await this.populateNewsBox(newsBox);
-                // force parent container to align newsbox next to twitch player
-                articleBox.setAttribute("style", "display: flex;");
-                articleBox.appendChild(newsBox);
-            }
-        });
+            newsBox = await ChattyNews.populateNewsBox(newsBox);
+            // force parent container to align newsbox next to twitch player
+            articleBox.setAttribute("style", "display: flex;");
+            articleBox.appendChild(newsBox);
+        }
     },
 };
 
