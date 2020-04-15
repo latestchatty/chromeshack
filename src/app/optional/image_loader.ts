@@ -21,7 +21,7 @@ const ImageLoader = {
     imgRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-._@#$%^&!()[\]{}']+\.(png|jpe?g|webp|gif))([&?].+?$|\w+)?/i,
     vidRegex: /https?:\/\/(?:.+?\.)?.+?\..+?\/(?:.*?\/)?(?:.+[=])?([\w\-._@#$%^&!()[\]{}']+\.(mp4|gifv|webm))([&?].+?$|\w+)?/i,
     // common media host patterns
-    imgurRegex: /https?:\/\/(?:.+?\.)?imgur\.com\/(?:(?:i\/)?(\w+?)\b\.|(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?|(\w+)$)?/i,
+    imgurRegex: /https?:\/\/(?:.+?\.)?imgur\.com\/(?:(?:i\/)?(\w+?)\b\.|(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?|.+\/([\w-]+)?|(\w+)$)?/i,
     gfycatRegex: /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i,
     giphyRegex: /https?:\/\/(?:.*?\.)?giphy.com\/(?:embed\/|gifs\/|media\/)(?:.*-)?([\w-]+)/i,
     tenorRegex: /https:\/\/(tenor\.com\/view\/[\w-]+?(\d{7,})|media\.tenor\.com\/videos\/(\w{32})\/(mp4|webm))/i,
@@ -144,8 +144,8 @@ const ImageLoader = {
         // resolve media shortcodes with failover (album-image > album > image)
         // causes some unnecessary fetches due to Imgur API silliness
         const _m = ImageLoader.imgurRegex.exec(link.href);
-        const albumId = _m[2] ? _m[2] : _m[4];
-        const imageId = _m[1] ? _m[1] : _m[3] || _m[4];
+        const albumId = _m[2] || _m[4];
+        const imageId = _m[1] || _m[3] || _m[5];
 
         if (albumId || imageId) {
             // resolver priority: album-image > image > album
