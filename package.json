@@ -9,8 +9,9 @@
         "lint": "npx eslint --fix ./src/app/**/*.{ts,tsx}",
         "zip": "npx web-ext build -s ./dist -a ./artifacts -o",
         "sign": "npx web-ext sign -s ./dist -a ./artifacts",
+        "pack": "node ./utils/packsrc.js",
         "build:dev": "npx webpack-cli --config ./utils/webpack.config.dev.js",
-        "build:prod": "npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip"
+        "build:prod": "npx webpack-cli --config ./utils/webpack.config.prod.js && npm run zip && npm run pack"
     },
     "author": "Adam Hughes",
     "email": "arhughes@gmail.com",
@@ -27,6 +28,7 @@
         "@types/react-dom": "^16.9.6",
         "@typescript-eslint/eslint-plugin": "^2.27.0",
         "@typescript-eslint/parser": "^2.27.0",
+        "archiver": "^4.0.1",
         "clean-webpack-plugin": "^3.0.0",
         "copy-webpack-plugin": "^5.1.1",
         "css-loader": "^1.0.1",
