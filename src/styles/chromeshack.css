@@ -57,12 +57,17 @@ div.fpmod_informative {
     border-top: 1px solid #00bff3 !important;
 }
 
-/* new comment marker */
+/* new comment highlighter */
+span.oneline_body {
+    /* avoid moving horizontally when not marked */
+    border-left-color: rgba(0, 153, 255, 0);
+    padding-left: 3px;
+}
 span.newcommenthighlighter {
-    border-left-color: #0099ff;
-    border-left-width: thin;
+    border-left-color: rgba(0, 153, 255, 1);
+    border-left-width: 1px;
     border-left-style: solid;
-    padding-left: 2px;
+    padding-left: 2px !important;
 }
 
 /* get post */
