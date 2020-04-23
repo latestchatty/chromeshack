@@ -3,19 +3,26 @@ import * as $ from "jquery";
 
 import { getSetting, setSetting } from "./settings";
 
-interface FetchArgs {
+export interface FetchArgs {
     url: string;
-    fetchOpts?: RequestInit;
-    parseType?: object;
+    fetchOpts?: RequestInit | {};
+    parseType?: object | {};
 }
 
-export const stripHtml = (html) => {
+export interface ParseType {
+    chattyPics?: boolean;
+    chattyRSS?: boolean;
+    html?: boolean;
+    instagram?: boolean;
+}
+
+export const stripHtml = (html: string) => {
     // respect carriage returns
     const result = html.replace(/<br.*?>/gi, "\n");
     return result.replace(/(<([^>]+)>)/gi, "");
 };
 
-export const insertStyle = (css, containerName) => {
+export const insertStyle = (css: string, containerName: string) => {
     const style = document.querySelector(`style#${containerName}`) || document.createElement("style");
     if (!style.id) {
         style.setAttribute("type", "text/css");
@@ -49,15 +56,7 @@ export const objContains = (needle: string | number, haystack: object) => {
     return false;
 };
 
-export const objContainsProperty = (key, obj) => Object.prototype.hasOwnProperty.call(obj, key);
-
-export const objConditionalFilter = (disallowed, obj) => {
-    return Object.keys(obj)
-        .filter((k) => !disallowed.includes(k))
-        .reduce((o, k) => {
-            return { ...o, [k]: obj[k] };
-        }, {});
-};
+export const objContainsProperty = (key: string, obj: object) => Object.prototype.hasOwnProperty.call(obj, key);
 
 export const superTrim = (string) => {
     return string.replace(/^\s+|\s+$/g, "");
@@ -124,11 +123,22 @@ export const waitToFetchSafe = async (timeout, fetchArgs: FetchArgs) => {
 };
 
 export const parseFetchResponse = async (textPromise, parseType) => {
-    const { chattyPics, html, chattyRSS } = parseType || {};
+    const { chattyPics, instagram, html, chattyRSS }: ParseType = parseType || {};
     const text = await textPromise;
     try {
+        // sanitize Instagram graphQL cache to JSON
+        if (instagram) {
+            const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+            const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+            if (instgrmGQL) {
+                return {
+                    metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
+                    gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
+                };
+            }
+        }
         // sanitize ChattyPics response to array of links
-        if (chattyPics) {
+        else if (chattyPics) {
             const _resFragment = sanitizeToFragment(text);
             const _resElemArr = _resFragment.querySelector("#allLinksDirect");
             const _resElemVal = _resFragment.querySelector("#link11");
@@ -159,7 +169,7 @@ export const parseFetchResponse = async (textPromise, parseType) => {
     return null;
 };
 
-export const getCookieValue = (name, defaultValue) => {
+export const getCookieValue = (name: string, defaultValue: string) => {
     let ret = defaultValue || "";
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
@@ -172,7 +182,7 @@ export const getCookieValue = (name, defaultValue) => {
     return ret;
 };
 
-export const generatePreview = (postText) => {
+export const generatePreview = (postText: string) => {
     // simple replacements
     postText = postText.replace(/</g, "&lt;");
     postText = postText.replace(/>/g, "&gt;");
@@ -252,7 +262,7 @@ export const generatePreview = (postText) => {
     return convertUrlToLink(postText);
 };
 
-export function scrollToElement(elem, toFitBool?) {
+export function scrollToElement(elem: Element, toFitBool?: boolean) {
     // don't use an arrow function here (for injection purposes)
     if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
@@ -267,7 +277,7 @@ export function scrollToElement(elem, toFitBool?) {
     }
 }
 
-export function elementIsVisible(elem, partialBool) {
+export function elementIsVisible(elem: Element, partialBool?: boolean) {
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility
     if (elem && elem instanceof $) elem = elem[0];
@@ -278,7 +288,7 @@ export function elementIsVisible(elem, partialBool) {
     return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
 
-export const elementFitsViewport = (elem) => {
+export const elementFitsViewport = (elem: Element) => {
     if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
     const elemHeight = elem.getBoundingClientRect().height;
@@ -286,23 +296,23 @@ export const elementFitsViewport = (elem) => {
     return elemHeight < visibleHeight;
 };
 
-export const convertUrlToLink = (text) => {
+export const convertUrlToLink = (text: string) => {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target="_blank">$1</a>');
 };
 
-export const removeChildren = (elem) => {
+export const removeChildren = (elem: Element) => {
     // https://stackoverflow.com/a/42658543
     while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 };
 
-export const sanitizeToFragment = (html) => {
+export const sanitizeToFragment = (html: string) => {
     return DOMPurify.sanitize(html, {
         RETURN_DOM_FRAGMENT: true,
         RETURN_DOM_IMPORT: true,
     });
 };
 
-export const safeInnerHTML = (text, targetNode) => {
+export const safeInnerHTML = (text: string, targetNode: Element) => {
     const sanitizedContent = sanitizeToFragment(text);
     const targetRange = document.createRange();
     targetRange.selectNodeContents(targetNode);
@@ -311,7 +321,7 @@ export const safeInnerHTML = (text, targetNode) => {
     targetRange.insertNode(sanitizedContent);
 };
 
-export const safeJSON = (text) => {
+export const safeJSON = (text: string) => {
     if (isJSON(text)) {
         try {
             const obj = JSON.parse(text);
@@ -345,7 +355,7 @@ export const safeJSON = (text) => {
     return null;
 };
 
-export const parseShackRSS = (rssText): object[] => {
+export const parseShackRSS = (rssText: string): object[] => {
     const result = [];
     if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
         const items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
@@ -369,14 +379,14 @@ export const parseShackRSS = (rssText): object[] => {
     return null;
 };
 
-export const isHTML = (text) => {
+export const isHTML = (text: string) => {
     // https://stackoverflow.com/a/15458968
     if (!text || (text && isJSON(text))) return false;
     const doc = new DOMParser().parseFromString(text, "text/html");
     return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 };
 
-export const isJSON = (text) => {
+export const isJSON = (text: string) => {
     try {
         if (text && JSON.parse(text)) return true;
     } catch (err) {
@@ -384,8 +394,8 @@ export const isJSON = (text) => {
     }
 };
 
-export const FormDataToJSON = async (fd) => {
-    const FileToObject = async (fileData) => {
+export const FormDataToJSON = async (fd: FormData) => {
+    const FileToObject = async (fileData: File) => {
         const reader = new FileReader();
         reader.readAsDataURL(fileData);
         return new Promise((resolve, reject) => {
@@ -397,14 +407,14 @@ export const FormDataToJSON = async (fd) => {
     const _fd = [];
     for (const [k, v] of fd) {
         const _file = v instanceof File && (await FileToObject(v));
-        if (_file) _fd.push({ key: k, filename: v.name, data: _file });
+        if (_file) _fd.push({ key: k, filename: (v as File).name, data: _file });
         else _fd.push({ key: k, value: v });
     }
     return JSON.stringify(_fd);
 };
 
-export const JSONToFormData = (jsonStr) => {
-    const Base64ToFile = (filename, baseStr) => {
+export const JSONToFormData = (jsonStr: string) => {
+    const Base64ToFile = (filename: string, baseStr: string) => {
         // https://stackoverflow.com/a/5100158
         let byteString;
         if (baseStr.split(",")[0].indexOf("base64") >= 0) byteString = atob(baseStr.split(",")[1]);
@@ -430,7 +440,7 @@ export const JSONToFormData = (jsonStr) => {
     return null;
 };
 
-export const collapseThread = (id) => {
+export const collapseThread = (id: string) => {
     const MAX_LENGTH = 100;
     getSetting("collapsed_threads", []).then((collapsed) => {
         if (collapsed.indexOf(id) < 0) {
@@ -442,7 +452,7 @@ export const collapseThread = (id) => {
     });
 };
 
-export const unCollapseThread = (id) => {
+export const unCollapseThread = (id: string) => {
     getSetting("collapsed_threads", []).then((collapsed) => {
         const index = collapsed.indexOf(id);
         if (index >= 0) {
@@ -452,7 +462,7 @@ export const unCollapseThread = (id) => {
     });
 };
 
-export const locatePostRefs = (elem) => {
+export const locatePostRefs = (elem: Element) => {
     if (elem) {
         const root = elem.closest(".root");
         const closestContainer = root.closest("li[id^='item_']");
@@ -465,13 +475,8 @@ export const locatePostRefs = (elem) => {
     return null;
 };
 
-export const elementMatches = (elem, selector) => (elem && elem.nodeType !== 3 && elem.matches(selector) ? elem : null);
-
-export const elementQuerySelector = (elem, selector) =>
-    elem && elem.nodeType !== 3 ? elem.querySelector(selector) : null;
-
-export const elementQuerySelectorAll = (elem, selector) =>
-    elem && elem.nodeType !== 3 ? elem.querySelectorAll(selector) : null;
+export const elementMatches = (elem: Element, selector: string) =>
+    elem && elem.nodeType !== 3 && elem.matches(selector) ? elem : null;
 
 export const insertAtCaret = (field: HTMLInputElement, text: string) => {
     if (field.selectionStart || field.selectionStart === 0) {
@@ -497,8 +502,8 @@ export const appendLinksToField = (field: HTMLInputElement, links: string[]) => 
     if (constructed) insertAtCaret(field, constructed);
 };
 
-export const getFileCount = (fileList): string => {
-    const files = fileList && Array.from(fileList);
+export const getFileCount = (fileList: FileList | File[]) => {
+    const files = typeof fileList === "object" && !Array.isArray(fileList) ? [...fileList] : fileList;
     return files && files.length > 0 ? `${files.length} files` : "";
 };
 
@@ -523,15 +528,14 @@ export const packValidTypes = (types: string, fileList: File[]) => {
     return files;
 };
 
-export const isUrlArr = (dataArr) => {
+export const isUrlArr = (dataArr: string[]) => {
     // every element of this array must contain a URL formatted string
     for (const i of dataArr || [])
         if (typeof i !== "string" || i.length <= 9 || !i.match(/^https?:\/\//i)) return false;
-
     return true;
 };
 
-export const isFileArr = (dataArr) => {
+export const isFileArr = (dataArr: any[]) => {
     // every element of this array must contain a File object
     for (const i of dataArr || []) if (!(i instanceof File)) return false;
     return true;
@@ -550,3 +554,6 @@ export const classNames = (...args) => {
     }
     return !isEmptyArr(result) ? result.join(" ") : "";
 };
+
+export const isVideo = (href) => /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
+export const isImage = (href) => /\.(jpe?g|gif|png|webp)|(jpe?g|gif|png|webp)$/i.test(href);

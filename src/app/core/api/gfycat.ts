@@ -7,7 +7,7 @@ const gfycatApiUrl = "https://api.gfycat.com/v1/gfycats"; // GET
 const gfycatStatusUrl = "https://api.gfycat.com/v1/gfycats/fetch/status"; // GET
 const gfycatDropUrl = "https://filedrop.gfycat.com"; // POST
 
-type UploadData = string[] | File[];
+type UploadData = string[] | File[] | [];
 interface GfycatResponse {
     task?: string;
     gfyname?: string;
@@ -21,6 +21,13 @@ interface GfycatResponse {
         mobileUrl?: string;
     };
 }
+
+const parseLink = (href) => {
+    const _isGfycat = /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i.exec(href);
+    return _isGfycat ? { href: href, shortcode: _isGfycat[1] || _isGfycat[2] } : null;
+};
+
+export const isGfycat = (href) => parseLink(href);
 
 export const doResolveGfycat = async (gfyname: string) => {
     /// resolves a gfycat nonce to its media url
@@ -40,7 +47,7 @@ export const doResolveGfycat = async (gfyname: string) => {
 const doGfycatDropKey = async (data?: UploadData) => {
     /// notifies the Gfycat drop endpoint that we wish to upload media
     // if we have a media URL to fetch then hand it off to Gfycat for server-side encoding
-    const dataBody = isUrlArr(data) ? JSON.stringify({ fetchUrl: data[0] }) : undefined;
+    const dataBody = isUrlArr(data as string[]) ? JSON.stringify({ fetchUrl: data[0] }) : undefined;
     const key: GfycatResponse = await fetchSafe({
         url: gfycatApiUrl,
         fetchOpts: {
@@ -91,7 +98,7 @@ const doGfycatStatus = async (key: string) => {
 
 const doGfycatUpload = async (data: UploadData, key: string, dispatch: Dispatch<UploaderAction>) => {
     /// this will push a File object to the Gfycat drop endpoint
-    if (isFileArr(data)) {
+    if (isFileArr(data as File[])) {
         for (const file of data as File[]) {
             const dataBody = new FormData();
             dataBody.append("key", key);
@@ -121,7 +128,7 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
         const key = await doGfycatDropKey(data);
         if (!key) throw new Error("doGfycatDropKey failed!");
 
-        if (isUrlArr(data)) {
+        if (isUrlArr(data as string[])) {
             // use the gfyname from the drop key step to resolve our encoded media url
             const urlUpload = await doGfycatStatus(key);
             if (typeof urlUpload === "string") {
@@ -134,7 +141,7 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
                     );
                 }
             } else return handleGfycatUploadFailure(urlUpload, dispatch);
-        } else if (isFileArr(data)) {
+        } else if (isFileArr(data as File[])) {
             await doGfycatUpload(data, key, dispatch);
             const encodedGfy = await doGfycatStatus(key); // wait for the encode
             if (typeof encodedGfy === "string") {

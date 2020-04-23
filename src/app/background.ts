@@ -1,6 +1,6 @@
 import * as browser from "webextension-polyfill";
 
-import { fetchSafe, JSONToFormData } from "./core/common";
+import { fetchSafe, JSONToFormData, FetchArgs, ParseType } from "./core/common";
 import {
     resetSettings,
     getSettingsLegacy,
@@ -25,6 +25,31 @@ interface NotificationMessage {
     postId: number;
     subject: string;
     body: string;
+}
+
+interface MenuClickInfo {
+    linkUrl: string;
+}
+interface MenuClickTab {
+    windowId: number;
+    index: number;
+}
+
+type OnMessageRequestName =
+    | "launchIncognito"
+    | "allowedIncognitoAccess"
+    | "chatViewFix"
+    | "scrollByKeyFix"
+    | "corbFetch"
+    | "corbPost";
+interface OnMessageRequest {
+    name: OnMessageRequestName;
+    data?: any;
+    value?: string;
+    url?: string;
+    fetchOpts: FetchArgs;
+    headers: any;
+    parseType: any;
 }
 
 const migrateSettings = async () => {
@@ -133,16 +158,16 @@ const pollNotifications = async () => {
     }
 };
 
-const notificationClicked = (notificationId) => {
+const notificationClicked = (notificationId: string) => {
     if (notificationId.indexOf("ChromeshackNotification") > -1) {
         const postId = notificationId.replace("ChromeshackNotification", "");
-        const url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
+        const url = `https://www.shacknews.com/chatty?id=${postId}#item_${postId}`;
         browser.tabs.create({ url: url });
         browser.notifications.clear(notificationId);
     }
 };
 
-const showCommentHistoryClick = (info, tab) => {
+const showCommentHistoryClick = (info: MenuClickInfo, tab: MenuClickTab) => {
     const match = /\/profile\/(.+)$/.exec(info.linkUrl);
     if (match) {
         const search_url = "https://winchatty.com/search?author=" + escape(match[1]);
@@ -154,29 +179,30 @@ const showCommentHistoryClick = (info, tab) => {
     }
 };
 
-browser.runtime.onMessage.addListener(async (request, sender) => {
-    if (request.name === "launchIncognito")
-        // necessary for opening nsfw links in an incognito window
-        return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
-    else if (request.name === "allowedIncognitoAccess")
-        // necessary for knowing when to open nsfw media in an incognito window
-        return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
-    else if (request.name === "chatViewFix") {
-        // scroll-to-post fix for Chatty
-        return chatViewFix();
-    } else if (request.name === "scrollByKeyFix") {
-        // scroll-by-key fix for Chatty
-        return scrollByKeyFix();
-    } else if (request.name === "corbFetch") {
-        return fetchSafe({
-            url: request.url,
-            fetchOpts: request.fetchOpts,
-            parseType: request.parseType,
-        });
-    } else if (request.name === "corbPost") {
-        const _fd = await JSONToFormData(request.data);
-        return new Promise((resolve, reject) => {
-            return fetchSafe({
+browser.runtime.onMessage.addListener(async (request: OnMessageRequest) => {
+    try {
+        if (request.name === "launchIncognito")
+            // necessary for opening nsfw links in an incognito window
+            return Promise.resolve(browser.windows.create({ url: request.value, incognito: true }));
+        else if (request.name === "allowedIncognitoAccess")
+            // necessary for knowing when to open nsfw media in an incognito window
+            return Promise.resolve(browser.extension.isAllowedIncognitoAccess());
+        else if (request.name === "chatViewFix") {
+            // scroll-to-post fix for Chatty
+            return chatViewFix();
+        } else if (request.name === "scrollByKeyFix") {
+            // scroll-by-key fix for Chatty
+            return scrollByKeyFix();
+        } else if (request.name === "corbFetch") {
+            const fetchArgs: FetchArgs = {
+                url: request.url,
+                fetchOpts: request.fetchOpts,
+                parseType: request.parseType,
+            };
+            return fetchSafe(fetchArgs);
+        } else if (request.name === "corbPost") {
+            const _fd = await JSONToFormData(request.data);
+            const fetchArgs: FetchArgs = {
                 url: request.url,
                 fetchOpts: {
                     method: "POST",
@@ -184,12 +210,12 @@ browser.runtime.onMessage.addListener(async (request, sender) => {
                     body: _fd,
                 },
                 parseType: request.parseType,
-            })
-                .then(resolve)
-                .catch(reject);
-        });
+            };
+            return fetchSafe(fetchArgs);
+        }
+    } catch (e) {
+        console.log(e);
     }
-
     return Promise.resolve();
 });
 

@@ -18,21 +18,21 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
     const dispatch = useUploaderDispatch();
     const fileChooserRef = useRef(null);
 
-    const onClickToggle = (e) => {
+    const onClickToggle = (e: MouseEvent) => {
         e.preventDefault();
         dispatch({ type: "TOGGLE_UPLOADER" });
     };
-    const onClickTab = (e) => {
+    const onClickTab = (e: MouseEvent) => {
         e.preventDefault();
-        const thisTab = e.target.id;
+        const thisTab = (e.target as HTMLDivElement).id;
         if (thisTab !== state.selectedTab) {
             dispatch({ type: "CHANGE_TAB", payload: thisTab });
             dispatch({ type: `${thisTab.toUpperCase()}_LOAD` });
         }
     };
-    const onClickUploadBtn = async (e) => {
+    const onClickUploadBtn = async (e: MouseEvent) => {
         e.preventDefault();
-        if (!e?.target?.disabled) {
+        if (!(e?.target as HTMLButtonElement).disabled) {
             const { fileData, urlData, selectedTab, urlDisabled, filesDisabled } = state;
             const data = !urlDisabled ? [urlData] : !filesDisabled ? fileData : [];
             if (selectedTab === "imgurTab") handleImgurUpload(data, dispatch);
@@ -40,7 +40,7 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
             else if (selectedTab === "chattypicsTab") handleChattypicsUpload(data as File[], dispatch);
         }
     };
-    const onClickCancelBtn = (e) => {
+    const onClickCancelBtn = (e: MouseEvent) => {
         e.preventDefault();
         const thisTab = state.selectedTab;
         dispatch({ type: "UPLOAD_CANCEL" });
@@ -48,7 +48,7 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         fileChooserRef.current.value = null;
     };
     /// hide the statusline once the transition animation ends
-    const onStatusAnimEnd = (e) => dispatch({ type: "UPDATE_STATUS", payload: "" });
+    const onStatusAnimEnd = () => dispatch({ type: "UPDATE_STATUS", payload: "" });
 
     useEffect(() => {
         /// update the reply box with links when data is returned from the server

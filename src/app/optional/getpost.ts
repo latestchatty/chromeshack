@@ -57,7 +57,7 @@ const GetPost = {
                     // workaround to enable media embeds in embedded chatty posts
                     const post = document.querySelector(`li#item_${postId}`);
                     const root = post && post.closest(".root > ul > li");
-                    if (post) CS_Instance.processPost(post, root);
+                    if (post) CS_Instance.processPost(post, root.id);
                 });
             }
         }

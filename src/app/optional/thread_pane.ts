@@ -123,10 +123,10 @@ const ThreadPane = {
                 $cardDiv.removeClass("cs_dim_animation");
 
                 setTimeout(() => {
-                    const elemFits = elementFitsViewport(li_root);
+                    const elemFits = li_root.length > 0 && elementFitsViewport(li_root[0]);
                     // scroll to fit thread or newest reply if applicable
-                    if (elemFits) scrollToElement(li_root, true);
-                    else scrollToElement($li);
+                    if (elemFits) scrollToElement(li_root[0], true);
+                    else if ($li.length > 0) scrollToElement($li[0]);
 
                     $opDiv.addClass("cs_flash_animation");
                     $li.addClass("cs_flash_animation");
