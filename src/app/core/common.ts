@@ -262,7 +262,7 @@ export const generatePreview = (postText: string) => {
     return convertUrlToLink(postText);
 };
 
-export function scrollToElement(elem: Element, toFitBool?: boolean) {
+export function scrollToElement(elem: HTMLElement, toFitBool?: boolean) {
     // don't use an arrow function here (for injection purposes)
     if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
@@ -277,7 +277,7 @@ export function scrollToElement(elem: Element, toFitBool?: boolean) {
     }
 }
 
-export function elementIsVisible(elem: Element, partialBool?: boolean) {
+export function elementIsVisible(elem: HTMLElement, partialBool?: boolean) {
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility
     if (elem && elem instanceof $) elem = elem[0];
@@ -288,7 +288,7 @@ export function elementIsVisible(elem: Element, partialBool?: boolean) {
     return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
 
-export const elementFitsViewport = (elem: Element) => {
+export const elementFitsViewport = (elem: HTMLElement) => {
     if (elem && elem instanceof $) elem = elem[0];
     else if (!elem) return false;
     const elemHeight = elem.getBoundingClientRect().height;
@@ -300,7 +300,7 @@ export const convertUrlToLink = (text: string) => {
     return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target="_blank">$1</a>');
 };
 
-export const removeChildren = (elem: Element) => {
+export const removeChildren = (elem: HTMLElement) => {
     // https://stackoverflow.com/a/42658543
     while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 };
@@ -312,7 +312,7 @@ export const sanitizeToFragment = (html: string) => {
     });
 };
 
-export const safeInnerHTML = (text: string, targetNode: Element) => {
+export const safeInnerHTML = (text: string, targetNode: HTMLElement) => {
     const sanitizedContent = sanitizeToFragment(text);
     const targetRange = document.createRange();
     targetRange.selectNodeContents(targetNode);
@@ -440,43 +440,25 @@ export const JSONToFormData = (jsonStr: string) => {
     return null;
 };
 
-export const collapseThread = (id: string) => {
-    const MAX_LENGTH = 100;
-    getSetting("collapsed_threads", []).then((collapsed) => {
-        if (collapsed.indexOf(id) < 0) {
-            collapsed.unshift(id);
-            // remove a bunch if it gets too big
-            if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
-            setSetting("collapsed_threads", collapsed);
-        }
-    });
-};
+/// matches on a passed Element
+export const elemMatches = (elem: HTMLElement, selector: string) =>
+    elem?.nodeType !== 3 && elem?.matches(selector) ? elem : null;
 
-export const unCollapseThread = (id: string) => {
-    getSetting("collapsed_threads", []).then((collapsed) => {
-        const index = collapsed.indexOf(id);
-        if (index >= 0) {
-            collapsed.splice(index, 1);
-            setSetting("collapsed_threads", collapsed);
-        }
-    });
-};
+/// similar to closest() but can also match on the Element passed
+export const nearestElem = (elem: HTMLElement, selector: string) =>
+    (elemMatches(elem, selector) ? elem : elem?.closest(selector) || null) as HTMLElement;
 
-export const locatePostRefs = (elem: Element) => {
-    if (elem) {
-        const root = elem.closest(".root");
-        const closestContainer = root.closest("li[id^='item_']");
-        const post =
-            closestContainer && !closestContainer.matches(".root > ul > li")
-                ? closestContainer
-                : root.querySelector("li li.sel");
-        return { post, root: root.querySelector("ul > li") };
-    }
-    return null;
+export const locatePostRefs = (postElem: HTMLElement) => {
+    /// takes an Element of a post and returns post/root information
+    if (!postElem) return null;
+    // match the first fullpost container (up/cur first, then down)
+    const post = nearestElem(postElem, "li.sel") || postElem?.querySelector("li.sel");
+    const root = nearestElem(post, ".root > ul > li");
+    const is_root = !!elemMatches(post, ".root > ul > li");
+    const rootid = root?.id?.substr(5);
+    const postid = post?.id?.substr(5);
+    return { post, postid, root, rootid, is_root };
 };
-
-export const elementMatches = (elem: Element, selector: string) =>
-    elem && elem.nodeType !== 3 && elem.matches(selector) ? elem : null;
 
 export const insertAtCaret = (field: HTMLInputElement, text: string) => {
     if (field.selectionStart || field.selectionStart === 0) {
@@ -555,5 +537,5 @@ export const classNames = (...args) => {
     return !isEmptyArr(result) ? result.join(" ") : "";
 };
 
-export const isVideo = (href) => /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
-export const isImage = (href) => /\.(jpe?g|gif|png|webp)|(jpe?g|gif|png|webp)$/i.test(href);
+export const isVideo = (href: string) => /\.(mp4|gifv|webm)|(mp4|webm)$/i.test(href);
+export const isImage = (href: string) => /\.(jpe?g|gif|png|webp)|(jpe?g|gif|png|webp)$/i.test(href);

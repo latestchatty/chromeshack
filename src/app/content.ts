@@ -28,13 +28,13 @@ import NuLOLFix from "./builtin/nulol_refresh_fix";
 import PostLengthCounter from "./builtin/post_length_counter";
 import UserPopup from "./builtin/userpopup";
 
-require("../styles/chatty-news.css");
-require("../styles/chromeshack.css");
-require("../styles/comic_scripts.css");
-require("../styles/embed_socials.css");
-require("../styles/image_uploader.css");
-require("../styles/media.css");
-require("../styles/two_pane.css");
+import "../styles/chatty-news.css";
+import "../styles/chromeshack.css";
+import "../styles/comic_scripts.css";
+import "../styles/embed_socials.css";
+import "../styles/image_uploader.css";
+import "../styles/media.css";
+import "../styles/two_pane.css";
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;

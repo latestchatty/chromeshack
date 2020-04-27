@@ -11,25 +11,27 @@ const GetPost = {
         if (is_enabled) processPostEvent.addHandler(GetPost.getLinks);
     },
 
-    getLinks(item) {
+    getLinks(item: HTMLElement) {
         const links = [...item.querySelectorAll(".sel .postbody a")];
         if (links) processExpandoLinks(links, GetPost.isChattyLink, GetPost.getPost);
     },
 
-    isChattyLink(href) {
+    isChattyLink(href: string) {
         const _isRootPost = /shacknews.com\/chatty\?id=\d+/i;
         if (_isRootPost.test(href)) return true;
         return false;
     },
 
-    getPost(e, parsedPost, postId, index) {
+    getPost(e: MouseEvent, parsedPost: HTMLElement, postId: string, index: number) {
         if (e.button == 0) {
             e.preventDefault();
-            const _expandoClicked = e.target.classList !== undefined && objContains("expando", e.target.classList);
-            const link = _expandoClicked ? e.target.parentNode : e.target;
+            const this_node = e.target as HTMLElement;
+            const _expandoClicked = objContains("expando", this_node?.classList);
+            const link = (_expandoClicked ? this_node?.parentNode : this_node) as HTMLLinkElement;
             if (toggleMediaItem(link)) return;
-            const chattyPostId = link.href.match(/[?&]id=([^&#]*)/);
-            const singlePost = chattyPostId && `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId[1]}`;
+            const _chattyPostId = /[?&]id=([^&#]*)/.exec(link?.href);
+            const chattyPostId = _chattyPostId && _chattyPostId[1];
+            const singlePost = chattyPostId && `https://www.shacknews.com/frame_chatty.x?root=&id=${chattyPostId}`;
             if (singlePost) {
                 fetchSafe({ url: singlePost }).then((data: HTMLElement) => {
                     const postDiv = document.createElement("div");
@@ -40,7 +42,7 @@ const GetPost = {
                     const spoilerTag = _postNode && _postNode.querySelector("span.jt_spoiler");
                     if (spoilerTag) {
                         spoilerTag.addEventListener("click", (e) => {
-                            (<HTMLElement>e.target).setAttribute("class", "jt_spoiler_clicked");
+                            (<HTMLElement>e.target)?.setAttribute("class", "jt_spoiler_clicked");
                         });
                     }
                     // nuke fullpost class as we don't want
@@ -55,9 +57,10 @@ const GetPost = {
                     if (removedBanner) fullpost.setAttribute("class", removedBanner);
                     link.parentNode.insertBefore(postDiv, link.nextSibling);
                     // workaround to enable media embeds in embedded chatty posts
-                    const post = document.querySelector(`li#item_${postId}`);
-                    const root = post && post.closest(".root > ul > li");
-                    if (post) CS_Instance.processPost(post, root.id);
+                    const post: HTMLElement = document.querySelector(`li#item_${postId}`);
+                    const root = post?.closest(".root > ul > li");
+                    const rootid = root?.id?.substr(5);
+                    if (post) CS_Instance.processPost(post, rootid, false);
                 });
             }
         }

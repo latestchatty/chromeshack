@@ -23,40 +23,39 @@ const NuLOLFix = {
         // intercept intent events (refresh/reply) that include the post and root ids
         processRefreshIntentEvent.addHandler(NuLOLFix.preRefreshHandler);
         // intercept the event that fires after tag data has loaded
-        processPostRefreshEvent.addHandler(NuLOLFix.postRefreshHandler);
+        processPostRefreshEvent.addHandler(NuLOLFix.postReplyHandler);
         // intercept the post-tag data event batch
         processTagDataLoadedEvent.addHandler(NuLOLFix.postTagDataHandler);
         processEmptyTagsLoadedEvent.addHandler(NuLOLFix.postTagDataHandler);
     },
 
-    preRefreshHandler(postId, rootId) {
+    preRefreshHandler(postid: string, rootid: string) {
+        if (CS_Instance.debugEvents) console.log("preRefreshHandler:", postid, rootid);
         // click the root refresh to refresh tag data for the whole thread
-        const _rootId = rootId && typeof rootId !== "string" ? rootId.id.substr(5) : rootId;
-        const root = document.querySelector(`#root_${_rootId} > ul > li`);
-        const rootRefreshBtn = root && root.querySelector(".refresh > a");
-        const matched = CS_Instance.refreshingThreads[_rootId];
+        const root = document.querySelector(`#root_${rootid} > ul > li`);
+        const rootRefreshBtn = root?.querySelector(".refresh > a") as HTMLLinkElement;
+        const matched = CS_Instance.refreshingThreads[rootid];
         // don't rerun this if we're already refreshing
         if (rootRefreshBtn && !matched) {
             if (CS_Instance.debugEvents) console.log("attempting to refresh the thread tag data:", root);
-            (<HTMLButtonElement>rootRefreshBtn).click();
+            rootRefreshBtn.click();
         }
     },
 
-    postRefreshHandler(post, root) {
+    postReplyHandler(post: HTMLElement, root: HTMLElement) {
         // reopen the saved post
-        const rootId = root && root.id.substr(5);
-        const oneline = post && post.querySelector(".oneline_body");
-        const matched = CS_Instance.refreshingThreads[rootId];
-        if (matched) {
-            if (oneline && matched.from_reply) {
-                // try to make sure replies are scrolled into view
-                oneline.click();
-                if (CS_Instance.debugEvents) console.log("trying to scroll reply into view:", post, matched);
-                scrollToElement(post);
-            }
-            // raise the processPost event on the root post so listeners are notified
-            processPostEvent.raise(root);
+        const rootid = root?.id?.substr(5);
+        const matched = CS_Instance.refreshingThreads[rootid];
+        const { from_reply } = matched || {};
+        const oneline = post?.querySelector(`.oneline_body`) as HTMLElement;
+        if (oneline && from_reply) {
+            if (CS_Instance.debugEvents) console.log("trying to scroll reply into view:", post, matched, oneline);
+            oneline.click();
+            // try to make sure replies are scrolled into view
+            scrollToElement(post);
         }
+        // raise the processPost event on the root post so listeners are notified
+        if (matched) processPostEvent.raise(root);
     },
 
     postTagDataHandler(post, root) {

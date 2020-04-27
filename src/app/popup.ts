@@ -1,13 +1,6 @@
 import * as browser from "webextension-polyfill";
 
-import {
-    isEmptyObj,
-    removeChildren,
-    superTrim,
-    elementMatches,
-    objContainsProperty,
-    safeInnerHTML,
-} from "./core/common";
+import { isEmptyObj, removeChildren, superTrim, elemMatches, objContainsProperty, safeInnerHTML } from "./core/common";
 import {
     getEnabled,
     getSetting,
@@ -24,7 +17,7 @@ import {
 } from "./core/settings";
 import { ChangeEvent } from "react";
 
-require("../styles/popup.css");
+import "../styles/popup.css";
 
 interface NotificationRegister {
     id?: string;
@@ -69,13 +62,13 @@ const getHighlightGroups = async () => {
     const activeGroups = [...document.querySelectorAll("#highlight_group")];
     const highlightRecords = [];
     for (const group of activeGroups || []) {
-        const record = getHighlightGroup(group);
+        const record = getHighlightGroup(group as HTMLElement);
         if (!isEmptyObj(record)) highlightRecords.push(record);
     }
     if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
 };
 
-const getHighlightGroup = (groupElem?: Element) => {
+const getHighlightGroup = (groupElem?: HTMLElement) => {
     // serialize a highlight group
     if (groupElem) {
         const enabled = (groupElem.querySelector(".group_header input[type='checkbox']") as HTMLInputElement).checked;
@@ -104,7 +97,8 @@ let debouncedUpdate = null;
 const delayedTextUpdate = (e: Event) => {
     if (debouncedUpdate) clearTimeout(debouncedUpdate);
     debouncedUpdate = setTimeout(async () => {
-        const groupElem = (e.target as Element).closest("#highlight_group") as HTMLInputElement;
+        const this_node = e.target as HTMLElement;
+        const groupElem = this_node.closest("#highlight_group") as HTMLInputElement;
         const groupLabel = groupElem.querySelector(".group_label") as HTMLLabelElement;
         const realGroupName = groupLabel.dataset.name;
         const updatedGroup = getHighlightGroup(groupElem);
@@ -185,7 +179,7 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
         optionContainer.appendChild(option);
     });
     groupElem.querySelector("#option_del").addEventListener("click", async (e) => {
-        const groupElem = (<HTMLElement>e.target).closest("#highlight_group");
+        const groupElem: HTMLElement = (<HTMLElement>e.target).closest("#highlight_group");
         const groupName = (<HTMLInputElement>groupElem.querySelector(".group_label")).value;
         const usersSelect = groupElem.querySelector("select");
         for (const option of [...usersSelect.selectedOptions]) option.parentNode.removeChild(option);
@@ -200,7 +194,7 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
         getHighlightGroups();
     });
     groupElem.querySelector("input[type='checkbox']").addEventListener("click", async (e) => {
-        const groupElem = (<HTMLElement>e.target).closest("#highlight_group");
+        const groupElem: HTMLElement = (<HTMLElement>e.target).closest("#highlight_group");
         const groupName = (<HTMLInputElement>groupElem.querySelector(".group_label")).value;
         const updatedGroup = getHighlightGroup(groupElem);
         await setHighlightGroup(groupName, updatedGroup);
@@ -322,10 +316,10 @@ const getEnabledScripts = async () => {
     ];
     for (let checkbox of checkboxes) {
         const _checkbox = checkbox as HTMLInputElement;
-        if (elementMatches(_checkbox, ".script_check") && _checkbox.checked) {
+        if (elemMatches(_checkbox, ".script_check") && _checkbox.checked) {
             // put non-boolean save supports here
             enabled.push(_checkbox.id);
-        } else if (elementMatches(_checkbox, ".suboption")) {
+        } else if (elemMatches(_checkbox, ".suboption")) {
             if (_checkbox.checked) enabledSuboptions.push(_checkbox.id);
         }
     }
@@ -346,12 +340,12 @@ const loadOptions = async () => {
     for (const script of scripts) {
         for (const checkbox of checkboxes) {
             const _checkbox = checkbox as HTMLInputElement;
-            if (elementMatches(checkbox, ".script_check")) {
+            if (elemMatches(_checkbox, ".script_check")) {
                 if (_checkbox.id === script) _checkbox.checked = true;
                 const settingsChild = document.querySelector(`div#${_checkbox.id}_settings`);
                 if (_checkbox.checked && settingsChild) settingsChild.classList.remove("hidden");
                 else if (!_checkbox.checked && settingsChild) settingsChild.classList.add("hidden");
-            } else if (elementMatches(_checkbox, ".suboption")) {
+            } else if (elemMatches(_checkbox, ".suboption")) {
                 const option = await getEnabledSuboptions(_checkbox.id);
                 if (option) _checkbox.checked = true;
             }
