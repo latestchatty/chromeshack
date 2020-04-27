@@ -3,6 +3,7 @@ const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LicenseCheckerWebpackPlugin = require("license-checker-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = {
@@ -26,13 +27,26 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
-                use: "ts-loader",
-                exclude: /node_modules/,
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, "css-loader"],
             },
             {
-                test: /\.(sass|scss|css)$/i,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
+                test: /\.tsx?$/,
+                use: [
+                    { loader: "cache-loader" },
+                    {
+                        loader: "thread-loader",
+                        options: { workers: require("os").cpus().length - 1, poolTimeout: Infinity },
+                    },
+                    {
+                        loader: "ts-loader",
+                        options: {
+                            transpileOnly: true,
+                            experimentalWatchApi: true,
+                            happyPackMode: true,
+                        },
+                    },
+                ],
             },
         ],
     },
@@ -40,6 +54,11 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             __REACT_DEVTOOLS_GLOBAL_HOOK__: "({ isDisabled: true })",
+        }),
+        new ForkTsCheckerWebpackPlugin({
+            useTypescriptIncrementalApi: true,
+            checkSyntacticErrors: true,
+            silent: true,
         }),
         new MiniCssExtractPlugin({
             filename: "[name].css",
