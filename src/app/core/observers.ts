@@ -43,7 +43,7 @@ const ChromeShack = {
                 const attrMutated = mutationsList[0].target as HTMLElement;
                 if (mutationsList[0].type === "attributes" && elemMatches(attrMutated, ".tag-container, .lol-tags")) {
                     const lastMutation = mutationsList[mutationsList.length - 1].target as HTMLElement;
-                    const mutatedPost: HTMLElement = lastMutation.closest("li[id^='item_']");
+                    const mutatedPost: HTMLElement = lastMutation.closest("li[id^='item_'].sel");
                     if (mutatedPost) return ChromeShack.processTagsLoaded(mutatedPost);
                 }
                 for (const mutation of mutationsList) {
@@ -142,7 +142,7 @@ const ChromeShack = {
 
     tagsLoadedHandler(item: HTMLElement) {
         // only process tag mutation and post mutation events
-        if (!item.matches("li.sel, span.user")) return;
+        if (!item.matches("li[id^='item_'], span.lol-tags, span.user")) return;
         const { post, root } = locatePostRefs(item) || {};
         const rootUpdatedTags = root && root.querySelectorAll(".tag-container.nonzero");
         const postUpdatedTags = post && post.querySelectorAll(".tag-container.nonzero");
@@ -187,13 +187,14 @@ const ChromeShack = {
     },
 
     processTagsLoaded(item: HTMLElement) {
-        if (!ChromeShack.falseTagEvent) {
+        /* if (!ChromeShack.falseTagEvent) {
             ChromeShack.falseTagEvent = true;
             return; // avoid processing false-positive tag events
         } else if (ChromeShack.falseTagEvent) {
             ChromeShack.tagsLoadedHandler(item);
             ChromeShack.falseTagEvent = false;
-        }
+        } */
+        ChromeShack.tagsLoadedHandler(item);
     },
 
     processReply(parentId: string) {
