@@ -78,22 +78,12 @@ const NuLOLFix = {
             }
         }
         // move the taglines to the correct parent to "fix" Chatty behavior
-        const rootAuthorLine = root && root.querySelector("span.author");
-        const postAuthorLine = post && post.querySelector("span.author");
-        if (
-            rootAuthorLine &&
-            rootTagCounts &&
-            rootTagCounts.length > 0 &&
-            rootTagCounts[0].matches("span.user .tag-counts")
-        )
+        const rootAuthorLine = root?.querySelector("span.author");
+        const postAuthorLine = post?.querySelector("span.author");
+        if (rootAuthorLine && rootTagCounts?.length > 0 && rootTagCounts[0].matches("span.user .tag-counts"))
             rootAuthorLine.appendChild(rootTagCounts[0]);
 
-        if (
-            postAuthorLine &&
-            postTagCounts &&
-            postTagCounts.length > 0 &&
-            postTagCounts[0].matches("span.user .tag-counts")
-        )
+        if (postAuthorLine && postTagCounts?.length > 0 && postTagCounts[0].matches("span.user .tag-counts"))
             postAuthorLine.appendChild(postTagCounts[0]);
     },
 };
