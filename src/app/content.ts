@@ -28,6 +28,8 @@ import NuLOLFix from "./builtin/nulol_refresh_fix";
 import PostLengthCounter from "./builtin/post_length_counter";
 import UserPopup from "./builtin/userpopup";
 
+//import MediaEmbedder from "./optional/media-embedder";
+
 import "../styles/chatty-news.css";
 import "../styles/chromeshack.css";
 import "../styles/comic_scripts.css";
@@ -59,6 +61,7 @@ Promise.all([
     Switchers.install(),
     TP_Instance.install(),
     VideoLoader.install(),
+    //MediaEmbedder.install(),
 ]).then(() => {
     CodeTagFix.install();
     Collapse.install();
