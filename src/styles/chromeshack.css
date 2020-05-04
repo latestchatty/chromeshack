@@ -362,6 +362,12 @@ div.read-only-tags {
     height: 1px;
 }
 
+/* put some spacing between the user icons and the user tagline */
+span.user > span.lol-tags,
+span.author > span.lol-tags {
+    margin-left: 0.5rem !important;
+}
+
 /* emoji tagline on the postbox form */
 #postform fieldset p.emoji-tagline {
     display: flex !important;

@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "build:prod",
+            "group": "build",
+            "problemMatcher": ["$ts-webpack"]
+        },
+        {
+            "type": "npm",
+            "script": "build:dev",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "base": "$ts-webpack",
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": {
+                            "regexp": "<your-custom-starting-regex-pattern here>"
+                        },
+                        "endsPattern": {
+                            "regexp": "<your-custom-ending-regex-pattern here>"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

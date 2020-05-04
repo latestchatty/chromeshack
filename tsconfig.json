@@ -3,9 +3,10 @@
         "target": "es2018",
         "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
         "module": "commonjs",
+        "alwaysStrict": true,
+        "noImplicitAny": true,
         "sourceMap": true,
         "jsx": "react"
     },
-    "exclude": ["node_modules"],
-    "files": ["src/app/background.ts", "src/app/content.ts", "src/app/popup.ts"]
+    "files": ["./src/content.ts", "./src/background.ts", "./src/popup.ts"]
 }

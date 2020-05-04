@@ -1,5 +1,6 @@
 .idea*
 node_modules
+coverage-ts
 dist
 artifacts
 # make sure to use --id option when signing!
