@@ -21,7 +21,7 @@ let HighlightPendingPosts = {
 
     fetchPendings() {
         fetchSafe({
-            url: `https://winchatty.com/v2/waitForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`
+            url: `https://winchatty.com/v2/pollForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`
         })
         .then((json) => {
             // sanitized in common.js!
