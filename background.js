@@ -20,20 +20,6 @@ const migrateSettings = async () => {
     await setSetting("version", current_version);
 };
 
-const addContextMenus = () => {
-    // get rid of any old and busted context menus
-    browser.contextMenus.removeAll();
-
-    // add some basic context menus
-    browser.contextMenus.create({
-        title: "Show comment history",
-        contexts: ["link"],
-        onclick: showCommentHistoryClick,
-        documentUrlPatterns: ["https://*.shacknews.com/*"],
-        targetUrlPatterns: ["https://*.shacknews.com/profile/*"]
-    });
-};
-
 var notificationsEventId = 0;
 
 const startNotifications = async () => {
@@ -108,14 +94,6 @@ const notificationClicked = notificationId => {
         let url = "https://www.shacknews.com/chatty?id=" + postId + "#item_" + postId;
         browser.tabs.create({ url: url });
         browser.notifications.clear(notificationId);
-    }
-};
-
-const showCommentHistoryClick = (info, tab) => {
-    let match = /\/profile\/(.+)$/.exec(info.linkUrl);
-    if (match) {
-        let search_url = "https://winchatty.com/search?author=" + escape(match[1]);
-        browser.tabs.create({ windowId: tab.windowId, index: tab.index + 1, url: search_url });
     }
 };
 
@@ -219,8 +197,6 @@ browser.webRequest.onHeadersReceived.addListener(responseListener, { urls: ["htt
     "blocking",
     "responseHeaders"
 ]);
-
-addContextMenus();
 
 (async () => {
     // attempt to update version settings

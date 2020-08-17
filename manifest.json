@@ -92,7 +92,6 @@
         "tabs",
         "storage",
         "webRequest",
-        "contextMenus",
         "notifications",
         "webRequestBlocking",
         "https://api.imgur.com/3/*",
