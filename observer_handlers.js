@@ -12,6 +12,9 @@ let ChromeShack = {
     debugEvents: false,
 
     install() {
+        let username = document.getElementById("user_posts");
+        setSetting("username", username && username.innerText || ""); // fire and forget
+
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList) => {
             try {

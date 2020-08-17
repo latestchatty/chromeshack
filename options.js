@@ -194,63 +194,6 @@ const addHighlightGroup = (e, group) => {
 
 
 /*
- * Notifications Support
- */
-
-const logInForNotifications = (notificationuid) => {
-    return fetchSafe({
-        url: "https://winchatty.com/v2/notifications/registerNotifierClient",
-        fetchOpts: {
-            method: "POST",
-            headers: { "Content-type": "application/x-www-form-urlencoded" },
-            body: encodeURI(`id=${notificationuid}&name=Chrome Shack (${new Date()})`)
-        }
-    })
-        .then(() => {
-            //console.log("Response from register client " + res.responseText);
-            browser.tabs.query({url: "https://winchatty.com/v2/notifications/ui/login*"}).then((tabs) => {
-                if (tabs.length === 0) {
-                    browser.tabs.create({
-                        url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`
-                    });
-                } else {
-                    //Since they requested, we'll open the tab and make sure they're at the correct url.
-                    browser.tabs.update(tabs[0].tabId, {
-                        active: true,
-                        highlighted: true,
-                        url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`
-                    });
-                }
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-};
-
-const updateNotificationOptions = async () => {
-    //Log the user in for notifications.
-    let notifications = await getEnabled("enable_notifications");
-    if (notifications) {
-        let uid = await getSetting("notificationuid");
-        if (!uid) {
-            let json = await fetchSafe({ url: "https://winchatty.com/v2/notifications/generateId" });
-            let notificationUID = json.id;
-            if (notificationUID) {
-                await setSetting("notificationuid", notificationUID);
-                logInForNotifications(notificationUID);
-            }
-        } else {
-            //console.log("Notifications already set up using an id of " + notificationUID);
-        }
-    } else {
-        await setSetting("notificationuid", "");
-        //TODO: Log them out because they're disabling it. This requires a username and password.  For now we'll just kill the UID and they can remove it manually because... meh whatever.
-    }
-};
-
-
-/*
  * Custom User Filters Support
  */
 const showUserFilters = async () => {
@@ -334,7 +277,6 @@ const getEnabledScripts = async () => {
     for (let checkbox of checkboxes) {
         if (elementMatches(checkbox, ".script_check") && checkbox.checked) {
             // put non-boolean save supports here
-            if (checkbox.id === "enable_notifications") await updateNotificationOptions();
             enabled.push(checkbox.id);
         } else if (elementMatches(checkbox, ".suboption")) {
             if (checkbox.checked) enabledSuboptions.push(checkbox.id);
@@ -367,8 +309,7 @@ const loadOptions = async () => {
             }
         }
         // put non-boolean load supports here
-        if (script === "enable_notifications") await updateNotificationOptions();
-        else if (script === "highlight_users") await showHighlightGroups();
+        if (script === "highlight_users") await showHighlightGroups();
         else if (script === "custom_user_filters") await showUserFilters();
     }
 };

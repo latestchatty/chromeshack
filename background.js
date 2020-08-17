@@ -34,72 +34,71 @@ const addContextMenus = () => {
     });
 };
 
+var notificationsEventId = 0;
+
 const startNotifications = async () => {
+    await setInitialNotificationsEventId();
     browser.notifications.onClicked.addListener(notificationClicked);
     await pollNotifications();
 };
 
+const setInitialNotificationsEventId = async () => {
+    const resp = await fetchSafe({
+        url: "https://winchatty.com/v2/getNewestEventId",
+        fetchOpts: { method: "GET" }
+    });
+    notificationsEventId = resp.eventId;
+};
+
+function matchNotification(loggedInUsername, post, parentAuthor) {
+    if (typeof loggedInUsername === 'string' && loggedInUsername !== '') {
+        const me = loggedInUsername.toLowerCase();
+        if (post.body.includes(me)) {
+            return "Post contains your name.";
+        } else if (me === (parentAuthor || '').toLowerCase()) {
+            return "Replied to you.";
+        }
+    }
+    return null;
+}
+
 const pollNotifications = async () => {
-    let notificationuid = await getSetting("notificationuid");
-    if (await getEnabled("enable_notifications") && notificationuid) {
+    if (await getEnabled("enable_notifications")) {
+        const username = await getSetting("username") || '';
+
         return await fetchSafe({
-            url: "https://winchatty.com/v2/notifications/waitForNotification",
-            fetchOpts: {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `clientId=${notificationuid}`
-            }
+            url: "https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=" + notificationsEventId,
+            fetchOpts: { method: "GET" }
         }).then(async resp => {
             let notifications = resp;
             if (!notifications.error) {
-                //console.log("notification response text: " + res.responseText);
-                if (notifications.messages) {
-                    for (let i = 0; i < notifications.messages.length; i++) {
-                        let n = notifications.messages[i];
-                        browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                            type: "basic",
-                            title: n.subject,
-                            message: n.body,
-                            iconUrl: "images/icon.png"
-                        });
-                    }
-                }
-                //If everything was successful, poll again in 15 seconds.
-                setTimeout(pollNotifications, 15000);
-            } else {
-                if (notifications.code === "ERR_UNKNOWN_CLIENT_ID") {
-                    browser.notifications.create("ErrorChromeshackNotification", {
-                        type: "basic",
-                        title: "ChromeShack Error",
-                        message:
-                            "Notifications are no longer enabled for this client, please try enabling them again.",
-                        iconUrl: "images/icon.png"
-                    });
-                    await setSetting("notificationuid", "");
-                    await removeEnabled("enable_notifications");
-                } else if (notifications.code == "ERR_CLIENT_NOT_ASSOCIATED") {
-                    browser.tabs.query({ url: "https://winchatty.com/v2/notifications/ui/login*" }, tabs => {
-                        // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
-                        if (tabs.length === 0) {
-                            browser.tabs.create({
-                                url:
-                                    "https://winchatty.com/v2/notifications/ui/login?clientId=" +
-                                    notificationuid
+                for (let i = 0; i < notifications.events.length; i++) {
+                    let n = notifications.events[i];
+                    if (n.eventType === "newPost") {
+                        var match = matchNotification(username, n.eventData.post, n.eventData.parentAuthor);
+                        if (match !== null) {
+                            browser.notifications.create("ChromeshackNotification" + n.eventData.post.id.toString(), {
+                                type: "basic",
+                                title: "New post by " + n.eventData.post.author,
+                                message: match,
+                                iconUrl: "images/icon.png"
                             });
                         }
-                    });
+                    }
                 }
-            }
-            setTimeout(pollNotifications, 60000);
-        })
-            .catch(async err => {
-                console.log(err);
+                notificationsEventId = notifications.lastEventId;
+                //If everything was successful, poll again in 15 seconds.
+                setTimeout(pollNotifications, 15000);
+            } else if (notifications.code === "ERR_TOO_MANY_EVENTS") {
+                await setInitialNotificationsEventId();
+                setTimeout(pollNotifications, 15000);
+            } else {
                 setTimeout(pollNotifications, 60000);
-            });
-    } else if (!(await getEnabled("enable_notifications"))) {
-        // disable the detached guid
-        await setSetting("notificationuid", "");
-        await removeEnabled("enable_notifications");
+            }
+        }).catch(async err => {
+            console.log(err);
+            setTimeout(pollNotifications, 60000);
+        });
     }
 };
 
