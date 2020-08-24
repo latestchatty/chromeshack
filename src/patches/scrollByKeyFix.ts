@@ -41,7 +41,7 @@ if (!document.getElementById("scrollbykeyfix-wjs")) {
 }`,
         });
     } catch (e) {
-        console.error(e);
+        /* eat empty object exceptions */
     }
 };
 export default scrollByKeyFix;

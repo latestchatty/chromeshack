@@ -54,7 +54,7 @@ if (!document.getElementById("chatviewfix-wjs")) {
 }`,
             }));
     } catch (e) {
-        console.error(e);
+        /* eat empty object exceptions */
     }
 };
 export default chatViewFix;
