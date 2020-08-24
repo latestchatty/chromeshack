@@ -19,10 +19,6 @@ import {
 
 require("./styles/popup.css");
 
-interface NotificationRegister {
-    id?: string;
-}
-
 /*
  * Highlight Users' Support
  */

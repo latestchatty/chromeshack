@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 
 import useUploaderStore, { UploaderState } from "./uploaderStore";
 import { ToggleChildren, Tab, DropArea, UrlInput, Button, StatusLine } from "./Components";

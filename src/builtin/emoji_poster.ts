@@ -1,5 +1,5 @@
 /*eslint no-control-regex: 0*/
-import * as $ from "jquery";
+import $ from "jquery";
 import { processPostBoxEvent } from "../core/events";
 import { safeInnerHTML } from "../core/common";
 

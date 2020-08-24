@@ -10,7 +10,8 @@ import {
     processEmptyTagsLoadedEvent,
     processTagDataLoadedEvent,
 } from "./events";
-import { elemMatches, locatePostRefs, objEmpty } from "./common";
+import { elemMatches, locatePostRefs } from "./common";
+import { setUsername } from "./notifications";
 
 interface PostRefreshMutation {
     lastPostId?: string;
@@ -42,6 +43,12 @@ const ChromeShack = {
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList: MutationRecord[]) => {
+            (async () => {
+                // set our current logged-in username once upon refreshing the Chatty
+                const loggedInUsername = document.getElementById("user_posts")?.innerText || "";
+                if (loggedInUsername) await setUsername(loggedInUsername);
+            })();
+
             try {
                 const attrMutated = mutationsList[0].target as HTMLElement;
                 if (mutationsList[0].type === "attributes" && elemMatches(attrMutated, ".tag-container, .lol-tags")) {

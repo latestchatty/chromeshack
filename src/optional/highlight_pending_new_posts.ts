@@ -1,25 +1,15 @@
+import { browser } from "webextension-polyfill-ts";
+
 import { enabledContains } from "../core/settings";
-import { fetchSafe, scrollToElement } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
+import { fetchSafe, scrollToElement } from "../core/common";
 import { TP_Instance, CS_Instance } from "../content";
 
-interface PostEvents {
-    eventId?: string;
-    lastEventId?: string;
-    events?: Array<{
-        eventType: string;
-        eventData: {
-            postId: string;
-            post: {
-                threadId: string;
-            };
-        };
-    }>;
-}
+import type { NotifyEvent, NotifyResponse } from "../core/notifications";
 
 interface PendingPost {
-    postId: string;
-    threadId: string;
+    postId: number;
+    threadId: number;
 }
 
 const HighlightPendingPosts = {
@@ -49,34 +39,32 @@ const HighlightPendingPosts = {
     },
 
     fetchPendings() {
-        fetchSafe({
-            url: `https://winchatty.com/v2/pollForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`,
-        }).then((json: any) => {
-            // sanitized in common.js!
-            if (json.events) {
-                HighlightPendingPosts.lastEventId = parseInt(json.lastEventId);
-                const newPosts = [...json.events.filter((x) => x.eventType === "newPost")];
-                const newPendingEvents = [];
-                for (const post of newPosts) {
-                    newPendingEvents.push({
-                        postId: post.eventData.postId,
-                        threadId: post.eventData.post.threadId,
-                    } as PendingPost);
+        browser.runtime
+            .sendMessage({
+                name: "corbFetch",
+                url: `https://winchatty.com/v2/pollForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`,
+            })
+            .then((json: NotifyResponse) => {
+                // sanitized in common.js!
+                if (json.events) {
+                    HighlightPendingPosts.lastEventId = json.lastEventId;
+                    const newPosts = [...json.events.filter((x: NotifyEvent) => x.eventType === "newPost")];
+                    const newPendingEvents = [];
+                    for (const post of newPosts) {
+                        newPendingEvents.push({
+                            postId: post.eventData.postId,
+                            threadId: post.eventData.post.threadId,
+                        } as PendingPost);
+                    }
+                    // Short delay in between loop iterations.
+                    setTimeout(HighlightPendingPosts.fetchPendings, 5000);
                 }
-                HighlightPendingPosts.pendings = newPendingEvents;
-                if (newPendingEvents.length > 0) {
-                    if (CS_Instance.debugEvents) console.log("Fetching pendings:", newPendingEvents);
-                    HighlightPendingPosts.updatePendings();
-                }
-            }
-            // Short delay in between loop iterations.
-            setTimeout(HighlightPendingPosts.fetchPendings, 5000);
-        });
+            });
     },
 
     excludeRefreshed(refreshElem: HTMLElement) {
         if (!refreshElem) return;
-        const closestId = refreshElem?.closest("li[id^='item_']")?.id?.substr(5);
+        const closestId = parseInt(refreshElem?.closest("li[id^='item_']")?.id?.substr(5));
         const mutated = [
             ...HighlightPendingPosts.pendings.filter((x) => x.postId !== closestId || x.threadId !== closestId),
         ];
@@ -154,11 +142,13 @@ const HighlightPendingPosts = {
             HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
         });
         // We need to get an initial event ID to start with.
-        fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" }).then((json: PostEvents) => {
-            // sanitized in common.js!
-            HighlightPendingPosts.lastEventId = parseInt(json.eventId);
-            HighlightPendingPosts.fetchPendings();
-        });
+        browser.runtime
+            .sendMessage({ name: "corbFetch", url: "https://winchatty.com/v2/getNewestEventId" })
+            .then((json: { eventId: number }) => {
+                // sanitized in common.js!
+                HighlightPendingPosts.lastEventId = json.eventId;
+                HighlightPendingPosts.fetchPendings();
+            });
     },
 };
 

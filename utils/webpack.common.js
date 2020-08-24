@@ -4,10 +4,10 @@ const path = require("path");
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-const rootDir = path.resolve(__dirname);
+const rootDir = path.resolve(__dirname, "..");
 const dist = path.resolve(rootDir, "./dist");
 const distImages = path.resolve(dist, "./images");
-const workspace = path.resolve(__dirname, "./src");
+const workspace = path.resolve(rootDir, "./src");
 const assets = path.resolve(workspace, "./assets");
 const assetImages = path.resolve(assets, "./images");
 

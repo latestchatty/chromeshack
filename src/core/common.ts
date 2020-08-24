@@ -1,6 +1,5 @@
-import { browser } from "webextension-polyfill-ts";
-import * as DOMPurify from "dompurify";
-import * as $ from "jquery";
+import DOMPurify from "dompurify";
+import $ from "jquery";
 
 import { CS_Instance } from "../content";
 

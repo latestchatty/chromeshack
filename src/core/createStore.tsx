@@ -1,5 +1,4 @@
-import * as React from "react";
-import { createContext, useReducer, useContext } from "react";
+import React, { createContext, useReducer, useContext } from "react";
 
 type BaseTypes = string | number | boolean | object | [];
 export interface ReducerAction {

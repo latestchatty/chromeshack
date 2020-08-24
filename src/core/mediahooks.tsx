@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import { classNames, isVideo, isImage } from "./common";
 

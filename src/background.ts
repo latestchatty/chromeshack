@@ -1,31 +1,11 @@
 import { browser, Menus, Tabs, WebRequest } from "webextension-polyfill-ts";
 
 import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
-import {
-    resetSettings,
-    getSettingsLegacy,
-    getSettings,
-    getSetting,
-    setSetting,
-    getEnabled,
-    setEnabled,
-    removeEnabled,
-} from "./core/settings";
+import { resetSettings, getSettingsLegacy, getSettings, getSetting, setSetting, setEnabled } from "./core/settings";
+import { startNotifications } from "./core/notifications";
 
 import chatViewFix from "./patches/chatViewFix";
 import scrollByKeyFix from "./patches/scrollByKeyFix";
-
-interface Notification {
-    error?: object;
-    code?: string;
-    messages?: [];
-}
-
-interface NotificationMessage {
-    postId: number;
-    subject: string;
-    body: string;
-}
 
 type OnMessageRequestName =
     | "launchIncognito"
@@ -56,119 +36,11 @@ const migrateSettings = async () => {
         const prevNotifyUID = legacy_settings["notificationuid"] || null;
         const prevNotifyState = legacy_settings["notifications"] || null;
         if (prevFilters) await setSetting("user_filters", prevFilters);
-        if (prevNotifyUID && prevNotifyState) {
-            await setSetting("notificationuid", prevNotifyUID);
-            await setEnabled("enable_notifications");
-        }
+        if (prevNotifyUID && prevNotifyState) await setEnabled("enable_notifications");
         window.localStorage.clear();
     }
     if (last_version !== current_version) await browser.tabs.create({ url: "release_notes.html" });
     await setSetting("version", current_version);
-};
-
-const showCommentHistoryClick = (info: Menus.OnClickData, tab: Tabs.Tab) => {
-    const match = /\/profile\/(.+)$/.exec(info.linkUrl);
-    if (match) {
-        const search_url = "https://winchatty.com/search?author=" + escape(match[1]);
-        browser.tabs.create({
-            windowId: tab.windowId,
-            index: tab.index + 1,
-            url: search_url,
-        });
-    }
-};
-
-const addContextMenus = async () => {
-    // get rid of any old and busted context menus
-    await browser.contextMenus.removeAll();
-    // add some basic context menus
-    browser.contextMenus.create({
-        title: "Show comment history",
-        contexts: ["link"],
-        onclick: showCommentHistoryClick,
-        documentUrlPatterns: ["https://*.shacknews.com/*"],
-        targetUrlPatterns: ["https://*.shacknews.com/profile/*"],
-    });
-};
-
-const startNotifications = async () => {
-    try {
-        browser.notifications.onClicked.addListener(notificationClicked);
-        await pollNotifications();
-    } catch (e) {
-        console.error(e);
-    }
-};
-
-const pollNotifications = async () => {
-    try {
-        const notificationuid = await getSetting("notificationuid");
-        if ((await getEnabled("enable_notifications")) && notificationuid) {
-            const _notifications: Notification = await fetchSafe({
-                url: "https://winchatty.com/v2/notifications/waitForNotification",
-                fetchOpts: {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: `clientId=${notificationuid}`,
-                },
-            });
-            if (!_notifications?.error) {
-                if (_notifications?.messages) {
-                    for (let i = 0; i < _notifications?.messages.length; i++) {
-                        const n: NotificationMessage = _notifications.messages[i];
-                        await browser.notifications.create("ChromeshackNotification" + n.postId.toString(), {
-                            type: "basic",
-                            title: n.subject,
-                            message: n.body,
-                            iconUrl: "images/icon.png",
-                        });
-                    }
-                    //If everything was successful, poll again in 15 seconds.
-                    setTimeout(pollNotifications, 15000);
-                } else {
-                    if (_notifications?.code === "ERR_UNKNOWN_CLIENT_ID") {
-                        await browser.notifications.create("ErrorChromeshackNotification", {
-                            type: "basic",
-                            title: "ChromeShack Error",
-                            message:
-                                "Notifications are no longer enabled for this client, please try enabling them again.",
-                            iconUrl: "images/icon.png",
-                        });
-                        await setSetting("notificationuid", "");
-                        await removeEnabled("enable_notifications");
-                    } else if (_notifications?.code == "ERR_CLIENT_NOT_ASSOCIATED") {
-                        await browser.tabs
-                            .query({ url: "https://winchatty.com/v2/notifications/ui/login*" })
-                            .then(async (tabs: Tabs.Tab[]) => {
-                                // If they're not already logging in somewhere, they need to.  Otherwise we'll just leave it alone instead of bringing it to the front or anything annoying like that.
-                                if (tabs.length === 0) {
-                                    await browser.tabs.create({
-                                        url: `https://winchatty.com/v2/notifications/ui/login?clientId=${notificationuid}`,
-                                    });
-                                }
-                            });
-                    }
-                    setTimeout(pollNotifications, 60000);
-                }
-            }
-        } else if (!(await getEnabled("enable_notifications"))) {
-            // disable the detached guid
-            await setSetting("notificationuid", "");
-            await removeEnabled("enable_notifications");
-        }
-    } catch (e) {
-        console.error(e);
-        setTimeout(pollNotifications, 60000);
-    }
-};
-
-const notificationClicked = async (notificationId: string) => {
-    if (notificationId.indexOf("ChromeshackNotification") > -1) {
-        const postId = notificationId.replace("ChromeshackNotification", "");
-        const url = `https://www.shacknews.com/chatty?id=${postId}#item_${postId}`;
-        await browser.tabs.create({ url: url });
-        await browser.notifications.clear(notificationId);
-    }
 };
 
 browser.runtime.onMessage.addListener(
@@ -235,8 +107,6 @@ try {
         "blocking",
         "responseHeaders",
     ]);
-
-    addContextMenus();
 
     (async () => {
         // attempt to update version settings

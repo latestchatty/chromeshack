@@ -1,6 +1,6 @@
 /* eslint-disable */
-const common = require("../webpack.common");
-const merge = require("webpack-merge");
+const common = require("./webpack.common");
+const { merge } = require("webpack-merge");
 const ExtensionReloader = require("webpack-extension-reloader");
 
 module.exports = merge(common, {

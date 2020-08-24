@@ -3,6 +3,8 @@
         "target": "es2018",
         "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
         "module": "commonjs",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "alwaysStrict": true,
         "noImplicitAny": true,
         "sourceMap": true,
