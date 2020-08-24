@@ -50,7 +50,19 @@ const ChattyNews = {
         const is_enabled = await enabledContains("chatty_news");
         if (is_enabled) {
             if (document.querySelector("div.chatty-news")) return;
-            const articleBox = document.querySelector(".article-content p") as HTMLElement;
+            // move all non-media elements into an alignment container for better responsiveness
+            const articleBox = document.querySelector(".article-content") as HTMLElement;
+            const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
+            const alignmentBox = document.createElement("div");
+            const subAlignmentBox = document.createElement("div");
+            alignmentBox.setAttribute("id", "chattynews__aligner");
+            for (const [i, p] of articleChildren.entries() || []) {
+                // leave our other text centered at the bottom of the article box
+                if (i !== articleChildren.length-1) subAlignmentBox.appendChild(p);
+                else alignmentBox.appendChild(p);
+            }
+            alignmentBox?.appendChild(subAlignmentBox);
+
             let newsBox = document.createElement("div");
             newsBox?.classList?.add("chatty-news");
             safeInnerHTML(
@@ -62,9 +74,8 @@ const ChattyNews = {
                 newsBox,
             );
             newsBox = await ChattyNews.populateNewsBox(newsBox);
-            // force parent container to align newsbox next to twitch player
-            articleBox?.setAttribute("style", "display: flex;");
-            articleBox?.appendChild(newsBox);
+            alignmentBox?.appendChild(newsBox);
+            articleBox?.appendChild(alignmentBox);
         }
     },
 };
