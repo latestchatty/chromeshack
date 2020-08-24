@@ -11,6 +11,7 @@ import {
     processTagDataLoadedEvent,
 } from "./events";
 import { elemMatches, locatePostRefs } from "./common";
+import { setSetting } from "./settings";
 import { setUsername } from "./notifications";
 
 interface PostRefreshMutation {
