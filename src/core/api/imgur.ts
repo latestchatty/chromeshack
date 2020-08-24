@@ -1,15 +1,16 @@
 import { browser } from "webextension-polyfill-ts";
 import { Dispatch } from "react";
 
-import { fetchSafe, matchFileFormat, arrEmpty, FormDataToJSON, isImage } from "../common";
-import {
-    imageFormats,
-    videoFormats,
+import { arrHas, arrEmpty, isImage, isVideo, matchFileFormat, FormDataToJSON, fetchSafe } from "../common";
+import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
+
+import type {
     UploaderAction,
     UploadSuccessPayload,
     UploadFailurePayload,
 } from "../../builtin/image-uploader/uploaderStore";
-import { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import type { ParsedResponse } from "./";
 
 const imgurApiImageBaseUrl = "https://api.imgur.com/3/image";
 const imgurApiAlbumBaseUrl = "https://api.imgur.com/3/album";
@@ -19,6 +20,7 @@ const imgurClientId = "Client-ID c045579f61fc802";
 interface ImgurResolution {
     imageId?: string;
     albumId?: string;
+    galleryId?: string;
 }
 
 type ImgurMediaItem = {
@@ -33,23 +35,35 @@ interface ImgurResponse {
     };
 }
 
+interface ImgurSource {
+    src: string;
+    type: "image" | "video";
+}
+type ImgurSources = ImgurSource[];
+
 const parseLink = (href: string) => {
-    const isImgur = /https?:\/\/(?:.+?\.)?imgur\.com\/(?:(?:i\/)?(\w+?)\b\.|(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?|.+\/([\w-]+)?|(\w+)$)?/i.exec(
-        href,
-    );
-    const albumId = (isImgur && isImgur[2]) || (isImgur && isImgur[4]);
-    const imageId = (isImgur && isImgur[1]) || (isImgur && isImgur[3]) || (isImgur && isImgur[4]);
-    return isImgur ? { href, albumId, imageId } : null;
+    // albumMatch[1] returns an album (data.images.length > 1)
+    // albumMatch[2] can also be an image nonce (data.images.length === 1 || data.link)
+    const albumMatch = /https?:\/\/(?:.+?\.)?imgur\.com\/(?:(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?)/i.exec(href);
+    // galleryMatch[1] matches a tagged gallery nonce (which is actually an album)
+    const galleryMatch = /https?:\/\/(?:.+?\.)?imgur\.com\/(?:t\/\w+\/(\w+))/i.exec(href);
+    // matches an image nonce (fallthrough from the two previous types)
+    // [1] = direct match, [2] = gallery direct match, [3] = indirect match, plus the albumMatch[2] above
+    const imageMatch = /https?:\/\/(?:.+?\.)?imgur\.com\/(?:i\/(\w+)|r\/\w+\/(\w+)|(\w+))$/i.exec(href);
+
+    const albumId = albumMatch ? albumMatch[1] : null;
+    const galleryId = galleryMatch ? galleryMatch[1] || galleryMatch[2] : null;
+    // check if we've matched an image nonce of an album first
+    const imageId = albumMatch ? albumMatch[2] : imageMatch ? imageMatch[1] || imageMatch[2] || imageMatch[3] : null;
+
+    const result =
+        albumId || galleryId || imageId
+            ? ({ href, args: [imageId, albumId, galleryId], type: null, cb: getImgur } as ParsedResponse)
+            : null;
+    return result;
 };
 
 export const isImgur = (href: string) => parseLink(href);
-
-export const getImgurLinks = async (href: string) => {
-    const { albumId, imageId } = isImgur(href);
-    const sources = await doResolveImgur({ albumId, imageId });
-    // return a string or string[], handle filetypes in consumers
-    return sources ? sources : null;
-};
 
 // wrap fetchSafe() so we can silence transmission exceptions
 const _fetch = async (url: string) =>
@@ -57,34 +71,53 @@ const _fetch = async (url: string) =>
     await fetchSafe({
         url,
         fetchOpts: { headers: { Authorization: imgurClientId } },
-    }).catch((e) => console.error(e));
+    }).catch((e: Error) => console.error(e));
 
-export const doResolveImgur = async ({ imageId, albumId }: ImgurResolution) => {
+export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResolution) => {
     try {
         const albumImageUrl = albumId && imageId && `${imgurApiAlbumBaseUrl}/${albumId}/image/${imageId}`;
         const albumUrl = albumId && `${imgurApiAlbumBaseUrl}/${albumId}`;
         // since a shortcode could be either an image or an album try both
         const imageUrl = imageId ? `${imgurApiImageBaseUrl}/${imageId}` : `${imgurApiImageBaseUrl}/${albumId}`;
-        // try resolving as an album image
+
+        // try resolving as a single image album
         const _albumImage: ImgurResponse = albumImageUrl && (await _fetch(albumImageUrl));
-        if (_albumImage) return [_albumImage?.data?.mp4 || _albumImage?.data?.link];
+        const resolvedAlbumImage = _albumImage ? _albumImage?.data?.mp4 || _albumImage?.data?.link : null;
+        if (resolvedAlbumImage) return [resolvedAlbumImage];
+
         // next try resolving as a multi-image album
         const _album: ImgurResponse = albumUrl && (await _fetch(albumUrl));
-        const _mediaItems = !arrEmpty(_album?.data?.images) && _album.data.images;
-        // finally try resolving as a standalone image
-        const _image: ImgurResponse = imageUrl && (await _fetch(imageUrl));
-        if (_image) return _image?.data?.mp4 || _image?.data?.link;
+        const resolvedMedia = arrHas(_album?.data?.images)
+            ? _album.data.images.reduce((acc, v) => {
+                  acc.push(v.mp4 || v.link);
+                  return acc;
+              }, [] as string[])
+            : null;
+        if (arrHas(resolvedMedia)) return resolvedMedia;
 
-        // if we get back an array of imgur items then return an array of links
-        if (Array.isArray(_mediaItems)) {
-            const result: string[] = [];
-            for (const i of _mediaItems) result.push(i.mp4 || i.link);
-            return result;
-        }
-        throw new Error(`Could not resolve Imgur using any available method: ${imageId} ${albumId}`);
+        // finally try resolving as a standalone image if everything else fails
+        const _image: ImgurResponse = imageUrl && (await _fetch(imageUrl));
+        const resolvedImage = _image ? _image?.data?.mp4 || _image?.data?.link : null;
+        if (resolvedImage) return [resolvedImage];
+
+        throw new Error(`Could not resolve Imgur using any available method: ${imageId} ${albumId} ${galleryId}`);
     } catch (e) {
         console.error(e);
+        return null;
     }
+};
+
+export const getImgur = async (...args: any[]) => {
+    const [imageId, albumId, galleryId] = args || [];
+    const resolved = await doResolveImgur({ imageId, albumId, galleryId });
+    const sources = arrHas(resolved)
+        ? resolved.reduce((acc, m) => {
+              const type = isImage(m) ? "image" : isVideo(m) ? "video" : null;
+              acc.push({ src: m, type });
+              return acc;
+          }, [] as ImgurSource[])
+        : [];
+    return sources;
 };
 
 const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
@@ -104,7 +137,9 @@ const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction
             const res: ImgurResponse = await browser.runtime.sendMessage({
                 name: "corbPost",
                 url: imgurApiUploadUrl,
-                headers: { Authorization: imgurClientId },
+                fetchOpts: {
+                    headers: { Authorization: imgurClientId },
+                },
                 data: stringified,
             });
             // sanitized in fetchSafe()

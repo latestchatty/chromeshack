@@ -1,102 +1,86 @@
 /* basic rules for styling media/socials children */
 :root {
-  --gutter-size: 6px;
-  --min-media-col-size: calc(33% - var(--gutter-size));
-  --max-media-col-size: calc(50% - var(--gutter-size));
-  --min-media-item-height: 200px;
-  --max-media-item-height: 720px;
-  --min-media-item-width: 300px;
-  --max-media-item-width: 854px;
-  --min-media-row-size: 200px;
-  --max-media-row-size: 640px;
-  --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --min-media-item-height: 200px;
+    --max-media-item-height: 720px;
+    --min-media-item-width: 300px;
+    --max-media-item-width: 854px;
+    --min-media-row-size: 200px;
+    --max-media-row-size: 640px;
+    --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.media-container.hidden {
-  display: none !important;
+/* General Media Embedder */
+div#react-media-manager {
+    display: none !important;
 }
-.medialoader video:not(.swiper-slide),
-.medialoader img:not(.swiper-slide) {
-  outline: none !important;
-  box-sizing: border-box;
-  object-fit: contain !important;
-  min-height: var(--min-media-item-height);
-  max-height: var(--max-media-item-height);
-  min-width: var(--min-media-item-width);
-  max-width: var(--max-media-item-width);
+div.media.hidden,
+div.media .hidden {
+    display: none;
 }
-.iframe-spacer {
-  /* restrict iframes (YT, et al) to 854x480 or less */
-  max-width: var(--max-media-item-width) !important;
-  max-height: 480px !important;
+div.medialink {
+    display: inline-block;
 }
-.iframe-spacer iframe {
-  min-width: calc(480 * 0.5) px !important;
-  min-height: calc(854 * 0.5) px !important;
-}
-.iframe-container,
-.yt-container,
-.twitch-container {
-  position: relative;
-  /* 16:9 for 854x480 */
-  padding-bottom: 56.21%;
-  height: 0;
-}
-.iframe-container iframe,
-.yt-container iframe,
-.twitch-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+div.medialink.toggled {
+    /* reposition when expanded to avoid mangling formatting */
+    display: block !important;
 }
 
-/* expando toggle button (.expando -> .expando.collapso) */
-.postbody a.embedded {
-  color: rgb(61, 154, 154) !important;
+div.media > img,
+div.media > video {
+    outline: none;
+    /* only enforce a max height */
+    object-fit: scale-down;
+    max-height: var(--max-media-item-height);
+}
+div.media .canToggleClick {
+    cursor: pointer;
 }
 div.expando {
-  display: inline-block !important;
-  text-decoration: none !important;
-  color: white !important;
-  font-size: 13px;
-  font-weight: 100;
-  position: relative;
-  margin-right: 6px;
-  top: 2px;
-  left: 5px;
+    display: inline-block;
+    margin: 0 2px 0 4px;
 }
-/* end expando */
+.iframe-container,
+.twitch-container,
+.yt-container {
+    position: relative;
+    overflow: hidden;
+    padding-top: 56.25%;
+    width: 100%;
+    max-width: var(--max-media-item-width);
+}
+.iframe-container iframe,
+.twitch-container iframe,
+.yt-container iframe {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* enforce 854 x 480px max-width */
+    max-height: 480px !important;
+}
+/* End Media Embedder */
 
-/* customizations for carousel */
-:not(div.instgrm-container) .swiper-container,
-.swiper-container.medialoader {
-  /* workaround for non-instagram responsiveness */
-  margin: unset !important;
+/* Chattypost Embedder */
+div.getPost {
+    width: 97%;
+    border: 1px #2f8484 solid;
+    background-color: #1d1d1d;
 }
-.swiper-container.instgrm-embed {
-  max-width: var(--max-social-item-width);
+div.getPost div.refresh,
+div.getPost div.reply,
+div.getPost div.postmeta a.closepost {
+    display: none;
 }
-.medialoader video.swiper-slide,
-.medialoader img.swiper-slide {
-  object-fit: contain !important;
-  max-width: var(--max-media-item-width);
+div.getPost > div.fullpost {
+    border: unset !important;
 }
-img.swiper-slide,
-video.swiper-slide {
-  outline: none !important;
+div.getPost div.postbody {
+    margin: 0.25em 0.25em 1em 1.5em;
 }
-.swiper-button-next,
-.swiper-button-prev {
-  opacity: 0.5 !important;
+div.getPost span.user a {
+    text-decoration: none;
 }
-.swiper-button-disabled {
-  opacity: 0.2 !important;
-}
-
-/* fix z-index of lightbox so header bar doesn't cover it */
-div.basicLightbox {
-  z-index: 99999;
-  overflow-y: scroll;
-}
+/* End Chattypost Embedder */

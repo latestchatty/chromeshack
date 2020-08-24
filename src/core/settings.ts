@@ -22,10 +22,8 @@ export const DefaultSettings: Settings = {
     enabled_scripts: [
         "shrink_user_icons",
         "reduced_color_user_icons",
-        "image_loader",
-        "image_loader_newtab",
-        "video_loader",
-        "embed_socials",
+        "media_loader",
+        "social_loader",
         "getpost",
         "nws_incognito",
         "new_comment_highlighter",

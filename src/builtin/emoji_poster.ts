@@ -1,7 +1,9 @@
 /*eslint no-control-regex: 0*/
-import $ from "jquery";
+import jQuery from "jquery";
 import { processPostBoxEvent } from "../core/events";
 import { safeInnerHTML } from "../core/common";
+
+const $ = jQuery;
 
 /*
  * Encodes string Astrals (Emoji's) into prefixed HTML entities to

@@ -1,9 +1,9 @@
 import ChromeShack from "./core/observers";
 
 import ChattyNews from "./optional/chatty-news";
+import TwitchAutoplay from "./optional/twitch_autoplay";
 import CustomUserFilters from "./optional/custom_user_filters";
 import DinoGegtik from "./optional/dinogegtik";
-import EmbedSocials from "./optional/embed_socials";
 import HighlightPendingPosts from "./optional/highlight_pending_new_posts";
 import HighlightUsers from "./optional/highlight_users";
 import NewCommentHighlighter from "./optional/new_comment_highlighter";
@@ -13,11 +13,7 @@ import PostStyling from "./optional/post_style";
 import SparklyComic from "./optional/sparkly_comic";
 import Switchers from "./optional/switchers";
 import ThreadPane from "./optional/thread_pane";
-
-import GetPost from "./optional/getpost";
-import ImageLoader from "./optional/image_loader";
-import VideoLoader from "./optional/video_loader";
-//import MediaEmbedder from "./optional/media-embedder";
+import MediaEmbedder from "./optional/media-embedder";
 
 import CodeTagFix from "./builtin/codetagfix";
 import Collapse from "./builtin/collapse";
@@ -47,22 +43,19 @@ try {
     Promise.all([
         // optional modules that rely on toggles
         ChattyNews.install(),
+        TwitchAutoplay.install(),
         CustomUserFilters.install(),
-        DinoGegtik.install(),
-        EmbedSocials.install(),
         HighlightPendingPosts.install(),
         HU_Instance.install(),
         NewCommentHighlighter.install(),
         NwsIncognito.install(),
         PostPreview.install(),
         PostStyling.install(),
+        DinoGegtik.install(),
         SparklyComic.install(),
         Switchers.install(),
         TP_Instance.install(),
-        GetPost.install(),
-        ImageLoader.install(),
-        VideoLoader.install(),
-        //MediaEmbedder.install(),
+        MediaEmbedder.install(),
     ]).then(() => {
         CodeTagFix.install();
         Collapse.install();

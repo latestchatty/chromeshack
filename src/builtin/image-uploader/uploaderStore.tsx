@@ -1,6 +1,5 @@
 import createStore, { ReducerState } from "../../core/createStore";
 import { packValidTypes } from "../../core/common";
-import { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
 export const videoFormats =

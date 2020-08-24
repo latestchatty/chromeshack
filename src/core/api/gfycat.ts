@@ -1,8 +1,14 @@
 import { Dispatch } from "react";
 
 import { waitToFetchSafe, fetchSafe, fetchSafeLegacy, isFileArr, objEmpty, isUrlArr } from "../common";
-import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../../builtin/image-uploader/uploaderStore";
-import { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+
+import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import type {
+    UploaderAction,
+    UploadSuccessPayload,
+    UploadFailurePayload,
+} from "../../builtin/image-uploader/uploaderStore";
+import type { ParsedResponse } from "./";
 
 const gfycatApiUrl = "https://api.gfycat.com/v1/gfycats"; // GET
 const gfycatStatusUrl = "https://api.gfycat.com/v1/gfycats/fetch/status"; // GET
@@ -24,30 +30,31 @@ interface GfycatResponse {
 
 const parseLink = (href: string) => {
     const _isGfycat = /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i.exec(href);
-    return _isGfycat ? { href: href, shortcode: _isGfycat[1] || _isGfycat[2], type: "video" } : null;
+    return _isGfycat
+        ? ({ href, args: [_isGfycat[1] || _isGfycat[2]], type: "video", cb: getGfycat } as ParsedResponse)
+        : null;
 };
 
 export const isGfycat = (href: string) => parseLink(href);
 
-export const getGfycatLink = async (href: string) => {
-    const { shortcode, type } = isGfycat(href) || {};
-    const src = await doResolveGfycat(shortcode);
-    return src ? { src, type } : null;
-};
-
-export const doResolveGfycat = async (gfyname: string) => {
+export const doResolveGfycat = async (...args: any[]) => {
+    const [gfyname] = args;
     /// resolves a gfycat nonce to its media url
     try {
-        const url = `${gfycatApiUrl}/${gfyname}`;
+        const url = gfyname ? `${gfycatApiUrl}/${gfyname}` : null;
+        if (!url) throw Error("Unable to resolve gfyname!");
+
         const result: GfycatResponse = window.chrome ? await fetchSafe({ url }) : await fetchSafeLegacy({ url });
         // sanitized in common.js
         const media = result?.gfyItem?.mobileUrl || result?.gfyItem?.webmUrl;
-        return media ? [media] : null;
+        return media ? { src: media, type: "video" } : null;
     } catch (e) {
         console.error("Couldn't resolve Gfycat:", gfyname, e);
         return null;
     }
 };
+
+export const getGfycat = async (...args: any[]) => (args ? await doResolveGfycat(...args) : null);
 
 const doGfycatDropKey = async (data?: UploadData) => {
     /// notifies the Gfycat drop endpoint that we wish to upload media
@@ -138,7 +145,8 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
             const urlUpload = await doGfycatStatus(key);
             if (typeof urlUpload === "string") {
                 const resolved = await doResolveGfycat(key);
-                if (resolved && typeof resolved[0] === "string") return handleGfycatUploadSuccess(resolved, dispatch);
+                if (resolved?.src && typeof resolved.src[0] === "string")
+                    return handleGfycatUploadSuccess([resolved.src], dispatch);
                 else {
                     return handleGfycatUploadFailure(
                         { code: 500, msg: `Unable to resolve the uploaded Gfycat: ${key}` },
@@ -151,7 +159,7 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
             const encodedGfy = await doGfycatStatus(key); // wait for the encode
             if (typeof encodedGfy === "string") {
                 const media = await doResolveGfycat(encodedGfy);
-                if (media) handleGfycatUploadSuccess(media, dispatch);
+                if (media?.src) handleGfycatUploadSuccess([media.src], dispatch);
             } else handleGfycatUploadFailure(encodedGfy, dispatch);
         }
     } catch (e) {

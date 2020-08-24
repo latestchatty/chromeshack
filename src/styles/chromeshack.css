@@ -70,36 +70,6 @@ span.newcommenthighlighter {
     padding-left: 2px !important;
 }
 
-/* get post */
-div.getPost {
-    position: relative;
-    padding: 0;
-    margin: 0;
-    min-height: 1;
-    max-width: 97%;
-    border: 1px #2f8484 solid;
-    background-color: #1d1d1d;
-}
-div.getPost > div.fullpost {
-    border: unset;
-}
-div.getPost div.postbody {
-    margin: 0.25em 0.25em 1em 1.5em;
-}
-div.getPost.hidden {
-    display: none !important;
-}
-
-div.getPost div.refresh,
-div.getPost div.reply,
-div.getPost div.postmeta a.closepost {
-    display: none;
-}
-
-div.getPost span.user a {
-    text-decoration: none;
-}
-
 /* shack userpopup */
 body .in,
 .base-level {
@@ -120,23 +90,27 @@ div.threads ul ul li span.author li {
     padding-left: 0;
     background-image: none;
 }
+.userDropdown-container {
+    position: relative !important;
+    z-index: 999;
+}
 .userDropdown {
     position: absolute !important;
-    top: 28px;
+    top: 16px;
     left: 0;
     width: auto !important;
     background: #222 !important;
-    z-index: 9999;
-    text-align: left;
     border: 1px solid #333;
     box-shadow: 3px 3px 4px #000;
+    z-index: 999;
+    text-align: left;
     font-weight: normal;
     font-size: 12px;
     padding: 0 !important;
 }
 .user a .userDropdown {
-    top: 1.5em;
-    left: 0;
+    top: 3px;
+    left: -5px;
 }
 .userDropdown li,
 .userDropdown #filter-list li:not(.userDropdown-separator) {
@@ -362,10 +336,13 @@ div.read-only-tags {
     height: 1px;
 }
 
-/* put some spacing between the user icons and the user tagline */
-span.user > span.lol-tags,
-span.author > span.lol-tags {
-    margin-left: 0.5rem !important;
+/* put some spacing between the user icons, label and tagline */
+span.lol-tags:not(.read-only-tags) {
+    margin-left: 0.25rem !important;
+}
+span.author > img.chatty-user-icons:nth-child(2),
+span.user > img.chatty-user-icons:nth-child(1) {
+    margin-left: 0.33rem !important;
 }
 
 /* emoji tagline on the postbox form */

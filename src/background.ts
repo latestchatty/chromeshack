@@ -1,4 +1,4 @@
-import { browser, Menus, Tabs, WebRequest } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 
 import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
 import { resetSettings, getSettingsLegacy, getSettings, getSetting, setSetting, setEnabled } from "./core/settings";
@@ -6,6 +6,8 @@ import { startNotifications } from "./core/notifications";
 
 import chatViewFix from "./patches/chatViewFix";
 import scrollByKeyFix from "./patches/scrollByKeyFix";
+
+import type { WebRequest } from "webextension-polyfill-ts";
 
 type OnMessageRequestName =
     | "launchIncognito"

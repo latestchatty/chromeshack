@@ -1,10 +1,15 @@
-import { isVideo, isImage } from "./../common";
 import { browser } from "webextension-polyfill-ts";
 import { Dispatch } from "react";
 
-import { FormDataToJSON, arrEmpty, isFileArr } from "../common";
-import { UploaderAction, UploadSuccessPayload, UploadFailurePayload } from "../../builtin/image-uploader/uploaderStore";
-import { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import { FormDataToJSON, arrEmpty, isFileArr, isVideo, isImage } from "../common";
+
+import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import type {
+    UploaderAction,
+    UploadSuccessPayload,
+    UploadFailurePayload,
+} from "../../builtin/image-uploader/uploaderStore";
+import type { ParsedResponse } from "./";
 
 const chattyPicsUrl = "https://chattypics.com/upload.php";
 
@@ -12,7 +17,7 @@ const parseLink = (href: string) => {
     const isChattyPics = /https?:\/\/(?:.*?\.)?(?:chattypics|shackpics)\.com\/(?:.+file=(.+)|files\/(.+))/i.exec(href);
     const src = isChattyPics ? `https://chattypics.com/files/${isChattyPics[1] || isChattyPics[2]}` : null;
     const type = isVideo(src) ? { type: "video" } : isImage(src) ? { type: "image" } : null;
-    return type ? { ...type, src } : null;
+    return type ? ({ ...type, src } as ParsedResponse) : null;
 };
 
 export const isChattypics = (href: string) => parseLink(href);

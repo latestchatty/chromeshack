@@ -1,4 +1,5 @@
-import $ from "jquery";
+import jQuery from "jquery";
+const $ = jQuery;
 
 import { enabledContains } from "../core/settings";
 import { elementFitsViewport, scrollToElement } from "../core/common";

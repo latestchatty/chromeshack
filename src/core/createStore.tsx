@@ -9,13 +9,13 @@ export interface ReducerState {
     [key: string]: BaseTypes;
 }
 type StoreReducer = React.ReducerWithoutAction<ReducerState> | React.Reducer<ReducerState, ReducerAction>;
+type ProviderChildProps = { children?: React.ReactNode };
 
 /// provide an HOC for ease-of-use in creating multi-context state stores
-type ProviderChildProps = { children?: React.ReactNode };
-const createStore = (reducer: StoreReducer, initialState: ReducerState) => {
-    const stateContext = createContext(null);
-    const dispatchContext = createContext(null);
-    const Provider: React.FC = ({ children }: ProviderChildProps) => {
+const useCreateStore = (reducer: StoreReducer, initialState: ReducerState) => {
+    const stateContext = createContext<ReducerState>({});
+    const dispatchContext = createContext<React.Dispatch<ReducerAction>>(() => null);
+    const Provider = ({ children }: ProviderChildProps) => {
         const [state, dispatch] = useReducer(reducer, initialState);
         return (
             <stateContext.Provider value={state}>
@@ -23,12 +23,12 @@ const createStore = (reducer: StoreReducer, initialState: ReducerState) => {
             </stateContext.Provider>
         );
     };
-    const useStoreState = () => useContext(stateContext as React.Context<ReducerState>);
-    const useStoreDispatch = () => useContext(dispatchContext as React.Context<React.Dispatch<ReducerAction>>);
+    const useStoreState = () => useContext(stateContext);
+    const useStoreDispatch = () => useContext(dispatchContext);
     return {
         Provider,
         useStoreState,
         useStoreDispatch,
     };
 };
-export default createStore;
+export default useCreateStore;

@@ -4,11 +4,18 @@
     --twttr-bg-color: #15202b;
     --twttr-bg-color2: #202224;
     --twttr-fg-color: #ffffff;
-    --twttr-fg-link-color: #1d9ceb;
-    --twttr-bg-link-color: #8899a6;
+    --twttr-fg-link-color1: rgb(27, 149, 224);
+    --twttr-fg-link-color2: #d9d9d9;
+    --twttr-bg-link-color: rgb(110, 118, 125);
     --twttr-fg-border-color: #38444d;
     --twttr-bg-border-color: #6b7d8c;
     --twttr-max-width: 500px;
+
+    --instgrm-fg-color1: rgba(30, 30, 30, 0.9);
+    --instgrm-fg-color2: rgba(30, 30, 30, 0.66);
+    --instgrm-bg-color: white;
+    --instgrm-link-color1: rgba(30, 30, 30, 0.33);
+    --instgrm-link-color2: rgb(0, 53, 105);
 
     --min-social-item-height: 300px;
     --max-social-item-height: 720px;
@@ -16,7 +23,7 @@
 }
 
 /* custom twitter container */
-.twitter-container {
+.twitter__container {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--twttr-bg-border-color);
@@ -25,47 +32,53 @@
     margin: 0;
     font-size: 16px;
     font-family: var(--common-sans);
-    /* background: var(--twttr-bg-color); */
     background: var(--twttr-bg-color2);
     color: var(--twttr-fg-color);
     max-width: var(--twttr-max-width);
 }
-.twitter-container.hidden {
+.twitter__container.hidden,
+.twitter__container .hidden {
     display: none !important;
 }
-.twitter-container svg {
+.twitter__container svg {
     vertical-align: text-bottom !important;
 }
-.twitter-container a {
+.twitter__container a,
+.twitter__text__content > span > a,
+.twitter__quote__text__content > span > a {
     text-decoration: none !important;
-    color: var(--twttr-bg-link-color) !important;
+    color: var(--twttr-fg-link-color1) !important;
 }
-.twitter-container a:hover,
-a:hover#twitter-displayname,
-a:hover#twitter-quote-displayname {
-    color: var(--twttr-fg-link-color) !important;
+a#twitter__displayname,
+a#twitter__quote_displayname {
+    color: var(--twttr-fg-link-color2) !important;
 }
-.twitter-header {
+.twitter__container a:hover,
+a#twitter__displayname:hover,
+a#twitter__quote_displayname:hover {
+    text-decoration: underline !important;
+}
+.twitter__header {
     display: flex;
     flex-direction: row;
 }
-.twitter-user-name {
+.twitter__user__name {
     display: flex;
     flex-direction: column;
     padding-left: 0.5em;
     padding-right: 1em;
 }
-.twitter-403 > span {
+.twitter__403 > span {
     color: #8899a6 !important;
 }
-#twitter-realname,
-#twitter-quote-realname {
+.twitter__realname,
+.twitter__quote__realname {
     color: var(--twttr-bg-link-color);
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-#user-profile-pic {
+.user__profile__pic {
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -73,22 +86,24 @@ a:hover#twitter-quote-displayname {
     padding: 0;
     margin: 0.25em;
 }
-#twitter-displayname,
-#twitter-quote-displayname {
+.twitter__displayname,
+.twitter__quote__displayname {
     font-weight: bold;
     color: var(--twttr-fg-color) !important;
 }
 
-#twtter-verified.hidden {
-    display: none !important;
+#twitter__verified {
+    position: relative;
+    top: -2px;
+    left: 3px;
 }
-#twitter-badge {
+.twitter__badge {
     display: flex;
     margin-left: auto;
 }
 
-#twitter-text-content,
-#twitter-quote-text-content {
+.twitter__text__content,
+.twitter__quote__text__content {
     cursor: text;
     white-space: pre-line;
     word-wrap: break-word;
@@ -97,18 +112,18 @@ a:hover#twitter-quote-displayname {
     padding: 0 0 10px 0;
     font-size: 16px;
 }
-#twitter-quote-text-content {
+.twitter__quote__text__content {
     font-size: 14px !important;
     margin-top: -1em;
 }
-.twitter-embed-link {
+.twitter__embed__link {
     color: var(--bg-link-color);
 }
 
-#twitter-media-content img,
-#twitter-media-content video,
-#twitter-quote-media-content img,
-#twitter-quote-media-content video {
+.twitter__media__content img,
+.twitter__media__content video,
+.twitter__quote__media__content img,
+.twitter__quote__media__content video {
     border: 1px solid var(--twttr-fg-border-color);
     border-radius: 8px;
     width: 100% !important;
@@ -122,54 +137,48 @@ a:hover#twitter-quote-displayname {
     padding: 0;
     object-fit: contain !important;
 }
-#twitter-quote-media-content.hidden {
-    display: none !important;
-}
 
-#twitter-quote-content {
+.twitter__quote__content {
     border: 1px solid var(--twttr-bg-border-color);
     border-radius: 4px;
     padding: 10px 10px 0 10px;
     margin: 0;
 }
-#twitter-quote-content.hidden {
-    display: none !important;
-}
 
-#twitter-timestamp {
+.twitter__timestamp {
     color: var(--twttr-bg-link-color);
     padding-top: 0.5em;
     font-size: 14px;
 }
 
 /* custom instagram container */
-.instgrm-container {
+.instagram__container {
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border: 1px solid #000;
+    background: var(--instgrm-bg-color);
+    border: 1px solid black;
     border-radius: 4px;
     padding: 0 0 0.5em 0;
     margin: 0;
     font-size: 14px;
     font-family: var(--common-sans);
-    color: #262626;
     max-width: var(--max-social-item-width);
 }
-.instgrm-container.hidden {
+.instagram__container.hidden,
+.instagram__container .hidden {
     display: none !important;
 }
-.instgrm-container span {
-    color: #262626;
+.instagram__container span {
+    color: var(--instgrm-fg-color1);
 }
-.instgrm-container a:link,
-.instgrm-container a:hover,
-.instgrm-container a:visited,
-.instgrm-container a:active {
+.instagram__container a:link,
+.instagram__container a:hover,
+.instagram__container a:visited,
+.instagram__container a:active {
     text-decoration: none !important;
 }
 
-.instgrm-header {
+.instagram__header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -177,81 +186,83 @@ a:hover#twitter-quote-displayname {
     max-height: 36px;
     margin: 0.5em 0 0.5em 0;
 }
-#instgrm_author_pic.circle {
+.instagram__author__pic.circle {
     width: 38px;
     height: 38px;
     border-radius: 50px;
     padding: 10px;
 }
-#instgrm_author_nick {
+.instagram__author__nick {
     font-weight: 500;
 }
 
-.instgrm-postpic-line {
+.instagram__postpic__line {
     display: flex;
     flex-direction: column;
 }
-#instgrm_post_details {
-    font-size: 12px;
-    color: #999;
+
+.instagram__postpic__details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.instagram__likes__icon,
+.instagram__comments__icon {
+    color: rgba(60, 60, 60, 0.25);
+    margin-right: 3px;
+    height: 12px;
+    width: 12px;
+}
+span.instagram__post__details {
+    font-size: 13px;
+    color: var(--instgrm-fg-color2);
+    margin-right: 7px;
 }
 
-.instgrm-container .instgrm-logo {
+.instagram__container .instagram__logo {
     display: flex;
     margin-left: auto;
     flex-shrink: 0;
 }
-.instgrm-logo svg {
+.instagram__logo svg {
     margin: 15px;
 }
 
-#instgrm_embed img:not(.swiper-slide),
-#instgrm_embed video:not(.swiper-slide) {
-    outline: 0 !important;
-    object-fit: contain !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: var(--min-social-item-height);
-    max-height: var(--max-social-item-height);
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-social-item-width);
-}
-#instgrm_embed img.swiper-slide,
-#instgrm_embed video.swiper-slide {
-    /* let carousel style itself but maintain ratio */
-    object-fit: contain !important;
-    max-width: var(--max-social-item-width);
-    max-height: var(--max-social-item-height);
-}
-
-#instgrm-caption {
+.instagram__caption {
     flex: 0 0 auto;
     padding: 10px;
 }
-#instgrm_post_caption {
+.instagram__caption a:link,
+.instagram__caption a:active,
+.instagram__caption a:hover,
+.instagram__caption a:visited,
+.instagram__caption a {
+    color: var(--instgrm-link-color2) !important;
+    overflow-wrap: break-word;
+}
+.instagram__post__caption {
     display: inline-block;
     flex-flow: row wrap;
     align-self: center;
     align-items: center;
     min-width: var(--min-media-item-width);
-}
-#instgrm_post_caption span {
-    margin: 0 0.1em 0 0.1em;
-    padding: 0;
+    color: var(--instgrm-fg-color2);
     white-space: pre-line;
 }
-#instgrm_post_caption a:link,
-#instgrm_post_caption a:active,
-#instgrm_post_caption a:hover,
-#instgrm_post_caption a:visited,
-#instgrm_post_caption a > span {
-    margin: 0 0.1em 0 0.1em;
-    padding: 0;
-    color: #003569 !important;
-    overflow-wrap: break-word;
+
+.instagram__embed {
+    margin: 0 1px;
+}
+.instagram__embed img,
+.instagram__embed video {
+    display: block;
+    outline: none;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
-.instgrm-footer {
+.instagram__footer {
     flex: 0;
     display: flex;
     flex-flow: row nowrap;
@@ -263,31 +274,31 @@ a:hover#twitter-quote-displayname {
     border-top: 1px solid lightgray;
     font-size: 13px;
     font-weight: 400;
-    color: #262626;
+    color: var(--instgrm-fg-color1);
     width: 100%;
 }
-.instgrm-footer span:first-child {
+.instagram__footer span:first-child {
     flex: 0 0 auto;
 }
-.instgrm-footer span {
+.instagram__footer span {
     line-height: 17px;
     padding: 3px 0.1em 0 0.2em;
 }
-.instgrm-footer a > span {
+.instagram__footer a > span {
     display: flex;
     align-self: center;
 }
-#instgrm_post_timestamp {
+.instagram__post__timestamp {
     min-width: 0 !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.instgrm-footer a:link,
-.instgrm-footer a:active,
-.instgrm-footer a:hover,
-.instgrm-footer a:visited {
+.instagram__footer a:link,
+.instagram__footer a:active,
+.instagram__footer a:hover,
+.instagram__footer a:visited {
     flex: 0 0 auto;
     text-decoration: underline !important;
-    color: #262626 !important;
+    color: var(--instgrm-fg-color1) !important;
 }
