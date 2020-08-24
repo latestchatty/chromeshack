@@ -50,7 +50,7 @@ const ChattyNews = {
         const is_enabled = await enabledContains("chatty_news");
         if (is_enabled) {
             if (document.querySelector("div.chatty-news")) return;
-            const articleBox = document.querySelector(".article-body p:first-child") as HTMLElement;
+            const articleBox = document.querySelector(".article-content p") as HTMLElement;
             let newsBox = document.createElement("div");
             newsBox?.classList?.add("chatty-news");
             safeInnerHTML(
@@ -63,7 +63,7 @@ const ChattyNews = {
             );
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             // force parent container to align newsbox next to twitch player
-            articleBox.setAttribute("style", "display: flex;");
+            articleBox?.setAttribute("style", "display: flex;");
             articleBox?.appendChild(newsBox);
         }
     },

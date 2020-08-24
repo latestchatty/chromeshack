@@ -7,7 +7,7 @@ import { ToggleChildren, Tab, DropArea, UrlInput, Button, StatusLine } from "./C
 import handleImgurUpload from "../../core/api/imgur";
 import handleGfycatUpload from "../../core/api/gfycat";
 import handleChattypicsUpload from "../../core/api/chattypics";
-import { arrEmpty, appendLinksToField } from "../../core/common";
+import { arrHas, appendLinksToField } from "../../core/common";
 
 export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {
@@ -56,7 +56,7 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         /// update the reply box with links when data is returned from the server
         const thisElem = props.parentRef;
         const replyField = thisElem?.querySelector("#frm_body") as HTMLInputElement;
-        if (!arrEmpty(state.response) && replyField) appendLinksToField(replyField, state.response);
+        if (arrHas(state?.response) && replyField) appendLinksToField(replyField, state.response);
     }, [state.response]);
 
     /// tabs are defined by id and label
