@@ -113,6 +113,7 @@ try {
     (async () => {
         // attempt to update version settings
         await migrateSettings();
+        // spin up the notification polling service
         await startNotifications();
     })();
 } catch (e) {

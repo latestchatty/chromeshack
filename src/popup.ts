@@ -388,6 +388,8 @@ const exportSettings = (settingsField: HTMLInputElement) => {
                 "chatty_news_lastfetchtime",
                 "last_highlight_time",
                 "new_comment_highlighter_last_id",
+                "nEventId",
+                "nUsername"
             ];
             const sanitizedGroups = settings.highlight_groups.filter((x: HighlightGroup) => !x.built_in) || [];
             const sanitizedSettings = objConditionalFilter(disallowed, settings);

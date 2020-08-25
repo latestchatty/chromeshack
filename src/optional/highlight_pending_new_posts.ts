@@ -1,9 +1,8 @@
-import { browser } from "webextension-polyfill-ts";
-
 import { enabledContains } from "../core/settings";
-import { processPostRefreshEvent } from "../core/events";
-import { fetchSafe, scrollToElement } from "../core/common";
-import { TP_Instance, CS_Instance } from "../content";
+import { processPostRefreshEvent, processNotifyEvent, processRefreshIntentEvent } from "../core/events";
+import { scrollToElement, arrHas } from "../core/common";
+import { TP_Instance } from "../content";
+import { getEventId } from "../core/notifications";
 
 import type { NotifyEvent, NotifyResponse } from "../core/notifications";
 
@@ -38,28 +37,25 @@ const HighlightPendingPosts = {
         if (TP_Instance.isEnabled) TP_Instance.apply();
     },
 
-    fetchPendings() {
-        browser.runtime
-            .sendMessage({
-                name: "corbFetch",
-                url: `https://winchatty.com/v2/pollForEvent?lastEventId=${HighlightPendingPosts.lastEventId}`,
-            })
-            .then((json: NotifyResponse) => {
-                // sanitized in common.js!
-                if (json.events) {
-                    HighlightPendingPosts.lastEventId = json.lastEventId;
-                    const newPosts = [...json.events.filter((x: NotifyEvent) => x.eventType === "newPost")];
-                    const newPendingEvents = [];
-                    for (const post of newPosts) {
-                        newPendingEvents.push({
-                            postId: post.eventData.postId,
-                            threadId: post.eventData.post.threadId,
-                        } as PendingPost);
-                    }
-                    // Short delay in between loop iterations.
-                    setTimeout(HighlightPendingPosts.fetchPendings, 5000);
-                }
-            });
+    fetchPendings(resp: NotifyResponse) {
+        if (arrHas(resp.events)) {
+            HighlightPendingPosts.lastEventId = resp.lastEventId;
+            const newPosts = [...resp.events.filter((x: NotifyEvent) => x.eventType === "newPost")];
+            const newPendingEvents = [];
+            for (const post of newPosts) {
+                newPendingEvents.push({
+                    postId: post.eventData.postId,
+                    threadId: post.eventData.post.threadId,
+                } as PendingPost);
+            }
+            if (arrHas(newPendingEvents)) {
+                HighlightPendingPosts.pendings = ([
+                    ...HighlightPendingPosts.pendings,
+                    newPendingEvents,
+                ] as PendingPost[]).flat();
+                HighlightPendingPosts.updatePendings();
+            }
+        }
     },
 
     excludeRefreshed(refreshElem: HTMLElement) {
@@ -141,14 +137,10 @@ const HighlightPendingPosts = {
             HighlightPendingPosts.updatePendings();
             HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
         });
-        // We need to get an initial event ID to start with.
-        browser.runtime
-            .sendMessage({ name: "corbFetch", url: "https://winchatty.com/v2/getNewestEventId" })
-            .then((json: { eventId: number }) => {
-                // sanitized in common.js!
-                HighlightPendingPosts.lastEventId = json.eventId;
-                HighlightPendingPosts.fetchPendings();
-            });
+        getEventId().then((id) => {
+            HighlightPendingPosts.lastEventId = id;
+            processNotifyEvent.addHandler(HighlightPendingPosts.fetchPendings);
+        });
     },
 };
 

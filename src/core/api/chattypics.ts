@@ -1,7 +1,6 @@
-import { browser } from "webextension-polyfill-ts";
 import { Dispatch } from "react";
 
-import { FormDataToJSON, arrEmpty, isFileArr, isVideo, isImage } from "../common";
+import { FormDataToJSON, arrEmpty, isFileArr, isVideo, isImage, postBackground } from "../common";
 
 import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
 import type {
@@ -36,8 +35,7 @@ const doChattypicsUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
     }
 
     const _dataBody = await FormDataToJSON(fd);
-    const links: ChattypicsResponse = await browser.runtime.sendMessage({
-        name: "corbPost",
+    const links: ChattypicsResponse = await postBackground({
         url: chattyPicsUrl,
         data: _dataBody,
         parseType: { chattyPics: true },

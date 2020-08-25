@@ -31,3 +31,4 @@ export const processRefreshIntentEvent = new LiteEvent<any>();
 export const processPostRefreshEvent = new LiteEvent<any>();
 export const processEmptyTagsLoadedEvent = new LiteEvent<any>();
 export const processTagDataLoadedEvent = new LiteEvent<any>();
+export const processNotifyEvent = new LiteEvent<any>();

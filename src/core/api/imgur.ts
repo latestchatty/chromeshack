@@ -1,7 +1,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { Dispatch } from "react";
 
-import { arrHas, arrEmpty, isImage, isVideo, matchFileFormat, FormDataToJSON, fetchSafe } from "../common";
+import { arrHas, arrEmpty, isImage, isVideo, matchFileFormat, FormDataToJSON, fetchSafe, postBackground } from "../common";
 import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
 
 import type {
@@ -134,8 +134,7 @@ const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction
             else if (fileFormat === 1) dataBody.append("video", file);
             else throw Error(`Could not detect the file format for: ${file}`);
             const stringified = await FormDataToJSON(dataBody);
-            const res: ImgurResponse = await browser.runtime.sendMessage({
-                name: "corbPost",
+            const res: ImgurResponse = await postBackground({
                 url: imgurApiUploadUrl,
                 fetchOpts: {
                     headers: { Authorization: imgurClientId },

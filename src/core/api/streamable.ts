@@ -1,6 +1,5 @@
 import { fetchBackground } from "../common";
 import type { ParsedResponse } from "./";
-import { browser } from "webextension-polyfill-ts";
 
 const parseLink = (href: string) => {
     const isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(href);
@@ -11,8 +10,7 @@ const parseLink = (href: string) => {
 
 const resolveStreamable = async (shortcode: string) => {
     const __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-    const json = await browser.runtime.sendMessage({
-        name: "corbFetch",
+    const json = await fetchBackground({
         url: `https://api.streamable.com/videos/${shortcode}`,
         fetchOpts: { headers: { Authorization: __obf } },
         parseType: { json: { ALLOWED_TAGS: ["iframe"] } },

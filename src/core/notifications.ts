@@ -2,12 +2,22 @@ import { browser } from "webextension-polyfill-ts";
 
 import { fetchSafe } from "./common";
 import { getSetting, setSetting, getEnabled } from "./settings";
+import { processNotifyEvent } from "./events";
+
+import type { Runtime } from "webextension-polyfill-ts";
 
 export const getEventId = async () => (await getSetting("nEventId")) as Promise<number>;
 export const setEventId = async (eventId: number) => await setSetting("nEventId", eventId);
 export const getUsername = async () => (await getSetting("nUsername")) as Promise<string>;
 export const setUsername = async (username: string) => await setSetting("nUsername", username);
 
+interface NotifyMsg {
+    name: string;
+    data: NotifyResponse;
+}
+interface NewestEventResponse {
+    eventId: number;
+}
 export interface NotifyEvent {
     eventData: {
         parentAuthor?: string;
@@ -41,8 +51,31 @@ export interface NotifyResponse {
     message?: string;
 }
 
+export const NotifyPortListener = {
+    // use the port ref to communicate
+    port: null as Runtime.Port,
+    csPort: null as Runtime.Port,
+    initPort() {
+        // NOTE: call this from a background script
+        browser.runtime.onConnect.addListener((port) => {
+            NotifyPortListener.port = port;
+        });
+    },
+    messageHandler(msg: NotifyMsg, port: Runtime.Port) {
+        if (msg.name === "notifyEvent") {
+            return Promise.resolve(processNotifyEvent.raise(msg.data));
+        } else return Promise.resolve(true);
+    },
+    initConnect() {
+        // NOTE: call this from a content script
+        NotifyPortListener.csPort = browser.runtime.connect();
+        NotifyPortListener.csPort.onMessage.addListener(NotifyPortListener.messageHandler);
+    },
+};
+export const NPL_Instance = NotifyPortListener;
+
 const setInitialNotificationsEventId = async () => {
-    const resp = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
+    const resp: NewestEventResponse = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
     if (resp) await setEventId(resp.eventId);
 };
 
@@ -68,8 +101,11 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     } else return null;
 };
 
+const handleEventSignal = (msg: NotifyMsg) => NPL_Instance?.port?.postMessage(msg);
+
 const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;
+    handleEventSignal({ name: "notifyEvent", data: response });
     for (const event of events || []) {
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);
@@ -109,13 +145,9 @@ const pollNotifications = async () => {
 };
 
 export const startNotifications = async () => {
-    /*
-     * NOTE: In order to handle notification events in content scripts ...
-     * you must send the message from background and receive it in the given script.
-     */
     browser.notifications.onClicked.addListener(notificationClicked);
-    // only poll for events if requested
-    if (await getEnabled("enable_notifications")) {
+    if ((await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"))) {
+        NPL_Instance.initPort();
         await setInitialNotificationsEventId();
         await pollNotifications();
     }

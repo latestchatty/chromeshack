@@ -22,9 +22,11 @@ import EmojiPoster from "./builtin/emoji_poster";
 import ImageUploader from "./builtin/image-uploader";
 import LocalTimeStamp from "./builtin/local_timestamp";
 import ModBanners from "./builtin/mod_banners";
-import NuLOLFix from "./builtin/nulol_refresh_fix";
+//import NuLOLFix from "./builtin/nulol_refresh_fix";
 import PostLengthCounter from "./builtin/post_length_counter";
 import UserPopup from "./builtin/userpopup";
+
+import { NPL_Instance } from "./core/notifications";
 
 require("./styles/chatty-news.css");
 require("./styles/chromeshack.css");
@@ -38,6 +40,8 @@ require("./styles/two_pane.css");
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 export const TP_Instance = ThreadPane;
+
+NPL_Instance.initConnect();
 
 try {
     Promise.all([
@@ -64,10 +68,9 @@ try {
         ImageUploader.install();
         LocalTimeStamp.install();
         ModBanners.install();
-        NuLOLFix.install();
+        //NuLOLFix.install();
         PostLengthCounter.install();
         UserPopup.install();
-
         // always make sure the ChromeShack event observer is last
         CS_Instance.install();
     });
