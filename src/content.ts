@@ -26,7 +26,7 @@ import ModBanners from "./builtin/mod_banners";
 import PostLengthCounter from "./builtin/post_length_counter";
 import UserPopup from "./builtin/userpopup";
 
-import { NPL_Instance } from "./core/notifications";
+import { TM_Instance } from "./core/notifications";
 
 require("./styles/chatty-news.css");
 require("./styles/chromeshack.css");
@@ -41,7 +41,8 @@ export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 export const TP_Instance = ThreadPane;
 
-NPL_Instance.initConnect();
+// spin up a tab listener for notification messages
+TM_Instance.connect();
 
 try {
     Promise.all([

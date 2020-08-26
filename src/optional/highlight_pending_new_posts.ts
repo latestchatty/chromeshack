@@ -5,6 +5,7 @@ import { TP_Instance } from "../content";
 import { getEventId } from "../core/notifications";
 
 import type { NotifyEvent, NotifyResponse } from "../core/notifications";
+import ChromeShack from "../core/observers";
 
 interface PendingPost {
     postId: number;
@@ -53,6 +54,8 @@ const HighlightPendingPosts = {
                     ...HighlightPendingPosts.pendings,
                     newPendingEvents,
                 ] as PendingPost[]).flat();
+                if (ChromeShack.debugEvents)
+                    console.log("HighlightPendingPosts fetchPendings:", HighlightPendingPosts.pendings);
                 HighlightPendingPosts.updatePendings();
             }
         }
@@ -65,6 +68,8 @@ const HighlightPendingPosts = {
             ...HighlightPendingPosts.pendings.filter((x) => x.postId !== closestId || x.threadId !== closestId),
         ];
         HighlightPendingPosts.pendings = mutated;
+        if (ChromeShack.debugEvents)
+            console.log("HighlightPendingPosts excludeRefreshed:", HighlightPendingPosts.pendings);
     },
 
     isCollapsed(elem: HTMLElement) {
@@ -133,9 +138,10 @@ const HighlightPendingPosts = {
         if (pageMatch && pageMatch[1] !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
-        processPostRefreshEvent.addHandler((refreshElem: HTMLElement) => {
+        processPostRefreshEvent.addHandler((postid: string) => {
+            const refreshedElem = document.querySelector(`li[id='item_${postid}']`) as HTMLElement;
             HighlightPendingPosts.updatePendings();
-            HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
+            HighlightPendingPosts.updateJumpToNewPostButton(refreshedElem);
         });
         getEventId().then((id) => {
             HighlightPendingPosts.lastEventId = id;

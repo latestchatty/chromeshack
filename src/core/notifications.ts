@@ -51,28 +51,26 @@ export interface NotifyResponse {
     message?: string;
 }
 
-export const NotifyPortListener = {
-    // use the port ref to communicate
-    port: null as Runtime.Port,
-    csPort: null as Runtime.Port,
-    initPort() {
+export const TabMessenger = {
+    send(msg: NotifyMsg) {
         // NOTE: call this from a background script
-        browser.runtime.onConnect.addListener((port) => {
-            NotifyPortListener.port = port;
+        browser.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
+            for (const tab of tabs || []) {
+                // broadcast a message to all subscribed scripts in running tabs
+                browser.tabs.sendMessage(tab.id, msg);
+            }
         });
     },
-    messageHandler(msg: NotifyMsg, port: Runtime.Port) {
-        if (msg.name === "notifyEvent") {
-            return Promise.resolve(processNotifyEvent.raise(msg.data));
-        } else return Promise.resolve(true);
-    },
-    initConnect() {
+    connect() {
         // NOTE: call this from a content script
-        NotifyPortListener.csPort = browser.runtime.connect();
-        NotifyPortListener.csPort.onMessage.addListener(NotifyPortListener.messageHandler);
+        browser.runtime.onMessage.addListener((msg: NotifyMsg) => {
+            if (msg.name === "notifyEvent") {
+                return Promise.resolve(processNotifyEvent.raise(msg.data));
+            } else return Promise.resolve(true);
+        });
     },
 };
-export const NPL_Instance = NotifyPortListener;
+export const TM_Instance = TabMessenger;
 
 const setInitialNotificationsEventId = async () => {
     const resp: NewestEventResponse = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
@@ -101,7 +99,7 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     } else return null;
 };
 
-const handleEventSignal = (msg: NotifyMsg) => NPL_Instance?.port?.postMessage(msg);
+const handleEventSignal = (msg: NotifyMsg) => TM_Instance?.send(msg);
 
 const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;
@@ -147,7 +145,6 @@ const pollNotifications = async () => {
 export const startNotifications = async () => {
     browser.notifications.onClicked.addListener(notificationClicked);
     if ((await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"))) {
-        NPL_Instance.initPort();
         await setInitialNotificationsEventId();
         await pollNotifications();
     }
