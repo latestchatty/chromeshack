@@ -28,7 +28,7 @@ const fetchChattyPost = async (postid: string) => {
 
         const _postNode = container.childNodes[1] as HTMLElement;
         // honor spoiler tags' click event when embedded
-        const spoilerTag = _postNode && _postNode.querySelector("span.jt_spoiler");
+        const spoilerTag = _postNode?.querySelector("span.jt_spoiler");
         if (spoilerTag) {
             spoilerTag.addEventListener("click", (e: MouseEvent) => {
                 const this_node = e?.target as HTMLElement;
@@ -40,7 +40,7 @@ const fetchChattyPost = async (postid: string) => {
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
         // return the post as a sanitized string of HTML (without the container)
-        return container.firstElementChild?.outerHTML;
+        return container.firstElementChild?.innerHTML;
     } else return null as string;
 };
 

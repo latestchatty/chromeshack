@@ -65,6 +65,7 @@ div.expando {
 
 /* Chattypost Embedder */
 div.getPost {
+    position: relative;
     width: 97%;
     border: 1px #2f8484 solid;
     background-color: #1d1d1d;
