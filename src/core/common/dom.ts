@@ -290,6 +290,13 @@ export const elemMatches = (elem: HTMLElement, selector: string) =>
     elem?.nodeType !== 3 && elem?.matches(selector) && elem;
 
 /// takes an Element of a post and returns post/root information
+export interface PostRefs {
+    post: HTMLElement;
+    postid: string;
+    root: HTMLElement;
+    rootid: string;
+    is_root: boolean;
+}
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
     // match the first fullpost container (up/cur first, then down)
@@ -299,6 +306,5 @@ export const locatePostRefs = (postElem: HTMLElement) => {
     const rootid = root?.id?.substr(5);
     const postid = post?.id?.substr(5);
     const result = { post, postid, root, rootid, is_root };
-    if (CS_Instance.debugEvents) console.log("locatePostRefs:", result);
     return objHas(result) ? result : null;
 };

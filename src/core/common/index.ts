@@ -20,7 +20,7 @@ import {
     elemMatches,
     locatePostRefs,
 } from "./dom";
-import type { PreviewReplacements } from "./dom";
+import type { PreviewReplacements, PostRefs } from "./dom";
 
 export {
     stripHtml,
@@ -44,7 +44,7 @@ export {
     elemMatches,
     locatePostRefs,
 };
-export { PreviewReplacements };
+export { PreviewReplacements, PostRefs };
 
 import {
     xhrRequestLegacy,

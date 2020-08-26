@@ -22,7 +22,6 @@ import EmojiPoster from "./builtin/emoji_poster";
 import ImageUploader from "./builtin/image-uploader";
 import LocalTimeStamp from "./builtin/local_timestamp";
 import ModBanners from "./builtin/mod_banners";
-//import NuLOLFix from "./builtin/nulol_refresh_fix";
 import PostLengthCounter from "./builtin/post_length_counter";
 import UserPopup from "./builtin/userpopup";
 
@@ -69,7 +68,6 @@ try {
         ImageUploader.install();
         LocalTimeStamp.install();
         ModBanners.install();
-        //NuLOLFix.install();
         PostLengthCounter.install();
         UserPopup.install();
         // always make sure the ChromeShack event observer is last

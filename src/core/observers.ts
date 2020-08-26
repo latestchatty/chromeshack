@@ -14,22 +14,11 @@ import { elemMatches, locatePostRefs } from "./common";
 import { setSetting } from "./settings";
 import { setUsername } from "./notifications";
 
-interface PostRefreshMutation {
-    lastPostId?: string;
-    lastRootId?: string;
-    is_root?: boolean;
-    from_reply?: boolean;
-}
-interface RefreshedThread {
-    [key: string]: PostRefreshMutation;
-}
 interface TagUpdateMutation {
     [key: string]: HTMLElement;
 }
 
 const ChromeShack = {
-    refreshingThreads: {} as RefreshedThread,
-
     isTagUpdateMutation: {} as TagUpdateMutation,
 
     isPostReplyMutation: null as string,
@@ -40,7 +29,7 @@ const ChromeShack = {
 
     install() {
         let username = document.getElementById("user_posts");
-        setSetting("username", username && username.innerText || ""); // fire and forget
+        setSetting("username", username ? username.innerText : ""); // fire and forget
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList: MutationRecord[]) => {
@@ -51,31 +40,33 @@ const ChromeShack = {
             })();
 
             try {
-                const attrMutated = mutationsList[0].target as HTMLElement;
-                if (mutationsList[0].type === "attributes" && elemMatches(attrMutated, ".tag-container, .lol-tags")) {
-                    const lastMutation = mutationsList[mutationsList.length - 1].target as HTMLElement;
-                    const mutatedPost: HTMLElement = lastMutation.closest("li.sel");
+                //if (ChromeShack.debugEvents) console.log("mutation:", mutationsList);
 
-                    const isPost = lastMutation?.matches("li.sel .tag-container");
-                    const isTagMutation = lastMutation?.matches("li.sel .lol-tags :not(.read-only)");
-                    const postid = mutatedPost.id.substr(5);
+                if (
+                    mutationsList[0].type === "attributes" ||
+                    mutationsList[mutationsList.length - 1].type === "attributes"
+                ) {
+                    const firstMutation = mutationsList[0]?.target as HTMLElement;
+                    const lastMutation = mutationsList[mutationsList.length - 1]?.target as HTMLElement;
 
-                    // only process unique fullpost tag mutation and fullpost mutation events
-                    if (ChromeShack.debugEvents) {
-                        console.log(
-                            "mutated:",
-                            lastMutation,
-                            mutatedPost,
-                            isPost,
-                            isTagMutation,
-                            !!ChromeShack.isTagUpdateMutation[postid],
-                        );
-                    }
-                    if (mutatedPost !== ChromeShack.isTagUpdateMutation[postid] && (isPost || isTagMutation)) {
-                        ChromeShack.isTagUpdateMutation[postid] = mutatedPost;
-                        return ChromeShack.processTagsLoaded(mutatedPost);
+                    /* detect the nuLOL tag mutations after a user refreshes a post/rootpost */
+                    const rootTagsLoaded =
+                        mutationsList.length >= 7 && elemMatches(firstMutation, ".tag-container:not(.read-only)");
+                    const postTagsLoaded =
+                        mutationsList.length >= 7 && elemMatches(lastMutation, ".tag-container:not(.read-only)");
+                    if (postTagsLoaded || rootTagsLoaded) {
+                        const { post, postid, root, rootid, is_root } =
+                            locatePostRefs(postTagsLoaded) || locatePostRefs(rootTagsLoaded) || {};
+                        if (ChromeShack.isTagUpdateMutation[postid]) {
+                            if (ChromeShack.debugEvents && postTagsLoaded)
+                                console.log("post tags loaded:", postTagsLoaded);
+                            else if (ChromeShack.debugEvents && rootTagsLoaded)
+                                console.log("root tags loaded:", rootTagsLoaded);
+                            ChromeShack.handleTagsEvent(post, root, postid, rootid, is_root);
+                        } else if (post) ChromeShack.isTagUpdateMutation[postid] = post as HTMLElement;
                     }
                 }
+
                 for (const mutation of mutationsList) {
                     const lastMutatedSibling = mutation.previousSibling as HTMLElement;
                     const lastRemoved = mutation.removedNodes[0] as HTMLElement;
@@ -85,25 +76,23 @@ const ChromeShack = {
                         const target: HTMLElement = mutated.closest("li[id^='item_']");
                         const parentId = target?.id?.substr(5) || null;
                         ChromeShack.isPostReplyMutation = parentId;
+                        if (ChromeShack.debugEvents)
+                            console.log("post reply mutation?", lastMutatedSibling, lastRemoved, parentId);
                     }
 
                     for (const addedNode of mutation.addedNodes || []) {
                         const added = addedNode as HTMLElement;
                         const addedParent = addedNode?.parentNode as HTMLElement;
-                        const addedTagMutation =
-                            elemMatches(added, ".tag-counts, .user") && (added?.closest("li.sel") as HTMLElement);
                         // the root post was swapped - they probably refreshed or replied to a thread
                         if (elemMatches(added, "div.root") && ChromeShack.isPostReplyMutation)
-                            ChromeShack.processReply(ChromeShack.isPostReplyMutation);
+                            ChromeShack.handleReplyEvent(ChromeShack.isPostReplyMutation);
                         // check for opening a fullpost
                         if (elemMatches(addedParent, "li[id^='item_']")) {
                             // grab the id from the old node, since the new node doesn't contain the id
-                            const is_root = !!elemMatches(addedParent, ".root > ul > li");
-                            ChromeShack.processPost(addedParent, addedParent?.id?.substr(5), is_root);
+                            const { post, postid, root, rootid, is_root } = locatePostRefs(addedParent) || {};
+                            // NOTE: we check for tags when loading every fullpost
+                            ChromeShack.processPost(post, root, postid, rootid, is_root);
                         }
-
-                        // check for tags loading after a fullpost
-                        if (addedTagMutation) ChromeShack.processTagsLoaded(addedTagMutation);
                         // check for the postbox
                         if (elemMatches(added, "#postbox")) ChromeShack.processPostBox(added);
                     }
@@ -121,67 +110,17 @@ const ChromeShack = {
         });
 
         ChromeShack.processFullPosts();
-
-        // subscribe to refresh button clicks so we can pass along the open post ids
-        document.addEventListener("click", ChromeShack.refreshHandler);
-        // subscribe to processRefreshIntentEvent to enable passing post and root refs around
-        processRefreshIntentEvent.addHandler(ChromeShack.refreshIntentHandler);
     },
 
-    refreshHandler(e: MouseEvent) {
-        const this_node = e?.target as HTMLElement;
-        const clickedElem = this_node.matches("div.refresh > a") ? this_node : null;
-        if (!clickedElem) return;
-
-        const relPost = (clickedElem ? clickedElem?.closest("li.sel") : null) as HTMLElement;
-        const postIsRoot = relPost?.matches(".root > ul > li");
-        const relRoot = (postIsRoot ? relPost : clickedElem?.closest(".root > ul > li")) as HTMLElement;
-        const rootContainer = (relRoot ? relRoot?.closest("div.root") : null) as HTMLElement;
-        const postid = relPost?.id?.substr(5);
-        const rootid = relRoot?.id?.substr(5);
-
-        // check the NuLOLFix refresh list to make sure we don't reprocess the thread
-        if (!ChromeShack.refreshingThreads[postid] && !elemMatches(rootContainer, ".refreshing")) {
-            e.preventDefault();
-            rootContainer?.closest("div.root")?.classList?.add("refreshing");
-            if (ChromeShack.debugEvents) console.log("raising processRefreshIntentEvent:", postid, rootid, postIsRoot);
-            processRefreshIntentEvent.raise(postid, rootid, postIsRoot, !!ChromeShack.isPostReplyMutation);
-            return false;
-        }
-    },
-
-    refreshIntentHandler(lastPostId: string, lastRootId: string, is_root: boolean, from_reply: boolean) {
-        // keep track of what's being refreshed (only act if we pass through a second time)
-        if (!ChromeShack.refreshingThreads[lastRootId])
-            ChromeShack.refreshingThreads[lastRootId] = { lastPostId, lastRootId, is_root, from_reply };
-        else {
-            if (ChromeShack.debugEvents)
-                console.log("refreshIntentHandler:", ChromeShack.refreshingThreads[lastRootId]);
-            // listen for when tag data gets mutated (avoid duplicates!)
-            processEmptyTagsLoadedEvent.addHandler(ChromeShack.postRefreshHandler);
-            processTagDataLoadedEvent.addHandler(ChromeShack.postRefreshHandler);
-        }
-    },
-
-    postRefreshHandler(post: HTMLElement, root: HTMLElement, postHasTags: boolean, rootHasTags: boolean) {
-        // should be raised after a post is populated with tag data
-        const rootId = root?.id?.substr(5);
-        const { lastPostId: postid } = ChromeShack.refreshingThreads[rootId] || {};
-        const _post: HTMLElement = (postid && document.querySelector(`li#item_${postid}`)) || post;
-        if (_post || root) {
-            if (ChromeShack.debugEvents)
-                console.log("raising processPostRefreshEvent:", _post, root, postHasTags, rootHasTags);
-            processPostRefreshEvent.raise(_post, root, postHasTags, rootHasTags);
-            delete ChromeShack.refreshingThreads[rootId];
-        }
-    },
-
+    /*
+     * Core DOM mutation events (chatty/post loading)
+     */
     processFullPosts() {
         // process fullposts
         const items = [...document.querySelectorAll("div.fullpost")];
         for (const item of items || []) {
-            const { post, rootid, is_root } = locatePostRefs(item as HTMLElement) || {};
-            if (post && rootid) ChromeShack.processPost(post, rootid, is_root);
+            const { post, postid, root, rootid, is_root } = locatePostRefs(item as HTMLElement) || {};
+            if (post && rootid) ChromeShack.processPost(post, root, postid, rootid, is_root);
         }
         if (ChromeShack.debugEvents) console.log("raising fullPostsCompletedEvent");
         fullPostsCompletedEvent.raise();
@@ -196,55 +135,69 @@ const ChromeShack = {
             await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
         })();
     },
-
-    processPost(post: HTMLElement, rootid: string, is_root: boolean) {
+    processPost(post: HTMLElement, root: HTMLElement, postid: string, rootid: string, is_root: boolean) {
         if (ChromeShack.debugEvents) console.log("raising processPostEvent:", post, rootid, is_root);
         processPostEvent.raise(post, rootid, is_root);
+        if (ChromeShack.hasInitialized) {
+            // only detect tag mutations when manually loading fullposts/rootposts
+            ChromeShack.isTagUpdateMutation[postid] = post;
+            ChromeShack.handleTagsEvent(post, root, postid, rootid, is_root);
+        }
     },
-
     processPostBox(postbox: HTMLElement) {
         if (ChromeShack.debugEvents) console.log("raising processPostBoxEvent:", postbox);
         if (postbox) processPostBoxEvent.raise(postbox);
     },
 
-    processTagsLoaded(item: HTMLElement) {
-        const post = item?.closest("li.sel");
-        const root = post?.closest(".root > ul > li");
-        const postid = post.id.substr(5);
-        const rootTags =
-            post !== root
-                ? [...root?.querySelectorAll(".root > ul > li.sel > .fullpost > .postmeta .lol-tags .nonzero")]
-                : [];
-        const postTags = [...post?.querySelectorAll(".fullpost > .postmeta .lol-tags .nonzero")];
-        if (post && postTags.length > 0 && ChromeShack.isTagUpdateMutation[postid]) {
-            if (ChromeShack.debugEvents)
-                console.log("raising processTagDataLoadedEvent:", post, root, postTags, rootTags);
-            processTagDataLoadedEvent.raise(post, root, postTags, rootTags);
-            delete ChromeShack.isTagUpdateMutation[postid];
-        } else if (post && ChromeShack.isTagUpdateMutation[postid]) {
-            if (ChromeShack.debugEvents)
-                console.log("raising processEmptyTagsLoadedEvent:", post, root, postTags, rootTags);
-            processEmptyTagsLoadedEvent.raise(post, root, postTags, rootTags);
-            delete ChromeShack.isTagUpdateMutation[postid];
-        }
-    },
-
-    processReply(parentId: string) {
+    /*
+     * Post specific DOM mutation events (refresh button and nuLOL tags)
+     */
+    handleReplyEvent(parentId: string) {
         if (parentId) {
-            const post: HTMLElement = document.querySelector(`li#item_${parentId} .sel.last`);
-            const postId = post && post.id.substr(5);
-            const root = post && post.closest(".root > ul > li");
-            const rootId = root && root.id.substr(5);
-            const is_root = !!elemMatches(post, ".root > ul > li");
+            const post = document.querySelector(`li#item_${parentId} .sel.last`) as HTMLElement;
+            const root = post?.closest(".root > ul > li.sel") as HTMLElement;
             if (post && root) {
                 // pass along our refreshed post and root post elements
                 if (ChromeShack.debugEvents) console.log("raising processReplyEvent:", post, root);
                 processReplyEvent.raise(post, root);
-                // also raise the refresh intent event to alert listeners that we want to refresh (nuLOL fix)
-                processRefreshIntentEvent.raise(postId, rootId, is_root, !!ChromeShack.isPostReplyMutation);
             }
         }
         ChromeShack.isPostReplyMutation = null;
+    },
+    handlePostRefreshEvent(
+        post: HTMLElement,
+        root: HTMLElement,
+        postid: string,
+        rootid: string,
+        postTags: Element[],
+        rootTags: Element[],
+    ) {
+        // should be raised after a post is populated with tag data
+        if (post || root) {
+            if (ChromeShack.debugEvents)
+                console.log("raising processPostRefreshEvent:", post, root, postid, rootid, postTags, rootTags);
+            processPostRefreshEvent.raise(post, root, postid, rootid, postTags, rootTags);
+        }
+        processTagDataLoadedEvent.removeHandler(ChromeShack.handlePostRefreshEvent);
+    },
+
+    handleTagsEvent(post: HTMLElement, root: HTMLElement, postid: string, rootid: string, is_root: boolean) {
+        // count all the tags in this post and raise events based on whether they contain data
+        const rootTags = is_root
+            ? [...root?.querySelectorAll(".root > ul > li.sel > .fullpost > .postmeta .lol-tags .nonzero")]
+            : [];
+        const postTags = [...post?.querySelectorAll(".fullpost > .postmeta .lol-tags .nonzero")];
+        if (post && postTags.length > 0) {
+            if (ChromeShack.debugEvents)
+                console.log("raising processTagDataLoadedEvent:", post, root, postTags, rootTags);
+            processTagDataLoadedEvent.raise(post, root, postTags, rootTags);
+        } else if (post) {
+            if (ChromeShack.debugEvents)
+                console.log("raising processEmptyTagsLoadedEvent:", post, root, postTags, rootTags);
+            processEmptyTagsLoadedEvent.raise(post, root, postTags, rootTags);
+        }
+        ChromeShack.handlePostRefreshEvent(post, root, postid, rootid, postTags, rootTags);
+        delete ChromeShack.isTagUpdateMutation[postid];
     },
 };
 
