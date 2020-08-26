@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
 
-import { processPostEvent } from "../../core/events";
-import { arrHas, objHas, locatePostRefs } from "../../core/common";
+import { processPostEvent, processPostRefreshEvent } from "../../core/events";
+import { arrHas, objHas, locatePostRefs, arrEmpty } from "../../core/common";
 import { detectMediaLink } from "../../core/api";
 
 import Expando from "./Expando";
@@ -71,15 +71,17 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
 const MediaEmbedder = {
     install() {
         processPostEvent.addHandler(MediaEmbedder.processPost);
+        processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
     },
 
     processPost(item: HTMLElement) {
         // render inside a hidden container in each fullpost
         const postbody = item?.querySelector(".sel > .fullpost > .postbody");
         const links = [...postbody?.querySelectorAll("a")] as HTMLAnchorElement[];
+        const embedded = [...postbody?.querySelectorAll("div.medialink")] as HTMLElement[];
 
         (async () => {
-            if (arrHas(links)) {
+            if (arrHas(links) && arrEmpty(embedded)) {
                 if (!postbody?.querySelector("#react-media-manager")) {
                     const container = document.createElement("div");
                     container.setAttribute("id", "react-media-manager");
