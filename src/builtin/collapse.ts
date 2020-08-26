@@ -78,7 +78,7 @@ const Collapse = {
             const { post, postid, root, rootid } = locatePostRefs(this_node);
             if (postid || rootid) {
                 if (CS_Instance.debugEvents) console.log("refreshing root post after uncollapse:", post, root);
-                processRefreshIntentEvent.raise(postid, rootid);
+                processRefreshIntentEvent.raise(post, root, postid, rootid);
             }
         }
     },

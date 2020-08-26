@@ -4,11 +4,11 @@ import {
     fullPostsCompletedEvent,
     processPostEvent,
     processPostBoxEvent,
-    processRefreshIntentEvent,
     processPostRefreshEvent,
     processReplyEvent,
     processEmptyTagsLoadedEvent,
     processTagDataLoadedEvent,
+    processRefreshIntentEvent,
 } from "./events";
 import { elemMatches, locatePostRefs } from "./common";
 import { setSetting } from "./settings";
@@ -25,7 +25,7 @@ const ChromeShack = {
 
     hasInitialized: false,
 
-    debugEvents: false,
+    debugEvents: true,
 
     install() {
         let username = document.getElementById("user_posts");
@@ -110,6 +110,8 @@ const ChromeShack = {
         });
 
         ChromeShack.processFullPosts();
+
+        processRefreshIntentEvent.addHandler(ChromeShack.handleRefreshIntent);
     },
 
     /*
@@ -152,6 +154,10 @@ const ChromeShack = {
     /*
      * Post specific DOM mutation events (refresh button and nuLOL tags)
      */
+    handleRefreshIntent(post: HTMLElement, root: HTMLElement, postid: string, rootid: string) {
+        const refreshBtn = root?.querySelector(".refresh > a") as HTMLAnchorElement;
+        if (refreshBtn) refreshBtn.click();
+    },
     handleReplyEvent(parentId: string) {
         if (parentId) {
             const post = document.querySelector(`li#item_${parentId} .sel.last`) as HTMLElement;
