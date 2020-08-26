@@ -54,19 +54,20 @@ export interface NotifyResponse {
 export const TabMessenger = {
     send(msg: NotifyMsg) {
         // NOTE: call this from a background script
-        browser.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
-            for (const tab of tabs || []) {
-                // broadcast a message to all subscribed scripts in running tabs
-                browser.tabs.sendMessage(tab.id, msg);
-            }
-        });
+        browser.tabs
+            .query({ url: "https://www.shacknews.com/chatty*", currentWindow: true, active: true })
+            .then((tabs) => {
+                for (const tab of tabs || []) {
+                    // broadcast a message to all subscribed scripts in running tabs
+                    browser.tabs.sendMessage(tab.id, msg);
+                }
+            });
     },
     connect() {
         // NOTE: call this from a content script
         browser.runtime.onMessage.addListener((msg: NotifyMsg) => {
-            if (msg.name === "notifyEvent") {
-                return Promise.resolve(processNotifyEvent.raise(msg.data));
-            } else return Promise.resolve(true);
+            if (msg.name === "notifyEvent") return Promise.resolve(processNotifyEvent.raise(msg.data));
+            return Promise.resolve(true);
         });
     },
 };
@@ -91,7 +92,6 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
     const postEventHasMe = nEvent?.eventData?.post?.body?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
-    console.log("matchNotification:", loggedInUsername, parentAuthor, postEventHasMe, parentAuthorIsMe, nEvent);
     if (postEventHasMe) {
         return "Post contains your name.";
     } else if (parentAuthorIsMe) {
