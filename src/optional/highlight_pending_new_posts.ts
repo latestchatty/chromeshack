@@ -10,6 +10,7 @@ import ChromeShack from "../core/observers";
 interface PendingPost {
     postId: number;
     threadId: number;
+    thread: HTMLElement;
 }
 
 const HighlightPendingPosts = {
@@ -28,9 +29,7 @@ const HighlightPendingPosts = {
 
     updatePendings(refreshElem?: HTMLElement) {
         for (const pending of HighlightPendingPosts.pendings || []) {
-            // Received an event for a post we already have.
-            if (document.getElementById(`item_${pending.postId}`)) continue;
-            const a = document.querySelector(`li#item_${pending.threadId} div.fullpost div.refresh a`);
+            const a = pending.thread?.querySelector(`.fullpost .refresh a`);
             if (a) a.classList.add("refresh_pending");
         }
         HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
@@ -43,11 +42,13 @@ const HighlightPendingPosts = {
             HighlightPendingPosts.lastEventId = resp.lastEventId;
             const newPosts = [...resp.events.filter((x: NotifyEvent) => x.eventType === "newPost")];
             const newPendingEvents = [];
-            for (const post of newPosts) {
-                newPendingEvents.push({
-                    postId: post.eventData.postId,
-                    threadId: post.eventData.post.threadId,
-                } as PendingPost);
+            for (const e of newPosts) {
+                const postId = e?.eventData?.postId;
+                const threadId = e?.eventData?.post?.threadId;
+                const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
+                // skip over threads already in our stack or threads that don't exist in the DOM
+                if (HighlightPendingPosts.pendings.find((x) => x.threadId === threadId) || !thread) continue;
+                newPendingEvents.push({ postId, threadId, thread } as PendingPost);
             }
             if (arrHas(newPendingEvents)) {
                 HighlightPendingPosts.pendings = ([
@@ -138,10 +139,10 @@ const HighlightPendingPosts = {
         if (pageMatch && pageMatch[1] !== "1") return;
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
-        processPostRefreshEvent.addHandler((postid: string) => {
-            const refreshedElem = document.querySelector(`li[id='item_${postid}']`) as HTMLElement;
+        processPostRefreshEvent.addHandler((post: HTMLElement) => {
+            console.log("HPP processPostRefreshEvent:", post);
             HighlightPendingPosts.updatePendings();
-            HighlightPendingPosts.updateJumpToNewPostButton(refreshedElem);
+            HighlightPendingPosts.updateJumpToNewPostButton(post);
         });
         getEventId().then((id) => {
             HighlightPendingPosts.lastEventId = id;
