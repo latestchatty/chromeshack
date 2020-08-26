@@ -5,6 +5,7 @@ import { getSetting, setSetting, getEnabled } from "./settings";
 import { processNotifyEvent } from "./events";
 
 import type { Runtime } from "webextension-polyfill-ts";
+import ChromeShack from "./observers";
 
 export const getEventId = async () => (await getSetting("nEventId")) as Promise<number>;
 export const setEventId = async (eventId: number) => await setSetting("nEventId", eventId);
@@ -54,14 +55,13 @@ export interface NotifyResponse {
 export const TabMessenger = {
     send(msg: NotifyMsg) {
         // NOTE: call this from a background script
-        browser.tabs
-            .query({ url: "https://www.shacknews.com/chatty*", currentWindow: true, active: true })
-            .then((tabs) => {
-                for (const tab of tabs || []) {
-                    // broadcast a message to all subscribed scripts in running tabs
-                    browser.tabs.sendMessage(tab.id, msg);
-                }
-            });
+        browser.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
+            for (const tab of tabs || []) {
+                // broadcast a message to all subscribed scripts in running tabs
+                if (ChromeShack.debugEvents) console.log("TabMessenger broadcast:", msg, tab.id, tab.title);
+                browser.tabs.sendMessage(tab.id, msg);
+            }
+        });
     },
     connect() {
         // NOTE: call this from a content script

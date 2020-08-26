@@ -25,7 +25,7 @@ const ChromeShack = {
 
     hasInitialized: false,
 
-    debugEvents: true,
+    debugEvents: false,
 
     install() {
         let username = document.getElementById("user_posts");
