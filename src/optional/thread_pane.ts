@@ -88,13 +88,10 @@ const ThreadPane = {
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
             $rootPostBodyDiv.find("a").replaceWith(function () {
-                // exclude expando children
                 return $(`<span class="cs_thread_pane_link">${(<HTMLAnchorElement>this).href}</span>`);
             });
-            // remove media containers from Thread Pane parent
-            $rootPostBodyDiv.find(".media-container").remove();
-            // remove embedded chatty post containers from Thread Pane parent
-            $rootPostBodyDiv.find(".getPost").remove();
+            // remove embed containers from Thread Pane parent
+            $rootPostBodyDiv.find("#react-media-manager, div.medialink").remove();
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
