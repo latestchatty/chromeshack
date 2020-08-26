@@ -16,11 +16,14 @@ export interface TweetParsed {
     timestamp?: string;
     userVerified?: boolean;
     tweetQuoted?: {
+        quotedTimestamp: string;
         quotedUrl: string;
+        quotedProfilePic: string;
         quotedDisplayName: string;
         quotedRealName: string;
         quotedText: string;
         quotedMediaItems: TweetMediaItem[];
+        quotedUserVerified: boolean;
     };
     unavailable?: boolean;
 }

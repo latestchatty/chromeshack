@@ -4,7 +4,7 @@ import useResolvedLink from "../../useResolvedLink";
 import { objHas, objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
 import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
 
-import type { TweetParsed, TweetMediaItem } from "./twitter.d";
+import type { TweetParsed, TweetMediaItem } from "./twitter";
 
 const CompiledTweetText = ({ text }: { text: string }) => {
     if (!text) return <span />;
@@ -97,12 +97,20 @@ const Twitter = (props: { response: TweetParsed }) => {
                             {response.tweetQuoted && (
                                 <>
                                     <div className="twitter__header">
+                                        <a href={response.tweetQuoted.quotedUrl} className="profile__pic__link">
+                                            <img
+                                                className="user__profile__pic"
+                                                alt=""
+                                                src={response.tweetQuoted.quotedProfilePic}
+                                            />
+                                        </a>
                                         <a
                                             href={response.tweetQuoted ? response.tweetQuoted.quotedUrl : "#"}
                                             id="twitter__quote__displayname"
                                         >
                                             {response.tweetQuoted ? response.tweetQuoted.quotedDisplayName : ""}
                                         </a>
+                                        <TwitterVerifiedSVG active={!!response?.tweetQuoted.quotedUserVerified} />
                                         <span className="twitter__quote__realname">
                                             {response.tweetQuoted ? `@${response.tweetQuoted.quotedRealName}` : ""}
                                         </span>
