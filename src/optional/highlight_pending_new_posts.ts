@@ -18,6 +18,8 @@ const HighlightPendingPosts = {
 
     lastIndex: -1,
 
+    refreshed: null as HTMLElement,
+
     pendings: [] as PendingPost[],
 
     marked: [] as HTMLElement[],
@@ -27,12 +29,12 @@ const HighlightPendingPosts = {
         if (is_enabled) HighlightPendingPosts.apply();
     },
 
-    updatePendings(refreshElem?: HTMLElement) {
+    updatePendings() {
         for (const pending of HighlightPendingPosts.pendings || []) {
             const a = pending.thread?.querySelector(`.fullpost .refresh a`);
             if (a) a.classList.add("refresh_pending");
         }
-        HighlightPendingPosts.updateJumpToNewPostButton(refreshElem);
+        HighlightPendingPosts.updateJumpToNewPostButton();
         // if the Thread Pane script is loaded, then refresh the thread pane
         if (TP_Instance.isEnabled) TP_Instance.apply();
     },
@@ -51,26 +53,18 @@ const HighlightPendingPosts = {
                 newPendingEvents.push({ postId, threadId, thread } as PendingPost);
             }
             if (arrHas(newPendingEvents)) {
-                HighlightPendingPosts.pendings = ([
-                    ...HighlightPendingPosts.pendings,
-                    newPendingEvents,
-                ] as PendingPost[]).flat();
+                const mutated = ([...HighlightPendingPosts.pendings, newPendingEvents] as PendingPost[]).flat();
                 if (ChromeShack.debugEvents)
-                    console.log("HighlightPendingPosts fetchPendings:", HighlightPendingPosts.pendings);
+                    console.log(
+                        "HighlightPendingPosts fetchPendings:",
+                        mutated,
+                        HighlightPendingPosts.pendings,
+                        HighlightPendingPosts.lastIndex,
+                    );
+                HighlightPendingPosts.pendings = mutated;
                 HighlightPendingPosts.updatePendings();
             }
         }
-    },
-
-    excludeRefreshed(refreshElem: HTMLElement) {
-        if (!refreshElem) return;
-        const closestId = parseInt(refreshElem?.closest("li[id^='item_']")?.id?.substr(5));
-        const mutated = [
-            ...HighlightPendingPosts.pendings.filter((x) => x.postId !== closestId || x.threadId !== closestId),
-        ];
-        HighlightPendingPosts.pendings = mutated;
-        if (ChromeShack.debugEvents)
-            console.log("HighlightPendingPosts excludeRefreshed:", HighlightPendingPosts.pendings);
     },
 
     isCollapsed(elem: HTMLElement) {
@@ -81,15 +75,33 @@ const HighlightPendingPosts = {
         return elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
     },
 
-    getNonCollapsedPendings(refreshElem?: HTMLElement) {
+    excludeRefreshed(refreshElem: HTMLElement) {
+        if (!refreshElem) return;
+        const closestId = parseInt(refreshElem?.closest("li[id^='item_']")?.id?.substr(5));
+        const mutated = [
+            ...HighlightPendingPosts.pendings.filter((x) => x.postId !== closestId || x.threadId !== closestId),
+        ];
+        HighlightPendingPosts.pendings = mutated;
+        const _index = HighlightPendingPosts.lastIndex;
+        // bump our position in the stack back one when we update our pendings
+        HighlightPendingPosts.lastIndex = _index - 1 > 0 ? _index - 1 : 0;
+        if (ChromeShack.debugEvents)
+            console.log(
+                "HighlightPendingPosts excludeRefreshed:",
+                HighlightPendingPosts.pendings,
+                HighlightPendingPosts.lastIndex,
+            );
+    },
+    getNonCollapsedPendings(refreshElem: HTMLElement) {
         HighlightPendingPosts.excludeRefreshed(refreshElem);
         const pendings = [...document.querySelectorAll("a.refresh_pending")];
         const filtered = [] as HTMLElement[];
         for (const pending of pendings) {
             const _pending = pending as HTMLElement;
-            // include only non-refreshed/non-collapsed pendings
+            const post = _pending?.closest("li[id^='item_']") as HTMLElement;
+            // include only non-refreshed/non-collapsed pending posts
             if (HighlightPendingPosts.isPending(_pending) && !HighlightPendingPosts.isCollapsed(_pending))
-                filtered.push(_pending);
+                filtered.push(post);
         }
         HighlightPendingPosts.marked = filtered;
     },
@@ -106,7 +118,7 @@ const HighlightPendingPosts = {
             // simple incrementing carousel
             const pendingLen = HighlightPendingPosts.marked.length;
             const newIndex = (HighlightPendingPosts.lastIndex + 1 + pendingLen) % pendingLen;
-            const divPostItem = HighlightPendingPosts.marked[newIndex]?.closest("li[id^='item_']") as HTMLElement;
+            const divPostItem = HighlightPendingPosts.marked[newIndex] as HTMLElement;
             scrollToElement(divPostItem);
             HighlightPendingPosts.lastIndex = newIndex;
         });
@@ -114,12 +126,12 @@ const HighlightPendingPosts = {
         position.appendChild(starContainer);
     },
 
-    updateJumpToNewPostButton(refreshElem?: HTMLElement) {
+    updateJumpToNewPostButton() {
         const button = document.getElementById("post_highlighter_container");
         const indicator = "★ ";
         const titleHasIndicator = document.title.startsWith(indicator);
         const pendingPostBtn = document.getElementById("jump_to_new_post");
-        HighlightPendingPosts.getNonCollapsedPendings(refreshElem);
+        HighlightPendingPosts.getNonCollapsedPendings(HighlightPendingPosts.refreshed);
         if (HighlightPendingPosts.marked.length > 0) {
             if (button) button.classList.remove("hidden");
             if (!titleHasIndicator) document.title = indicator + document.title;
@@ -140,9 +152,9 @@ const HighlightPendingPosts = {
         HighlightPendingPosts.installJumpToNewPostButton();
         // Recalculate the "jump to new post" button's visibility when the user refreshes/toggles a thread
         processPostRefreshEvent.addHandler((post: HTMLElement) => {
-            console.log("HPP processPostRefreshEvent:", post);
+            HighlightPendingPosts.refreshed = post;
             HighlightPendingPosts.updatePendings();
-            HighlightPendingPosts.updateJumpToNewPostButton(post);
+            HighlightPendingPosts.updateJumpToNewPostButton();
         });
         getEventId().then((id) => {
             HighlightPendingPosts.lastEventId = id;
