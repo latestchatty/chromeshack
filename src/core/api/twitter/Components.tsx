@@ -94,24 +94,28 @@ const Twitter = (props: { response: TweetParsed }) => {
                         </div>
                         <CompiledMedia className="twitter__media__content" mediaItems={response?.tweetMediaItems} />
                         <div className={classNames("twitter__quote__content", { hidden: !response.tweetQuoted })}>
-                            <div>
-                                <a
-                                    href={response.tweetQuoted ? response.tweetQuoted.quotedUrl : "#"}
-                                    id="twitter__quote__displayname"
-                                >
-                                    {response.tweetQuoted ? response.tweetQuoted.quotedDisplayName : ""}
-                                </a>
-                                <span className="twitter__quote__realname">
-                                    {response.tweetQuoted ? `@${response.tweetQuoted.quotedRealName}` : ""}
-                                </span>
-                            </div>
-                            <div className="twitter__quote__text__content">
-                                <CompiledTweetText text={response.tweetQuoted?.quotedText} />
-                            </div>
-                            <CompiledMedia
-                                className="twitter__quote__media__content"
-                                mediaItems={response.tweetQuoted?.quotedMediaItems}
-                            />
+                            {response.tweetQuoted && (
+                                <>
+                                    <div className="twitter__header">
+                                        <a
+                                            href={response.tweetQuoted ? response.tweetQuoted.quotedUrl : "#"}
+                                            id="twitter__quote__displayname"
+                                        >
+                                            {response.tweetQuoted ? response.tweetQuoted.quotedDisplayName : ""}
+                                        </a>
+                                        <span className="twitter__quote__realname">
+                                            {response.tweetQuoted ? `@${response.tweetQuoted.quotedRealName}` : ""}
+                                        </span>
+                                    </div>
+                                    <div className="twitter__quote__text__content">
+                                        <CompiledTweetText text={response.tweetQuoted?.quotedText} />
+                                    </div>
+                                    <CompiledMedia
+                                        className="twitter__quote__media__content"
+                                        mediaItems={response.tweetQuoted?.quotedMediaItems}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="twitter__timestamp">{response.timestamp}</div>

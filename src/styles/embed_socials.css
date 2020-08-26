@@ -58,6 +58,18 @@ a#twitter__displayname:hover,
 a#twitter__quote_displayname:hover {
     text-decoration: underline !important;
 }
+.twitter__quote__content {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--twttr-bg-border-color);
+    border-radius: 4px;
+    padding: 10px 10px 0 10px;
+    margin: 0;
+}
+.twitter__quote__content > .twitter__header {
+    margin-bottom: 1.5em;
+}
+
 .twitter__header {
     display: flex;
     flex-direction: row;
@@ -78,6 +90,9 @@ a#twitter__quote_displayname:hover {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.twitter__quote__realname {
+    margin-left: 0.5em;
+}
 .user__profile__pic {
     width: 38px;
     height: 38px;
@@ -90,6 +105,9 @@ a#twitter__quote_displayname:hover {
 .twitter__quote__displayname {
     font-weight: bold;
     color: var(--twttr-fg-color) !important;
+}
+.twitter__quote__displayname {
+    margin-right: 1.5em;
 }
 
 #twitter__verified {
@@ -136,13 +154,6 @@ a#twitter__quote_displayname:hover {
     margin: 0;
     padding: 0;
     object-fit: contain !important;
-}
-
-.twitter__quote__content {
-    border: 1px solid var(--twttr-bg-border-color);
-    border-radius: 4px;
-    padding: 10px 10px 0 10px;
-    margin: 0;
 }
 
 .twitter__timestamp {
