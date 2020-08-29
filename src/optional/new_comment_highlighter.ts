@@ -1,17 +1,17 @@
 import { enabledContains, getSetting, setSetting } from "../core/settings";
-import { processPostRefreshEvent } from "../core/events";
+import { processPostRefreshEvent, fullPostsCompletedEvent } from "../core/events";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 const NewCommentHighlighter = {
     async install() {
         const is_enabled = await enabledContains("new_comment_highlighter");
         if (is_enabled) {
-            NewCommentHighlighter.highlight();
+            fullPostsCompletedEvent.addHandler(NewCommentHighlighter.highlight);
             processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
         }
     },
 
-    async highlight() {
+    async highlight(post?: HTMLElement) {
         // only highlight if less than 2 hours have passed
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
             const last_id = (await getSetting("new_comment_highlighter_last_id")) as number;
