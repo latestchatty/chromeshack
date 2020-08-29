@@ -56,9 +56,10 @@ const ChattyNews = {
             const alignmentBox = document.createElement("div");
             const subAlignmentBox = document.createElement("div");
             alignmentBox.setAttribute("id", "chattynews__aligner");
+            subAlignmentBox.setAttribute("id", "links__aligner");
             for (const [i, p] of articleChildren.entries() || []) {
                 // leave our other text centered at the bottom of the article box
-                if (i !== articleChildren.length-1) subAlignmentBox.appendChild(p);
+                if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
                 else alignmentBox.appendChild(p);
             }
             alignmentBox?.appendChild(subAlignmentBox);
@@ -76,6 +77,7 @@ const ChattyNews = {
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
+            articleBox?.classList?.add("chatty__news__enabled");
         }
     },
 };

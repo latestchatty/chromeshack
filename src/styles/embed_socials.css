@@ -63,7 +63,7 @@ a#twitter__quote_displayname:hover {
     flex-direction: column;
     border: 1px solid var(--twttr-bg-border-color);
     border-radius: 4px;
-    padding: 10px 10px 0 10px;
+    padding: 4px 10px 0 10px;
     margin: 0;
 }
 

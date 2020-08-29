@@ -27,9 +27,11 @@ div.medialink.toggled {
 
 div.media > img,
 div.media > video {
+    object-fit: contain;
     outline: none;
+    width: 100%;
+    height: auto;
     /* only enforce a max height */
-    object-fit: scale-down;
     max-height: var(--max-media-item-height);
 }
 div.media .canToggleClick {
