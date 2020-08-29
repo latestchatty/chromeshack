@@ -1,6 +1,6 @@
 import { enabledContains } from "../core/settings";
 import { processPostRefreshEvent, processNotifyEvent, processRefreshIntentEvent } from "../core/events";
-import { scrollToElement, arrHas } from "../core/common";
+import { scrollToElement, scrollParentToChild, arrHas } from "../core/common";
 import { TP_Instance } from "../content";
 import { getEventId } from "../core/notifications";
 
@@ -119,7 +119,12 @@ const HighlightPendingPosts = {
             const pendingLen = HighlightPendingPosts.marked.length;
             const newIndex = (HighlightPendingPosts.lastIndex + 1 + pendingLen) % pendingLen;
             const divPostItem = HighlightPendingPosts.marked[newIndex] as HTMLElement;
+            const postId = divPostItem?.id?.substr(5);
+            const csPane = document.querySelector("#cs_thread_pane") as HTMLElement;
+            const tpCard = csPane?.querySelector(`div[id='${postId}']`) as HTMLElement;
             scrollToElement(divPostItem);
+            // also scroll to the card on the ThreadPane (if enabled)
+            if (tpCard) scrollParentToChild(csPane, tpCard);
             HighlightPendingPosts.lastIndex = newIndex;
         });
         starContainer.appendChild(star);

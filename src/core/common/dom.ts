@@ -147,6 +147,20 @@ export function scrollToElement(elem: JQuery<HTMLElement> | HTMLElement, toFitBo
     }
 }
 
+export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement) => {
+    // https://stackoverflow.com/a/45411081
+    const parentRect = parent.getBoundingClientRect();
+    const parentViewableArea = {
+        height: parent.clientHeight,
+        width: parent.clientWidth,
+    };
+    const childRect = child.getBoundingClientRect();
+    const isViewable = childRect.top >= parentRect.top && childRect.top <= parentRect.top + parentViewableArea.height;
+    if (!isViewable) {
+        parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top;
+    }
+};
+
 export function elementIsVisible(elem: JQuery<HTMLElement> | HTMLElement, partialBool?: boolean) {
     // don't use an arrow function here (for injection purposes)
     // only check to ensure vertical visibility

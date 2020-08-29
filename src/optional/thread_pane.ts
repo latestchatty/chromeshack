@@ -74,7 +74,7 @@ const ThreadPane = {
             const isRefreshPending = $opDiv.find(".refresh_pending").length > 0;
 
             // begin constructing the thread summary card in the thread pane
-            const $cardDiv = $('<div class="cs_thread_pane_card">');
+            const $cardDiv = $('<div class="cs_thread_pane_card">').attr("id", threadId);
             $cardDiv.append(
                 $('<div class="cs_thread_pane_post_count">').text(`${postCount} post${postCount === 1 ? "" : "s"}`),
             );
