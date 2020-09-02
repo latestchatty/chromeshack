@@ -31,6 +31,7 @@ NPM commands are as follows:
 
 NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated when `npm run build:prod` is used for licensing information.
 
+-   [Embla](https://github.com/davidcetinkaya/embla-carousel)
 -   [jQuery](https://github.com/jquery/jquery)
 -   [DOMPurify](https://github.com/cure53/DOMPurify)
 -   [Luxon](https://github.com/moment/luxon)

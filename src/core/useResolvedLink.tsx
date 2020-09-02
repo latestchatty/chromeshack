@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { arrHas, objHas, isIframe, classNames } from "./common";
 import { ParsedResponse, detectMediaLink } from "./api";
 
+import Carousel from "../optional/media-embedder/Carousel";
+
 import type { MediaLinkOptions } from "../optional/media-embedder";
 
 declare module "react" {
@@ -29,7 +31,7 @@ interface MediaProps {
 
 const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2);
 
-const Iframe = (props: MediaProps) => {
+export const Iframe = (props: MediaProps) => {
     const { postid, idx, src, isSlide } = props || {};
     if (!src) return null;
 
@@ -58,7 +60,7 @@ const Iframe = (props: MediaProps) => {
         </div>
     );
 };
-const Video = (props: MediaProps) => {
+export const Video = (props: MediaProps) => {
     const { postid, idx, classes, src } = props || {};
     let { loop, muted, controls, autoPlay, pauseOnClick } = props || {};
     const id = `video_${postid}-${idx}`;
@@ -108,7 +110,7 @@ const Video = (props: MediaProps) => {
         />
     );
 };
-const Image = (props: MediaProps) => {
+export const Image = (props: MediaProps) => {
     const { postid, idx, classes, src } = props || {};
     const id = `image_${postid}-${idx}`;
     if (!src) return null;
@@ -152,40 +154,46 @@ const useResolvedLink = (props: ResolvedLinkProps) => {
         else if (type === "iframe") return <Iframe key={src} postid={postid} idx={idx} src={src} />;
         else return <div />;
     };
-    const loadCarousel = (response: ParsedResponse) => {
-        /// TODO: IMPLEMENT CAROUSEL
-        return loadComponent(response, true);
-    };
 
     useEffect(() => {
         (async () => {
             const parsed = await detectMediaLink(link);
             const { src: normalSrc, args, cb, type: normalType } = parsed || {};
             const resolver = args ? await cb(...args) : null;
-            if (arrHas(resolver)) {
-                // if our media comes in an array try to return a carousel
-                const children = resolver.reduce((acc: React.ReactChild[], v: ParsedResponse) => {
+            if (arrHas(resolver) && resolver.length > 1) {
+                // if our media comes in an array return some carousel slides
+                const children = resolver.reduce((acc: React.ReactNode[], v: ParsedResponse) => {
                     const { src: resolvedSrc, type: resolvedType } = v || {};
                     const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType, postid, idx };
-                    const rendered = objHas(response) && loadCarousel(response);
+                    const rendered = objHas(response) && loadComponent(response);
                     if (rendered) acc.push(rendered);
                     return acc;
-                }, []) as React.ReactChild[];
-                arrHas(children) && setResolved(children);
+                }, []) as React.ReactNode[];
+                // pack them into a Carousel component for a better user experience
+                if (arrHas(children)) setResolved(<Carousel slides={children} />);
             } else {
-                // return a rendered component if provided
-                const rComponent = resolver?.component
-                    ? { component: resolver.component, type: resolver.type, postid, idx }
-                    : null;
-                // otherwise resolve using 'src'
-                const rSrc = resolver?.src
-                    ? { key: resolver.src, src: resolver.src, type: resolver.type, postid, idx }
+                // catch a single image gallery case (Imgur silliness)
+                const _src = arrHas(resolver)
+                    ? resolver[0].src
                     : normalSrc
-                    ? { key: normalSrc, src: normalSrc, type: normalType, postid, idx }
+                    ? normalSrc
+                    : resolver.src
+                    ? resolver.src
                     : null;
+                const _type = arrHas(resolver)
+                    ? resolver[0].type
+                    : normalType
+                    ? normalType
+                    : resolver.type
+                    ? resolver.type
+                    : null;
+                const resolved = _src && _type ? { key: _src, src: _src, type: _type, postid, idx } : null;
                 // pass along a rendered component otherwise render using 'src'
-                if (objHas(rComponent)) setResolved(rComponent.component);
-                else if (objHas(rSrc)) setResolved(loadComponent(rSrc));
+                if (resolver?.component) setResolved(resolver.component);
+                else if (resolved?.src) {
+                    const component = loadComponent(resolved);
+                    if (component) setResolved(component);
+                }
             }
         })();
     }, []);

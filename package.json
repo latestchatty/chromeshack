@@ -65,6 +65,7 @@
         "@fortawesome/free-solid-svg-icons": "^5.14.0",
         "@fortawesome/react-fontawesome": "^0.1.11",
         "dompurify": "^2.0.12",
+        "embla-carousel": "^4.0.1",
         "jquery": "^3.5.1",
         "luxon": "^1.25.0",
         "react": "^16.13.1",
