@@ -37,7 +37,7 @@ const Carousel = (props: { slides: React.ReactNode[] }) => {
         const selectedMedia = selectedSlide?.querySelector("img, video") as HTMLElement;
         const cHeight = selectedMedia?.clientHeight;
         // try to forcefully resize the carousel container to the media's client height
-        if (selectedSlide) emblaContainer?.setAttribute("style", `height: ${cHeight}px;`);
+        if (selectedSlide && cHeight > 0) emblaContainer?.setAttribute("style", `height: ${cHeight}px;`);
     }, [embla]);
     const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla]);
     const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla]);

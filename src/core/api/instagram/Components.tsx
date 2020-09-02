@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
-import useResolvedLink from "../../useResolvedLink";
-import { arrHas, classNames, objHas, fetchBackground } from "../../common";
+import useResolvedLinks from "../../useResolvedLinks";
+import { classNames, objHas, fetchBackground, arrHas } from "../../common";
 import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
 
 import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./instagram.d";
 
-const collectMedia = (media: InstagramShortcodeMedia): string[] => {
+const collectMedia = (media: InstagramShortcodeMedia) => {
     const collector = [];
     if (media.__typename === "GraphSidecar") {
         media.edge_sidecar_to_children.edges.forEach((edge) => {
@@ -19,22 +19,14 @@ const collectMedia = (media: InstagramShortcodeMedia): string[] => {
     else if (media.__typename === "GraphImage") collector.push(media.display_resources[0].src);
     return collector;
 };
-
 const CompiledMedia = (props: { mediaItems: string[] }) => {
     const { mediaItems } = props || {};
-    const mediaChildren = arrHas(mediaItems)
-        ? mediaItems.reduce((acc, m, i) => {
-              const resolved = useResolvedLink({
-                  link: m,
-                  postid: "0",
-                  idx: i.toString(),
-                  options: { muted: false, loop: false, autoPlay: false, controls: true },
-              });
-              if (resolved) acc.push(<div key={i}>{resolved}</div>);
-              return acc;
-          }, [] as React.ReactNode[])
-        : null;
-    return <>{mediaChildren}</>;
+    // display wrapper for useResolvedLinks()
+    const resolved = useResolvedLinks({
+        links: mediaItems,
+        options: { muted: false, loop: false, autoPlay: false, controls: true },
+    });
+    return resolved as JSX.Element;
 };
 
 const parseDate = (timestamp: string) => {

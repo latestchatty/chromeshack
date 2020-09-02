@@ -23,12 +23,12 @@
 .embla__slide__inner {
     overflow: hidden;
 }
-.embla__slide__img,
-.embla__slide__video {
+.embla__slide__inner img,
+.embla__slide__inner video {
     width: 100%;
     object-fit: contain;
-    max-width: 854px;
-    max-height: 720px;
+    max-width: var(--max-media-item-width) !important;
+    max-height: var(--max-media-item-height) !important;
 }
 
 .embla {
@@ -50,9 +50,6 @@
     z-index: 1;
     transform: translateY(-50%);
 }
-.embla__button:hover {
-    background-color: rgba(111, 111, 111, 0.5);
-}
 .embla__button:disabled {
     cursor: default;
     opacity: 0.3;
@@ -70,5 +67,5 @@
 .embla__button__svg {
     height: 24px !important;
     width: 24px !important;
-    color: rgb(27, 202, 205);
+    color: rgba(27, 202, 205, 0.8);
 }

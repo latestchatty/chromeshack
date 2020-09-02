@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpandAlt, faCompressAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { getLinkType, classNames, arrHas, objHas } from "../../core/common";
-import useResolvedLink from "../../core/useResolvedLink";
+import useResolvedLinks from "../../core/useResolvedLinks";
 
 import type { MediaLinkOptions } from "./";
 
@@ -25,11 +25,8 @@ interface ExpandoProps {
 const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
     const [toggled, setToggled] = useState(false);
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
-    const children = useResolvedLink({ link: link.href, postid, idx, options });
-    const type =
-        arrHas(children) && children[0]?.key
-            ? getLinkType(children[0].key) || getLinkType(children.key)
-            : getLinkType(link.href);
+    const children = useResolvedLinks({ link: link.href, options });
+    const type = getLinkType(link.href);
     const parentClasses = classNames("medialink", { toggled });
     // only allow toggle-by-click for explicit types
     const includedType = ["image", "video"].find((t) => type === t);
@@ -51,6 +48,7 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
         toggleEmbed();
         return false;
     };
+
     return (
         <div id={id} className={parentClasses} data-postid={postid} data-idx={idx}>
             <a href={link.href} onClick={handleClick}>

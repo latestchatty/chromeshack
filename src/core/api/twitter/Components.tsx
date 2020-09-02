@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import useResolvedLink from "../../useResolvedLink";
+import useResolvedLinks from "../../useResolvedLinks";
 import { objHas, objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
 import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
 
@@ -44,22 +44,15 @@ const CompiledTweetText = ({ text }: { text: string }) => {
 
 const CompiledMedia = (props: { mediaItems: TweetMediaItem[]; className?: string }) => {
     const { mediaItems, className } = props || {};
-    const mediaChildren = arrHas(mediaItems) ? (
-        mediaItems.reduce((acc, m, i) => {
-            const media = useResolvedLink({
-                link: m.url,
-                postid: "0",
-                idx: i.toString(),
-                options: { loop: false, muted: false, autoPlay: false, controls: true },
-            });
-            if (media) {
-                acc.push(<div key={i}>{media}</div>);
-            }
-            return acc;
-        }, [] as React.ReactNode[])
-    ) : (
-        <div className="hidden" />
-    );
+    // display wrapper for useResolvedLinks()
+    const _mediaItems = mediaItems.reduce((acc, x) => {
+        acc.push(x.url);
+        return acc;
+    }, [] as string[]);
+    const mediaChildren = useResolvedLinks({
+        links: _mediaItems,
+        options: { loop: false, muted: false, autoPlay: false, controls: true },
+    });
     return <div className={className}>{mediaChildren}</div>;
 };
 

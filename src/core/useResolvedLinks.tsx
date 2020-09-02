@@ -16,10 +16,8 @@ declare module "react" {
 
 interface MediaProps {
     id?: string;
-    src: string;
-    postid?: string;
-    idx?: string;
     classes?: string;
+    src: string;
     loop?: boolean;
     muted?: boolean;
     controls?: boolean;
@@ -32,22 +30,20 @@ interface MediaProps {
 const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2);
 
 export const Iframe = (props: MediaProps) => {
-    const { postid, idx, src, isSlide } = props || {};
+    const { src } = props || {};
     if (!src) return null;
 
     const iframeType = isIframe(src);
     const isTwitch = iframeType && iframeType === "twitch";
     const isYoutube = iframeType && iframeType === "youtube";
     const isGeneric = iframeType && !isTwitch && !isYoutube;
-    const id = `iframe_${postid}-${idx}`;
     const classes = classNames({
-        "iframe-slide": isSlide,
         "iframe-container": isGeneric,
         "twitch-container": isTwitch,
         "yt-container": isYoutube,
     });
     return (
-        <div id={id} className={classes}>
+        <div className={classes}>
             <iframe
                 title={src}
                 src={src}
@@ -61,25 +57,11 @@ export const Iframe = (props: MediaProps) => {
     );
 };
 export const Video = (props: MediaProps) => {
-    const { postid, idx, classes, src } = props || {};
-    let { loop, muted, controls, autoPlay, pauseOnClick } = props || {};
-    const id = `video_${postid}-${idx}`;
+    const { classes, src } = props || {};
     const videoRef = useRef<HTMLVideoElement>(null);
-    // provide an visibility observer for use in carousel mode
-    /* const observerOptions = {
-        delay: 500,
-        trackVisibility: true,
-        threshold: [0, 0.95],
-    };
-    const visibilityObserver = new IntersectionObserver((changes) => {
-        for (const c of changes) {
-            const elem = c.target?.matches("video") && (c.target as HTMLVideoElement);
-            if (c.intersectionRatio >= 0.95 && elem) elem.play();
-            else if (elem) elem.pause();
-        }
-    }, observerOptions); */
 
     // set some sensible defaults
+    let { loop, muted, controls, autoPlay, pauseOnClick } = props || {};
     if (loop === undefined) loop = true;
     if (muted === undefined) muted = true;
     if (controls === undefined) controls = false;
@@ -97,9 +79,8 @@ export const Video = (props: MediaProps) => {
 
     return (
         <video
-            key={idx}
+            key={src}
             ref={videoRef}
-            id={id}
             className={classes}
             src={src}
             loop={loop}
@@ -111,66 +92,54 @@ export const Video = (props: MediaProps) => {
     );
 };
 export const Image = (props: MediaProps) => {
-    const { postid, idx, classes, src } = props || {};
-    const id = `image_${postid}-${idx}`;
+    const { classes, src } = props || {};
     if (!src) return null;
-    return <img id={id} className={classes} src={src} alt="" />;
+    return <img className={classes} src={src} alt="" />;
 };
 
 interface ResolvedLinkProps {
-    link: string;
-    postid?: string;
-    idx?: string;
+    link?: string;
+    links?: string[];
     options?: MediaLinkOptions;
 }
-const useResolvedLink = (props: ResolvedLinkProps) => {
-    const { link, postid, idx, options } = props || {};
-    /// returns a rendered component after resolving its associated media
-    const [resolved, setResolved] = useState(null);
+const useResolvedLinks = (props: ResolvedLinkProps) => {
+    /// returns a rendered component after resolving its associated media link
+    const { link, links, options } = props || {};
     // provide access to video props for native embeds
     const { muted, loop, controls, autoPlay } = options || {};
+    const [resolved, setResolved] = useState(null as React.ReactNode);
 
-    const loadComponent = (response: ParsedResponse, slide?: boolean) => {
+    const loadComponent = (response: ParsedResponse) => {
         let { src } = response || {};
-        const { type, postid, idx } = response || {};
+        const { type } = response || {};
         // special case: normalize gifv to mp4 (imgur directmedia match)
         if (type === "video" && /imgur/.test(src) && src) src = src.replace(/\.gifv/, ".mp4");
         // feed 'src' into an embeddable common media component depending on link type
-        if (type === "image") return <Image key={src} postid={postid} idx={idx} src={src} />;
+        if (type === "image") return <Image key={src} src={src} />;
         else if (type === "video")
-            return (
-                <Video
-                    key={src}
-                    postid={postid}
-                    idx={idx}
-                    src={src}
-                    loop={loop}
-                    muted={muted}
-                    controls={controls}
-                    autoPlay={autoPlay}
-                    isSlide={slide}
-                />
-            );
-        else if (type === "iframe") return <Iframe key={src} postid={postid} idx={idx} src={src} />;
+            return <Video key={src} src={src} loop={loop} muted={muted} controls={controls} autoPlay={autoPlay} />;
+        else if (type === "iframe") return <Iframe key={src} src={src} />;
+        // ... just return an empty div otherwise
         else return <div />;
     };
 
     useEffect(() => {
-        (async () => {
-            const parsed = await detectMediaLink(link);
+        const resolveLink = async (l?: string) => {
+            const _link = l ? l : link;
+            const parsed = await detectMediaLink(_link);
             const { src: normalSrc, args, cb, type: normalType } = parsed || {};
             const resolver = args ? await cb(...args) : null;
             if (arrHas(resolver) && resolver.length > 1) {
-                // if our media comes in an array return some carousel slides
+                // if our media comes in an array return a carousel (Imgur)
                 const children = resolver.reduce((acc: React.ReactNode[], v: ParsedResponse) => {
                     const { src: resolvedSrc, type: resolvedType } = v || {};
-                    const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType, postid, idx };
+                    const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType };
                     const rendered = objHas(response) && loadComponent(response);
                     if (rendered) acc.push(rendered);
                     return acc;
                 }, []) as React.ReactNode[];
                 // pack them into a Carousel component for a better user experience
-                if (arrHas(children)) setResolved(<Carousel slides={children} />);
+                if (arrHas(children)) return <Carousel slides={children} />;
             } else {
                 // catch a single image gallery case (Imgur silliness)
                 const _src = arrHas(resolver)
@@ -187,18 +156,27 @@ const useResolvedLink = (props: ResolvedLinkProps) => {
                     : resolver.type
                     ? resolver.type
                     : null;
-                const resolved = _src && _type ? { key: _src, src: _src, type: _type, postid, idx } : null;
+                const resolved = _src && _type ? { key: _src, src: _src, type: _type } : null;
                 // pass along a rendered component otherwise render using 'src'
-                if (resolver?.component) setResolved(resolver.component);
-                else if (resolved?.src) {
-                    const component = loadComponent(resolved);
-                    if (component) setResolved(component);
-                }
+                if (resolver?.component) return resolver.component;
+                else if (resolved?.src) return loadComponent(resolved);
             }
-        })();
+        };
+        const resolveLinks = async () => {
+            const _resolved = await links.reduce(async (acc, l) => {
+                const _acc = await acc;
+                const resolving = await resolveLink(l);
+                if (resolving) _acc.push(resolving);
+                return Promise.resolve(_acc);
+            }, Promise.resolve([]) as Promise<React.ReactNode[]>);
+            if (_resolved) return <Carousel slides={_resolved} />;
+        };
+
+        if (arrHas(links)) resolveLinks().then(setResolved);
+        else resolveLink().then(setResolved);
     }, []);
     // return rendered media embeds as components
     return resolved;
 };
 
-export default useResolvedLink;
+export default useResolvedLinks;
