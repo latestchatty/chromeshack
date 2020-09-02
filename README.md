@@ -14,7 +14,9 @@ NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
 
 -   Development mode (`npm run build:dev`) includes full source mapping, and runs an extension reloader plugin through webpack that will reload Chrome/Firefox when files are changed. If you wish to test via a disposable Firefox profile then use `npm run webext` separate from `npm run build:dev`.
 
--   Production code is generated in the `dist/` folder by running `npm run build:prod`, along with two zip files in the `artifacts/` folder that are deployment ready (not signed).
+-   Production code is generated in the `dist/` folder by running `npm run build:prod`.
+
+-   Deployment packages can be generated with `npm run build:pack`; this results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
 
 NPM commands are as follows:
 
