@@ -53,7 +53,8 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
     };
     const handleNewClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
-        const newWindow = window.open(link?.href, "_blank", "noopener,noreferrer");
+        const _href = (children as FCWithMediaProps)?.props?.src || link?.href;
+        const newWindow = window.open(_href, "_blank", "noopener,noreferrer");
         if (newWindow) newWindow.opener = null;
         return false;
     };
@@ -84,11 +85,9 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
                     )}
                 </div>
             </a>
-            {includedType && (
-                <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
-                    <ExternalLink />
-                </a>
-            )}
+            <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
+                <ExternalLink />
+            </a>
             <div className={childClasses} onClick={includedType ? handleExpandClick : undefined}>
                 {toggled ? children : <div />}
             </div>
