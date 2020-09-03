@@ -16,18 +16,7 @@ NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
 
 -   Production code is generated in the `dist/` folder by running `npm run build:prod`.
 
--   Deployment packages can be generated with `npm run build:pack`; this results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
-
-NPM commands are as follows:
-
--   `npm run build:dev` for auto-reloading the extension in Chrome/Firefox in dev mode
--   `npm run build:prod` for building in production mode (for both Firefox and Chrome)
--   `npm run pack` for packing the raw extension source for upload to AMO for admin review
--   `npm run lint` for running auto-fix linting through ESLint and Prettier
--   `npm run extlint` for running the AMO linter to audit production code
--   `npm run webext` for testing the extension in a clean Firefox profile via `web-ext run`
--   `npm run sign` for packing `dist/` into a self-signed XPI for upload to AMO
--   `npm run zip` for packing `dist/` for uploading to AMO or Chrome Store
+-   Deployment packages can be generated with `npm run build:pack`. This results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
 
 #### Dependencies used in this project
 
