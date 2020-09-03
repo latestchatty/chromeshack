@@ -270,7 +270,7 @@ const getUserFilters = async () => {
     return await setSetting("user_filters", users);
 };
 
-const addUserFilter = async (e: MouseEvent) => {
+const addUserFilter = async () => {
     const username = document.getElementById("new_user_filter_text") as HTMLInputElement;
     const usersLst = document.getElementById("filtered_users");
     const filtersHas = await filtersContains(username.value);
@@ -309,7 +309,7 @@ const getEnabledScripts = async () => {
         input[type='checkbox'].suboption
     `),
     ];
-    for (let checkbox of checkboxes) {
+    for (const checkbox of checkboxes) {
         const _checkbox = checkbox as HTMLInputElement;
         if (elemMatches(_checkbox, ".script_check") && _checkbox.checked) {
             // put non-boolean save supports here
@@ -389,7 +389,7 @@ const exportSettings = (settingsField: HTMLInputElement) => {
                 "last_highlight_time",
                 "new_comment_highlighter_last_id",
                 "nEventId",
-                "nUsername"
+                "nUsername",
             ];
             const sanitizedGroups = settings.highlight_groups.filter((x: HighlightGroup) => !x.built_in) || [];
             const sanitizedSettings = objConditionalFilter(disallowed, settings);
@@ -423,7 +423,7 @@ const importSettings = (settingsField: HTMLInputElement) => {
               }, defaults.highlight_groups)
             : defaults.highlight_groups;
         parsedSettings.highlight_groups = reducedGroups;
-        let combinedSettings = { ...defaults, ...parsedSettings };
+        const combinedSettings = { ...defaults, ...parsedSettings };
         if (combinedSettings)
             resetSettings().then(() =>
                 setSettings(combinedSettings).then(() => alert("Successfully imported settings!")),

@@ -1,7 +1,15 @@
-import { browser } from "webextension-polyfill-ts";
 import { Dispatch } from "react";
 
-import { arrHas, arrEmpty, isImage, isVideo, matchFileFormat, FormDataToJSON, fetchSafe, postBackground } from "../common";
+import {
+    arrHas,
+    arrEmpty,
+    isImage,
+    isVideo,
+    matchFileFormat,
+    FormDataToJSON,
+    fetchSafe,
+    postBackground,
+} from "../common";
 import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
 
 import type {

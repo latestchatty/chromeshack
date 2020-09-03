@@ -7,7 +7,6 @@
     "eslint.packageManager": "npm",
     "eslint.alwaysShowStatus": true,
     "eslint.lintTask.enable": true,
-    "eslint.workingDirectories": ["./app"],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },

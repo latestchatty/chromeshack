@@ -3,29 +3,22 @@
     "tasks": [
         {
             "type": "npm",
+            "script": "lint",
+            "group": "build",
+            "problemMatcher": ["$eslint-stylish"]
+        },
+        {
+            "type": "npm",
             "script": "build:prod",
             "group": "build",
-            "problemMatcher": ["$ts-webpack"]
+            "problemMatcher": ["$ts-checker5-webpack", "$ts-checker5-eslint-webpack"]
         },
         {
             "type": "npm",
             "script": "build:dev",
             "group": "build",
             "isBackground": true,
-            "problemMatcher": [
-                {
-                    "base": "$ts-webpack",
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": {
-                            "regexp": "<your-custom-starting-regex-pattern here>"
-                        },
-                        "endsPattern": {
-                            "regexp": "<your-custom-ending-regex-pattern here>"
-                        }
-                    }
-                }
-            ]
+            "problemMatcher": ["$ts-checker5-webpack-watch", "$ts-checker5-eslint-webpack-watch"]
         }
     ]
 }

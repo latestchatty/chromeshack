@@ -84,7 +84,7 @@ const PostPreview = {
 
     updatePreview(e: KeyboardEvent | MouseEvent | HTMLElement) {
         if (PostPreview.previewTimer) clearTimeout(PostPreview.previewTimer);
-        PostPreview.previewTimer = setTimeout(PostPreview.delayedPreview, 250);
+        PostPreview.previewTimer = setTimeout(() => PostPreview.delayedPreview(e), 250);
     },
 
     delayedPreview(e: KeyboardEvent | MouseEvent | HTMLElement) {

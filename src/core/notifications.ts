@@ -4,7 +4,6 @@ import { fetchSafe } from "./common";
 import { getSetting, setSetting, getEnabled } from "./settings";
 import { processNotifyEvent } from "./events";
 
-import type { Runtime } from "webextension-polyfill-ts";
 import ChromeShack from "./observers";
 
 export const getEventId = async () => (await getSetting("nEventId")) as Promise<number>;

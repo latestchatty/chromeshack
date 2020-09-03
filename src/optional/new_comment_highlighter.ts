@@ -11,7 +11,7 @@ const NewCommentHighlighter = {
         }
     },
 
-    async highlight(post?: HTMLElement) {
+    async highlight() {
         // only highlight if less than 2 hours have passed
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
             const last_id = (await getSetting("new_comment_highlighter_last_id")) as number;

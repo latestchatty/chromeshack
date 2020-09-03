@@ -1,7 +1,6 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
 
-import { CS_Instance } from "./../../content";
 import { arrHas, objHas } from "./";
 
 import type { PurifyConfig } from "./fetch";

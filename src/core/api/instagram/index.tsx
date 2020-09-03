@@ -4,7 +4,6 @@ import useInstagram, { fetchInstagramData } from "./Components";
 
 import type { ParsedResponse } from "../../api";
 import type { InstagramParsed } from "./instagram";
-import useTweets from "../twitter";
 
 const parseLink = (href: string) => {
     const isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/(?:p|tv)\/([\w-]+)\/?/i.exec(href);

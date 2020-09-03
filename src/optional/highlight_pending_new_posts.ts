@@ -1,5 +1,5 @@
 import { enabledContains } from "../core/settings";
-import { processPostRefreshEvent, processNotifyEvent, processRefreshIntentEvent } from "../core/events";
+import { processPostRefreshEvent, processNotifyEvent } from "../core/events";
 import { scrollToElement, scrollParentToChild, arrHas } from "../core/common";
 import { TP_Instance } from "../content";
 import { getEventId } from "../core/notifications";

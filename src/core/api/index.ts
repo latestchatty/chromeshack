@@ -30,7 +30,7 @@ export interface ParsedResponse {
     href?: string;
     type: ParsedType;
     args?: string[];
-    cb?: Function;
+    cb?: (...args: string[]) => any;
     component?: JSX.Element;
     postid?: string;
     idx?: string;

@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
 
-import { waitToFetchSafe, fetchSafe, fetchSafeLegacy, isFileArr, objEmpty, isUrlArr } from "../common";
+import { waitToFetchSafe, fetchSafe, fetchSafeLegacy, isFileArr, objEmpty, isUrlArr, postBackground } from "../common";
 
 import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
 import type {
@@ -60,14 +60,14 @@ const doGfycatDropKey = async (data?: UploadData) => {
     /// notifies the Gfycat drop endpoint that we wish to upload media
     // if we have a media URL to fetch then hand it off to Gfycat for server-side encoding
     const dataBody = isUrlArr(data as string[]) ? JSON.stringify({ fetchUrl: data[0] }) : undefined;
-    const key: GfycatResponse = await fetchSafe({
+    const key: GfycatResponse = await postBackground({
         url: gfycatApiUrl,
         fetchOpts: {
-            method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: dataBody,
         },
+        data: dataBody,
     });
+    console.log("doGfycatDropKey:", key);
     return !objEmpty(key) ? key?.gfyname : null;
 };
 
@@ -108,17 +108,19 @@ const doGfycatStatus = async (key: string) => {
     return result ? result : null;
 };
 
-const doGfycatUpload = async (data: UploadData, key: string, dispatch: Dispatch<UploaderAction>) => {
+const doGfycatUpload = async (data: UploadData, key: string) => {
     /// this will push a File object to the Gfycat drop endpoint
     if (isFileArr(data as File[])) {
         for (const file of data as File[]) {
             const dataBody = new FormData();
             dataBody.append("key", key);
             dataBody.append("file", new File([file], key, { type: file.type }));
-            await fetchSafe({
+            // we handle the result via doGfycatStatus
+            const result = await postBackground({
                 url: gfycatDropUrl,
-                fetchOpts: { method: "POST", body: dataBody },
+                data: dataBody,
             });
+            console.log("doGfycatUpload:", result);
         }
     } else throw new Error(`Unable to upload non-File data to endpoint: ${gfycatDropUrl}`);
 };
@@ -155,7 +157,8 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
                 }
             } else return handleGfycatUploadFailure(urlUpload, dispatch);
         } else if (isFileArr(data as File[])) {
-            await doGfycatUpload(data, key, dispatch);
+            await doGfycatUpload(data, key);
+            // our status resolver handles the success/failure dispatch
             const encodedGfy = await doGfycatStatus(key); // wait for the encode
             if (typeof encodedGfy === "string") {
                 const media = await doResolveGfycat(encodedGfy);

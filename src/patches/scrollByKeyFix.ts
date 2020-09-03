@@ -2,7 +2,7 @@ import { browser } from "webextension-polyfill-ts";
 
 const scrollByKeyFix = async () => {
     try {
-        const status = await browser.tabs.executeScript(null, {
+        await browser.tabs.executeScript(null, {
             code: /*javascript*/ `
 /// monkeypatch nuChatty's broken scroll-post-by-A/Z functionality
 if (!document.getElementById("scrollbykeyfix-wjs")) {

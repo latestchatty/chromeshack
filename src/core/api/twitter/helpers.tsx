@@ -1,4 +1,4 @@
-import { objEmpty, arrHas, objHas, fetchBackground } from "../../common";
+import { arrHas, objHas, fetchBackground } from "../../common";
 import { getEnabledSuboptions } from "../../settings";
 
 import type { TweetParsed, TwitterResponse, TwitterResponseMediaItem, TwitterMediaItemVariant } from "./twitter";

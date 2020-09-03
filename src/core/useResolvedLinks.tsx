@@ -7,13 +7,6 @@ import Carousel from "../optional/media-embedder/Carousel";
 
 import type { MediaLinkOptions } from "../optional/media-embedder";
 
-declare module "react" {
-    interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
-        // suppress warning on scale attribute for iframes
-        scale?: string;
-    }
-}
-
 interface MediaProps {
     id?: string;
     classes?: string;
@@ -27,7 +20,7 @@ interface MediaProps {
     links?: string[];
 }
 
-const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2);
+export const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2);
 
 export const Iframe = (props: MediaProps) => {
     const { src } = props || {};
@@ -52,7 +45,7 @@ export const Iframe = (props: MediaProps) => {
                     scrolling="no"
                     allowFullScreen
                     allow={isYoutube ? "autoplay; encrypted-media" : ""}
-                    scale={isGeneric ? "tofit" : ""}
+                    /* scale={isGeneric ? "tofit" : ""} */
                 />
             </div>
         </div>

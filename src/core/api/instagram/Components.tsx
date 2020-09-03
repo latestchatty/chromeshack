@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 import useResolvedLinks from "../../useResolvedLinks";
 import { classNames, fetchBackground } from "../../common";

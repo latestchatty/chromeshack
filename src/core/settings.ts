@@ -16,7 +16,7 @@ export interface Settings {
     user_filters?: string[];
     highlight_groups?: HighlightGroup[];
 }
-type Setting = string | number | boolean | object | [] | HighlightGroup | HighlightGroup[];
+type Setting = string | number | boolean | Record<string, any> | [] | HighlightGroup | HighlightGroup[];
 
 export const DefaultSettings: Settings = {
     enabled_scripts: [

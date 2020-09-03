@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpandAlt, faCompressAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { getLinkType, classNames, arrHas, objHas } from "../../core/common";
+import { getLinkType, classNames } from "../../core/common";
 import useResolvedLinks from "../../core/useResolvedLinks";
 
 import type { MediaLinkOptions } from "./";

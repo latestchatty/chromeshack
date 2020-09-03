@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useContext } from "react";
 
-type BaseTypes = string | number | boolean | object | [];
+type BaseTypes = string | number | boolean | Record<string, any> | [];
 export interface ReducerAction {
     type: string;
     payload?: BaseTypes;

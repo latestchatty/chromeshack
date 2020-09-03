@@ -5,8 +5,7 @@ import { scrollToElement, elementIsVisible } from "../core/common";
 const chatViewFix = async () => {
     try {
         const is_enabled = await browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` });
-        const result =
-            is_enabled &&
+        is_enabled &&
             (await browser.tabs.executeScript(null, {
                 code: /*javascript*/ `
 /// monkeypatch for Chatty's broken scroll-to-post functionality

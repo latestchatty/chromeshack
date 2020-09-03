@@ -21,7 +21,8 @@ export const objContains = (needle: any, haystack: any) => {
     return null;
 };
 
-export const objContainsProperty = (key: string, obj: object) => obj && Object.prototype.hasOwnProperty.call(obj, key);
+export const objContainsProperty = (key: string, obj: Record<string, any>) =>
+    obj && Object.prototype.hasOwnProperty.call(obj, key);
 
 export const isHTML = (text: string) => {
     // https://stackoverflow.com/a/15458968
