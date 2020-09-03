@@ -33,7 +33,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
         if (children) mediaLinkReplacer();
     }, [children]);
     useEffect(() => {
-        (async () => {
+        const resolveChildren = async () => {
             // tag all matching links and embed an Expando toggle for each one
             const detected = arrHas(links)
                 ? await links.reduce(async (acc, l, i) => {
@@ -63,7 +63,8 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                   }, Promise.resolve([] as React.ReactChild[]))
                 : null;
             if (detected) setChildren(detected);
-        })();
+        };
+        resolveChildren();
     }, []);
     return <>{children}</>;
 };

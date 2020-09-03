@@ -1,8 +1,4 @@
 /// schema for the rendered tweet object
-export interface TweetMediaItem {
-    type: "photo" | "animated_gif" | "video";
-    url: string;
-}
 export interface TweetParsed {
     tweetParentId?: string;
     tweetParents?: TweetParsed[];
@@ -12,7 +8,7 @@ export interface TweetParsed {
     displayName?: string;
     realName?: string;
     tweetText?: string;
-    tweetMediaItems?: TweetMediaItem[];
+    tweetMediaItems?: string[];
     timestamp?: string;
     userVerified?: boolean;
     tweetQuoted?: {
@@ -22,7 +18,7 @@ export interface TweetParsed {
         quotedDisplayName: string;
         quotedRealName: string;
         quotedText: string;
-        quotedMediaItems: TweetMediaItem[];
+        quotedMediaItems: string[];
         quotedUserVerified: boolean;
     };
     unavailable?: boolean;

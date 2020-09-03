@@ -4,7 +4,7 @@ import useResolvedLinks from "../../useResolvedLinks";
 import { objHas, objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
 import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
 
-import type { TweetParsed, TweetMediaItem } from "./twitter";
+import type { TweetParsed } from "./twitter";
 
 const CompiledTweetText = ({ text }: { text: string }) => {
     if (!text) return <span />;
@@ -42,15 +42,11 @@ const CompiledTweetText = ({ text }: { text: string }) => {
     return <span>{output}</span>;
 };
 
-const CompiledMedia = (props: { mediaItems: TweetMediaItem[]; className?: string }) => {
+const CompiledMedia = (props: { mediaItems: string[]; className?: string }) => {
     const { mediaItems, className } = props || {};
     // display wrapper for useResolvedLinks()
-    const _mediaItems = mediaItems.reduce((acc, x) => {
-        acc.push(x.url);
-        return acc;
-    }, [] as string[]);
     const mediaChildren = useResolvedLinks({
-        links: _mediaItems,
+        links: mediaItems,
         options: { loop: false, muted: false, autoPlay: false, controls: true },
     });
     return <div className={className}>{mediaChildren}</div>;
@@ -137,24 +133,24 @@ const Twitter = (props: { response: TweetParsed }) => {
 
 const useTweets = (tweetObj: TweetParsed) => {
     /// render Tweet children from a given twitter response object
-    const [children, setChildren] = useState(null);
-    const accumulateTweets = () => {
-        const tweetParents = arrHas(tweetObj?.tweetParents) ? tweetObj?.tweetParents : null;
-        const parents = tweetParents
-            ? tweetParents.reduce((acc, t, i) => {
-                  acc.push(<Twitter key={i} response={t} />);
-                  return acc;
-              }, [] as React.ReactNode[])
-            : null;
-        const withNewest =
-            parents?.length > 0 ? (
-                [...parents, <Twitter key={parents.length + 1} response={tweetObj} />]
-            ) : (
-                <Twitter response={tweetObj} />
-            );
-        return withNewest;
-    };
+    const [children, setChildren] = useState(null as React.ReactNode | React.ReactNode[]);
     useEffect(() => {
+        const accumulateTweets = () => {
+            const tweetParents = arrHas(tweetObj?.tweetParents) ? tweetObj?.tweetParents : null;
+            const parents = tweetParents
+                ? tweetParents.reduce((acc, t, i) => {
+                      acc.push(<Twitter key={i} response={t} />);
+                      return acc;
+                  }, [] as React.ReactNode[])
+                : null;
+            const withNewest =
+                parents?.length > 0 ? (
+                    [...parents, <Twitter key={parents.length + 1} response={tweetObj} />]
+                ) : (
+                    <Twitter response={tweetObj} />
+                );
+            return withNewest;
+        };
         if (objHas(tweetObj)) {
             const accumulatedTweets = accumulateTweets();
             if (accumulatedTweets) setChildren(accumulatedTweets);

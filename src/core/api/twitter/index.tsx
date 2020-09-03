@@ -4,8 +4,7 @@ import useTweets from "./Components";
 import { fetchTweets } from "./helpers";
 
 import type { ParsedResponse } from "../../api";
-import type { TweetParsed } from "./twitter";
-import { arrHas, objHas } from "../../common";
+import type { TweetParsed, TwitterResponse } from "./twitter";
 
 const parseLink = (href: string) => {
     const isTwitter = /https?:\/\/(?:mobile\.|m\.)?twitter.com\/\w+\/status\/(\d+)/i.exec(href);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 import useResolvedLinks from "../../useResolvedLinks";
-import { classNames, objHas, fetchBackground, arrHas } from "../../common";
+import { classNames, fetchBackground } from "../../common";
 import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
 
 import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./instagram.d";
@@ -163,9 +163,7 @@ const useInstagram = (instagramObj: InstagramParsed) => {
     /// render Instagram child from a given instagram response object
     const [children, setChildren] = useState(null);
     useEffect(() => {
-        if (objHas(instagramObj)) {
-            setChildren(<Instagram response={instagramObj} />);
-        }
+        if (instagramObj) setChildren(<Instagram response={instagramObj} />);
     }, []);
     return <>{children}</>;
 };

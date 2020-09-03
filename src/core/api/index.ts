@@ -46,6 +46,7 @@ export const detectMediaLink = async (href: string) => {
     const mediaEnabled = await enabledContains("media_loader");
     const socialsEnabled = await enabledContains("social_loader");
     const chattypostEnabled = await enabledContains("getpost");
+
     // test if href matches any of our parsers
     if (mediaEnabled) {
         const chattypics = isChattypics(href);

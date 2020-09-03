@@ -1,13 +1,7 @@
 import { objEmpty, arrHas, objHas, fetchBackground } from "../../common";
 import { getEnabledSuboptions } from "../../settings";
 
-import type {
-    TweetParsed,
-    TweetMediaItem,
-    TwitterResponse,
-    TwitterResponseMediaItem,
-    TwitterMediaItemVariant,
-} from "./twitter";
+import type { TweetParsed, TwitterResponse, TwitterResponseMediaItem, TwitterMediaItemVariant } from "./twitter";
 
 export const decodeHTMLEntities = (text: string) => {
     // somewhat risky but lazy - we're okay with that (tweet text is pre-sanitized)
@@ -15,14 +9,6 @@ export const decodeHTMLEntities = (text: string) => {
     if (text) ta.innerHTML = text;
     return ta.value || "";
 };
-
-export const parseMedia = (mediaObjArr: TweetMediaItem[]) =>
-    !objEmpty(mediaObjArr)
-        ? mediaObjArr.reduce((pv, v) => {
-              if (v.url) pv.push(v.url);
-              return pv;
-          }, [])
-        : null;
 
 export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
     // prioritize the highest bitrate source
@@ -35,16 +21,15 @@ export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
 };
 
 export const collectMedia = (tweetMediaObj: TwitterResponseMediaItem[]) => {
-    const result: TweetMediaItem[] = [];
+    const result: string[] = [];
     for (const item of Object.values(tweetMediaObj) || []) {
         if ((item.type === "video" || item.type === "animated_gif") && item.video_info.variants) {
             const sorted = sortByBitrate(item.video_info.variants.filter((x) => x.content_type === "video/mp4"));
             for (const vidItem of sorted) {
-                result.push({ type: "video", url: vidItem.url });
+                result.push(vidItem.url);
                 break; // bail on the first match (highest res)
             }
-        } else if (item.type === "photo" && item.media_url_https)
-            result.push({ type: "photo", url: item.media_url_https });
+        } else if (item.type === "photo" && item.media_url_https) result.push(item.media_url_https);
     }
     return result;
 };

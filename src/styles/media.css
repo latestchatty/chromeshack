@@ -27,10 +27,8 @@ div.medialink.toggled {
 
 div.media > img,
 div.media > video {
-    object-fit: contain;
+    object-fit: scale-down;
     outline: none;
-    width: 100%;
-    height: auto;
     /* only enforce a max height */
     max-height: var(--max-media-item-height);
 }

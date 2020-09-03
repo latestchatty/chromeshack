@@ -141,35 +141,38 @@ const useResolvedLinks = (props: ResolvedLinkProps) => {
                 // pack them into a Carousel component for a better user experience
                 if (arrHas(children)) return <Carousel slides={children} />;
             } else {
+                // pass along a rendered component if provided
+                if (resolver?.component) return resolver.component;
                 // catch a single image gallery case (Imgur silliness)
                 const _src = arrHas(resolver)
                     ? resolver[0].src
                     : normalSrc
                     ? normalSrc
-                    : resolver.src
+                    : resolver?.src
                     ? resolver.src
                     : null;
                 const _type = arrHas(resolver)
                     ? resolver[0].type
                     : normalType
                     ? normalType
-                    : resolver.type
+                    : resolver?.type
                     ? resolver.type
                     : null;
                 const resolved = _src && _type ? { key: _src, src: _src, type: _type } : null;
-                // pass along a rendered component otherwise render using 'src'
-                if (resolver?.component) return resolver.component;
-                else if (resolved?.src) return loadComponent(resolved);
+                if (resolved?.src) return loadComponent(resolved);
             }
         };
         const resolveLinks = async () => {
             const _resolved = await links.reduce(async (acc, l) => {
                 const _acc = await acc;
                 const resolving = await resolveLink(l);
+                //console.log("resolveLinks accumulator:", resolving, l, _acc);
                 if (resolving) _acc.push(resolving);
                 return Promise.resolve(_acc);
             }, Promise.resolve([]) as Promise<React.ReactNode[]>);
-            if (_resolved) return <Carousel slides={_resolved} />;
+            // wrap with a Carousel if necessary
+            if (arrHas(_resolved) && _resolved.length > 1) return <Carousel slides={_resolved} />;
+            else if (_resolved?.length === 1) return _resolved[0];
         };
 
         if (arrHas(links)) resolveLinks().then(setResolved);
