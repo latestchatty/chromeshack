@@ -43,16 +43,18 @@ export const Iframe = (props: MediaProps) => {
         "yt-container": isYoutube,
     });
     return (
-        <div className={classes}>
-            <iframe
-                title={src}
-                src={src}
-                frameBorder="0"
-                scrolling="no"
-                allowFullScreen
-                allow={isYoutube ? "autoplay; encrypted-media" : ""}
-                scale={isGeneric ? "tofit" : ""}
-            />
+        <div className="iframe__boundary">
+            <div className={classes}>
+                <iframe
+                    title={src}
+                    src={src}
+                    frameBorder="0"
+                    scrolling="no"
+                    allowFullScreen
+                    allow={isYoutube ? "autoplay; encrypted-media" : ""}
+                    scale={isGeneric ? "tofit" : ""}
+                />
+            </div>
         </div>
     );
 };
@@ -78,23 +80,29 @@ export const Video = (props: MediaProps) => {
     };
 
     return (
-        <video
-            key={src}
-            ref={videoRef}
-            className={classes}
-            src={src}
-            loop={loop}
-            muted={muted}
-            controls={controls}
-            autoPlay={autoPlay}
-            onClick={onClick}
-        />
+        <div className="media__boundary">
+            <video
+                key={src}
+                ref={videoRef}
+                className={classes}
+                src={src}
+                loop={loop}
+                muted={muted}
+                controls={controls}
+                autoPlay={autoPlay}
+                onClick={onClick}
+            />
+        </div>
     );
 };
 export const Image = (props: MediaProps) => {
     const { classes, src } = props || {};
     if (!src) return null;
-    return <img className={classes} src={src} alt="" />;
+    return (
+        <div className="media__boundary">
+            <img className={classes} src={src} alt="" />
+        </div>
+    );
 };
 
 interface ResolvedLinkProps {

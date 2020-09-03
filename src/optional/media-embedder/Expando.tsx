@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpandAlt, faCompressAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExpandAlt, faCompressAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { getLinkType, classNames, arrHas, objHas } from "../../core/common";
 import useResolvedLinks from "../../core/useResolvedLinks";
@@ -14,6 +14,7 @@ const commonIconStyle = {
 };
 const ExpandIcon = () => <FontAwesomeIcon icon={faExpandAlt} style={commonIconStyle} />;
 const CompressIcon = () => <FontAwesomeIcon icon={faCompressAlt} style={commonIconStyle} />;
+const ExternalLink = () => <FontAwesomeIcon icon={faExternalLinkAlt} style={commonIconStyle} />;
 
 interface ExpandoProps {
     link: HTMLAnchorElement;
@@ -22,11 +23,19 @@ interface ExpandoProps {
     options?: MediaLinkOptions;
 }
 
+interface FCWithMediaProps extends JSX.Element {
+    props: {
+        src?: string;
+    };
+}
 const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
     const [toggled, setToggled] = useState(false);
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const children = useResolvedLinks({ link: link.href, options });
-    const type = getLinkType(link.href);
+    // pull the 'src' from props if we have a rendered component
+    const type = (children as FCWithMediaProps)?.props?.src
+        ? getLinkType((children as FCWithMediaProps).props.src)
+        : getLinkType(link.href);
     const parentClasses = classNames("medialink", { toggled });
     // only allow toggle-by-click for explicit types
     const includedType = ["image", "video"].find((t) => type === t);
@@ -42,7 +51,13 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
             }
         }
     };
-    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleNewClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        e.preventDefault();
+        const newWindow = window.open(link?.href, "_blank", "noopener,noreferrer");
+        if (newWindow) newWindow.opener = null;
+        return false;
+    };
+    const handleExpandClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         setToggled(!toggled);
         toggleEmbed();
@@ -51,7 +66,11 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
 
     return (
         <div id={id} className={parentClasses} data-postid={postid} data-idx={idx}>
-            <a href={link.href} onClick={handleClick}>
+            <a
+                href={link.href}
+                title={toggled ? "Hide embedded media" : "Show embedded media"}
+                onClick={handleExpandClick}
+            >
                 <span>{link.href}</span>
                 <div className="expando">
                     {toggled ? (
@@ -65,7 +84,12 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
                     )}
                 </div>
             </a>
-            <div className={childClasses} onClick={includedType ? handleClick : undefined}>
+            {includedType && (
+                <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
+                    <ExternalLink />
+                </a>
+            )}
+            <div className={childClasses} onClick={includedType ? handleExpandClick : undefined}>
                 {toggled ? children : <div />}
             </div>
         </div>
