@@ -68,7 +68,7 @@ browser.runtime.onMessage.addListener(
                 };
                 return fetchSafe(fetchArgs);
             } else if (request.name === "corbPost") {
-                const _fd = JSONToFormData(request.data);
+                const _fd = request.data ? JSONToFormData(request.data) : null;
                 const fetchArgs: FetchArgs = {
                     url: request.url,
                     fetchOpts: {

@@ -55,7 +55,10 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         /// update the reply box with links when data is returned from the server
         const thisElem = props.parentRef;
         const replyField = thisElem?.querySelector("#frm_body") as HTMLInputElement;
-        if (arrHas(state?.response) && replyField) appendLinksToField(replyField, state.response);
+        if (arrHas(state?.response) && replyField) {
+            appendLinksToField(replyField, state.response);
+            dispatch({ type: "UPLOAD_CANCEL" }); // reset UI
+        }
     }, [state.response]);
 
     /// tabs are defined by id and label

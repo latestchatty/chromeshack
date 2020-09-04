@@ -33,31 +33,31 @@ export interface UploaderState extends ReducerState {
     cancelDisabled: boolean;
     isPending: boolean;
     fileData: File[];
+    response: string[];
+    formats: string;
     selectedTab: string;
     urlData: string;
-    formats: string;
     status: string;
     error: {
         code: number;
         msg: string;
     };
-    response: string[];
 }
 const initialState: UploaderState = {
     visible: true,
-    selectedTab: "imgurTab",
     multifile: false,
-    fileData: [],
     filesDisabled: false,
-    urlData: "",
     urlDisabled: false,
     uploadDisabled: true,
     cancelDisabled: true,
-    formats: `${imageFormats},${videoFormats}`,
-    response: null,
-    error: null,
-    status: "",
     isPending: false,
+    fileData: [],
+    response: [],
+    formats: `${imageFormats},${videoFormats}`,
+    selectedTab: "imgurTab",
+    urlData: "",
+    status: "",
+    error: null,
 };
 
 const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
@@ -133,10 +133,12 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
             };
         }
         case "UPLOAD_CANCEL":
+            // also used to reset the UI state for another upload
             return {
                 ...state,
-                urlData: "",
+                response: [],
                 fileData: [],
+                urlData: "",
                 filesDisabled: false,
                 urlDisabled: false,
                 uploadDisabled: true,

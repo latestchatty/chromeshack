@@ -1,6 +1,15 @@
 import { Dispatch } from "react";
 
-import { waitToFetchSafe, fetchSafe, fetchSafeLegacy, isFileArr, objEmpty, isUrlArr, postBackground } from "../common";
+import {
+    waitToFetchSafe,
+    fetchSafe,
+    fetchSafeLegacy,
+    isFileArr,
+    objEmpty,
+    isUrlArr,
+    postBackground,
+    FormDataToJSON,
+} from "../common";
 
 import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
 import type {
@@ -67,7 +76,6 @@ const doGfycatDropKey = async (data?: UploadData) => {
         },
         data: dataBody,
     });
-    console.log("doGfycatDropKey:", key);
     return !objEmpty(key) ? key?.gfyname : null;
 };
 
@@ -115,12 +123,13 @@ const doGfycatUpload = async (data: UploadData, key: string) => {
             const dataBody = new FormData();
             dataBody.append("key", key);
             dataBody.append("file", new File([file], key, { type: file.type }));
-            // we handle the result via doGfycatStatus
-            const result = await postBackground({
-                url: gfycatDropUrl,
-                data: dataBody,
-            });
-            console.log("doGfycatUpload:", result);
+            const _dataBody = await FormDataToJSON(dataBody);
+            // handle the result in doGfycatStatus
+            if (_dataBody)
+                await postBackground({
+                    url: gfycatDropUrl,
+                    data: _dataBody,
+                });
         }
     } else throw new Error(`Unable to upload non-File data to endpoint: ${gfycatDropUrl}`);
 };
