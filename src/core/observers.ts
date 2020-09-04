@@ -14,7 +14,7 @@ import { elemMatches, locatePostRefs, arrHas } from "./common";
 import { setSetting } from "./settings";
 import { setUsername } from "./notifications";
 
-interface DOMMutationDict {
+export interface DOMMutationDict {
     [key: string]: HTMLElement;
 }
 

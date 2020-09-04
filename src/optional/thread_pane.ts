@@ -10,7 +10,7 @@ interface RecentPostSubtree {
     postPreviewHtml: string;
     postId: number;
 }
-interface RecentPosts {
+export interface RecentPosts {
     parentIsRoot: boolean;
     mostRecentSubtree: RecentPostSubtree[];
 }
