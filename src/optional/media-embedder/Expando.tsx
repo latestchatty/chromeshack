@@ -36,10 +36,10 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
     const type = (children as FCWithMediaProps)?.props?.src
         ? getLinkType((children as FCWithMediaProps).props.src)
         : getLinkType(link.href);
-    const parentClasses = classNames("medialink", { toggled });
+    const expandoClasses = classNames("medialink", { toggled });
     // only allow toggle-by-click for explicit types
     const includedType = ["image", "video"].find((t) => type === t);
-    const childClasses = classNames("media", { hidden: !toggled, canToggleClick: includedType });
+    const mediaClasses = classNames("media", { hidden: !toggled, canToggleClick: includedType });
 
     const toggleEmbed = () => {
         if (type === "instagram" || type === "twitter") {
@@ -66,7 +66,7 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
     };
 
     return (
-        <div id={id} className={parentClasses} data-postid={postid} data-idx={idx}>
+        <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
             <a
                 href={link.href}
                 title={toggled ? "Hide embedded media" : "Show embedded media"}
@@ -88,7 +88,7 @@ const RenderExpando = ({ link, idx, postid, options }: ExpandoProps) => {
             <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
                 <ExternalLink />
             </a>
-            <div className={childClasses} onClick={includedType ? handleExpandClick : undefined}>
+            <div className={mediaClasses} onClick={includedType ? handleExpandClick : undefined}>
                 {toggled ? children : <div />}
             </div>
         </div>

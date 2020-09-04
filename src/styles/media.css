@@ -14,7 +14,8 @@ div#react-media-manager {
     display: none !important;
 }
 div.media {
-    display: unset !important;
+    /* enforce block for everything but image/video */
+    display: block !important;
 }
 div.media.hidden,
 div.media .hidden {
@@ -32,9 +33,6 @@ div.medialink > .expandalt {
     margin: 0 0.25em 0 0.2em;
 }
 
-div.media > .media__boundary {
-    display: inline-block !important;
-}
 div.media > .media__boundary > img,
 div.media > .media__boundary > video {
     object-fit: scale-down;
@@ -43,6 +41,10 @@ div.media > .media__boundary > video {
     max-height: var(--max-media-item-height);
     /* prevent larger-than-post width */
     max-width: 100%;
+}
+div.media.canToggleClick {
+    /* workaround for image/video container stretching issue */
+    display: table !important;
 }
 div.media .canToggleClick,
 div.media.canToggleClick,
