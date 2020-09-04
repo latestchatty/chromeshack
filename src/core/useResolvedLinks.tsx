@@ -117,9 +117,9 @@ const useResolvedLinks = (props: ResolvedLinkProps) => {
         if (type === "video" && /imgur/.test(src) && src) src = src.replace(/\.gifv/, ".mp4");
         // feed 'src' into an embeddable common media component depending on link type
         if (type === "image") return <Image key={src} src={src} />;
-        else if (type === "video")
+        else if (type === "video") {
             return <Video key={src} src={src} loop={loop} muted={muted} controls={controls} autoPlay={autoPlay} />;
-        else if (type === "iframe") return <Iframe key={src} src={src} />;
+        } else if (type === "iframe") return <Iframe key={src} src={src} />;
         // ... just return an empty div otherwise
         else return <div />;
     };

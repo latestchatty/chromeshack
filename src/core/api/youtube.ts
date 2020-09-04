@@ -24,9 +24,9 @@ const parseLink = (href: string) => {
             ...h,
             src: `https://www.youtube.com/embed/${video}?autoplay=1&list=${playlist}${startAt}`,
         } as ParsedResponse;
-    } else if (!video && playlist)
+    } else if (!video && playlist) {
         return { ...h, src: `https://www.youtube.com/embed/videoseries?autoplay=1&list=${playlist}` } as ParsedResponse;
-    else return null;
+    } else return null;
 };
 
 export const isYoutube = (href: string) => parseLink(href);

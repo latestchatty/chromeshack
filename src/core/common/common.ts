@@ -79,8 +79,9 @@ export const getLinkType = (href: string) =>
 
 export const isUrlArr = (dataArr: string[]) => {
     // every element of this array must contain a URL formatted string
-    for (const i of dataArr || [])
+    for (const i of dataArr || []) {
         if (typeof i !== "string" || i.length <= 9 || !i.match(/^https?:\/\//i)) return false;
+    }
     return true;
 };
 

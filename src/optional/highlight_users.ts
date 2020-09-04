@@ -49,13 +49,15 @@ const HighlightUsers = {
                 if (group.name === "Original Poster") css += `div.oneline.op span.oneline_user { ${group.css} }`;
                 else if (group.name === "Mods") {
                     for (const { id, mod } of users) {
-                        if (mod)
+                        if (mod) {
                             css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
+                        }
                     }
                 } else {
                     for (const { id, name } of users) {
-                        if (group.users && group.users.includes(name) && group.css.length > 0)
+                        if (group.users && group.users.includes(name) && group.css.length > 0) {
                             css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
+                        }
                     }
                 }
             }

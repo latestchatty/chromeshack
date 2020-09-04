@@ -50,7 +50,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                           l.setAttribute("data-postid", postid);
                           l.setAttribute("data-idx", i.toString());
                           // pass some sensible video options if we're embedding a social player
-                          if (detected.type === "twitter" || detected.type === "instagram")
+                          if (detected.type === "twitter" || detected.type === "instagram") {
                               _acc.push(
                                   <Expando
                                       key={i}
@@ -60,7 +60,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                                       options={{ muted: false, autoPlay: false }}
                                   />,
                               );
-                          else _acc.push(<Expando key={i} link={l} postid={postid} idx={i.toString()} />);
+                          } else _acc.push(<Expando key={i} link={l} postid={postid} idx={i.toString()} />);
                       }
                       return _acc;
                   }, Promise.resolve([] as React.ReactChild[]))

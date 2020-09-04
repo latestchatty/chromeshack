@@ -71,13 +71,13 @@ const migrateSettings = async () => {
 browser.runtime.onMessage.addListener(
     async (request: OnMessageRequest): Promise<any> => {
         try {
-            if (request.name === "launchIncognito")
+            if (request.name === "launchIncognito") {
                 // necessary for opening nsfw links in an incognito window
                 return browser.windows.create({ url: request.value, incognito: true });
-            else if (request.name === "allowedIncognitoAccess")
+            } else if (request.name === "allowedIncognitoAccess") {
                 // necessary for knowing when to open nsfw media in an incognito window
                 return browser.extension.isAllowedIncognitoAccess();
-            else if (request.name === "chatViewFix") {
+            } else if (request.name === "chatViewFix") {
                 // scroll-to-post fix for Chatty
                 return chatViewFix();
             } else if (request.name === "scrollByKeyFix") {

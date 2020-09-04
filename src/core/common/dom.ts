@@ -113,8 +113,9 @@ export const generatePreview = (postText: string) => {
     // replace matching pairs first
     for (const ix in complexReplacements) {
         const rgx = new RegExp(complexReplacements[ix].from[0] + "(.*?)" + complexReplacements[ix].from[1], "g");
-        while (postText.match(rgx) !== null)
+        while (postText.match(rgx) !== null) {
             postText = postText.replace(rgx, complexReplacements[ix].to[0] + "$1" + complexReplacements[ix].to[1]);
+        }
     }
 
     // replace orphaned opening shacktags, close them at the end of the post.

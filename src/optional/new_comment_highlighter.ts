@@ -39,8 +39,9 @@ const NewCommentHighlighter = {
         const new_posts = NewCommentHighlighter.getPostsAfter(last_id);
         for (const post of new_posts || []) {
             const preview = post.querySelector(".oneline_body");
-            if (preview && !preview.classList.contains("newcommenthighlighter"))
+            if (preview && !preview.classList.contains("newcommenthighlighter")) {
                 preview.classList.add("newcommenthighlighter");
+            }
         }
         NewCommentHighlighter.displayNewCommentCount(new_posts?.length);
     },

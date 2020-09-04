@@ -7,6 +7,7 @@
         "extlint": "npx web-ext lint -s ./dist",
         "webext": "npx web-ext run -s dist -u https://shacknews.com/chatty",
         "lint": "npx eslint ./src/**/*.{ts,tsx}",
+        "lint-fix": "npx eslint --fix ./src/**/*.{ts,tsx}",
         "zip": "npx web-ext build -s ./dist -a ./artifacts -o",
         "sign": "npx web-ext sign -s ./dist -a ./artifacts",
         "pack": "node ./utils/packsrc.js",

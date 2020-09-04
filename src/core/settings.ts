@@ -243,9 +243,9 @@ export const getEnabledSuboptions = async (key?: string) => {
 export const getSettingsLegacy = () => {
     const settings = { ...localStorage };
     for (const key of Object.keys(settings) || []) {
-        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
+        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key])) {
             settings[key] = JSON.parse(settings[key]);
-        else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
+        } else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
         else settings[key] = JSON.parse(settings[key]);
     }
     return settings;
@@ -301,7 +301,7 @@ export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
 };
 
 export const mergeSettings = async (newSettings: { [key: string]: any }) => {
-    // pass in an object named for the settings options we want to merge
+    // pass in an object named for the settings options we want to mutate
     // to rename if found, pass: { option_name: [{ old: "...", new: "..." }] }
     // to remove in a list if found, pass: { option_name: [{ old: "...", new: null }] }
     // to remove if found, pass: { option_name: null }

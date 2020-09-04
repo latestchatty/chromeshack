@@ -182,8 +182,9 @@ const ThreadPane = {
     },
 
     parseThreadId(threadDiv: JQuery<HTMLElement>) {
-        if (!threadDiv?.attr("id").startsWith("root_"))
+        if (!threadDiv?.attr("id").startsWith("root_")) {
             throw new Error(`Did not expect the root div to have an element id of "${threadDiv.attr("id")}".`);
+        }
 
         const threadId = parseInt(threadDiv.attr("id").substring("root_".length));
         if (threadId < 1 || threadId > 50000000) throw new Error(`The thread ID of ${threadId} seems bogus.`);
@@ -203,8 +204,9 @@ const ThreadPane = {
     parseMostRecentPosts(threadDiv: JQuery<HTMLElement>, threadId: number) {
         const mostRecentSubtree = [] as RecentPostSubtree[];
         let $mostRecentPost: JQuery<HTMLElement>;
-        for (let i = 0; i < 10 && $mostRecentPost?.length !== 1; i++)
+        for (let i = 0; i < 10 && $mostRecentPost?.length !== 1; i++) {
             $mostRecentPost = threadDiv.find(`div.oneline${i}`) as JQuery<HTMLElement>;
+        }
 
         // don't fail, it will cause the entire pane to disappear. better for it to look weird
         if ($mostRecentPost?.length !== 1) return { parentIsRoot: true, mostRecentSubtree: [] };

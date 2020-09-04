@@ -218,17 +218,20 @@ const UserPopup = {
                     e.preventDefault();
                     e.stopPropagation();
                     UserPopup.toggleDropdowns(this_elem);
-                    if (!this_elem.querySelector("ul.userDropdown"))
+                    if (!this_elem.querySelector("ul.userDropdown")) {
                         UserPopup.displayUserMenu(this_elem, sanitizedUser, "You");
+                    }
                 } else if (this_elem.matches("a#userDropdownTrigger")) {
                     // User name clicked (at the top of the banner?)
                     e.preventDefault();
                     e.stopPropagation();
                     UserPopup.toggleDropdowns(this_elem);
-                    if (!this_elem.querySelector("ul.userDropdown"))
+                    if (!this_elem.querySelector("ul.userDropdown")) {
                         UserPopup.displayUserMenu(this_elem, UserPopup.getShackUsername(), "You");
-                } else if (!this_elem.closest("ul.userDropdown") || !this_elem.matches("a#userDropdownTrigger"))
+                    }
+                } else if (!this_elem.closest("ul.userDropdown") || !this_elem.matches("a#userDropdownTrigger")) {
                     UserPopup.toggleDropdowns();
+                }
             } catch (e) {
                 console.error(e);
             }

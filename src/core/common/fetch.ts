@@ -43,8 +43,9 @@ export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
         }
 
         xhr.onload = function () {
-            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
+            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1) {
                 resolve(xhr.response);
+            }
 
             reject({ status: this.status, statusText: xhr.statusText });
         };
@@ -179,9 +180,9 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
         // explicitly sanitize (don't return fragment)
         else if (html && text) return DOMPurify.sanitize(text) as string;
         // sanitize and return as DOM fragment (with optional DOMPurify config)
-        else if (isHTML(text) && htmlPurifyConfig)
+        else if (isHTML(text) && htmlPurifyConfig) {
             return sanitizeToFragment(text, htmlPurifyConfig) as DocumentFragment;
-        else if (isHTML(text)) return sanitizeToFragment(text) as DocumentFragment;
+        } else if (isHTML(text)) return sanitizeToFragment(text) as DocumentFragment;
         else if (isJSON(text) && jsonPurifyConfig) {
             const parsed = safeJSON(text, jsonPurifyConfig);
             if (parsed) return parsed;

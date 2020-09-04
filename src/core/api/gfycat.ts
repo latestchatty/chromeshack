@@ -125,11 +125,12 @@ const doGfycatUpload = async (data: UploadData, key: string) => {
             dataBody.append("file", new File([file], key, { type: file.type }));
             const _dataBody = await FormDataToJSON(dataBody);
             // handle the result in doGfycatStatus
-            if (_dataBody)
+            if (_dataBody) {
                 await postBackground({
                     url: gfycatDropUrl,
                     data: _dataBody,
                 });
+            }
         }
     } else throw new Error(`Unable to upload non-File data to endpoint: ${gfycatDropUrl}`);
 };
@@ -156,9 +157,9 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
             const urlUpload = await doGfycatStatus(key);
             if (typeof urlUpload === "string") {
                 const resolved = await doResolveGfycat(key);
-                if (resolved?.src && typeof resolved.src[0] === "string")
+                if (resolved?.src && typeof resolved.src[0] === "string") {
                     return handleGfycatUploadSuccess([resolved.src], dispatch);
-                else {
+                } else {
                     return handleGfycatUploadFailure(
                         { code: 500, msg: `Unable to resolve the uploaded Gfycat: ${key}` },
                         dispatch,

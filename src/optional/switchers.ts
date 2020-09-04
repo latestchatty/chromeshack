@@ -59,8 +59,9 @@ const Switchers = {
             const offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
             const offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
             const offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (const post of offenderPosts)
+            for (const post of offenderPosts) {
                 Switchers.rewritePost(post as HTMLElement, offender.name, offender.matched);
+            }
         }
     },
 
