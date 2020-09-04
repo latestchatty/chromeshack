@@ -1,7 +1,16 @@
 import { browser } from "webextension-polyfill-ts";
 
 import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
-import { resetSettings, getSettingsLegacy, getSettings, getSetting, setSetting, setEnabled } from "./core/settings";
+import {
+    resetSettings,
+    getSettingsLegacy,
+    getSettings,
+    getSetting,
+    setSetting,
+    setEnabled,
+    mergeSettings,
+    setSettings,
+} from "./core/settings";
 import { startNotifications } from "./core/notifications";
 
 import chatViewFix from "./patches/chatViewFix";
@@ -40,6 +49,20 @@ const migrateSettings = async () => {
         if (prevFilters) await setSetting("user_filters", prevFilters);
         if (prevNotifyUID && prevNotifyState) await setEnabled("enable_notifications");
         window.localStorage.clear();
+    }
+    if (last_version <= 1.68 && last_version >= 1.64) {
+        // migrate pre-1.69 settings
+        const settingsMutation = {
+            enabled_scripts: [
+                { old: "image_loader", new: "media_loader" },
+                { old: "video_loader", new: "media_loader" },
+                { old: "embed_socials", new: "social_loader" },
+            ],
+            enabled_suboptions: [{ old: "es_show_tweet_threads", new: "sl_show_tweet_threads" }],
+            notificationuid: null as unknown,
+        };
+        const mutatedSettings = await mergeSettings(settingsMutation);
+        await setSettings(mutatedSettings);
     }
     if (last_version !== current_version) await browser.tabs.create({ url: "release_notes.html" });
     await setSetting("version", current_version);

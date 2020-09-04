@@ -1,6 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 
-import { objEmpty, superTrim, objContains } from "./common";
+import { arrHas, objEmpty, superTrim, objContains } from "./common";
 
 export interface HighlightGroup {
     name?: string;
@@ -282,6 +282,47 @@ export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) 
     if (indexMatch > -1) records[indexMatch] = obj;
     else records.push(obj);
     if (records) return setSetting("highlight_groups", records);
+};
+
+export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
+    const builtinGroups = ((await getSetting("highlight_groups")) as HighlightGroup[])?.filter((g) => g.built_in);
+    // try to intelligently merge default, old, and parsed groups
+    const mergedGroups = arrHas(newGroups)
+        ? newGroups.reduce((acc, v) => {
+              // compare ordinal group names (non-unique users are allowed)
+              const foundIdx = acc.findIndex((y) => y.name.toUpperCase() === v.name.toUpperCase());
+              if (foundIdx > -1) acc[foundIdx] = v;
+              else acc.push(v);
+              return acc;
+          }, builtinGroups)
+        : [];
+    await setSetting("highlight_groups", mergedGroups);
+    return mergedGroups;
+};
+
+export const mergeSettings = async (newSettings: { [key: string]: any }) => {
+    // pass in an object named for the settings options we want to merge
+    // to rename if found, pass: { option_name: [{ old: "...", new: "..." }] }
+    // to remove in a list if found, pass: { option_name: [{ old: "...", new: null }] }
+    // to remove if found, pass: { option_name: null }
+    const settings = await getSettings();
+    for (const [key, val] of Object.entries(newSettings)) {
+        if (arrHas(val) && settings[key]) {
+            for (const v of val) {
+                const foundIdx = (settings[key] as string[]).findIndex((x) => x === v.old);
+                // mutate array and leave no duplicate options
+                if (foundIdx > -1 && v.new) {
+                    settings[key][foundIdx] = v.new;
+                    settings[key] = (settings[key] as string[]).filter((x, i, s) => s.indexOf(x) === i);
+                } else if (foundIdx > -1 && v.new === null) {
+                    settings[key] = (settings[key] as string[])
+                        .splice(foundIdx)
+                        .filter((x, i, s) => s.indexOf(x) === i);
+                }
+            }
+        } else if (val === null && key && settings[key]) delete settings[key];
+    }
+    return settings;
 };
 
 /// REMOVERS
