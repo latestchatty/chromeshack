@@ -1,16 +1,7 @@
 import { browser } from "webextension-polyfill-ts";
 
 import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
-import {
-    resetSettings,
-    getSettingsLegacy,
-    getSettings,
-    getSetting,
-    setSetting,
-    setEnabled,
-    mergeSettings,
-    setSettings,
-} from "./core/settings";
+import { migrateSettings } from "./core/settings";
 import { startNotifications } from "./core/notifications";
 
 import chatViewFix from "./patches/chatViewFix";
@@ -34,39 +25,6 @@ interface OnMessageRequest {
     headers: any;
     parseType: any;
 }
-
-const migrateSettings = async () => {
-    const legacy_settings = getSettingsLegacy();
-    const last_version = await getSetting("version", 0);
-    const current_version = parseFloat(browser.runtime.getManifest().version);
-    if (legacy_settings && legacy_settings["version"] <= 1.63) {
-        // quick reload from default settings of nuStorage
-        await resetSettings().then(getSettings);
-        // preserve previous convertible filters and notifications state
-        const prevFilters = legacy_settings["user_filters"] || null;
-        const prevNotifyUID = legacy_settings["notificationuid"] || null;
-        const prevNotifyState = legacy_settings["notifications"] || null;
-        if (prevFilters) await setSetting("user_filters", prevFilters);
-        if (prevNotifyUID && prevNotifyState) await setEnabled("enable_notifications");
-        window.localStorage.clear();
-    }
-    if (last_version <= 1.68 && last_version >= 1.64) {
-        // migrate pre-1.69 settings
-        const settingsMutation = {
-            enabled_scripts: [
-                { old: "image_loader", new: "media_loader" },
-                { old: "video_loader", new: "media_loader" },
-                { old: "embed_socials", new: "social_loader" },
-            ],
-            enabled_suboptions: [{ old: "es_show_tweet_threads", new: "sl_show_tweet_threads" }],
-            notificationuid: null as unknown,
-        };
-        const mutatedSettings = await mergeSettings(settingsMutation);
-        await setSettings(mutatedSettings);
-    }
-    if (last_version !== current_version) await browser.tabs.create({ url: "release_notes.html" });
-    await setSetting("version", current_version);
-};
 
 browser.runtime.onMessage.addListener(
     async (request: OnMessageRequest): Promise<any> => {
@@ -134,7 +92,7 @@ try {
     ]);
 
     (async () => {
-        // attempt to update version settings
+        // attempt to migrate legacy settings on startup
         await migrateSettings();
         // spin up the notification polling service
         await startNotifications();

@@ -1,4 +1,4 @@
-import { getSetting, getEnabledSuboptions, enabledContains } from "../core/settings";
+import { getSetting, getEnabledSuboption, enabledContains } from "../core/settings";
 import { processPostRefreshEvent } from "../core/events";
 import { HU_Instance, TP_Instance } from "../content";
 import { ResolvedUser } from "./highlight_users";
@@ -24,7 +24,7 @@ const CustomUserFilters = {
 
     async removeOLsFromUserId(id: string) {
         let postElems: Element[];
-        const hideFPs = await getEnabledSuboptions("cuf_hide_fullposts");
+        const hideFPs = await getEnabledSuboption("cuf_hide_fullposts");
         if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
         else postElems = [...document.querySelectorAll(`div.olauthor_${id}`)];
         for (const post of postElems || []) {

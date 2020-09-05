@@ -36,7 +36,7 @@ div#content {
     justify-items: start;
     margin: 0.25em 1em 0.5em 1em;
 }
-div[id$='_settings'].hidden {
+div[id$="_settings"].hidden {
     display: none !important;
 }
 div.suboption {
@@ -52,7 +52,7 @@ div.suboption.indent {
 #highlight_users_settings {
     display: flex;
     flex-direction: column;
-    max-width: 350px;
+    max-width: 97%;
     margin: 0 auto 0 auto;
 }
 #add_highlight_group {
@@ -73,7 +73,7 @@ div.suboption.indent {
     padding: 3px;
     width: 100%;
 }
-input[type='text']:read-only {
+input[type="text"]:read-only {
     outline: none;
 }
 .group_select {
@@ -176,4 +176,4 @@ textarea#import_export_field {
     flex: 1 auto;
     word-break: break-all;
     resize: none;
- }
+}

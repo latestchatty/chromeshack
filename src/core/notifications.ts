@@ -133,7 +133,7 @@ const pollNotifications = async () => {
                 (await fetchSafe({
                     url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
                 }));
-            if (!resp?.error) {
+            if (resp?.lastEventId && !resp.error) {
                 await setEventId(resp.lastEventId);
                 await handleNotification(resp);
                 // recheck every tick

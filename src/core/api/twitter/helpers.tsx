@@ -1,5 +1,5 @@
 import { arrHas, objHas, fetchBackground } from "../../common";
-import { getEnabledSuboptions } from "../../settings";
+import { getEnabledSuboption } from "../../settings";
 
 import type { TweetParsed, TwitterResponse, TwitterResponseMediaItem, TwitterMediaItemVariant } from "./twitter";
 
@@ -116,7 +116,7 @@ export const fetchTweetParents = async (tweetObj: TweetParsed) => {
 
 export const fetchTweets = async (tweetId: string) => {
     /// use with useTweets() to fetch a fully rendered Twitter response
-    const showTweetThreads = await getEnabledSuboptions("sl_show_tweet_threads");
+    const showTweetThreads = await getEnabledSuboption("sl_show_tweet_threads");
     const tweetObj = await fetchTweet(tweetId);
     if (showTweetThreads && tweetObj.tweetParentId) {
         const withParents = await fetchTweetParents(tweetObj);

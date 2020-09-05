@@ -10,13 +10,15 @@ export interface HighlightGroup {
     users?: string[];
 }
 export interface Settings {
+    [x: string]: any;
     enabled_scripts?: string[];
     enabled_suboptions?: string[];
     collapsed_threads?: string[];
     user_filters?: string[];
     highlight_groups?: HighlightGroup[];
+    nEventId?: number;
+    nUsername?: string;
 }
-type Setting = string | number | boolean | Record<string, any> | [] | HighlightGroup | HighlightGroup[];
 
 export const DefaultSettings: Settings = {
     enabled_scripts: [
@@ -213,17 +215,20 @@ export const DefaultSettings: Settings = {
 
 /// GETTERS
 
+export const getSettingsVersion = async () => (await getSetting("version", 0)) as number;
+export const getManifestVersion = () => parseFloat(browser.runtime.getManifest().version);
+
 export const getSetting = async (key: string, defaultVal?: any) => {
     const settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
-    const result = settings[key] as Setting;
+    const result = settings[key];
     return result;
 };
 export const getSettings = async () => {
-    const settings = (await browser.storage.local.get()) as Settings;
+    let settings = (await browser.storage.local.get()) as Settings;
     if (objEmpty(settings)) {
         await browser.storage.local.set(DefaultSettings);
-        return browser.storage.local.get();
+        settings = browser.storage.local.get();
     }
     return settings;
 };
@@ -231,13 +236,18 @@ export const getSettings = async () => {
 export const getEnabled = async (key?: string) => {
     const enabled = ((await getSetting("enabled_scripts")) || []) as string[];
     if (!key) return enabled;
-    return enabled && enabled.find((v) => v === key);
+    return enabled ? enabled.find((v) => v === key) : null;
 };
 
-export const getEnabledSuboptions = async (key?: string) => {
+export const getEnabledSuboptions = async () => {
     const enabled = ((await getSetting("enabled_suboptions")) || []) as string[];
-    if (!key) return enabled;
-    return enabled && enabled.find((v: string) => v === key);
+    return enabled || null;
+};
+
+export const getEnabledSuboption = async (key: string) => {
+    const suboptions = ((await getEnabledSuboptions()) || []) as string[];
+    const found = suboptions.find((x) => x.toUpperCase() === key.toUpperCase());
+    return found || null;
 };
 
 export const getSettingsLegacy = () => {
@@ -258,6 +268,15 @@ export const getMutableHighlights = async () => {
 
 /// SETTERS
 
+export const updateSettingsVersion = async () => {
+    const manifestVersion = getManifestVersion();
+    const settingsVersion = await getSettingsVersion();
+    if (!settingsVersion || manifestVersion !== settingsVersion) {
+        await setSetting("version", manifestVersion || 0);
+    }
+    return manifestVersion;
+};
+
 export const setEnabled = async (key: string) => {
     const scripts = (await getEnabled()) as string[];
     if (!scripts.includes(key) && key.length > 0) scripts.push(key);
@@ -272,7 +291,10 @@ export const setEnabledSuboption = async (key: string) => {
 
 export const setSetting = async (key: string, val: any) => await browser.storage.local.set({ [key]: val });
 
-export const setSettings = async (obj: Settings) => await browser.storage.local.set(obj);
+export const setSettings = async (obj: Settings) => {
+    await browser.storage.local.clear();
+    return await browser.storage.local.set(obj);
+};
 
 export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) => {
     // for overwriting a specific highlight group by name
@@ -284,64 +306,28 @@ export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) 
     if (records) return setSetting("highlight_groups", records);
 };
 
-export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
-    const builtinGroups = ((await getSetting("highlight_groups")) as HighlightGroup[])?.filter((g) => g.built_in);
-    // try to intelligently merge default, old, and parsed groups
-    const mergedGroups = arrHas(newGroups)
-        ? newGroups.reduce((acc, v) => {
-              // compare ordinal group names (non-unique users are allowed)
-              const foundIdx = acc.findIndex((y) => y.name.toUpperCase() === v.name.toUpperCase());
-              if (foundIdx > -1) acc[foundIdx] = v;
-              else acc.push(v);
-              return acc;
-          }, builtinGroups)
-        : [];
-    await setSetting("highlight_groups", mergedGroups);
-    return mergedGroups;
-};
-
-export const mergeSettings = async (newSettings: { [key: string]: any }) => {
-    // pass in an object named for the settings options we want to mutate
-    // to rename if found, pass: { option_name: [{ old: "...", new: "..." }] }
-    // to remove in a list if found, pass: { option_name: [{ old: "...", new: null }] }
-    // to remove if found, pass: { option_name: null }
-    const settings = await getSettings();
-    for (const [key, val] of Object.entries(newSettings)) {
-        if (arrHas(val) && settings[key]) {
-            for (const v of val) {
-                const foundIdx = (settings[key] as string[]).findIndex((x) => x === v.old);
-                // mutate array and leave no duplicate options
-                if (foundIdx > -1 && v.new) {
-                    settings[key][foundIdx] = v.new;
-                    settings[key] = (settings[key] as string[]).filter((x, i, s) => s.indexOf(x) === i);
-                } else if (foundIdx > -1 && v.new === null) {
-                    settings[key] = (settings[key] as string[])
-                        .splice(foundIdx)
-                        .filter((x, i, s) => s.indexOf(x) === i);
-                }
-            }
-        } else if (val === null && key && settings[key]) delete settings[key];
-    }
-    return settings;
-};
-
 /// REMOVERS
 
 export const removeEnabled = async (key: string) => {
-    let scripts = ((await getEnabled()) || []) as string[];
-    scripts = scripts.filter((x) => x !== key) || null;
-    if (scripts) return await setSetting("enabled_scripts", scripts);
+    const scripts = ((await getEnabled()) || []) as string[];
+    const filtered = scripts.filter((x) => x !== key) || [];
+    await setSetting("enabled_scripts", filtered);
+    return filtered;
 };
 
 export const removeEnabledSuboption = async (key: string) => {
-    let options = ((await getEnabledSuboptions()) || []) as string[];
-    options = options.filter((x) => x !== key) || null;
-    if (options) return await setSetting("enabled_suboptions", options);
+    const options = ((await getEnabledSuboptions()) || []) as string[];
+    const filtered = options.filter((x) => x !== key) || [];
+    await setSetting("enabled_suboptions", filtered);
+    return filtered;
 };
 
 export const removeSetting = (key: string) => browser.storage.local.remove(key);
 
-export const resetSettings = () => browser.storage.local.clear();
+export const resetSettings = async () => {
+    await browser.storage.local.clear();
+    return await getSettings();
+};
 
 export const removeHighlightGroup = async (groupName: string) => {
     // for removing a highlight group while preserving record order
@@ -364,16 +350,17 @@ export const removeHighlightUser = async (groupName: string, username: string) =
 };
 
 export const removeFilter = async (username: string) => {
-    const filters = (await getSetting("user_filters")) as string[];
-    const filtered = filters.filter((y) => y.toLowerCase() !== username.toLowerCase()) || null;
-    for (const filter of filtered || []) await setSetting("user_filters", filter);
+    const filters = ((await getSetting("user_filters")) || []) as string[];
+    const filtered = filters.filter((y) => y.toLowerCase() !== username.toLowerCase()) || [];
+    await setSetting("user_filters", filtered);
+    return filtered;
 };
 
 /// CONTAINERS
 
 export const settingsContains = async (key: string) => {
     const settings = (await getSettings()) as Settings;
-    const contained = objContains(key, settings) as Setting;
+    const contained = objContains(key, settings);
     return contained;
 };
 
@@ -416,4 +403,116 @@ export const addFilter = async (username: string) => {
         const mutated = [...filters, username];
         await setSetting("user_filters", mutated);
     }
+};
+
+/// SETTINGS MIGRATION
+
+export const mergeUserFilters = async (newUsers: string[]) => {
+    const oldUsers = ((await getSetting("user_filters")) || []) as string[];
+    const filtered = arrHas(newUsers)
+        ? newUsers.reduce((acc, u) => {
+              // don't allow duplicate usernames
+              const found = acc.find((x) => x.toUpperCase() === u.toUpperCase());
+              if (!found) acc.push(u);
+              return acc;
+          }, oldUsers)
+        : [];
+    return filtered;
+};
+
+export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
+    const oldGroups = (await getSetting("highlight_groups")) as HighlightGroup[];
+    const builtinGroups = arrHas(oldGroups) ? oldGroups.filter((g) => g.built_in) : [];
+    // try to intelligently merge default, old, and parsed groups
+    const mergedGroups = arrHas(newGroups)
+        ? newGroups.reduce((acc, v) => {
+              // compare ordinal group names (users can exist in multiple groups)
+              const foundIdx = acc.findIndex((y) => y.name?.toUpperCase() === v.name?.toUpperCase());
+              // update existing member with the newest duplicate group found
+              if (foundIdx > -1) acc[foundIdx] = v;
+              else {
+                  // only allow unique users in a given group (compare ordinal name)
+                  const uniqueUsers = v.users?.filter(
+                      (x, i, s) => s.findIndex((y) => y.toUpperCase() === x.toUpperCase()) === i,
+                  );
+                  if (uniqueUsers) v.users = uniqueUsers;
+                  // a group name is required to accumulate
+                  if (v.name) acc.push(v);
+              }
+              return acc;
+          }, builtinGroups)
+        : [];
+    return mergedGroups;
+};
+
+export const mergeSettings = async (newSettings: { [key: string]: any }) => {
+    // pass in an object named for the settings options we want to mutate
+    // to rename if found, pass: { option_name: [{ old: "...", new: "..." }] }
+    // to remove in a list if found, pass: { option_name: [{ old: "...", new: null }] }
+    // to remove if found, pass: { option_name: null }
+    const settings = await getSettings();
+    for (const [key, val] of Object.entries(newSettings)) {
+        if (arrHas(val) && settings[key]) {
+            for (const v of val) {
+                const foundIdx = (settings[key] as string[]).findIndex((x) => x === v.old);
+                // mutate array and leave no duplicate options/sub-options
+                if (foundIdx > -1 && v.new) {
+                    settings[key][foundIdx] = v.new;
+                    settings[key] = (settings[key] as string[]).filter((x, i, s) => s.indexOf(x) === i);
+                } else if (foundIdx > -1 && v.new === null) {
+                    settings[key] = (settings[key] as string[])
+                        .splice(foundIdx)
+                        .filter((x, i, s) => s.indexOf(x) === i);
+                }
+            }
+        } else if (val === null && key && settings[key]) delete settings[key];
+    }
+    return settings;
+};
+
+export const migrateSettings = async () => {
+    const legacy_settings = getSettingsLegacy();
+    let current_version = getManifestVersion();
+    let last_version = (await getSettingsVersion()) || current_version;
+    if (legacy_settings && legacy_settings["version"] <= 1.63) {
+        // quick reload of default settings from nuStorage
+        await resetSettings().then(getSettings);
+        // preserve previous convertible filters and notifications state
+        const prevFilters = legacy_settings["user_filters"] || null;
+        const prevNotifyUID = legacy_settings["notificationuid"] || null;
+        const prevNotifyState = legacy_settings["notifications"] || null;
+        if (prevFilters) await setSetting("user_filters", prevFilters);
+        if (prevNotifyUID && prevNotifyState) await setEnabled("enable_notifications");
+        window.localStorage.clear();
+    }
+    if (last_version <= 1.68 && last_version >= 1.64) {
+        // migrate pre-1.69 settings
+        const settingsMutation = {
+            enabled_scripts: [
+                { old: "image_loader", new: "media_loader" },
+                { old: "video_loader", new: "media_loader" },
+                { old: "embed_socials", new: "social_loader" },
+            ],
+            enabled_suboptions: [{ old: "es_show_tweet_threads", new: "sl_show_tweet_threads" }],
+            notificationuid: null as unknown,
+        };
+        const mutatedSettings = await mergeSettings(settingsMutation);
+        await setSettings(mutatedSettings);
+    }
+
+    // pull the latest version data after the migration
+    current_version = getManifestVersion();
+    last_version = (await getSettingsVersion()) || current_version;
+    if (last_version !== current_version) {
+        await setEnabledSuboption("show_rls_notes");
+        await updateSettingsVersion();
+    }
+    // only show release notes automatically once after the version is updated
+    const show_notes = await getEnabledSuboption("show_rls_notes");
+    const imported = await getEnabledSuboption("imported");
+    if (show_notes && !imported) {
+        await browser.tabs.create({ url: "release_notes.html" });
+        await removeEnabledSuboption("show_rls_notes");
+    }
+    await removeEnabledSuboption("imported");
 };

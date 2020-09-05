@@ -9,12 +9,16 @@ import {
     setSettings,
     resetSettings,
     filtersContains,
-    getEnabledSuboptions,
+    getEnabledSuboption,
     setHighlightGroup,
     highlightGroupContains,
     addHighlightUser,
     DefaultSettings,
     HighlightGroup,
+    mergeHighlightGroups,
+    migrateSettings,
+    setEnabledSuboption,
+    mergeUserFilters,
 } from "./core/settings";
 
 require("./styles/popup.css");
@@ -42,7 +46,9 @@ const showHighlightGroups = async () => {
     const highlightGroups = document.getElementById("highlight_groups");
     removeChildren(highlightGroups);
     const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-    for (const group of groups || []) addHighlightGroup(null, group);
+    for (const group of groups || []) {
+        addHighlightGroup(null, group);
+    }
 };
 
 const getHighlightGroup = (groupElem?: HTMLElement) => {
@@ -68,7 +74,9 @@ const getHighlightGroups = async () => {
         const record = getHighlightGroup(group as HTMLElement);
         if (!objEmpty(record)) highlightRecords.push(record);
     }
-    if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
+    if (highlightRecords.length > 0) {
+        return await setSetting("highlight_groups", highlightRecords);
+    }
 };
 
 const newHighlightGroup = (name?: string, css?: string, username?: string) => {
@@ -211,7 +219,9 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
             if (!firstColor) {
                 firstColor = g1;
                 return g1;
-            } else return "";
+            } else {
+                return "";
+            }
         });
         styleField.value = superTrim(`${style} color: ${randomHsl()} !important;`);
         delayedTextUpdate(e); // fire off a css field update
@@ -224,6 +234,7 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
             textfield.addEventListener("keyup", delayedTextUpdate);
         }
     }
+
     document.querySelector("#highlight_groups").appendChild(groupElem);
     if (e && (<HTMLElement>e.target).matches("#add_highlight_group")) getHighlightGroups();
 };
@@ -331,44 +342,56 @@ const loadOptions = async () => {
         input[type='checkbox'].script_check,
         input[type='checkbox'].suboption
     `),
-    ];
-    for (const script of scripts) {
-        for (const checkbox of checkboxes) {
-            const _checkbox = checkbox as HTMLInputElement;
-            if (elemMatches(_checkbox, ".script_check")) {
-                if (_checkbox.id === script) _checkbox.checked = true;
-                const settingsChild = document.querySelector(`div#${_checkbox.id}_settings`);
-                if (_checkbox.checked && settingsChild) settingsChild.classList.remove("hidden");
-                else if (!_checkbox.checked && settingsChild) settingsChild.classList.add("hidden");
-            } else if (elemMatches(_checkbox, ".suboption")) {
-                const option = await getEnabledSuboptions(_checkbox.id);
-                if (option) _checkbox.checked = true;
-            }
-        }
-        // put non-boolean load supports here
-        if (script === "highlight_users") await showHighlightGroups();
-        else if (script === "custom_user_filters") await showUserFilters();
+    ] as HTMLInputElement[];
+
+    for (const checkbox of checkboxes) {
+        if (elemMatches(checkbox, ".script_check")) {
+            const script = await getEnabled(checkbox.id);
+            if (checkbox.id === script) checkbox.checked = true;
+            else checkbox.checked = false;
+            const settingsChild = document.querySelector(`div#${checkbox.id}_settings`);
+            if (checkbox.checked && settingsChild) settingsChild.classList.remove("hidden");
+            else if (!checkbox.checked && settingsChild) settingsChild.classList.add("hidden");
+        } else if (elemMatches(checkbox, ".suboption")) {
+            const option = await getEnabledSuboption(checkbox.id);
+            if (option) checkbox.checked = true;
+            else checkbox.checked = false;
+        } else if (checkbox.id !== scripts) checkbox.checked = false;
+    }
+
+    if (await getEnabled("highlight_users")) {
+        await showHighlightGroups();
+    } else if (await getEnabled("custom_user_filters")) {
+        await showUserFilters();
     }
 };
 
 const saveOptions = (e: MouseEvent) => {
-    const this_node = e?.target as HTMLButtonElement;
-    if (this_node?.id !== "clear_settings") getEnabledScripts().then(loadOptions);
+    (async () => {
+        const this_node = e?.target as HTMLButtonElement;
+        if (this_node?.id !== "clear_settings") {
+            await getEnabledScripts();
+            await loadOptions();
+        }
+    })();
 };
 
-const clearSettings = (e: MouseEvent) =>
-    resetSettings()
-        .then(loadOptions)
-        .then(() => saveOptions(e))
-        .then(() => {
-            const settings_field = <HTMLInputElement>document.getElementById("import_export_field");
-            if (settings_field) settings_field.value = "";
-            handleImportExportField(); // force a field update
-        });
+const clearSettings = (e: MouseEvent) => {
+    (async () => {
+        await resetSettings();
+        await loadOptions();
+        saveOptions(e);
+        // force a field update
+        const settings_field = <HTMLInputElement>document.getElementById("import_export_field");
+        if (settings_field) settings_field.value = "";
+        handleImportExportField();
+    })();
+};
 
 /*
  *  Support import/export of the settings store
  */
+
 const objConditionalFilter = (disallowed: string[], obj: Record<string, any>) => {
     return Object.keys(obj)
         .filter((k) => !disallowed.includes(k))
@@ -377,9 +400,10 @@ const objConditionalFilter = (disallowed: string[], obj: Record<string, any>) =>
         }, {});
 };
 
-const exportSettings = (settingsField: HTMLInputElement) => {
-    if (settingsField) {
-        getSettings().then(async (settings) => {
+const exportSettings = async (settingsField: HTMLInputElement) => {
+    try {
+        if (settingsField) {
+            const settings = await getSettings();
             // strip unnecessary cached keys
             const disallowed = [
                 "highlight_groups",
@@ -391,46 +415,54 @@ const exportSettings = (settingsField: HTMLInputElement) => {
                 "nEventId",
                 "nUsername",
             ];
-            const sanitizedGroups = settings.highlight_groups.filter((x: HighlightGroup) => !x.built_in) || [];
-            const sanitizedSettings = objConditionalFilter(disallowed, settings);
-            const exportable =
-                sanitizedGroups.length > 0
-                    ? JSON.stringify({
-                          ...sanitizedSettings,
-                          highlight_groups: sanitizedGroups,
-                      })
-                    : JSON.stringify(sanitizedSettings);
+            const disallowedOptions = ["show_rls_notes", "imported"];
+
+            const mutableGroups = settings.highlight_groups.filter((x: HighlightGroup) => !x.built_in) || [];
+            const allowedSettings = objConditionalFilter(disallowed, settings);
+            const allowedSuboptions = disallowedOptions.reduce((acc, so) => {
+                const foundIdx = acc.findIndex((x) => x.toUpperCase() === so.toUpperCase());
+                if (foundIdx !== -1) acc.splice(foundIdx);
+                return acc;
+            }, settings.enabled_suboptions as string[]);
+
+            const mutated = {
+                ...allowedSettings,
+                enabled_suboptions: allowedSuboptions,
+                highlight_groups: mutableGroups,
+            };
+            const exportable = JSON.stringify(mutated, null, 2);
             settingsField.value = exportable;
             handleImportExportField(); // force a field update
             settingsField.select();
             document.execCommand("copy");
             alert("Copied current settings to clipboard!");
-        });
+            return true;
+        }
+    } catch (e) {
+        console.log("Something went wrong:", e);
+        return false;
     }
 };
 
-const importSettings = (settingsField: HTMLInputElement) => {
+const importSettings = async (settingsField: HTMLInputElement) => {
     try {
         const parsedSettings = settingsField && JSON.parse(superTrim(settingsField.value));
-        const defaults = { ...DefaultSettings };
         // combine default and parsed highlight groups intelligently
-        const reducedGroups = parsedSettings.highlight_groups
-            ? parsedSettings.highlight_groups.reduce((acc: HighlightGroup[], v: HighlightGroup) => {
-                  const foundIdx = acc.findIndex((y) => y.name === v.name);
-                  if (foundIdx > -1) acc[foundIdx] = v;
-                  else acc.push(v);
-                  return acc;
-              }, defaults.highlight_groups)
-            : defaults.highlight_groups;
-        parsedSettings.highlight_groups = reducedGroups;
-        const combinedSettings = { ...defaults, ...parsedSettings };
-        if (combinedSettings)
-            resetSettings().then(() =>
-                setSettings(combinedSettings).then(() => alert("Successfully imported settings!")),
-            );
+        const mergedGroups =
+            parsedSettings.highlight_groups && (await mergeHighlightGroups(parsedSettings.highlight_groups));
+        parsedSettings.highlight_groups = mergedGroups;
+        const sanitizedUserFilters = await mergeUserFilters(parsedSettings.user_filters);
+        parsedSettings.user_filters = sanitizedUserFilters;
+        const combinedSettings = { ...DefaultSettings, ...parsedSettings };
+        // merge settings and migrate any legacy options
+        await setSettings(combinedSettings);
+        await setEnabledSuboption("imported");
+        await migrateSettings();
+        return true;
     } catch (e) {
         console.error(e);
         alert("Something went wrong when importing, check the console!");
+        return false;
     }
 };
 
@@ -445,15 +477,23 @@ const handleImportExportField = () => {
 const handleImportExportSettings = () => {
     const field_limit = 5 * 1000 * 1000;
     const importExportField = document.getElementById("import_export_field") as HTMLInputElement;
-    const field_val = importExportField && importExportField.value;
-    if (field_val && field_val.length > field_limit) {
-        // truncate to 5 MiB (max of extension storage)
-        alert("Warning! Settings input must be less than 5MiB in size!");
-        const _truncated = field_val.substring(0, field_limit);
-        importExportField.value = _truncated;
-    }
-    if (importExportField && importExportField.value.length > 0) importSettings(importExportField);
-    else if (importExportField) exportSettings(importExportField);
+    (async () => {
+        if (importExportField?.value?.length > field_limit) {
+            // truncate to 5 MiB (max of extension storage)
+            alert("Warning! Settings input must be less than 5MiB in size!");
+            const _truncated = importExportField.value.substring(0, field_limit);
+            importExportField.value = _truncated;
+        }
+        if (importExportField?.value?.length > 0) {
+            const result = await importSettings(importExportField);
+            if (result) {
+                alert("Successfully imported!");
+                importExportField.value = "";
+                handleImportExportField();
+                await loadOptions();
+            }
+        } else if (importExportField) await exportSettings(importExportField);
+    })();
 };
 
 const parseSettingsString = (input: string) => {
