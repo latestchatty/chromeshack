@@ -128,15 +128,17 @@ const pollNotifications = async () => {
         const enabled = (await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"));
         if (enabled) {
             const nEventId = await getEventId();
-            const resp: NotifyResponse = await fetchSafe({
-                url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
-            });
-            if (!resp.error) {
+            const resp: NotifyResponse =
+                nEventId &&
+                (await fetchSafe({
+                    url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
+                }));
+            if (!resp?.error) {
                 await setEventId(resp.lastEventId);
                 await handleNotification(resp);
                 // recheck every tick
                 setTimeout(pollNotifications, greenLightTimer);
-            } else if (resp.code === "ERR_TOO_MANY_EVENTS") {
+            } else if (resp?.code === "ERR_TOO_MANY_EVENTS") {
                 await setInitialNotificationsEventId();
                 // busy signal - recheck on next tick
                 setTimeout(pollNotifications, greenLightTimer);
