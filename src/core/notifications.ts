@@ -103,10 +103,11 @@ const handleEventSignal = (msg: NotifyMsg) => TM_Instance?.send(msg);
 const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;
     handleEventSignal({ name: "notifyEvent", data: response });
+    const notify_enabled = await getEnabled("enable_notifications");
     for (const event of events || []) {
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);
-            if (match && event?.eventData?.post?.author) {
+            if (notify_enabled && match && event?.eventData?.post?.author) {
                 const post = event.eventData.post;
                 browser.notifications.create(`ChromeshackNotification${post.id.toString()}`, {
                     type: "basic",
@@ -120,31 +121,42 @@ const handleNotification = async (response: NotifyResponse) => {
 };
 
 const pollNotifications = async () => {
-    const nEventId = await getEventId();
-    return await fetchSafe({
-        url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
-    })
-        .then(async (resp: NotifyResponse) => {
+    const greenLightTimer = 15000; // tick
+    const redLightTimer = 60000; // tock
+    try {
+        // TODO: have the consuming scripts set a consumer suboption
+        const enabled = (await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"));
+        if (enabled) {
+            const nEventId = await getEventId();
+            const resp: NotifyResponse = await fetchSafe({
+                url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
+            });
             if (!resp.error) {
                 await setEventId(resp.lastEventId);
                 await handleNotification(resp);
-                // If everything was successful, poll again in 15 seconds.
-                setTimeout(pollNotifications, 15000);
+                // recheck every tick
+                setTimeout(pollNotifications, greenLightTimer);
             } else if (resp.code === "ERR_TOO_MANY_EVENTS") {
                 await setInitialNotificationsEventId();
-                setTimeout(pollNotifications, 15000);
-            } else setTimeout(pollNotifications, 60000);
-        })
-        .catch((err: any) => {
-            console.log(err);
-            setTimeout(pollNotifications, 60000);
-        });
+                // busy signal - recheck on next tick
+                setTimeout(pollNotifications, greenLightTimer);
+            } else {
+                // fail - recheck on next tock
+                setTimeout(pollNotifications, redLightTimer);
+            }
+        } else {
+            // recheck every tick for enablement
+            setTimeout(pollNotifications, greenLightTimer);
+        }
+    } catch (e) {
+        console.log(e);
+        // retry every tock
+        setTimeout(pollNotifications, redLightTimer);
+    }
 };
 
 export const startNotifications = async () => {
     browser.notifications.onClicked.addListener(notificationClicked);
-    if ((await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"))) {
-        await setInitialNotificationsEventId();
-        await pollNotifications();
-    }
+    await setInitialNotificationsEventId();
+    await pollNotifications();
 };
