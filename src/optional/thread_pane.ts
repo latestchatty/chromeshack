@@ -151,8 +151,8 @@ const ThreadPane = {
     getHtmlWithTrimmedLineBreaks(container: JQuery<HTMLElement>) {
         return container
             .html()
-            .replace(/[\r\n]/g, "") // strip newlines, we only need the <br>s
-            .replace(/^(<br>)+/, ""); // strip leading <br>s
+            .replace(/[\r\n]/gm, "") // strip newlines, we only need the <br>s
+            .replace(/\<br\>/gm, " "); // strip <br>s
     },
 
     cloneRootPostBody(opDiv: JQuery<HTMLElement>, threadId: number) {
