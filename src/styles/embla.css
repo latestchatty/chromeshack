@@ -1,3 +1,7 @@
+:root {
+    --arrow-outline: rgba(60, 60, 60, 0.6);
+}
+
 .embla__viewport {
     position: relative;
     overflow: hidden;
@@ -49,10 +53,17 @@
     padding: 0;
     z-index: 1;
     transform: translateY(-50%);
+    transition: 0.2s;
+    opacity: 0.5;
+}
+.embla__button:hover {
+    filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
+        drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
+    opacity: 1;
 }
 .embla__button:disabled {
     cursor: default;
-    opacity: 0.3;
+    opacity: 0.25;
 }
 .embla__button--prev {
     margin-left: auto;
