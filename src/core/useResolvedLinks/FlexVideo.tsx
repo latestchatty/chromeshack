@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 import { classNames } from "../common";
+import useIntersectObserver from "./useIntersectObserver";
 
 import type { OverlayProps, MediaProps, HTMLVideoElementWithAudio } from "./index.d";
 
@@ -38,8 +39,14 @@ const FlexVideo = (props: MediaProps) => {
     const _classes = classNames(classes, { canToggle: clickTogglesPlay });
 
     const [muteToggle, setMuteToggle] = useState(muted);
+    const [wasPaused, setWasPaused] = useState(false);
     const [hasAudio, setHasAudio] = useState(false);
     const videoRef = useRef<HTMLVideoElementWithAudio>(null);
+    const { setObservedElem, entry } = useIntersectObserver({
+        threshold: 0.66,
+        delay: 500,
+        trackVisibility: true,
+    });
 
     // cache our handlers with useCallback to avoid re-renders
     const handleVideoState = useCallback(() => {
@@ -66,32 +73,31 @@ const FlexVideo = (props: MediaProps) => {
             e.preventDefault();
             if (clickTogglesPlay) {
                 const vid = videoRef.current;
-                if (vid && isVidPlaying(vid)) vid.pause();
-                else if (vid) vid.play();
+                if (vid && isVidPlaying(vid)) {
+                    vid.pause();
+                    setWasPaused(true);
+                } else if (vid) {
+                    vid.play();
+                    setWasPaused(false);
+                }
             }
         },
         [clickTogglesPlay, videoRef],
     );
 
     useEffect(() => {
+        // setup visibility observer
         const vid = videoRef.current;
-        if (!vid) return;
-        const handleVisible = (entries: IntersectionObserverEntry[]) => {
-            for (const entry of entries) {
-                const vid = entry.target as HTMLVideoElement;
-                // play when visible - pause when not-visible
-                if (entry.intersectionRatio > 0.66) vid.play();
-                else vid.pause();
-            }
-        };
-        const observerOpts = {
-            threshold: 0.66,
-            delay: 500,
-            trackVisibility: true,
-        };
-        const observer = new IntersectionObserver(handleVisible, observerOpts);
-        observer.observe(vid);
-    }, [videoRef]);
+        if (!vid || !setObservedElem) return;
+        setObservedElem(vid);
+        if (entry) {
+            const _this = entry.target as HTMLVideoElement;
+            // don't auto-play if we've manually paused
+            if (!wasPaused && entry.intersectionRatio >= 0.66) {
+                _this.play();
+            } else _this.pause();
+        }
+    }, [videoRef, setObservedElem, wasPaused, entry]);
 
     return (
         <div className="media__boundary">

@@ -38,3 +38,9 @@ export interface OverlayProps {
     onClick: () => void;
     audioEnabled?: boolean;
 }
+
+export interface IntersectionObserverConfig {
+    root?: HTMLElement;
+    threshold: number[] | number;
+    [x: string]: any;
+}
