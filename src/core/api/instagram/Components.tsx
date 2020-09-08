@@ -24,7 +24,7 @@ const CompiledMedia = (props: { mediaItems: string[] }) => {
     // display wrapper for useResolvedLinks()
     const resolved = useResolvedLinks({
         links: mediaItems,
-        options: { clickTogglesVisible: false },
+        options: { controls: true, clickTogglesVisible: false },
     });
     return resolved as JSX.Element;
 };

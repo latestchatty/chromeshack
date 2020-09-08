@@ -42,8 +42,10 @@ const FlexVideo = (props: MediaProps) => {
     const [wasPaused, setWasPaused] = useState(false);
     const [hasAudio, setHasAudio] = useState(false);
     const videoRef = useRef<HTMLVideoElementWithAudio>(null);
+    // visibility threshold before firing play/pause event
+    const visibilityRatio = 0.66;
     const { setObservedElem, entry } = useIntersectObserver({
-        threshold: 0.66,
+        threshold: visibilityRatio,
         delay: 500,
         trackVisibility: true,
     });
@@ -71,15 +73,13 @@ const FlexVideo = (props: MediaProps) => {
     const handlePlayToggle = useCallback(
         (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
             e.preventDefault();
-            if (clickTogglesPlay) {
-                const vid = videoRef.current;
-                if (vid && isVidPlaying(vid)) {
-                    vid.pause();
-                    setWasPaused(true);
-                } else if (vid) {
-                    vid.play();
-                    setWasPaused(false);
-                }
+            const vid = videoRef.current;
+            if (vid && clickTogglesPlay && isVidPlaying(vid)) {
+                vid.pause();
+                setWasPaused(true);
+            } else if (vid && clickTogglesPlay) {
+                vid.play();
+                setWasPaused(false);
             }
         },
         [clickTogglesPlay, videoRef],
@@ -93,7 +93,7 @@ const FlexVideo = (props: MediaProps) => {
         if (entry) {
             const _this = entry.target as HTMLVideoElement;
             // don't auto-play if we've manually paused
-            if (!wasPaused && entry.intersectionRatio >= 0.66) {
+            if (!wasPaused && entry.intersectionRatio >= visibilityRatio) {
                 _this.play();
             } else _this.pause();
         }

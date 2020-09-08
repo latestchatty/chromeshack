@@ -47,7 +47,7 @@ const CompiledMedia = (props: { mediaItems: string[]; className?: string }) => {
     // display wrapper for useResolvedLinks()
     const mediaChildren = useResolvedLinks({
         links: mediaItems,
-        options: { clickTogglesVisible: false },
+        options: { controls: true, clickTogglesVisible: false },
     });
     return <div className={className}>{mediaChildren}</div>;
 };

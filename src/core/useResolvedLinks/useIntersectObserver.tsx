@@ -18,6 +18,7 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
             threshold,
             ...configOpts,
         };
+        // only expose the first IntersectionEntry for this element
         observer.current = new IntersectionObserver(([e]) => setEntry(e), config);
         // avoid dropping our ref
         const _observer = observer.current;
