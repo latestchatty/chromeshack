@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-unused-vars: "off" */
+
 interface LiteEventInterface<T> {
     addHandler(handler: { (...args: any[]): void }): void;
     removeHandler(handler: { (...args: any[]): void }): void;

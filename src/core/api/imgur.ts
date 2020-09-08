@@ -47,7 +47,6 @@ interface ImgurSource {
     src: string;
     type: "image" | "video";
 }
-type ImgurSources = ImgurSource[];
 
 const parseLink = (href: string) => {
     // albumMatch[1] returns an album (data.images.length > 1)
