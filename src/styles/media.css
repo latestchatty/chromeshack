@@ -54,10 +54,19 @@ div.media.canToggle,
 div.medialink > .expandalt {
     cursor: pointer;
 }
+
 div.expando {
     display: inline-block;
     margin: 0 0.33em;
 }
+.expando svg.expand__icon,
+.expando svg.compress__icon,
+.expando svg.external__icon {
+    fill: "white";
+    height: 12px !important;
+    width: 12px !important;
+}
+
 .iframe__boundary {
     /* enforce maximum iframe dimensions */
     max-width: 854px !important;

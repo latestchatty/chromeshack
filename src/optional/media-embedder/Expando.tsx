@@ -7,14 +7,9 @@ import useResolvedLinks from "../../core/useResolvedLinks";
 
 import type { FCWithMediaProps, ExpandoProps } from "./index.d";
 
-const commonIconStyle = {
-    fill: "white",
-    height: "12px",
-    width: "auto",
-};
-const ExpandIcon = () => <FontAwesomeIcon icon={faExpandAlt} style={commonIconStyle} />;
-const CompressIcon = () => <FontAwesomeIcon icon={faCompressAlt} style={commonIconStyle} />;
-const ExternalLink = () => <FontAwesomeIcon icon={faExternalLinkAlt} style={commonIconStyle} />;
+const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
+const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
+const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
 
 const RenderExpando = (props: ExpandoProps) => {
     const [toggled, setToggled] = useState(false);
@@ -51,17 +46,7 @@ const RenderExpando = (props: ExpandoProps) => {
                 onClick={handleToggleClick}
             >
                 <span>{link.href}</span>
-                <div className="expando">
-                    {toggled ? (
-                        <span role="img" aria-label="close">
-                            <CompressIcon />
-                        </span>
-                    ) : (
-                        <span role="img" aria-label="open">
-                            <ExpandIcon />
-                        </span>
-                    )}
-                </div>
+                <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
             <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
                 <ExternalLink />
