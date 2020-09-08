@@ -29,3 +29,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [WebExtension-Polyfill](https://github.com/mozilla/webextension-polyfill)
 -   [React](https://github.com/facebook/react)
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
+-   [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
