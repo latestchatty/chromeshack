@@ -4,7 +4,7 @@ import useResolvedLinks from "../../useResolvedLinks";
 import { classNames, fetchBackground } from "../../common";
 import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
 
-import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./instagram.d";
+import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./index.d";
 
 const collectMedia = (media: InstagramShortcodeMedia) => {
     const collector = [];
@@ -24,7 +24,7 @@ const CompiledMedia = (props: { mediaItems: string[] }) => {
     // display wrapper for useResolvedLinks()
     const resolved = useResolvedLinks({
         links: mediaItems,
-        options: { muted: false, loop: false, autoPlay: false, controls: true },
+        options: { clickTogglesVisible: false },
     });
     return resolved as JSX.Element;
 };
@@ -37,16 +37,20 @@ const parseDate = (timestamp: string) => {
 };
 
 export const fetchInstagramData = async (shortcode: string) => {
-    const errMsg = "This account or post has been made private or cannot be found";
     try {
-        const parsed: InstagramResponse = await fetchBackground({
-            url: `https://www.instagram.com/p/${shortcode}/`,
-            parseType: { instagram: true },
-        });
+        const url = `https://www.instagram.com/p/${shortcode}/`;
+        const parsed: InstagramResponse =
+            shortcode &&
+            (await fetchBackground({
+                url,
+                parseType: { instagram: true },
+            }));
         const _matchGQL = parsed && parsed.gqlData.shortcode_media;
-        // const _isPrivate = _matchGQL && _matchGQL.owner.is_private;
-        if (_matchGQL) {
-            const response = {
+        const _isPrivate = _matchGQL && _matchGQL.owner.is_private;
+        if (!_matchGQL || _isPrivate) {
+            return { error: "This account or post has been made private or cannot be found:", url };
+        } else if (_matchGQL) {
+            return {
                 metaLikes: _matchGQL.edge_media_preview_like.count.toLocaleString(),
                 metaComments: _matchGQL.edge_media_preview_comment.count.toLocaleString(),
                 authorPic: _matchGQL.owner.profile_pic_url,
@@ -60,12 +64,8 @@ export const fetchInstagramData = async (shortcode: string) => {
                         : "",
                 postMedia: collectMedia(_matchGQL),
             };
-            return response;
         }
-        alert(errMsg);
-        return null;
     } catch (e) {
-        alert(errMsg);
         console.error(e);
     }
 };
@@ -97,18 +97,19 @@ const InstagramCaption = ({ text }: { text: string }) => {
 
 const Instagram = (props: { response: InstagramParsed }) => {
     const { response } = props || {};
-    if (response) {
-        const {
-            metaLikes,
-            metaComments,
-            authorName,
-            authorPic,
-            postUrl,
-            postCaption,
-            authorFullName,
-            postTimestamp,
-            postMedia,
-        } = response;
+    const {
+        metaLikes,
+        metaComments,
+        authorName,
+        authorPic,
+        postUrl,
+        postCaption,
+        authorFullName,
+        postTimestamp,
+        postMedia,
+        error,
+    } = response || {};
+    if (!error) {
         return (
             <div className="instagram__container">
                 <div className="instagram__header">
@@ -156,7 +157,13 @@ const Instagram = (props: { response: InstagramParsed }) => {
                 </div>
             </div>
         );
-    } else return null;
+    } else {
+        return (
+            <div className="instagram__container">
+                <span className="instagram__error">{error}</span>
+            </div>
+        );
+    }
 };
 
 const useInstagram = (instagramObj: InstagramParsed) => {

@@ -17,6 +17,7 @@ export interface InstagramShortcodeMedia {
         profile_pic_url: string;
         username: string;
         full_name: string;
+        is_private?: boolean;
     };
     edge_media_preview_comment?: { count: number };
     edge_media_preview_like?: { count: number };
@@ -43,11 +44,12 @@ export interface InstagramResponse {
 export interface InstagramParsed {
     metaLikes?: string;
     metaComments?: string;
-    authorPic: string;
-    authorName: string;
-    authorFullName: string;
-    postTimestamp: string;
-    postUrl: string;
-    postCaption: string;
-    postMedia: string[];
+    authorPic?: string;
+    authorName?: string;
+    authorFullName?: string;
+    postTimestamp?: string;
+    postUrl?: string;
+    postCaption?: string;
+    postMedia?: string[];
+    error?: string;
 }

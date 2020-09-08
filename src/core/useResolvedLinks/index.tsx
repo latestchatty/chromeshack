@@ -1,26 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { arrHas, objHas, isIframe, classNames } from "./common";
-import { ParsedResponse, detectMediaLink } from "./api";
+import { arrHas, objHas, isIframe, classNames } from "../common";
+import { ParsedResponse, detectMediaLink } from "../api";
 
-import Carousel from "../optional/media-embedder/Carousel";
+import Carousel from "../../optional/media-embedder/Carousel";
+import FlexVideo from "./FlexVideo";
 
-import type { MediaLinkOptions } from "../optional/media-embedder";
-
-interface MediaProps {
-    id?: string;
-    classes?: string;
-    src: string;
-    loop?: boolean;
-    muted?: boolean;
-    controls?: boolean;
-    autoPlay?: boolean;
-    pauseOnClick?: boolean;
-    isSlide?: boolean;
-    links?: string[];
-}
-
-export const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.paused && !v.ended && v.readyState > 2);
+import type { ResolvedLinkProps, MediaProps } from "./index.d";
 
 export const Iframe = (props: MediaProps) => {
     const { src } = props || {};
@@ -35,6 +21,7 @@ export const Iframe = (props: MediaProps) => {
         "twitch-container": isTwitch,
         "yt-container": isYoutube,
     });
+
     return (
         <div className="iframe__boundary">
             <div className={classes}>
@@ -45,93 +32,56 @@ export const Iframe = (props: MediaProps) => {
                     scrolling="no"
                     allowFullScreen
                     allow={isYoutube ? "autoplay; encrypted-media" : ""}
-                    /* scale={isGeneric ? "tofit" : ""} */
                 />
             </div>
         </div>
     );
 };
-export const Video = (props: MediaProps) => {
-    const { classes, src } = props || {};
-    const videoRef = useRef<HTMLVideoElement>(null);
 
-    // set some sensible defaults
-    let { loop, muted, controls, autoPlay, pauseOnClick } = props || {};
-    if (loop === undefined) loop = true;
-    if (muted === undefined) muted = true;
-    if (controls === undefined) controls = false;
-    if (autoPlay === undefined) autoPlay = true;
-    if (pauseOnClick === undefined) pauseOnClick = true;
-
-    const onClick = (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
-        e.preventDefault();
-        if (pauseOnClick) {
-            const vid = videoRef.current;
-            if (vid && isVidPlaying(vid)) vid.pause();
-            else if (vid) vid.play();
-        }
-    };
-
-    return (
-        <div className="media__boundary">
-            <video
-                key={src}
-                ref={videoRef}
-                className={classes}
-                src={src}
-                loop={loop}
-                muted={muted}
-                controls={controls}
-                autoPlay={autoPlay}
-                onClick={onClick}
-            />
-        </div>
-    );
-};
 export const Image = (props: MediaProps) => {
-    const { classes, src } = props || {};
+    const { classes, src, options } = props || {};
     if (!src) return null;
+
+    let { clickTogglesVisible } = options || {};
+    // click-to-toggle enabled by default
+    if (clickTogglesVisible === undefined) clickTogglesVisible = true;
+    const _classes = clickTogglesVisible ? classNames(classes, { canToggle: clickTogglesVisible }) : classes;
+
     return (
         <div className="media__boundary">
-            <img className={classes} src={src} alt="" />
+            <img className={_classes} src={src} alt="" />
         </div>
     );
 };
 
-interface ResolvedLinkProps {
-    link?: string;
-    links?: string[];
-    options?: MediaLinkOptions;
-}
 const useResolvedLinks = (props: ResolvedLinkProps) => {
-    /// returns a rendered component after resolving its associated media link
+    /// returns a rendered component after resolving its associated media link(s)
     const { link, links, options } = props || {};
-    // provide access to video props for native embeds
-    const { muted, loop, controls, autoPlay } = options || {};
-    const [resolved, setResolved] = useState(null as React.ReactNode);
-
-    const loadComponent = (response: ParsedResponse) => {
-        let { src } = response || {};
-        const { type } = response || {};
-        // special case: normalize gifv to mp4 (imgur directmedia match)
-        if (type === "video" && /imgur/.test(src) && src) src = src.replace(/\.gifv/, ".mp4");
-        // feed 'src' into an embeddable common media component depending on link type
-        if (type === "image") return <Image key={src} src={src} />;
-        else if (type === "video") {
-            return <Video key={src} src={src} loop={loop} muted={muted} controls={controls} autoPlay={autoPlay} />;
-        } else if (type === "iframe") return <Iframe key={src} src={src} />;
-        // ... just return an empty div otherwise
-        else return <div />;
-    };
+    const [resolved, setResolved] = useState(null as JSX.Element);
 
     useEffect(() => {
+        const loadComponent = (response: ParsedResponse) => {
+            const { type } = response || {};
+            let { src } = response || {};
+            // special case: normalize gifv to mp4 (imgur directmedia match)
+            if (type === "video" && src && /imgur/.test(src)) src = src.replace(".gifv", ".mp4");
+            // feed 'src' into an embeddable common media component depending on link type
+            if (type === "image") return <Image key={src} src={src} options={options} />;
+            else if (type === "video") {
+                return <FlexVideo key={src} src={src} {...options} />;
+            } else if (type === "iframe") return <Iframe key={src} src={src} />;
+            else return null;
+        };
         const resolveLink = async (l?: string) => {
             const _link = l ? l : link;
+            // grab a link resolver object from the url given to us
             const parsed = await detectMediaLink(_link);
+            // rename our initial result for normal media types to avoid conflicts later
             const { src: normalSrc, args, cb, type: normalType } = parsed || {};
+            // if our resolver object contains a callback then use it
             const resolver = args ? await cb(...args) : null;
             if (arrHas(resolver) && resolver.length > 1) {
-                // if our media comes in an array return a carousel (Imgur)
+                // if our media comes in an array reduce to rendered components
                 const children = resolver.reduce((acc: React.ReactNode[], v: ParsedResponse) => {
                     const { src: resolvedSrc, type: resolvedType } = v || {};
                     const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType };
@@ -139,12 +89,12 @@ const useResolvedLinks = (props: ResolvedLinkProps) => {
                     if (rendered) acc.push(rendered);
                     return acc;
                 }, []) as React.ReactNode[];
-                // pack them into a Carousel component for a better user experience
+                // pack them into a Carousel container for a better user experience
                 if (arrHas(children)) return <Carousel slides={children} />;
             } else {
-                // pass along a rendered component if provided
+                // use the rendered component if it exists in our resolver object
                 if (resolver?.component) return resolver.component;
-                // catch a single image gallery case (Imgur silliness)
+                // pack our resolver results into a format our loader understands
                 const _src = arrHas(resolver)
                     ? resolver[0].src
                     : normalSrc
@@ -164,14 +114,14 @@ const useResolvedLinks = (props: ResolvedLinkProps) => {
             }
         };
         const resolveLinks = async () => {
+            // process each link in our list then reduce into a rendered component
             const _resolved = await links.reduce(async (acc, l) => {
                 const _acc = await acc;
                 const resolving = await resolveLink(l);
-                //console.log("resolveLinks accumulator:", resolving, l, _acc);
                 if (resolving) _acc.push(resolving);
                 return Promise.resolve(_acc);
             }, Promise.resolve([]) as Promise<React.ReactNode[]>);
-            // wrap with a Carousel if necessary
+            // wrap with a Carousel container if appropriate
             if (arrHas(_resolved) && _resolved.length > 1) return <Carousel slides={_resolved} />;
             else if (_resolved?.length === 1) return _resolved[0];
         };
@@ -183,4 +133,5 @@ const useResolvedLinks = (props: ResolvedLinkProps) => {
     return resolved;
 };
 
+export { MediaProps };
 export default useResolvedLinks;

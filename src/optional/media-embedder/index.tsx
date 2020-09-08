@@ -8,13 +8,6 @@ import { detectMediaLink } from "../../core/api";
 
 import Expando from "./Expando";
 
-export interface MediaLinkOptions {
-    loop?: boolean;
-    muted?: boolean;
-    controls?: boolean;
-    autoPlay?: boolean;
-}
-
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {
     const { links, item } = props || {};
     const [children, setChildren] = useState(null);

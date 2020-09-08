@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import useInstagram, { fetchInstagramData } from "./Components";
 
 import type { ParsedResponse } from "../../api";
-import type { InstagramParsed } from "./instagram";
+import type { InstagramParsed } from "./index.d";
 
 const parseLink = (href: string) => {
     const isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/(?:p|tv)\/([\w-]+)\/?/i.exec(href);

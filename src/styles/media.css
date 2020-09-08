@@ -33,6 +33,9 @@ div.medialink > .expandalt {
     margin: 0 0.25em 0 0.2em;
 }
 
+.media__boundary {
+    position: relative;
+}
 div.media > .media__boundary > img,
 div.media > .media__boundary > video {
     object-fit: scale-down;
@@ -42,12 +45,12 @@ div.media > .media__boundary > video {
     /* prevent larger-than-post width */
     max-width: 100%;
 }
-div.media.canToggleClick {
+div.media.canToggle {
     /* workaround for image/video container stretching issue */
     display: table !important;
 }
-div.media .canToggleClick,
-div.media.canToggleClick,
+div.media .canToggle,
+div.media.canToggle,
 div.medialink > .expandalt {
     cursor: pointer;
 }
@@ -78,6 +81,27 @@ div.expando {
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+.mute__overlay__container {
+    position: absolute;
+    z-index: 3;
+    top: 10px;
+    right: 10px;
+    opacity: 0.3;
+    transition: 0.2s;
+    cursor: pointer;
+}
+.mute__overlay__container:hover {
+    opacity: 1;
+}
+svg.unmute__icon,
+svg.mute__icon {
+    color: white;
+    height: 26px !important;
+    width: 26px !important;
+    filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
+        drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
 }
 /* End Media Embedder */
 

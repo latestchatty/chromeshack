@@ -170,12 +170,11 @@ a#twitter__quote_displayname:hover {
 
 /* custom instagram container */
 .instagram__container {
-    display: flex;
-    flex-direction: column;
+    display: table !important;
     background: var(--instgrm-bg-color);
     border: 1px solid black;
     border-radius: 4px;
-    padding: 0 0 0.5em 0;
+    padding: 0;
     margin: 0;
     font-size: 14px;
     font-family: var(--common-sans);
@@ -184,6 +183,10 @@ a#twitter__quote_displayname:hover {
 .instagram__container.hidden,
 .instagram__container .hidden {
     display: none !important;
+}
+.instagram__container .instagram__error {
+    padding: 6px;
+    font-weight: bold;
 }
 .instagram__container span {
     color: var(--instgrm-fg-color1);
@@ -268,7 +271,9 @@ span.instagram__post__details {
 }
 
 .instagram__embed {
-    margin: 0 1px;
+    display: flex !important;
+    flex-direction: column;
+    margin: 0 auto;
 }
 .instagram__embed img,
 .instagram__embed video {
@@ -288,7 +293,7 @@ span.instagram__post__details {
     justify-self: center;
     align-items: center;
     justify-content: center;
-    margin: auto 5px 0 5px;
+    margin: auto 5px 0.5em 5px;
     border-top: 1px solid lightgray;
     font-size: 13px;
     font-weight: 400;
