@@ -127,7 +127,12 @@ const pollNotifications = async () => {
         // TODO: have the consuming scripts set a consumer suboption
         const enabled = (await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"));
         if (enabled) {
-            const nEventId = await getEventId();
+            let nEventId = await getEventId();
+            if (!nEventId) {
+                // avoid getting hung in a tock loop if saved id is unusable
+                await setInitialNotificationsEventId();
+                nEventId = await getEventId();
+            }
             const resp: NotifyResponse =
                 nEventId &&
                 (await fetchSafe({
