@@ -43,61 +43,55 @@ const FlexVideo = (props: MediaProps) => {
     const [hasAudio, setHasAudio] = useState(false);
     const videoRef = useRef<HTMLVideoElementWithAudio>(null);
     // visibility threshold before firing play/pause event
-    const visibilityRatio = 0.66;
-    const { setObservedElem, entry } = useIntersectObserver({
-        threshold: visibilityRatio,
+    const { setObservedElem, isVisible } = useIntersectObserver({
+        threshold: 0.66,
         delay: 500,
         trackVisibility: true,
     });
 
-    // cache our handlers with useCallback to avoid re-renders
-    const handleVideoState = useCallback(() => {
+    const handleMuteToggle = useCallback(() => {
         const vid = videoRef.current;
+        if (vid && !muteToggle && !controls) {
+            vid.muted = true;
+            setMuteToggle(true);
+        } else if (vid && !controls) {
+            vid.muted = false;
+            setMuteToggle(false);
+        }
+    }, [videoRef, muteToggle]);
+    const handleVideoState = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+        const vid = e.target as HTMLVideoElementWithAudio;
         // supports Firefox and Chrome only (via their respective APIs)
         const mozHasAudio = vid?.mozHasAudio;
         const wkAudioByteCount = vid?.webkitAudioDecodedByteCount;
         const _hasAudio = vid && mozHasAudio ? mozHasAudio : vid && wkAudioByteCount > 0 ? true : false;
         if (vid && _hasAudio) setHasAudio(_hasAudio);
         else if (vid) setHasAudio(false);
-    }, [videoRef]);
-    const handleMuteToggle = useCallback(() => {
-        const vid = videoRef.current;
-        if (vid && !muteToggle && !controls) {
-            vid.muted = true;
-            setMuteToggle(true);
-        } else if (vid && muteToggle && !controls) {
-            vid.muted = false;
-            setMuteToggle(false);
+    };
+    const handlePlayToggle = (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
+        e.preventDefault();
+        const vid = e.target as HTMLVideoElementWithAudio;
+        if (vid && clickTogglesPlay && isVidPlaying(vid)) {
+            vid.pause();
+            setWasPaused(true);
+        } else if (vid && clickTogglesPlay && !isVidPlaying(vid)) {
+            vid.play();
+            setWasPaused(false);
         }
-    }, [videoRef, muteToggle, controls]);
-    const handlePlayToggle = useCallback(
-        (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
-            e.preventDefault();
-            const vid = videoRef.current;
-            if (vid && clickTogglesPlay && isVidPlaying(vid)) {
-                vid.pause();
-                setWasPaused(true);
-            } else if (vid && clickTogglesPlay) {
-                vid.play();
-                setWasPaused(false);
-            }
-        },
-        [clickTogglesPlay, videoRef],
-    );
+    };
 
     useEffect(() => {
-        // setup visibility observer
         const vid = videoRef.current;
-        if (!vid || !setObservedElem) return;
-        setObservedElem(vid);
-        if (entry) {
-            const _this = entry.target as HTMLVideoElement;
-            // don't auto-play if we've manually paused
-            if (!wasPaused && entry.intersectionRatio >= visibilityRatio) {
-                _this.play();
-            } else _this.pause();
+        // setup visibility observer
+        if (vid) setObservedElem(vid);
+    }, [videoRef, setObservedElem]);
+    useEffect(() => {
+        const vid = videoRef.current;
+        if (vid) {
+            if (vid && isVisible && !wasPaused) vid.play();
+            else if (vid) vid.pause();
         }
-    }, [videoRef, setObservedElem, wasPaused, entry]);
+    }, [videoRef, isVisible]);
 
     return (
         <div className="media__boundary">

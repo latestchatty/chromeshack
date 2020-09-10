@@ -5,7 +5,7 @@ import type { IntersectionObserverConfig } from "./index.d";
 const useIntersectObserver = (config: IntersectionObserverConfig) => {
     const { root = null, threshold = 0.5, ...configOpts } = config || {};
 
-    const [entry, setEntry] = useState<IntersectionObserverEntry>(null);
+    const [isVisible, setIsVisible] = useState(false);
     const [observedElem, setObservedElem] = useState<HTMLElement>(null);
     const observer = useRef<IntersectionObserver>(null);
 
@@ -19,7 +19,10 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
             ...configOpts,
         };
         // only expose the first IntersectionEntry for this element
-        observer.current = new IntersectionObserver(([e]) => setEntry(e), config);
+        observer.current = new IntersectionObserver(([e]) => {
+            if (e?.intersectionRatio > threshold) setIsVisible(true);
+            else setIsVisible(false);
+        }, config);
         // avoid dropping our ref
         const _observer = observer.current;
         if (observedElem) _observer.observe(observedElem);
@@ -27,7 +30,7 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
         return () => _observer.disconnect();
     }, [observedElem, root, threshold]);
     // expose an element setter and our intersect entries
-    return { setObservedElem, entry };
+    return { setObservedElem, isVisible };
 };
 
 export default useIntersectObserver;

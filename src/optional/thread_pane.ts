@@ -87,11 +87,7 @@ const ThreadPane = {
             else $cardDiv.addClass("cs_thread_pane_card_ontopic");
 
             const $rootPostBodyDiv = $('<div class="cs_thread_pane_root_body">').html(rootBodyHtml);
-            $rootPostBodyDiv.find("a").replaceWith(function () {
-                return $(`<span class="cs_thread_pane_link">${(<HTMLAnchorElement>this).href}</span>`);
-            });
-            // remove embed containers from Thread Pane parent
-            $rootPostBodyDiv.find("#react-media-manager, div.medialink").remove();
+
             $cardDiv.append($rootPostBodyDiv);
             $listDiv.append($cardDiv);
 
@@ -158,8 +154,13 @@ const ThreadPane = {
     cloneRootPostBody(opDiv: JQuery<HTMLElement>, threadId: number) {
         const $rootPostbodyDiv = opDiv.find("div.postbody").first();
         if ($rootPostbodyDiv.length !== 1) throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
-
-        return $rootPostbodyDiv.clone();
+        const $cloned = $rootPostbodyDiv.clone();
+        $cloned.find("a").replaceWith(function () {
+            return $(`<span class="cs_thread_pane_link">${(this as HTMLAnchorElement).href}</span>`);
+        });
+        // remove embed containers from Thread Pane parent
+        $cloned.find("#react-media-manager, div.medialink").remove();
+        return $cloned;
     },
 
     parseRootAuthor($opDiv: JQuery<HTMLElement>) {
