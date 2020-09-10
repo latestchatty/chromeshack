@@ -250,28 +250,19 @@ export const JSONToFormData = (jsonStr: string) => {
     return null;
 };
 
-export const insertAtCaret = (field: HTMLInputElement, text: string) => {
-    if (field.selectionStart || field.selectionStart === 0) {
-        const startPos = field.selectionStart || 0;
-        const endPos = field.selectionEnd || 0;
-        field.value = field.value.substring(0, startPos) + text + field.value.substring(endPos, field.value.length);
-        field.selectionStart = startPos + text.length;
-        field.selectionEnd = startPos + text.length;
-    } else field.value += text;
-};
-
 export const appendLinksToField = (field: HTMLInputElement, links: string[]) => {
     /// try to append links to the bottom of text input field
+    if (!field || field.value === undefined) return console.error("invalid field target:", field);
     const constructed: string = arrHas(links)
         ? links
               .reduce((pv, v, i) => {
-                  if (i === 0 && field.value.length > 0) pv.push(`\n\n${v}`);
-                  else pv.push(v);
+                  // make sure we leave space after the link text is inserted
+                  if (i === 0 && field.value.length > 0) pv.push(`\n\n${v}\n`);
+                  else pv.push(`${v}\n\n`);
                   return pv;
               }, [])
               .join("")
         : null;
-    //if (constructed) insertAtCaret(field, constructed);
     if (constructed) textFieldEdit.insert(field, constructed);
 };
 
