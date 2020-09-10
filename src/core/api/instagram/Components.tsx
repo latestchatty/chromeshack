@@ -71,7 +71,7 @@ export const fetchInstagramData = async (shortcode: string) => {
 };
 
 const InstagramCaption = ({ text }: { text: string }) => {
-    const tagsReplaced = text?.split(/(#\w+)|(@\w+)/gm);
+    const tagsReplaced = text?.split(/([#@][A-Za-z0-9\._]+)/gm);
     const output = [];
     for (const [i, m] of tagsReplaced.entries() || []) {
         const isHash = m?.match(/^#/);
@@ -79,14 +79,14 @@ const InstagramCaption = ({ text }: { text: string }) => {
         if (isHash) {
             const hash = m?.replace("#", "");
             output.push(
-                <a key={i} href={`https://instagr.am/explore/tags/${m}`}>
+                <a key={i} href={`https://instagr.am/explore/tags/${hash}`}>
                     #{hash}
                 </a>,
             );
         } else if (isTag) {
             const tag = m?.replace("@", "");
             output.push(
-                <a key={i} href={`https://instagr.am/${m}`}>
+                <a key={i} href={`https://instagr.am/${tag}`}>
                     @{tag}
                 </a>,
             );

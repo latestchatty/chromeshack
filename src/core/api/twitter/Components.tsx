@@ -9,7 +9,7 @@ import type { TweetParsed } from "./twitter";
 const CompiledTweetText = ({ text }: { text: string }) => {
     if (!text) return <span />;
     // try to parse our tags, links, and text content into a set of rendered links
-    const tagsReplaced = text.split(/(#\w+)|(@\w+)|(https:\/\/t.co\/\w+)/gm);
+    const tagsReplaced = text.split(/([#@][A-Za-z0-9\._]+)|(https:\/\/t.co\/\w+)/gm);
     const output = [];
     for (const [i, m] of tagsReplaced.entries() || []) {
         const isHash = m?.match(/^#/);
