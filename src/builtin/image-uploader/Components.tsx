@@ -88,7 +88,9 @@ export const DropArea = (props: ImageUploaderComponentProps) => {
                 accept={formats}
                 onChange={handleFileChooser}
             />
-            <span onClick={onClickLabelHandler}>{getFileCount(fileData) || "Drop or select files here..."}</span>
+            <span onClick={onClickLabelHandler}>
+                {getFileCount(fileData) || `Drop or select ${multifile ? "files" : "file"} here...`}
+            </span>
         </div>
     );
 };

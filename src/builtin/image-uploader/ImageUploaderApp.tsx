@@ -7,6 +7,7 @@ import handleImgurUpload from "../../core/api/imgur";
 import handleGfycatUpload from "../../core/api/gfycat";
 import handleChattypicsUpload from "../../core/api/chattypics";
 import { arrHas, appendLinksToField } from "../../core/common";
+import { getSetting, setSetting } from "../../core/settings";
 
 export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {
@@ -18,6 +19,14 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
     const dispatch = useUploaderDispatch();
     const fileChooserRef = useRef(null);
 
+    const doSelectTab = (tabName: string) => {
+        const normalizedTabName = `${tabName.toUpperCase()}_LOAD`;
+        dispatch({ type: "CHANGE_TAB", payload: tabName });
+        dispatch({ type: normalizedTabName });
+        // save our selected tab between sessions
+        setSetting("selected_tab", tabName);
+    };
+
     const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         dispatch({ type: "TOGGLE_UPLOADER" });
@@ -26,10 +35,7 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         e.preventDefault();
         const this_node = e.target as HTMLDivElement;
         const thisTab = this_node?.id;
-        if (thisTab !== state.selectedTab) {
-            dispatch({ type: "CHANGE_TAB", payload: thisTab });
-            dispatch({ type: `${thisTab.toUpperCase()}_LOAD` });
-        }
+        if (thisTab !== state.selectedTab) doSelectTab(thisTab);
     };
     const onClickUploadBtn = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
@@ -60,6 +66,12 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
             dispatch({ type: "UPLOAD_CANCEL" }); // reset UI
         }
     }, [state.response]);
+    useEffect(() => {
+        // restore our saved hoster tab
+        getSetting("selected_tab").then((tab: string) => {
+            if (tab) doSelectTab(tab);
+        });
+    }, []);
 
     /// tabs are defined by id and label
     const tabs = [
