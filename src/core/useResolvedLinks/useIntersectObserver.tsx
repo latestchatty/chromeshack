@@ -18,7 +18,7 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
             threshold,
             ...configOpts,
         };
-        // only expose the first IntersectionEntry for this element
+        // only expose the boolean state of the visibility threshold (for ease of use)
         observer.current = new IntersectionObserver(([e]) => {
             if (e?.intersectionRatio > threshold) setIsVisible(true);
             else setIsVisible(false);
@@ -29,7 +29,7 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
         // make sure we clean up after ourselves
         return () => _observer.disconnect();
     }, [observedElem, root, threshold]);
-    // expose an element setter and our intersect entries
+    // expose an element setter and our boolean visibility state
     return { setObservedElem, isVisible };
 };
 
