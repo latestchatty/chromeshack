@@ -58,9 +58,12 @@ div.suboption.indent {
 #add_highlight_group {
     width: 100%;
 }
-.highlight_group {
+#highlight_group {
     display: flex;
     flex-direction: column;
+}
+#highlight_group:not(:last-child) {
+    margin-bottom: 0.5em;
 }
 .group_header {
     display: flex;
@@ -97,14 +100,13 @@ input[type="text"]:read-only {
 
 .group_css {
     display: flex;
-    max-width: 98%;
+    max-width: 100%;
 }
 .group_css textarea {
     flex: 1 auto;
     width: 100%;
     min-height: 45px;
     min-width: 300px;
-    max-width: 350px;
     max-height: 750px;
     padding: 4px;
     margin: 0 0.15em 0.5em 0;
