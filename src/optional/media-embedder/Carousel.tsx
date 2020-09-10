@@ -28,14 +28,17 @@ const Carousel = (props: { slides: React.ReactNode[] }) => {
         // update our button states
         setPrevBtnEnabled(embla.canScrollPrev());
         setNextBtnEnabled(embla.canScrollNext());
-        const slideNodes = embla.slideNodes();
-        const visibleSlides = embla.slidesInView();
-        const selectedSlide = slideNodes[visibleSlides[visibleSlides.length - 1]];
-        const emblaContainer = selectedSlide?.closest(".embla");
-        const selectedMedia = selectedSlide?.querySelector("img, video") as HTMLElement;
-        const cHeight = selectedMedia?.clientHeight;
-        // try to forcefully resize the carousel container to the media's client height
-        if (selectedSlide && cHeight > 0) emblaContainer?.setAttribute("style", `height: ${cHeight}px;`);
+        setTimeout(() => {
+            // wait slightly longer than transition time to update height
+            const slideNodes = embla.slideNodes();
+            const visibleSlides = embla.slidesInView();
+            const selectedSlide = slideNodes[visibleSlides[visibleSlides.length - 1]];
+            const emblaContainer = selectedSlide?.closest(".embla");
+            const selectedMedia = selectedSlide?.querySelector("img, video") as HTMLElement;
+            const cHeight = selectedMedia?.clientHeight;
+            // try to forcefully resize the carousel container to the media's client height
+            if (selectedSlide && cHeight > 0) emblaContainer?.setAttribute("style", `height: ${cHeight}px;`);
+        }, 210);
     }, [embla]);
     const scrollPrev = useCallback(() => embla && embla.scrollPrev(), [embla]);
     const scrollNext = useCallback(() => embla && embla.scrollNext(), [embla]);
@@ -48,7 +51,7 @@ const Carousel = (props: { slides: React.ReactNode[] }) => {
 
     useEffect(() => {
         if (!embla) return;
-        embla.on("settle", onSelect);
+        embla.on("select", onSelect);
         embla.on("resize", onResize);
         onSelect();
     }, [embla, onSelect, onResize]);

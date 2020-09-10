@@ -14,6 +14,7 @@ div#react-media-manager {
     display: none !important;
 }
 div.media {
+    position: relative;
     /* enforce block for everything but image/video */
     display: block !important;
 }
@@ -33,11 +34,12 @@ div.medialink > .expandalt {
     margin: 0 0.25em 0 0.2em;
 }
 
-.media__boundary {
-    position: relative;
-}
+/*
 div.media > .media__boundary > img,
+div.media > .media__boundary > video */
+div.media > img,
 div.media > .media__boundary > video {
+    display: block;
     object-fit: scale-down;
     outline: none;
     /* only enforce a max height */
@@ -92,7 +94,12 @@ div.expando {
     height: 100%;
 }
 
+.media > .media__boundary {
+    display: inline-block;
+    position: relative;
+}
 .mute__overlay__container {
+    display: block;
     position: absolute;
     z-index: 3;
     top: 10px;

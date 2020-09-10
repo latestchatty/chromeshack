@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { arrHas, objHas, isIframe, classNames } from "../common";
 import { ParsedResponse, detectMediaLink } from "../api";
@@ -39,19 +39,28 @@ export const Iframe = (props: MediaProps) => {
 };
 
 export const Image = (props: MediaProps) => {
-    const { classes, src, options } = props || {};
+    const { classes: _classes, src, options } = props || {};
+    const [classes, setClasses] = useState("");
+    const [isSlide, setIsSlide] = useState(false);
+    const imageRef = useRef<HTMLImageElement>();
     if (!src) return null;
 
     let { clickTogglesVisible } = options || {};
     // click-to-toggle enabled by default
     if (clickTogglesVisible === undefined) clickTogglesVisible = true;
-    const _classes = clickTogglesVisible ? classNames(classes, { canToggle: clickTogglesVisible }) : classes;
+    useEffect(() => {
+        const img = imageRef.current;
+        const _isSlide = img?.closest(".embla__slide__inner");
+        if (img && _isSlide) {
+            setIsSlide(!!_isSlide);
+            // disable click-to-toggle pointer if we're a child of a slide
+            setClasses(classNames(_classes));
+        } else if (img) {
+            setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
+        }
+    }, [imageRef, isSlide, _classes]);
 
-    return (
-        <div className="media__boundary">
-            <img className={_classes} src={src} alt="" />
-        </div>
-    );
+    return <img className={classes} src={src} alt="" ref={imageRef} />;
 };
 
 const useResolvedLinks = (props: ResolvedLinkProps) => {

@@ -148,18 +148,15 @@ a#twitter__quote_displayname:hover {
 .twitter__media__content video,
 .twitter__quote__media__content img,
 .twitter__quote__media__content video {
+    width: 100% !important;
+    object-fit: contain !important;
+    max-height: var(--max-social-item-height);
+    max-width: var(--max-social-item-width);
     border: 1px solid var(--twttr-fg-border-color);
     border-radius: 8px;
-    width: 100% !important;
-    height: auto !important;
-    min-height: var(--min-social-item-height);
-    max-height: var(--max-social-item-height);
-    min-width: var(--min-media-item-width);
-    max-width: var(--max-social-item-width);
     outline: none !important;
     margin: 0;
     padding: 0;
-    object-fit: contain !important;
 }
 
 .twitter__timestamp {
