@@ -30,15 +30,17 @@
     /* postbox alignment container */
     display: flex;
     width: 100%;
+    padding: 0 0 1px 0;
 }
 .post_sub_container .hidden {
     display: none !important;
 }
 
 #shacktags_legend {
-    margin: 0 auto auto 0 !important;
     display: flex !important;
     flex-direction: column;
+    top: 0;
+    left: 0;
 }
 #shacktags_legend_toggle {
     width: 100%;
