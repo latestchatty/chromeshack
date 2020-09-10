@@ -155,11 +155,13 @@ const ThreadPane = {
         const $rootPostbodyDiv = opDiv.find("div.postbody").first();
         if ($rootPostbodyDiv.length !== 1) throw new Error(`Couldn't find the div.postbody for thread ${threadId}.`);
         const $cloned = $rootPostbodyDiv.clone();
-        $cloned.find("a").replaceWith(function () {
-            return $(`<span class="cs_thread_pane_link">${(this as HTMLAnchorElement).href}</span>`);
+        // replace normal and embedded links with a styled defunct replica
+        $cloned.find("a, div.medialink").replaceWith(function () {
+            const link = this.nodeName === "DIV" ? this.querySelector("a") : (this as HTMLAnchorElement);
+            return $(`<span class="cs_thread_pane_link">${link?.href}</span>`);
         });
-        // remove embed containers from Thread Pane parent
-        $cloned.find("#react-media-manager, div.medialink").remove();
+        // remove any copied embed containers from the copied postbody
+        $cloned.find("#react-media-manager").remove();
         return $cloned;
     },
 
