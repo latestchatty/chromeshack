@@ -30,3 +30,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [React](https://github.com/facebook/react)
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
 -   [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
+-   [text-field-edit](https://github.com/fregante/text-field-edit)

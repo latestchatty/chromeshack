@@ -1,3 +1,5 @@
+import * as textFieldEdit from "text-field-edit";
+
 import { processPostBoxEvent } from "../core/events";
 
 const CommentTags = {
@@ -103,7 +105,7 @@ const CommentTags = {
             input = input.replace(/^{/, "\n{").replace(/}$/, "}\n");
         }
 
-        textarea.value =
+        const mutatedComment =
             textarea.value.substring(0, start) +
             (whiteSpaceBefore ? " " : "") +
             opening_tag +
@@ -111,6 +113,7 @@ const CommentTags = {
             closing_tag +
             (whiteSpaceAfter ? " " : "") +
             textarea.value.substring(end, textarea.value.length);
+        textFieldEdit.set(textarea, mutatedComment);
 
         let offset = whiteSpaceBefore ? 1 : 0;
         if (end > start) {

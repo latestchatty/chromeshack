@@ -1,5 +1,6 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
+import * as textFieldEdit from "text-field-edit";
 
 import { arrHas, objHas } from "./";
 
@@ -270,7 +271,8 @@ export const appendLinksToField = (field: HTMLInputElement, links: string[]) => 
               }, [])
               .join("")
         : null;
-    if (constructed) insertAtCaret(field, constructed);
+    //if (constructed) insertAtCaret(field, constructed);
+    if (constructed) textFieldEdit.insert(field, constructed);
 };
 
 export const matchFileFormat = (input: File, imgFormats: string, vidFormats: string): number => {

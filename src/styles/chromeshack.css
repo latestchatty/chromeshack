@@ -13,13 +13,19 @@ a.pin_button {
 }
 
 /* post preview */
+div#postbox {
+    /* avoid the textareas moving around */
+    padding: 0.2rem;
+    margin: auto auto;
+}
 #previewArea {
     display: block;
     border: 1px solid #aeae9b;
-    padding: 5px 0 5px 5px;
     background: #222;
     height: 200px;
-    width: 99%;
+    width: 97.8%;
+    padding: 0.5rem;
+    margin: 0 auto;
     overflow-y: auto;
 }
 pre.codeblock {
