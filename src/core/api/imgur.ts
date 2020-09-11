@@ -37,9 +37,16 @@ type ImgurMediaItem = {
 };
 interface ImgurResponse {
     data: {
+        deletehash?: string;
         images?: ImgurMediaItem[];
         mp4?: string;
         link?: string;
+    };
+}
+interface ImgurCreateAlbumResponse {
+    data: {
+        id?: string;
+        deletehash?: string;
     };
 }
 
@@ -73,11 +80,18 @@ const parseLink = (href: string) => {
 export const isImgur = (href: string) => parseLink(href);
 
 // wrap fetchSafe() so we can silence transmission exceptions
-const _fetch = async (url: string) =>
+const _auth = { Authorization: imgurClientId };
+const _fetch = async (url: string, fetchOpts?: Record<string, any>) =>
     // sanitized in common.js
     await fetchSafe({
         url,
-        fetchOpts: { headers: { Authorization: imgurClientId } },
+        fetchOpts: { ...fetchOpts, headers: _auth },
+    }).catch((e: Error) => console.error(e));
+const _post = async (url: string, data: string, fetchOpts?: Record<string, any>) =>
+    await postBackground({
+        url,
+        fetchOpts: { ...fetchOpts, headers: _auth },
+        data,
     }).catch((e: Error) => console.error(e));
 
 export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResolution) => {
@@ -141,20 +155,30 @@ const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction
             else if (fileFormat === 1) dataBody.append("video", file);
             else throw Error(`Could not detect the file format for: ${file}`);
             const stringified = await FormDataToJSON(dataBody);
-            const res: ImgurResponse = await postBackground({
-                url: imgurApiUploadUrl,
-                fetchOpts: {
-                    headers: { Authorization: imgurClientId },
-                },
-                data: stringified,
-            });
-            // sanitized in fetchSafe()
-            if (res?.data?.link) response.push(res.data.link);
+            const res: ImgurResponse = await _post(imgurApiUploadUrl, stringified);
+            const deletehash = res?.data?.deletehash;
+            const link = res?.data?.mp4 || res?.data?.link;
+            // return our deletehash (for use on anonymous albums) and media link
+            if (link) response.push({ deletehash, link });
         }
         return response;
     } catch (e) {
         if (e) console.error(e);
     }
+};
+
+const doImgurCreateAlbum = async (hashes: string[]) => {
+    const dataBody =
+        hashes?.length > 0
+            ? (hashes as string[]).reduce((acc, p) => {
+                  acc.append("deletehashes[]", p);
+                  return acc;
+              }, new FormData())
+            : null;
+    const _fd = dataBody && (await FormDataToJSON(dataBody));
+    // open a new album and add our media hashes to it
+    const resp = _fd && ((await _post(imgurApiAlbumBaseUrl, _fd)) as ImgurCreateAlbumResponse);
+    return resp?.data?.id ? `https://imgur.com/a/${resp.data.id}` : null;
 };
 
 const handleImgurSuccess = (payload: UploadSuccessPayload, dispatch: Dispatch<UploaderAction>) =>
@@ -163,11 +187,22 @@ const handleImgurSuccess = (payload: UploadSuccessPayload, dispatch: Dispatch<Up
 const handleImgurFailure = (payload: UploadFailurePayload, dispatch: Dispatch<UploaderAction>) =>
     dispatch({ type: "UPLOAD_FAILURE", payload });
 
+const handleImgurAlbumUpload = async (links: string[], hashes: string[], dispatch: Dispatch<UploaderAction>) => {
+    if (!arrEmpty(hashes) && hashes?.length > 1) {
+        const albumId = await doImgurCreateAlbum(hashes);
+        if (albumId) handleImgurSuccess([albumId], dispatch);
+        else handleImgurFailure({ code: 400, msg: "Something went wrong when creating album!" }, dispatch);
+    } else if (hashes?.length === 1) handleImgurSuccess(links, dispatch);
+    else handleImgurFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
+};
+
 const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     try {
-        const links: string[] = await doImgurUpload(data, dispatch);
-        if (!arrEmpty(links)) handleImgurSuccess(links, dispatch);
-        else handleImgurFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
+        const uploaded = await doImgurUpload(data, dispatch);
+        const links = uploaded && uploaded.map((i) => i.link);
+        const hashes = uploaded && uploaded.map((i) => i.deletehash);
+        // return an album link or a media link
+        await handleImgurAlbumUpload(links, hashes, dispatch);
     } catch (e) {
         if (e) console.error(e);
         handleImgurFailure({ code: 401, msg: e.message || `Something went wrong!` }, dispatch);

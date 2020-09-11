@@ -63,9 +63,13 @@ export const fetchSafeLegacy = ({ url, fetchOpts, parseType }: FetchArgs): Promi
             .then((res: any) => {
                 const result = res && parseFetchResponse(res, parseType);
                 if (result) resolve(result);
+                console.error(res);
                 return reject(res);
             })
-            .catch((err) => reject(err));
+            .catch((err) => {
+                console.error(err);
+                return reject(err);
+            });
     });
 };
 
@@ -84,9 +88,13 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
                 const result = (res?.ok || res?.statusText === "OK") && res.text();
                 const parsed = result ? parseFetchResponse(result, parseType) : null;
                 if (parsed) return resolve(parsed);
+                console.error(res);
                 return reject(res);
             })
-            .catch((err) => reject(err)),
+            .catch((err) => {
+                console.error(err);
+                return reject(err);
+            }),
     );
 };
 

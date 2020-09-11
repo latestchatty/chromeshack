@@ -94,7 +94,7 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
             return {
                 ...state,
                 urlDisabled: false,
-                multifile: false,
+                multifile: true,
                 formats,
             };
         }

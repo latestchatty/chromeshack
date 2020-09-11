@@ -53,8 +53,8 @@ browser.runtime.onMessage.addListener(
                 const fetchArgs: FetchArgs = {
                     url: request.url,
                     fetchOpts: {
-                        method: "POST",
-                        headers: request.headers,
+                        ...request.fetchOpts,
+                        method: request.fetchOpts.method || "POST",
                         body: _fd,
                     },
                     parseType: request.parseType,
