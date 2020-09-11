@@ -91,10 +91,11 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
         case "IMGURTAB_LOAD":
         case "GFYCATTAB_LOAD": {
             const formats = `${imageFormats},${videoFormats}`;
+            // Imgur supports anonymous multi-file album uploads
             return {
                 ...state,
                 urlDisabled: false,
-                multifile: true,
+                multifile: action.type === "IMGURTAB_LOAD" ? true : false,
                 formats,
             };
         }
