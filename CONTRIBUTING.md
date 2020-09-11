@@ -57,7 +57,7 @@ If you're interested in contributing a new content script or feature suggestion:
   - Click "Upload New Version" on the left side
   - Click "Select a file..." and pick the zip
   - Click "Continue"
-  - Do You Need to Submit Source Code? Click "No", click "Continue"
+  - Do You Need to Submit Source Code? Click "Yes", select the "src" zip in the artifacts directory, and click "Continue"
   - Convert release notes to plain text and paste in
   - Click "Submit Version"
   - You're done!
