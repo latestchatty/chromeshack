@@ -166,8 +166,12 @@ a#twitter__quote_displayname:hover {
 }
 
 /* custom instagram container */
+.instagram__boundary {
+    display: flex;
+}
 .instagram__container {
-    display: table !important;
+    display: flex !important;
+    flex-direction: column;
     background: var(--instgrm-bg-color);
     border: 1px solid black;
     border-radius: 4px;
@@ -270,7 +274,8 @@ span.instagram__post__details {
 .instagram__embed {
     display: flex !important;
     flex-direction: column;
-    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
 }
 .instagram__embed img,
 .instagram__embed video {

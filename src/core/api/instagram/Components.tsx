@@ -71,11 +71,12 @@ export const fetchInstagramData = async (shortcode: string) => {
 };
 
 const InstagramCaption = ({ text }: { text: string }) => {
-    const tagsReplaced = text?.split(/([#@][A-Za-z0-9\._]+)/gm);
+    const tagsReplaced = text?.split(/([#@][A-Za-z0-9\._]+|[\r\n])/gm);
     const output = [];
     for (const [i, m] of tagsReplaced.entries() || []) {
         const isHash = m?.match(/^#/);
         const isTag = m?.match(/^@/);
+        const isCR = m?.match(/[\r\n]/);
         if (isHash) {
             const hash = m?.replace("#", "");
             output.push(
@@ -90,7 +91,8 @@ const InstagramCaption = ({ text }: { text: string }) => {
                     @{tag}
                 </a>,
             );
-        } else if (m) output.push(m);
+        } else if (isCR) output.push(<br key={i} />);
+        else if (m) output.push(m);
     }
     return <span id="instagram__post__caption">{output}</span>;
 };
@@ -111,56 +113,60 @@ const Instagram = (props: { response: InstagramParsed }) => {
     } = response || {};
     if (!error) {
         return (
-            <div className="instagram__container">
-                <div className="instagram__header">
-                    <a href={`https://instagr.am/${authorName}/`} className="instagram__profile__a">
-                        <img className="instagram__author__pic circle" src={authorPic} alt="" />
-                    </a>
-                    <div className="instagram__postpic__line">
-                        <a href={`https://instagr.am/${authorName}/`} className="instagram__profile__b">
-                            <span className="instagram__author__nick">{authorName}</span>
+            <div className="instagram__boundary">
+                <div className="instagram__container">
+                    <div className="instagram__header">
+                        <a href={`https://instagr.am/${authorName}/`} className="instagram__profile__a">
+                            <img className="instagram__author__pic circle" src={authorPic} alt="" />
                         </a>
-                        <div className="instagram__postpic__details">
-                            {metaLikes.length > 0 && (
-                                <>
-                                    <LikesIcon />
-                                    <span className="instagram__post__details">{`${metaLikes} likes`}</span>
-                                </>
-                            )}
-                            {metaComments.length > 0 && (
-                                <>
-                                    <CommentsIcon />
-                                    <span className="instagram__post__details">{`${metaComments} comments`}</span>
-                                </>
-                            )}
+                        <div className="instagram__postpic__line">
+                            <a href={`https://instagr.am/${authorName}/`} className="instagram__profile__b">
+                                <span className="instagram__author__nick">{authorName}</span>
+                            </a>
+                            <div className="instagram__postpic__details">
+                                {metaLikes.length > 0 && (
+                                    <>
+                                        <LikesIcon />
+                                        <span className="instagram__post__details">{`${metaLikes} likes`}</span>
+                                    </>
+                                )}
+                                {metaComments.length > 0 && (
+                                    <>
+                                        <CommentsIcon />
+                                        <span className="instagram__post__details">{`${metaComments} comments`}</span>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                        <div className="instagram__logo">
+                            <a href={postUrl}>
+                                <InstagramLogo />
+                            </a>
                         </div>
                     </div>
-                    <div className="instagram__logo">
-                        <a href={postUrl}>
-                            <InstagramLogo />
-                        </a>
+                    <div className="instagram__embed">
+                        <CompiledMedia mediaItems={postMedia} />
                     </div>
-                </div>
-                <div className="instagram__embed">
-                    <CompiledMedia mediaItems={postMedia} />
-                </div>
-                <div className={classNames("instagram__caption", { hidden: postCaption.length === 0 })}>
-                    <InstagramCaption text={postCaption} />
-                </div>
-                <div className="instagram__footer">
-                    <span>A post shared by</span>
-                    <a className="instagram__post__url" href={postUrl}>
-                        <span className="instagram__postlink__name">{authorFullName}</span>
-                    </a>
-                    <span className="instagram__post__author">{authorName ? `(@${authorName})` : ""}</span>
-                    <span className="instagram__post__timestamp">on {postTimestamp}</span>
+                    <div className={classNames("instagram__caption", { hidden: postCaption.length === 0 })}>
+                        <InstagramCaption text={postCaption} />
+                    </div>
+                    <div className="instagram__footer">
+                        <span>A post shared by</span>
+                        <a className="instagram__post__url" href={postUrl}>
+                            <span className="instagram__postlink__name">{authorFullName}</span>
+                        </a>
+                        <span className="instagram__post__author">{authorName ? `(@${authorName})` : ""}</span>
+                        <span className="instagram__post__timestamp">on {postTimestamp}</span>
+                    </div>
                 </div>
             </div>
         );
     } else {
         return (
-            <div className="instagram__container">
-                <span className="instagram__error">{error}</span>
+            <div className="instagram__boundary">
+                <div className="instagram__container">
+                    <span className="instagram__error">{error}</span>
+                </div>
             </div>
         );
     }
