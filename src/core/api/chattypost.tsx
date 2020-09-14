@@ -29,19 +29,21 @@ const fetchChattyPost = async (postid: string) => {
         const _postNode = container.childNodes[1] as HTMLElement;
         // honor spoiler tags' click event when embedded
         const spoilerTag = _postNode?.querySelector("span.jt_spoiler");
-        if (spoilerTag) {
+        if (spoilerTag)
             spoilerTag.addEventListener("click", (e: MouseEvent) => {
                 const this_node = e?.target as HTMLElement;
                 this_node?.setAttribute("class", "jt_spoiler_clicked");
             });
-        }
+
         // strip any mod banners from this embedded post (they look weird)
         const fullpost = container.querySelector("div.fullpost");
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
         // return the post as a sanitized string of HTML (without the container)
         return container.firstElementChild?.innerHTML;
-    } else return null as string;
+    } else {
+        return null as string;
+    }
 };
 
 const Chattypost = (props: { html: string }) => {

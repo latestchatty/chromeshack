@@ -46,9 +46,7 @@ const showHighlightGroups = async () => {
     const highlightGroups = document.getElementById("highlight_groups");
     removeChildren(highlightGroups);
     const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-    for (const group of groups || []) {
-        addHighlightGroup(null, group);
-    }
+    for (const group of groups || []) addHighlightGroup(null, group);
 };
 
 const getHighlightGroup = (groupElem?: HTMLElement) => {
@@ -74,9 +72,7 @@ const getHighlightGroups = async () => {
         const record = getHighlightGroup(group as HTMLElement);
         if (!objEmpty(record)) highlightRecords.push(record);
     }
-    if (highlightRecords.length > 0) {
-        return await setSetting("highlight_groups", highlightRecords);
-    }
+    if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
 };
 
 const newHighlightGroup = (name?: string, css?: string, username?: string) => {
@@ -229,12 +225,11 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
     });
     // handle changes on mutable text fields with a debounce
     const textfields = [...groupElem.querySelectorAll(".group_css textarea, .group_label")];
-    for (const textfield of textfields || []) {
+    for (const textfield of textfields || [])
         if (!textfield.hasAttribute("readonly")) {
             textfield.removeEventListener("keyup", delayedTextUpdate);
             textfield.addEventListener("keyup", delayedTextUpdate);
         }
-    }
 
     document.querySelector("#highlight_groups").appendChild(groupElem);
     if (e && (<HTMLElement>e.target).matches("#add_highlight_group")) getHighlightGroups();
@@ -323,12 +318,10 @@ const getEnabledScripts = async () => {
     ];
     for (const checkbox of checkboxes) {
         const _checkbox = checkbox as HTMLInputElement;
-        if (elemMatches(_checkbox, ".script_check") && _checkbox.checked) {
+        if (elemMatches(_checkbox, ".script_check") && _checkbox.checked)
             // put non-boolean save supports here
             enabled.push(_checkbox.id);
-        } else if (elemMatches(_checkbox, ".suboption") && _checkbox.checked) {
-            enabledSuboptions.push(_checkbox.id);
-        }
+        else if (elemMatches(_checkbox, ".suboption") && _checkbox.checked) enabledSuboptions.push(_checkbox.id);
     }
     await setSetting("enabled_scripts", enabled);
     await setSetting("enabled_suboptions", enabledSuboptions);
@@ -359,18 +352,13 @@ const loadOptions = async () => {
     `),
     ] as HTMLInputElement[];
 
-    for (const checkbox of checkboxes) {
-        if (elemMatches(checkbox, ".script_check")) {
-            await loadOption(checkbox, "script");
-        } else if (elemMatches(checkbox, ".suboption")) {
-            await loadOption(checkbox, "suboption");
-        } else if (checkbox.id !== scripts) checkbox.checked = false;
-    }
+    for (const checkbox of checkboxes)
+        if (elemMatches(checkbox, ".script_check")) await loadOption(checkbox, "script");
+        else if (elemMatches(checkbox, ".suboption")) await loadOption(checkbox, "suboption");
+        else if (checkbox.id !== scripts) checkbox.checked = false;
 
     if (await getEnabled("highlight_users")) await showHighlightGroups();
     if (await getEnabled("custom_user_filters")) await showUserFilters();
-
-    console.log("loadOptions:", await getSettings());
 };
 
 const saveOptions = (e: MouseEvent) => {
@@ -446,7 +434,7 @@ const exportSettings = async (settingsField: HTMLInputElement) => {
             return true;
         }
     } catch (e) {
-        console.log("Something went wrong:", e);
+        console.error("Something went wrong:", e);
         return false;
     }
 };
@@ -515,7 +503,9 @@ const handleImportExportSettings = () => {
                 handleImportExportField();
                 await loadOptions();
             }
-        } else if (importExportField) await exportSettings(importExportField);
+        } else if (importExportField) {
+            await exportSettings(importExportField);
+        }
     })();
 };
 

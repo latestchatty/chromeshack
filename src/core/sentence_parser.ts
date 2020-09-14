@@ -31,13 +31,11 @@ export const SentenceParser = {
             if (tmp?.length > 0) {
                 // replace placeholders with items
                 // do spoilers first, because spoilers could contain links!
-                while (tmp.indexOf(SPOILER_PLACEHOLDER) >= 0 && spoilers?.length > 0) {
+                while (tmp.indexOf(SPOILER_PLACEHOLDER) >= 0 && spoilers?.length > 0)
                     tmp = tmp.replace(spoiler_replace_regex, spoilers.shift());
-                }
 
-                while (tmp.indexOf(LINK_PLACEHOLDER) >= 0 && links?.length > 0) {
+                while (tmp.indexOf(LINK_PLACEHOLDER) >= 0 && links?.length > 0)
                     tmp = tmp.replace(link_replace_regex, links.shift());
-                }
 
                 sentences.push(tmp);
             }

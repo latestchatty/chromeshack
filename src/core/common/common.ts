@@ -13,7 +13,9 @@ export const objContains = (needle: any, haystack: any) => {
         if (arrHas(value) || typeof value === "object") {
             const result = objContains(needle, value) as string;
             if (result) return result;
-        } else if (value === needle) return value;
+        } else if (value === needle) {
+            return value;
+        }
     }
     return null;
 };
@@ -41,12 +43,14 @@ export const classNames = (...args: any[]) => {
     /// e.g.: classNames("a", { very: true, convenient: true, function: false });
     /// produces: "a very convenient"
     const result = [];
-    for (const arg of args) {
+    for (const arg of args)
         if (typeof arg === "object" && arg !== null) {
             const keys = Object.keys(arg);
             for (const k of keys) if (arg[k]) result.push(k);
-        } else if (typeof arg === "string" && arg !== null && arg) result.push(arg);
-    }
+        } else if (typeof arg === "string" && arg !== null && arg) {
+            result.push(arg);
+        }
+
     return !arrEmpty(result) ? result.join(" ") : "";
 };
 
@@ -71,9 +75,9 @@ export const getLinkType = (href: string) => {
 
 export const isUrlArr = (dataArr: string[]) => {
     // every element of this array must contain a URL formatted string
-    for (const i of dataArr || []) {
+    for (const i of dataArr || [])
         if (typeof i !== "string" || i.length <= 9 || !i.match(/^https?:\/\//i)) return false;
-    }
+
     return true;
 };
 

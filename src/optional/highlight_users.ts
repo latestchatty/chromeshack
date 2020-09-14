@@ -44,24 +44,19 @@ export const HighlightUsers = {
 
     gatherCSS(users: ResolvedUser[], groups: HighlightGroup[]) {
         let css = "";
-        for (const group of groups || []) {
-            if (group.enabled) {
+        for (const group of groups || [])
+            if (group.enabled)
                 if (group.name === "Original Poster") css += `div.oneline.op span.oneline_user { ${group.css} }`;
-                else if (group.name === "Mods") {
+                else if (group.name === "Mods")
                     for (const { id, mod } of users) {
-                        if (mod) {
+                        if (mod)
                             css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
-                        }
                     }
-                } else {
-                    for (const { id, name } of users) {
-                        if (group.users && group.users.includes(name) && group.css.length > 0) {
+                else
+                    for (const { id, name } of users)
+                        if (group.users && group.users.includes(name) && group.css.length > 0)
                             css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
-                        }
-                    }
-                }
-            }
-        }
+
         // don't highlight current user as mod/employee/dev
         css += " span.this_user { color: rgb(0, 191, 243) !important; }";
         insertStyle(css, "highlighted-users");

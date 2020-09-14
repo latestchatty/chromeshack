@@ -32,7 +32,9 @@ export const insertStyle = (css: string, containerName: string) => {
         style.setAttribute("id", containerName);
         style.appendChild(document.createTextNode(css));
         document.getElementsByTagName("head")[0].appendChild(style);
-    } else if (style.id) style.innerHTML = css;
+    } else if (style.id) {
+        style.innerHTML = css;
+    }
 };
 
 export const getCookieValue = (name: string, defaultValue: string) => {
@@ -114,9 +116,8 @@ export const generatePreview = (postText: string) => {
     // replace matching pairs first
     for (const ix in complexReplacements) {
         const rgx = new RegExp(complexReplacements[ix].from[0] + "(.*?)" + complexReplacements[ix].from[1], "g");
-        while (postText.match(rgx) !== null) {
+        while (postText.match(rgx) !== null)
             postText = postText.replace(rgx, complexReplacements[ix].to[0] + "$1" + complexReplacements[ix].to[1]);
-        }
     }
 
     // replace orphaned opening shacktags, close them at the end of the post.
@@ -138,14 +139,13 @@ export function scrollToElement(elem: JQuery<HTMLElement> | HTMLElement, toFitBo
     if (elem && elem instanceof $) elem = (elem as JQuery<HTMLElement>)[0] as HTMLElement;
     else if (!elem) return false;
     if (toFitBool) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
-    else {
+    else
         $("html, body").animate(
             {
                 scrollTop: $(elem).offset().top - $(window).height() / 4,
             },
             0,
         );
-    }
 }
 
 export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement) => {
@@ -157,9 +157,7 @@ export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement) => 
     };
     const childRect = child.getBoundingClientRect();
     const isViewable = childRect.top >= parentRect.top && childRect.top <= parentRect.top + parentViewableArea.height;
-    if (!isViewable) {
-        parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top;
-    }
+    if (!isViewable) parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top;
 };
 
 export function elementIsVisible(elem: JQuery<HTMLElement> | HTMLElement, partialBool?: boolean) {

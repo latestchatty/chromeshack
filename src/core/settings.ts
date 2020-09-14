@@ -251,12 +251,12 @@ export const getEnabledSuboption = async (key: string) => {
 
 export const getSettingsLegacy = () => {
     const settings = { ...localStorage };
-    for (const key of Object.keys(settings) || []) {
-        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key])) {
+    for (const key of Object.keys(settings) || [])
+        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
             settings[key] = JSON.parse(settings[key]);
-        } else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
+        else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
         else settings[key] = JSON.parse(settings[key]);
-    }
+
     return settings;
 };
 
@@ -270,9 +270,8 @@ export const getMutableHighlights = async () => {
 export const updateSettingsVersion = async () => {
     const manifestVersion = getManifestVersion();
     const settingsVersion = await getSettingsVersion();
-    if (!settingsVersion || manifestVersion !== settingsVersion) {
-        await setSetting("version", manifestVersion || 0);
-    }
+    if (!settingsVersion || manifestVersion !== settingsVersion) await setSetting("version", manifestVersion || 0);
+
     return manifestVersion;
 };
 
@@ -425,8 +424,9 @@ export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
               // compare ordinal group names (users can exist in multiple groups)
               const foundIdx = acc.findIndex((y) => y.name?.toUpperCase() === v.name?.toUpperCase());
               // update existing member with the newest duplicate group found
-              if (foundIdx > -1) acc[foundIdx] = v;
-              else {
+              if (foundIdx > -1) {
+                  acc[foundIdx] = v;
+              } else {
                   // only allow unique users in a given group (compare ordinal name)
                   const uniqueUsers = v.users?.filter(
                       (x, i, s) => s.findIndex((y) => y.toUpperCase() === x.toUpperCase()) === i,
@@ -446,8 +446,8 @@ export const mergeSettings = async (newSettings: { [key: string]: any }) => {
     // to remove in a list if found, pass: { option_name: [{ old: "...", new: null }] }
     // to remove if found, pass: { option_name: null }
     const settings = await getSettings();
-    for (const [key, val] of Object.entries(newSettings)) {
-        if (arrHas(val) && settings[key]) {
+    for (const [key, val] of Object.entries(newSettings))
+        if (arrHas(val) && settings[key])
             for (const v of val) {
                 const foundIdx = (settings[key] as string[]).findIndex((x) => x === v.old);
                 // mutate array and leave no duplicate options/sub-options
@@ -460,8 +460,8 @@ export const mergeSettings = async (newSettings: { [key: string]: any }) => {
                         .filter((x, i, s) => s.indexOf(x) === i);
                 }
             }
-        } else if (val === null && key && settings[key]) delete settings[key];
-    }
+        else if (val === null && key && settings[key]) delete settings[key];
+
     return settings;
 };
 
@@ -501,7 +501,9 @@ export const migrateSettings = async () => {
     if (last_version !== current_version) {
         await setEnabledSuboption("show_rls_notes");
         await updateSettingsVersion();
-    } else await updateSettingsVersion();
+    } else {
+        await updateSettingsVersion();
+    }
     // only show release notes automatically once after the version is updated
     const show_notes = await getEnabledSuboption("show_rls_notes");
     const imported = await getEnabledSuboption("imported");

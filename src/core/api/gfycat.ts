@@ -95,21 +95,21 @@ const doGfycatStatus = async (key: string) => {
         status = await waitToFetchSafe(interval, { url: `${gfycatStatusUrl}/${key}` });
         elapsed += interval; // increment on await
         if (status?.task === "complete" && status?.gfyname) result = status?.gfyname;
-        else if (status?.task === "NotFoundo") {
-            // try multiple times in case the backend needs time to resolve an upload
-            if (attempts < maxAttempts) attempts += 1;
-            else {
+        else if (status?.task === "NotFoundo")
+            if (attempts < maxAttempts)
+                // try multiple times in case the backend needs time to resolve an upload
+                attempts += 1;
+            else
                 result = {
                     code: 400,
                     msg: `Gfycat returned NotFoundo for: ${key}`,
                 };
-            }
-        } else if (status?.task === "error") {
+        else if (status?.task === "error")
             result = {
                 code: parseInt(status?.errorMessage?.code) || 400,
                 msg: status?.errorMessage?.description || "Something went wrong!",
             };
-        }
+
         if (result) monitor = false;
     }
     if (interval >= maxTimeout) result = { code: 500, msg: "Gfycat timed out waiting for upload status!" };
@@ -118,21 +118,20 @@ const doGfycatStatus = async (key: string) => {
 
 const doGfycatUpload = async (data: UploadData, key: string) => {
     /// this will push a File object to the Gfycat drop endpoint
-    if (isFileArr(data as File[])) {
+    if (isFileArr(data as File[]))
         for (const file of data as File[]) {
             const dataBody = new FormData();
             dataBody.append("key", key);
             dataBody.append("file", new File([file], key, { type: file.type }));
             const _dataBody = await FormDataToJSON(dataBody);
             // handle the result in doGfycatStatus
-            if (_dataBody) {
+            if (_dataBody)
                 await postBackground({
                     url: gfycatDropUrl,
                     data: _dataBody,
                 });
-            }
         }
-    } else throw new Error(`Unable to upload non-File data to endpoint: ${gfycatDropUrl}`);
+    else throw new Error(`Unable to upload non-File data to endpoint: ${gfycatDropUrl}`);
 };
 
 const handleGfycatUploadSuccess = (payload: UploadSuccessPayload, dispatch: Dispatch<UploaderAction>) =>
@@ -157,15 +156,16 @@ export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<Up
             const urlUpload = await doGfycatStatus(key);
             if (typeof urlUpload === "string") {
                 const resolved = await doResolveGfycat(key);
-                if (resolved?.src && typeof resolved.src[0] === "string") {
+                if (resolved?.src && typeof resolved.src[0] === "string")
                     return handleGfycatUploadSuccess([resolved.src], dispatch);
-                } else {
+                else
                     return handleGfycatUploadFailure(
                         { code: 500, msg: `Unable to resolve the uploaded Gfycat: ${key}` },
                         dispatch,
                     );
-                }
-            } else return handleGfycatUploadFailure(urlUpload, dispatch);
+            } else {
+                return handleGfycatUploadFailure(urlUpload, dispatch);
+            }
         } else if (isFileArr(data as File[])) {
             await doGfycatUpload(data, key);
             // our status resolver handles the success/failure dispatch
@@ -173,7 +173,9 @@ export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<Up
             if (typeof encodedGfy === "string") {
                 const media = await doResolveGfycat(encodedGfy);
                 if (media?.src) handleGfycatUploadSuccess([media.src], dispatch);
-            } else handleGfycatUploadFailure(encodedGfy, dispatch);
+            } else {
+                handleGfycatUploadFailure(encodedGfy, dispatch);
+            }
         }
     } catch (e) {
         if (e) console.error(e);

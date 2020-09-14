@@ -43,9 +43,8 @@ export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
         }
 
         xhr.onload = function () {
-            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1) {
+            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
                 resolve(xhr.response);
-            }
 
             reject({ status: this.status, statusText: xhr.statusText });
         };
@@ -133,7 +132,7 @@ const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
     }
 };
 export const safeJSON = (text: string, purifyConfig?: PurifyConfig) => {
-    if (isJSON(text)) {
+    if (isJSON(text))
         try {
             const obj = JSON.parse(text);
             const result = {} as Record<string, any>;
@@ -145,30 +144,30 @@ export const safeJSON = (text: string, purifyConfig?: PurifyConfig) => {
         } catch (e) {
             throw Error(e);
         }
-    }
+
     return null;
 };
 
 const parseInstagram = (text: string) => {
     const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
     const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-    if (instgrmGQL) {
+    if (instgrmGQL)
         return {
             metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
             gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
         };
-    } else return null;
+    else return null;
 };
 const parseChattypics = (text: string) => {
     const _resFragment = sanitizeToFragment(text) as DocumentFragment;
     const _resElemArr = _resFragment.querySelector("#allLinksDirect") as HTMLInputElement;
     const _resElemVal = _resFragment.querySelector("#link11") as HTMLInputElement;
     // return a list of links if applicable
-    if (_resElemArr || _resElemVal) {
+    if (_resElemArr || _resElemVal)
         return _resElemArr
             ? _resElemArr.value.split("\n").filter((x: string) => x !== "")
             : _resElemVal && [_resElemVal.value];
-    } else return null;
+    else return null;
 };
 const parseShackRSS = (rssText: string) => {
     const result: ShackRSSItem[] = [];
@@ -229,7 +228,9 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
             if (parsed) return parsed;
         }
         // fallthrough: Gfycat (assume OK)
-        else if (text.length === 0) return true;
+        else if (text.length === 0) {
+            return true;
+        }
     } catch (e) {
         if (e) console.error("Parse failed:", e);
         console.error("Parse failed!");

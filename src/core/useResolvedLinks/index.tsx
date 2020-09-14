@@ -68,9 +68,8 @@ const loadComponent = (response: ParsedResponse, options?: MediaOptions) => {
     if (type === "video" && src && /imgur/.test(src)) src = src.replace(".gifv", ".mp4");
     // feed 'src' into an embeddable common media component depending on link type
     if (type === "image") return <Image key={src} src={src} options={options} />;
-    else if (type === "video") {
-        return <FlexVideo key={src} src={src} {...options} />;
-    } else if (type === "iframe") return <Iframe key={src} src={src} />;
+    else if (type === "video") return <FlexVideo key={src} src={src} {...options} />;
+    else if (type === "iframe") return <Iframe key={src} src={src} />;
     else return null;
 };
 const loadCarousel = (resolved: ParsedResponse[]) => {

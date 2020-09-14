@@ -20,7 +20,7 @@ export const SparklyComic = {
         const targetUsernames = ["sparkly"];
         SparklyComic.userMatch = HU_Instance.resolveUsers().filter((x) => targetUsernames.includes(x.name));
         // we have a fullpost, and its className contains sparkly's user id
-        for (const match of SparklyComic.userMatch) {
+        for (const match of SparklyComic.userMatch)
             if (fullpost?.classList?.contains(`fpauthor_${match.id}`)) {
                 const comic_id = `sparklycomic_${id}`;
                 // comic is already here!
@@ -49,7 +49,6 @@ export const SparklyComic = {
                     comic_div.appendChild(panel);
                 }
             }
-        }
     },
 
     getImage(line: string, i: number, count: number) {

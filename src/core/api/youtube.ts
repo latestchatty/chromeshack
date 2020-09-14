@@ -14,19 +14,19 @@ const parseLink = (href: string) => {
     const startAt = offset ? `&start=${offset}` : "";
 
     const h = { type: "iframe" };
-    if (video && !playlist) {
+    if (video && !playlist)
         return {
             ...h,
             src: `https://www.youtube.com/embed/${video}?autoplay=1${startAt}`,
         } as ParsedResponse;
-    } else if (video && playlist) {
+    else if (video && playlist)
         return {
             ...h,
             src: `https://www.youtube.com/embed/${video}?autoplay=1&list=${playlist}${startAt}`,
         } as ParsedResponse;
-    } else if (!video && playlist) {
+    else if (!video && playlist)
         return { ...h, src: `https://www.youtube.com/embed/videoseries?autoplay=1&list=${playlist}` } as ParsedResponse;
-    } else return null;
+    else return null;
 };
 
 export const isYoutube = (href: string) => parseLink(href);

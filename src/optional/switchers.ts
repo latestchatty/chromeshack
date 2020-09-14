@@ -36,11 +36,11 @@ export const Switchers = {
     cacheSwitchers() {
         // resolve and cache all offenders on the page once on load
         const users = HU_Instance.resolveUsers();
-        for (const user of users || []) {
+        for (const user of users || [])
             for (const offender of Switchers.offenders) {
                 const matchedOld = offender.old.toLowerCase() === user.name.toLowerCase();
                 const matchedNew = offender.new.toLowerCase() === user.name.toLowerCase();
-                if (matchedOld || matchedNew) {
+                if (matchedOld || matchedNew)
                     Switchers.resolved = [
                         ...Switchers.resolved,
                         {
@@ -49,9 +49,7 @@ export const Switchers = {
                             matched: matchedNew ? offender.old : offender.new,
                         } as SwitcherMatch,
                     ];
-                }
             }
-        }
     },
 
     loadSwitchers(item: HTMLElement) {
@@ -59,9 +57,8 @@ export const Switchers = {
             const offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
             const offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
             const offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (const post of offenderPosts) {
+            for (const post of offenderPosts)
                 Switchers.rewritePost(post as HTMLElement, offender.name, offender.matched);
-            }
         }
     },
 

@@ -21,15 +21,17 @@ export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
 
 export const collectMedia = (tweetMediaObj: TwitterResponseMediaItem[]) => {
     const result: string[] = [];
-    for (const item of Object.values(tweetMediaObj) || []) {
+    for (const item of Object.values(tweetMediaObj) || [])
         if ((item.type === "video" || item.type === "animated_gif") && item.video_info.variants) {
             const sorted = sortByBitrate(item.video_info.variants.filter((x) => x.content_type === "video/mp4"));
             for (const vidItem of sorted) {
                 result.push(vidItem.url);
                 break; // bail on the first match (highest res)
             }
-        } else if (item.type === "photo" && item.media_url_https) result.push(item.media_url_https);
-    }
+        } else if (item.type === "photo" && item.media_url_https) {
+            result.push(item.media_url_https);
+        }
+
     return result;
 };
 
@@ -47,7 +49,7 @@ export const renderTweetObj = async (response: TwitterResponse) => {
             timestamp: new Date(Date.parse(response.created_at)).toLocaleString(),
             userVerified: response.user.verified,
         };
-        if (response.quoted_status) {
+        if (response.quoted_status)
             result = {
                 ...result,
                 tweetQuoted: {
@@ -63,14 +65,15 @@ export const renderTweetObj = async (response: TwitterResponse) => {
                     quotedUserVerified: response.quoted_status.user.verified,
                 },
             };
-        }
-        if (response.in_reply_to_status_id_str) {
+
+        if (response.in_reply_to_status_id_str)
             result = {
                 ...result,
                 tweetParentId: response.in_reply_to_status_id_str,
             };
-        }
-    } else result = { unavailable: true };
+    } else {
+        result = { unavailable: true };
+    }
     return result;
 };
 
@@ -109,14 +112,15 @@ export const fetchTweetParents = async (tweetObj: TweetParsed) => {
         const parentTweets = await fetchParents(pid, [] as TweetParsed[]);
         // push the rendered tweets into the tweetParents property of our OT
         return arrHas(parentTweets) ? ({ ...tweetObj, tweetParents: parentTweets } as TweetParsed) : null;
-    } else return null;
+    } else {
+        return null;
+    }
 };
 
 export const fetchTweets = async (tweetId: string) => {
     /// use with useTweets() to fetch a fully rendered Twitter response
     const showTweetThreads = await getEnabledSuboption("sl_show_tweet_threads");
     const tweetObj = await fetchTweet(tweetId);
-    if (showTweetThreads && tweetObj.tweetParentId) {
-        return await fetchTweetParents(tweetObj);
-    } else return tweetObj;
+    if (showTweetThreads && tweetObj.tweetParentId) return await fetchTweetParents(tweetObj);
+    else return tweetObj;
 };

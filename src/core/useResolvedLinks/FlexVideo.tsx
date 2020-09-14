@@ -81,10 +81,9 @@ export const FlexVideo = (props: MediaProps) => {
     }, [videoRef, setObservedElem]);
     useEffect(() => {
         const vid = videoRef.current;
-        if (vid) {
+        if (vid)
             if (vid && isVisible && !wasPaused) vid.play();
             else if (vid) vid.pause();
-        }
     }, [videoRef, isVisible, wasPaused]);
 
     return (

@@ -8,15 +8,16 @@ import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from
 
 const collectMedia = (media: InstagramShortcodeMedia) => {
     const collector = [];
-    if (media.__typename === "GraphSidecar") {
+    if (media.__typename === "GraphSidecar")
         media.edge_sidecar_to_children.edges.forEach((edge) => {
             Object.entries(edge).forEach((item) => {
                 // pick the video url of this item, or the smallest of the media choices (640x640)
                 collector.push(item[1].video_url != null ? item[1].video_url : item[1].display_resources[0].src);
             });
         });
-    } else if (media.__typename === "GraphVideo") collector.push(media.video_url);
+    else if (media.__typename === "GraphVideo") collector.push(media.video_url);
     else if (media.__typename === "GraphImage") collector.push(media.display_resources[0].src);
+
     return collector;
 };
 const CompiledMedia = (props: { mediaItems: string[] }) => {
@@ -46,9 +47,9 @@ export const fetchInstagramData = async (shortcode: string) => {
             }));
         const _matchGQL = parsed && parsed.gqlData.shortcode_media;
         const _isPrivate = _matchGQL && _matchGQL.owner.is_private;
-        if (!_matchGQL || _isPrivate) {
+        if (!_matchGQL || _isPrivate)
             return { error: "This account or post has been made private or cannot be found:", url };
-        } else if (_matchGQL) {
+        else if (_matchGQL)
             return {
                 metaLikes: _matchGQL.edge_media_preview_like.count.toLocaleString(),
                 metaComments: _matchGQL.edge_media_preview_comment.count.toLocaleString(),
@@ -63,7 +64,6 @@ export const fetchInstagramData = async (shortcode: string) => {
                         : "",
                 postMedia: collectMedia(_matchGQL),
             };
-        }
     } catch (e) {
         console.error(e);
     }
@@ -90,8 +90,11 @@ const InstagramCaption = ({ text }: { text: string }) => {
                     @{tag}
                 </a>,
             );
-        } else if (isCR) output.push(<br key={i} />);
-        else if (m) output.push(m);
+        } else if (isCR) {
+            output.push(<br key={i} />);
+        } else if (m) {
+            output.push(m);
+        }
     }
     return <span id="instagram__post__caption">{output}</span>;
 };
@@ -110,7 +113,7 @@ const Instagram = (props: { response: InstagramParsed }) => {
         postMedia,
         error,
     } = response || {};
-    if (!error) {
+    if (!error)
         return (
             <div className="instagram__boundary">
                 <div className="instagram__container">
@@ -160,7 +163,7 @@ const Instagram = (props: { response: InstagramParsed }) => {
                 </div>
             </div>
         );
-    } else {
+    else
         return (
             <div className="instagram__boundary">
                 <div className="instagram__container">
@@ -168,7 +171,6 @@ const Instagram = (props: { response: InstagramParsed }) => {
                 </div>
             </div>
         );
-    }
 };
 
 // render Instagram child from a given instagram response object

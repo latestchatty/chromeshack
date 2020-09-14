@@ -28,7 +28,7 @@ export const DinoGegtik = {
         const targetUsernames = ["gegtik", "boring gegtik"];
         DinoGegtik.userMatches = HU_Instance.resolveUsers().filter((x) => targetUsernames.includes(x.name));
         // we have a fullpost, and its className contains gegtik's user id
-        for (const match of DinoGegtik.userMatches) {
+        for (const match of DinoGegtik.userMatches)
             if (fullpost?.classList.contains(`fpauthor_${match.id}`)) {
                 const comic_id = `dinogegtik_${id}`;
                 // comic is already here!
@@ -60,7 +60,6 @@ export const DinoGegtik = {
                     DinoGegtik.resizePanelText(panel);
                 }
             }
-        }
     },
 
     resizePanelText(panel: HTMLDivElement) {

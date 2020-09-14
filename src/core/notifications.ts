@@ -91,11 +91,9 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
     const postEventHasMe = nEvent?.eventData?.post?.body?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
-    if (postEventHasMe) {
-        return "Post contains your name.";
-    } else if (parentAuthorIsMe) {
-        return "Replied to you.";
-    } else return null;
+    if (postEventHasMe) return "Post contains your name.";
+    else if (parentAuthorIsMe) return "Replied to you.";
+    else return null;
 };
 
 const handleEventSignal = (msg: NotifyMsg) => TM_Instance?.send(msg);
@@ -104,7 +102,7 @@ const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;
     handleEventSignal({ name: "notifyEvent", data: response });
     const notify_enabled = await getEnabled("enable_notifications");
-    for (const event of events || []) {
+    for (const event of events || [])
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);
             if (notify_enabled && match && event?.eventData?.post?.author) {
@@ -117,7 +115,6 @@ const handleNotification = async (response: NotifyResponse) => {
                 });
             }
         }
-    }
 };
 
 const pollNotifications = async () => {

@@ -189,8 +189,11 @@ const handleImgurAlbumUpload = async (links: string[], hashes: string[], dispatc
         const albumId = await doImgurCreateAlbum(hashes);
         if (albumId) handleImgurSuccess([albumId], dispatch);
         else handleImgurFailure({ code: 400, msg: "Something went wrong when creating album!" }, dispatch);
-    } else if (hashes?.length === 1) handleImgurSuccess(links, dispatch);
-    else handleImgurFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
+    } else if (hashes?.length === 1) {
+        handleImgurSuccess(links, dispatch);
+    } else {
+        handleImgurFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
+    }
 };
 
 export const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {

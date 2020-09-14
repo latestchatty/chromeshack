@@ -54,14 +54,14 @@ export const HighlightPendingPosts = {
             }
             if (arrHas(newPendingEvents)) {
                 const mutated = ([...HighlightPendingPosts.pendings, newPendingEvents] as PendingPost[]).flat();
-                if (ChromeShack.debugEvents) {
+                if (ChromeShack.debugEvents)
                     console.log(
                         "HighlightPendingPosts fetchPendings:",
                         mutated,
                         HighlightPendingPosts.pendings,
                         HighlightPendingPosts.lastIndex,
                     );
-                }
+
                 HighlightPendingPosts.pendings = mutated;
                 HighlightPendingPosts.updatePendings();
             }
@@ -86,13 +86,12 @@ export const HighlightPendingPosts = {
         const _index = HighlightPendingPosts.lastIndex;
         // bump our position in the stack back one when we update our pendings
         HighlightPendingPosts.lastIndex = _index - 1 > 0 ? _index - 1 : 0;
-        if (ChromeShack.debugEvents) {
+        if (ChromeShack.debugEvents)
             console.log(
                 "HighlightPendingPosts excludeRefreshed:",
                 HighlightPendingPosts.pendings,
                 HighlightPendingPosts.lastIndex,
             );
-        }
     },
     getNonCollapsedPendings(refreshElem: HTMLElement) {
         HighlightPendingPosts.excludeRefreshed(refreshElem);
@@ -102,9 +101,8 @@ export const HighlightPendingPosts = {
             const _pending = pending as HTMLElement;
             const post = _pending?.closest("li[id^='item_']") as HTMLElement;
             // include only non-refreshed/non-collapsed pending posts
-            if (HighlightPendingPosts.isPending(_pending) && !HighlightPendingPosts.isCollapsed(_pending)) {
+            if (HighlightPendingPosts.isPending(_pending) && !HighlightPendingPosts.isCollapsed(_pending))
                 filtered.push(post);
-            }
         }
         HighlightPendingPosts.marked = filtered;
     },

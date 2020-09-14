@@ -31,11 +31,11 @@ export const NwsIncognito = {
                 e?.preventDefault();
                 // Note to reviewers: please refer to the top of this file for explanation
                 browser.runtime.sendMessage({ name: "allowedIncognitoAccess" }).then((result: Promise<boolean>) => {
-                    if (!window.chrome && !result) {
+                    if (!window.chrome && !result)
                         alert(
                             'This feature will not work unless you enable "Run in Private Windows" in the Chrome Shack addon settings for Firefox!',
                         );
-                    }
+
                     browser.runtime.sendMessage({
                         name: "launchIncognito",
                         value: (e?.target as HTMLAnchorElement).href,

@@ -46,11 +46,10 @@ export const CustomUserFilters = {
         const filteredUsers = (await getSetting("user_filters")) as string[];
         if (!filteredUsers || filteredUsers.length === 0) return;
         CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
-        for (const filteredUser of filteredUsers) {
-            for (const userMatch of CustomUserFilters.resolveUser(filteredUser) || []) {
+        for (const filteredUser of filteredUsers)
+            for (const userMatch of CustomUserFilters.resolveUser(filteredUser) || [])
                 await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id);
-            }
-        }
+
         // refresh threadpane after removing posts to avoid unnecessary redraws
         if (TP_Instance.isEnabled) TP_Instance.apply();
     },
