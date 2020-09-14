@@ -221,7 +221,7 @@ export const getManifestVersion = () => parseFloat(browser.runtime.getManifest()
 export const getSetting = async (key: string, defaultVal?: any) => {
     const settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
-    return settings[key];
+    return settings[key] || null;
 };
 export const getSettings = async () => {
     let settings = (await browser.storage.local.get()) as Settings;
@@ -233,9 +233,9 @@ export const getSettings = async () => {
 };
 
 export const getEnabled = async (key?: string) => {
-    const enabled = ((await getSetting("enabled_scripts")) || []) as string[];
+    const enabled = (await getSetting("enabled_scripts")) as string[];
     if (!key) return enabled;
-    return enabled ? enabled.find((v) => v === key) : null;
+    return enabled.find((v) => v === key) || null;
 };
 
 export const getEnabledSuboptions = async () => {
@@ -501,7 +501,7 @@ export const migrateSettings = async () => {
     if (last_version !== current_version) {
         await setEnabledSuboption("show_rls_notes");
         await updateSettingsVersion();
-    }
+    } else await updateSettingsVersion();
     // only show release notes automatically once after the version is updated
     const show_notes = await getEnabledSuboption("show_rls_notes");
     const imported = await getEnabledSuboption("imported");

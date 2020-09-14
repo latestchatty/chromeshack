@@ -367,11 +367,10 @@ const loadOptions = async () => {
         } else if (checkbox.id !== scripts) checkbox.checked = false;
     }
 
-    if (await getEnabled("highlight_users")) {
-        await showHighlightGroups();
-    } else if (await getEnabled("custom_user_filters")) {
-        await showUserFilters();
-    }
+    if (await getEnabled("highlight_users")) await showHighlightGroups();
+    if (await getEnabled("custom_user_filters")) await showUserFilters();
+
+    console.log("loadOptions:", await getSettings());
 };
 
 const saveOptions = (e: MouseEvent) => {
@@ -474,6 +473,22 @@ const importSettings = async (settingsField: HTMLInputElement) => {
     }
 };
 
+const parseSettingsString = (input: string) => {
+    // rudimentary way of checking if a settings string is a valid JSON object
+    try {
+        const parsed = input?.length > 0 && JSON.parse(superTrim(input));
+        if (parsed && objContainsProperty("version", parsed)) return input;
+        return false;
+    } catch (e) {
+        alert("Input is not a valid settings string!");
+        const importExportField = document.getElementById("import_export_field") as HTMLInputElement;
+        if (importExportField) importExportField.value = "";
+        handleImportExportField(); // force a field update
+        console.error(e);
+        return false;
+    }
+};
+
 const handleImportExportField = () => {
     const field = document.getElementById("import_export_field") as HTMLInputElement;
     const importExportBtn = document.getElementById("import_export_btn") as HTMLButtonElement;
@@ -502,22 +517,6 @@ const handleImportExportSettings = () => {
             }
         } else if (importExportField) await exportSettings(importExportField);
     })();
-};
-
-const parseSettingsString = (input: string) => {
-    // rudimentary way of checking if a settings string is a valid JSON object
-    try {
-        const parsed = input?.length > 0 && JSON.parse(superTrim(input));
-        if (parsed && objContainsProperty("version", parsed)) return input;
-        return false;
-    } catch (e) {
-        alert("Input is not a valid settings string!");
-        const importExportField = document.getElementById("import_export_field") as HTMLInputElement;
-        if (importExportField) importExportField.value = "";
-        handleImportExportField(); // force a field update
-        console.error(e);
-        return false;
-    }
 };
 
 /*
