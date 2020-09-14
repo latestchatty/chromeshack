@@ -50,6 +50,7 @@ module.exports = {
 
     plugins: [
         new ForkTsCheckerWebpackPlugin({
+            formatter: "basic",
             eslint: {
                 enabled: true,
                 files: "./src/**/*.{ts,tsx}",
