@@ -8,7 +8,7 @@ export interface ResolvedUser {
     mod?: boolean;
 }
 
-const HighlightUsers = {
+export const HighlightUsers = {
     userRegex: /(?:<div class=\\?"oneline.+?olauthor_(\d+))[\s\S]+?class=\\?"oneline_user.+?>(.+?)<\/span(?:.+?alt=\\?"(moderator)?\\?")?/gi,
 
     cache: [] as ResolvedUser[],
@@ -22,7 +22,7 @@ const HighlightUsers = {
         }
     },
 
-    resolveUsers(refresh?: boolean) {
+    resolveUsers(refresh?: boolean): ResolvedUser[] {
         // memoize this resolution method for speed
         if (!refresh && HighlightUsers.cache.length > 0) return HighlightUsers.cache;
         const uniques = [] as ResolvedUser[];
@@ -74,5 +74,3 @@ const HighlightUsers = {
         HighlightUsers.gatherCSS(users, groups);
     },
 };
-
-export default HighlightUsers;

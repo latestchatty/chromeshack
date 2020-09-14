@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import useTweets from "./Components";
+import { useTweets } from "./Components";
 import { fetchTweets } from "./helpers";
 
 import type { ParsedResponse } from "../../api";
@@ -23,7 +23,7 @@ export const isTwitter = (href: string) => parseLink(href);
 const TwitterWrapper = (props: { response: TweetParsed }) => {
     /// wrap useTweets() returning memoized renders of <Twitter /> FC's
     const { response } = props || {};
-    const tweets = response ? useTweets(response) : null;
+    const tweets = useTweets({ tweetObj: response });
     const memoizedTweets = useMemo(() => tweets, [tweets]);
     return <>{memoizedTweets}</>;
 };
@@ -34,6 +34,5 @@ export const getTwitter = async (...args: string[]) => {
     return response ? { component: <TwitterWrapper response={response} />, type: "twitter" } : null;
 };
 
-export { fetchTweets };
+export { fetchTweets, useTweets };
 export type { TweetParsed };
-export default useTweets;

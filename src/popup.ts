@@ -142,9 +142,10 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
     );
     if (group.built_in) {
         // hide mutation interactions if userlist is readonly
-        groupElem.querySelector("#remove_group").setAttribute("style", "display: none;");
-        groupElem.querySelector(".group_select").setAttribute("style", "display: none;");
-        groupElem.querySelector(".group_option_input").setAttribute("style", "display: none;");
+        const _hide = "display: none;";
+        groupElem.querySelector("#remove_group").setAttribute("style", _hide);
+        groupElem.querySelector(".group_select").setAttribute("style", _hide);
+        groupElem.querySelector(".group_option_input").setAttribute("style", _hide);
     }
     for (const user of group.users || []) {
         const select = groupElem.querySelector(`#${trimmedName}_list`);
@@ -325,8 +326,8 @@ const getEnabledScripts = async () => {
         if (elemMatches(_checkbox, ".script_check") && _checkbox.checked) {
             // put non-boolean save supports here
             enabled.push(_checkbox.id);
-        } else if (elemMatches(_checkbox, ".suboption")) {
-            if (_checkbox.checked) enabledSuboptions.push(_checkbox.id);
+        } else if (elemMatches(_checkbox, ".suboption") && _checkbox.checked) {
+            enabledSuboptions.push(_checkbox.id);
         }
     }
     await setSetting("enabled_scripts", enabled);
@@ -334,6 +335,20 @@ const getEnabledScripts = async () => {
     return enabled;
 };
 
+const loadOption = async (checkboxRef: HTMLInputElement, type: "script" | "suboption") => {
+    if (type === "script") {
+        const script = await getEnabled(checkboxRef.id);
+        if (checkboxRef.id === script) checkboxRef.checked = true;
+        else checkboxRef.checked = false;
+        const settingsChild = document.querySelector(`div#${checkboxRef.id}_settings`);
+        if (checkboxRef.checked && settingsChild) settingsChild.classList.remove("hidden");
+        else if (!checkboxRef.checked && settingsChild) settingsChild.classList.add("hidden");
+    } else if (type === "suboption") {
+        const option = await getEnabledSuboption(checkboxRef.id);
+        if (option) checkboxRef.checked = true;
+        else checkboxRef.checked = false;
+    }
+};
 const loadOptions = async () => {
     // deserialize extension storage to options state
     const scripts = await getEnabled();
@@ -346,16 +361,9 @@ const loadOptions = async () => {
 
     for (const checkbox of checkboxes) {
         if (elemMatches(checkbox, ".script_check")) {
-            const script = await getEnabled(checkbox.id);
-            if (checkbox.id === script) checkbox.checked = true;
-            else checkbox.checked = false;
-            const settingsChild = document.querySelector(`div#${checkbox.id}_settings`);
-            if (checkbox.checked && settingsChild) settingsChild.classList.remove("hidden");
-            else if (!checkbox.checked && settingsChild) settingsChild.classList.add("hidden");
+            await loadOption(checkbox, "script");
         } else if (elemMatches(checkbox, ".suboption")) {
-            const option = await getEnabledSuboption(checkbox.id);
-            if (option) checkbox.checked = true;
-            else checkbox.checked = false;
+            await loadOption(checkbox, "suboption");
         } else if (checkbox.id !== scripts) checkbox.checked = false;
     }
 

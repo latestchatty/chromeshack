@@ -1,13 +1,13 @@
 import { browser } from "webextension-polyfill-ts";
 
-import SentenceParser from "../core/sentence_parser";
+import { SentenceParser } from "../core/sentence_parser";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { safeInnerHTML } from "../core/common";
 import { HU_Instance } from "../content";
 import { ResolvedUser } from "./highlight_users";
 
-const SparklyComic = {
+export const SparklyComic = {
     userMatch: [] as ResolvedUser[],
 
     async install() {
@@ -69,5 +69,3 @@ const SparklyComic = {
         return "sparkly1.jpg";
     },
 };
-
-export default SparklyComic;

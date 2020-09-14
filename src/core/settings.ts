@@ -221,8 +221,7 @@ export const getManifestVersion = () => parseFloat(browser.runtime.getManifest()
 export const getSetting = async (key: string, defaultVal?: any) => {
     const settings = await getSettings();
     if (!settingsContains(key)) setSetting(key, defaultVal);
-    const result = settings[key];
-    return result;
+    return settings[key];
 };
 export const getSettings = async () => {
     let settings = (await browser.storage.local.get()) as Settings;
@@ -335,8 +334,7 @@ export const removeHighlightGroup = async (groupName: string) => {
     const selected = groups.filter((x) => x.name !== groupName) || null;
     for (const group of selected || []) await setHighlightGroup(groupName, group);
     // return the sliced records from the settings store
-    const updated_groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-    return updated_groups;
+    return (await getSetting("highlight_groups")) as HighlightGroup[];
 };
 
 export const removeHighlightUser = async (groupName: string, username: string) => {
@@ -360,8 +358,7 @@ export const removeFilter = async (username: string) => {
 
 export const settingsContains = async (key: string) => {
     const settings = (await getSettings()) as Settings;
-    const contained = objContains(key, settings);
-    return contained;
+    return objContains(key, settings);
 };
 
 export const enabledContains = async (key: string) => {
@@ -409,7 +406,7 @@ export const addFilter = async (username: string) => {
 
 export const mergeUserFilters = async (newUsers: string[]) => {
     const oldUsers = ((await getSetting("user_filters")) || []) as string[];
-    const filtered = arrHas(newUsers)
+    return arrHas(newUsers)
         ? newUsers.reduce((acc, u) => {
               // don't allow duplicate usernames
               const found = acc.find((x) => x.toUpperCase() === u.toUpperCase());
@@ -417,14 +414,13 @@ export const mergeUserFilters = async (newUsers: string[]) => {
               return acc;
           }, oldUsers)
         : [];
-    return filtered;
 };
 
 export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
     const oldGroups = (await getSetting("highlight_groups")) as HighlightGroup[];
     const builtinGroups = arrHas(oldGroups) ? oldGroups.filter((g) => g.built_in) : [];
     // try to intelligently merge default, old, and parsed groups
-    const mergedGroups = arrHas(newGroups)
+    return arrHas(newGroups)
         ? newGroups.reduce((acc, v) => {
               // compare ordinal group names (users can exist in multiple groups)
               const foundIdx = acc.findIndex((y) => y.name?.toUpperCase() === v.name?.toUpperCase());
@@ -442,7 +438,6 @@ export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
               return acc;
           }, builtinGroups)
         : [];
-    return mergedGroups;
 };
 
 export const mergeSettings = async (newSettings: { [key: string]: any }) => {

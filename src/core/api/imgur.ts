@@ -70,11 +70,9 @@ const parseLink = (href: string) => {
     // check if we've matched an image nonce of an album first
     const imageId = albumMatch ? albumMatch[2] : imageMatch ? imageMatch[1] || imageMatch[2] || imageMatch[3] : null;
 
-    const result =
-        albumId || galleryId || imageId
-            ? ({ href, args: [imageId, albumId, galleryId], type: null, cb: getImgur } as ParsedResponse)
-            : null;
-    return result;
+    return albumId || galleryId || imageId
+        ? ({ href, args: [imageId, albumId, galleryId], type: null, cb: getImgur } as ParsedResponse)
+        : null;
 };
 
 export const isImgur = (href: string) => parseLink(href);
@@ -131,14 +129,13 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
 export const getImgur = async (...args: any[]) => {
     const [imageId, albumId, galleryId] = args || [];
     const resolved = await doResolveImgur({ imageId, albumId, galleryId });
-    const sources = arrHas(resolved)
+    return arrHas(resolved)
         ? resolved.reduce((acc, m) => {
               const type = isImage(m) ? "image" : isVideo(m) ? "video" : null;
               acc.push({ src: m, type });
               return acc;
           }, [] as ImgurSource[])
         : [];
-    return sources;
 };
 
 const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
@@ -163,7 +160,7 @@ const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction
         }
         return response;
     } catch (e) {
-        if (e) console.error(e);
+        console.error(e);
     }
 };
 
@@ -196,7 +193,7 @@ const handleImgurAlbumUpload = async (links: string[], hashes: string[], dispatc
     else handleImgurFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
 };
 
-const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
+export const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     try {
         const uploaded = await doImgurUpload(data, dispatch);
         const links = uploaded && uploaded.map((i) => i.link);
@@ -208,4 +205,3 @@ const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAc
         handleImgurFailure({ code: 401, msg: e.message || `Something went wrong!` }, dispatch);
     }
 };
-export default handleImgurUpload;

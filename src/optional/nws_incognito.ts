@@ -11,7 +11,7 @@ import { processPostEvent } from "../core/events";
 // "allowedIncognitoAccess" permission.
 //
 
-const NwsIncognito = {
+export const NwsIncognito = {
     async install() {
         const is_enabled = await enabledContains("nws_incognito");
         if (is_enabled) processPostEvent.addHandler(NwsIncognito.hookToNwsPosts);
@@ -53,4 +53,3 @@ const NwsIncognito = {
         }
     },
 };
-export default NwsIncognito;

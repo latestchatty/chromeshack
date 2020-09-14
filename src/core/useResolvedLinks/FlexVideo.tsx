@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 import { classNames } from "../common";
-import useIntersectObserver from "./useIntersectObserver";
+import { useIntersectObserver } from "./useIntersectObserver";
 
 import type { OverlayProps, MediaProps, HTMLVideoElementWithAudio } from "./index.d";
 
@@ -26,16 +26,10 @@ const MuteOverlay = (props: OverlayProps) => {
     );
 };
 
-const FlexVideo = (props: MediaProps) => {
+export const FlexVideo = (props: MediaProps) => {
     const { classes, src } = props || {};
-    let { loop, muted, controls, autoPlay, clickTogglesPlay } = props || {};
     // set some sensible defaults
-    if (loop === undefined) loop = true;
-    if (muted === undefined) muted = true;
-    if (controls === undefined) controls = false;
-    if (autoPlay === undefined) autoPlay = true;
-    // click-to-play/pause enabled by default
-    if (clickTogglesPlay === undefined) clickTogglesPlay = true;
+    const { loop = true, muted = true, controls = false, autoPlay = true, clickTogglesPlay = true } = props || {};
     const _classes = classNames(classes, { canToggle: clickTogglesPlay });
 
     const [muteToggle, setMuteToggle] = useState(muted);
@@ -58,7 +52,7 @@ const FlexVideo = (props: MediaProps) => {
             vid.muted = false;
             setMuteToggle(false);
         }
-    }, [videoRef, muteToggle]);
+    }, [videoRef, muteToggle, controls]);
     const handleVideoState = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
         const vid = e.target as HTMLVideoElementWithAudio;
         // supports Firefox and Chrome only (via their respective APIs)
@@ -91,7 +85,7 @@ const FlexVideo = (props: MediaProps) => {
             if (vid && isVisible && !wasPaused) vid.play();
             else if (vid) vid.pause();
         }
-    }, [videoRef, isVisible]);
+    }, [videoRef, isVisible, wasPaused]);
 
     return (
         <div className="media__boundary">
@@ -119,5 +113,3 @@ const FlexVideo = (props: MediaProps) => {
         </div>
     );
 };
-
-export default FlexVideo;

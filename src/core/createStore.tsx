@@ -12,7 +12,7 @@ type StoreReducer = React.ReducerWithoutAction<ReducerState> | React.Reducer<Red
 type ProviderChildProps = { children?: React.ReactNode };
 
 /// provide an HOC for ease-of-use in creating multi-context state stores
-const useCreateStore = (reducer: StoreReducer, initialState: ReducerState) => {
+export const createStore = (reducer: StoreReducer, initialState: ReducerState) => {
     const stateContext = createContext<ReducerState>({});
     const dispatchContext = createContext<React.Dispatch<ReducerAction>>(() => null);
     const Provider = ({ children }: ProviderChildProps) => {
@@ -31,4 +31,3 @@ const useCreateStore = (reducer: StoreReducer, initialState: ReducerState) => {
         useStoreDispatch,
     };
 };
-export default useCreateStore;

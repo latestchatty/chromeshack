@@ -1,6 +1,6 @@
 import { processPostEvent } from "../core/events";
 
-const CodeTagFix = {
+export const CodeTagFix = {
     install() {
         processPostEvent.addHandler(CodeTagFix.apply);
     },
@@ -15,5 +15,3 @@ const CodeTagFix = {
         }
     },
 };
-
-export default CodeTagFix;

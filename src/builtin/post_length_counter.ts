@@ -1,7 +1,7 @@
 import { processPostBoxEvent } from "../core/events";
-import EmojiPoster from "../builtin/emoji_poster";
+import { EmojiPoster } from "../builtin/emoji_poster";
 
-const PostLengthCounter = {
+export const PostLengthCounter = {
     MAX_POST_BYTES: 105,
     updateTimer: null as ReturnType<typeof setTimeout>,
 
@@ -46,5 +46,3 @@ const PostLengthCounter = {
         });
     },
 };
-
-export default PostLengthCounter;

@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 
-import useUploaderStore, { UploaderState } from "./uploaderStore";
+import { useUploaderStore, UploaderState } from "./uploaderStore";
 import { ToggleChildren, Tab, DropArea, UrlInput, Button, StatusLine } from "./Components";
 
-import handleImgurUpload from "../../core/api/imgur";
-import handleGfycatUpload from "../../core/api/gfycat";
-import handleChattypicsUpload from "../../core/api/chattypics";
+import { handleImgurUpload } from "../../core/api/imgur";
+import { handleGfycatUpload } from "../../core/api/gfycat";
+import { handleChattypicsUpload } from "../../core/api/chattypics";
 import { arrHas, appendLinksToField } from "../../core/common";
 import { getSetting, setSetting } from "../../core/settings";
 
@@ -13,19 +13,22 @@ export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {
     parentRef: HTMLElement;
 }
-const ImageUploaderApp = (props: ImageUploaderAppProps) => {
+export const ImageUploaderApp = (props: ImageUploaderAppProps) => {
     const { useStoreState: useUploaderState, useStoreDispatch: useUploaderDispatch } = useUploaderStore;
     const state = useUploaderState() as UploaderState;
     const dispatch = useUploaderDispatch();
     const fileChooserRef = useRef(null);
 
-    const doSelectTab = (tabName: string) => {
-        const normalizedTabName = `${tabName.toUpperCase()}_LOAD`;
-        dispatch({ type: "CHANGE_TAB", payload: tabName });
-        dispatch({ type: normalizedTabName });
-        // save our selected tab between sessions
-        setSetting("selected_tab", tabName);
-    };
+    const doSelectTab = useCallback(
+        (tabName: string) => {
+            const normalizedTabName = `${tabName.toUpperCase()}_LOAD`;
+            dispatch({ type: "CHANGE_TAB", payload: tabName });
+            dispatch({ type: normalizedTabName });
+            // save our selected tab between sessions
+            setSetting("selected_tab", tabName);
+        },
+        [dispatch],
+    );
 
     const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
@@ -65,13 +68,13 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
             appendLinksToField(replyField, state.response);
             dispatch({ type: "UPLOAD_CANCEL" }); // reset UI
         }
-    }, [state.response]);
+    }, [state.response, dispatch, props.parentRef]);
     useEffect(() => {
         // restore our saved hoster tab
         getSetting("selected_tab").then((tab: string) => {
             if (tab) doSelectTab(tab);
         });
-    }, []);
+    }, [doSelectTab]);
 
     /// tabs are defined by id and label
     const tabs = [
@@ -135,4 +138,3 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         </ToggleChildren>
     );
 };
-export default ImageUploaderApp;

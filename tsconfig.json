@@ -12,6 +12,7 @@
         "sourceMap": true,
         "incremental": true,
         "composite": true,
+        "noEmit": true,
         "jsx": "react"
     },
     "include": ["./src/**/*.ts", "./src/**/*.tsx"],

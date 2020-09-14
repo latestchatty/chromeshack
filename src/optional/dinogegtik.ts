@@ -1,13 +1,13 @@
 import { browser } from "webextension-polyfill-ts";
 
-import SentenceParser from "../core/sentence_parser";
+import { SentenceParser } from "../core/sentence_parser";
 import { safeInnerHTML } from "../core/common";
 import { enabledContains } from "../core/settings";
 import { processPostEvent } from "../core/events";
 import { HU_Instance } from "../content";
 import { ResolvedUser } from "./highlight_users";
 
-const DinoGegtik = {
+export const DinoGegtik = {
     panels: [
         { x: 5, y: 5, width: 234, height: 92 },
         { x: 248, y: 5, width: 121, height: 92 },
@@ -75,5 +75,3 @@ const DinoGegtik = {
         }, 200);
     },
 };
-
-export default DinoGegtik;

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 
 import type { IntersectionObserverConfig } from "./index.d";
 
-const useIntersectObserver = (config: IntersectionObserverConfig) => {
+export const useIntersectObserver = (config: IntersectionObserverConfig) => {
     const { root = null, threshold = 0.5, ...configOpts } = config || {};
 
     const [isVisible, setIsVisible] = useState(false);
@@ -28,9 +28,7 @@ const useIntersectObserver = (config: IntersectionObserverConfig) => {
         if (observedElem) _observer.observe(observedElem);
         // make sure we clean up after ourselves
         return () => _observer.disconnect();
-    }, [observedElem, root, threshold]);
+    }, [configOpts, observedElem, root, threshold]);
     // expose an element setter and our boolean visibility state
     return { setObservedElem, isVisible };
 };
-
-export default useIntersectObserver;

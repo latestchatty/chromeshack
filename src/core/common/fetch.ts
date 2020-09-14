@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 import { browser } from "webextension-polyfill-ts";
 
-import { objHas, arrEmpty, isHTML, isJSON, sanitizeToFragment } from "./";
+import { objHas, arrHas, isHTML, isJSON, sanitizeToFragment } from "./";
 
 export type PurifyConfig = Record<string, any>;
 export interface ParseType {
@@ -116,31 +116,30 @@ export const waitToFetchSafe = async (timeout: number, fetchArgs: FetchArgs) => 
     return await fetchSafe(fetchArgs);
 };
 
-export const safeJSON = (text: string, purifyConfig?: any) => {
+const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
+    if (val && Array.isArray(val)) {
+        const _arr = [] as any[];
+        for (const subval of val) _arr.push(sanitizeObj(subval));
+        return _arr;
+    } else if (val && typeof val === "object" && Object.keys(val).length > 0) {
+        const _obj = {} as Record<string, any>;
+        for (const key in val) _obj[key] = sanitizeObj(val[key]);
+        return _obj;
+    } else {
+        if (val === null) return null;
+        if (typeof val === "boolean" && val) return true;
+        if (typeof val === "boolean" && !val) return false;
+        else return DOMPurify.sanitize(val, purifyConfig);
+    }
+};
+export const safeJSON = (text: string, purifyConfig?: PurifyConfig) => {
     if (isJSON(text)) {
         try {
             const obj = JSON.parse(text);
             const result = {} as Record<string, any>;
-            const iterate = (val: any) => {
-                if (val && Array.isArray(val)) {
-                    const _arr = [] as any[];
-                    for (const subval of val) _arr.push(iterate(subval));
-                    return _arr;
-                } else if (val && typeof val === "object" && Object.keys(val).length > 0) {
-                    const _obj = {} as Record<string, any>;
-                    for (const key in val) _obj[key] = iterate(val[key]);
-                    return _obj;
-                } else {
-                    if (val === null) return null;
-                    if (typeof val === "boolean" && val) return true;
-                    if (typeof val === "boolean" && !val) return false;
-                    else return DOMPurify.sanitize(val, purifyConfig);
-                }
-            };
-
             for (const key of Object.keys(obj)) {
                 const val = obj[key];
-                result[key] = iterate(val);
+                result[key] = sanitizeObj(val, purifyConfig);
             }
             return result;
         } catch (e) {
@@ -150,66 +149,28 @@ export const safeJSON = (text: string, purifyConfig?: any) => {
     return null;
 };
 
-export const parseFetchResponse = async (textPromise: Promise<string>, parseType: ParseType) => {
-    const { chattyPics, instagram, chattyRSS, json, html }: ParseType = parseType || {};
-
-    const _json = typeof json === "boolean" ? (json as boolean) : (json as PurifyConfig);
-    const _html = typeof html === "boolean" ? (html as boolean) : (html as PurifyConfig);
-    const jsonPurifyConfig = objHas(_json as PurifyConfig) && (_json as PurifyConfig);
-    const htmlPurifyConfig = objHas(_html as PurifyConfig) && (_html as PurifyConfig);
-
-    const text = await textPromise;
-    try {
-        // sanitize Instagram graphQL cache to JSON
-        if (instagram) {
-            const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
-            const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
-            if (instgrmGQL) {
-                return {
-                    metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
-                    gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
-                };
-            }
-        }
-        // sanitize ChattyPics response to array of links
-        else if (chattyPics) {
-            const _resFragment = sanitizeToFragment(text) as DocumentFragment;
-            const _resElemArr = _resFragment.querySelector("#allLinksDirect") as HTMLInputElement;
-            const _resElemVal = _resFragment.querySelector("#link11") as HTMLInputElement;
-            // return a list of links if applicable
-            if (_resElemArr || _resElemVal) {
-                return _resElemArr
-                    ? _resElemArr.value.split("\n").filter((x: string) => x !== "")
-                    : _resElemVal && [_resElemVal.value];
-            }
-        }
-        // sanitize and return as Shacknews RSS article list
-        else if (chattyRSS && text) return parseShackRSS(text);
-        // explicitly sanitize (don't return fragment)
-        else if (html && text) return DOMPurify.sanitize(text) as string;
-        // sanitize and return as DOM fragment (with optional DOMPurify config)
-        else if (isHTML(text) && htmlPurifyConfig) {
-            return sanitizeToFragment(text, htmlPurifyConfig) as DocumentFragment;
-        } else if (isHTML(text)) return sanitizeToFragment(text) as DocumentFragment;
-        else if (isJSON(text) && jsonPurifyConfig) {
-            const parsed = safeJSON(text, jsonPurifyConfig);
-            if (parsed) return parsed;
-        }
-        // fallthrough: sanitize to JSON
-        else if (isJSON(text)) {
-            const parsed = safeJSON(text);
-            if (parsed) return parsed;
-        }
-        // fallthrough: Gfycat (assume OK)
-        else if (text.length === 0) return true;
-    } catch (e) {
-        if (e) console.error("Parse failed:", e);
-        console.error("Parse failed!");
-    }
-    return null;
+const parseInstagram = (text: string) => {
+    const metaMatch = /[\s\s]*?"og:description"\scontent="(?:(.*?) - )?[\s\S]+"/im.exec(text);
+    const instgrmGQL = /:\{"PostPage":\[\{"graphql":([\s\S]+)\}\]\}/im.exec(text);
+    if (instgrmGQL) {
+        return {
+            metaViews: metaMatch && DOMPurify.sanitize(metaMatch[1]),
+            gqlData: instgrmGQL && JSON.parse(DOMPurify.sanitize(instgrmGQL[1])),
+        };
+    } else return null;
 };
-
-export const parseShackRSS = (rssText: string) => {
+const parseChattypics = (text: string) => {
+    const _resFragment = sanitizeToFragment(text) as DocumentFragment;
+    const _resElemArr = _resFragment.querySelector("#allLinksDirect") as HTMLInputElement;
+    const _resElemVal = _resFragment.querySelector("#link11") as HTMLInputElement;
+    // return a list of links if applicable
+    if (_resElemArr || _resElemVal) {
+        return _resElemArr
+            ? _resElemArr.value.split("\n").filter((x: string) => x !== "")
+            : _resElemVal && [_resElemVal.value];
+    } else return null;
+};
+const parseShackRSS = (rssText: string) => {
     const result: ShackRSSItem[] = [];
     if (rssText.startsWith('<?xml version="1.0" encoding="utf-8"?>')) {
         const items = rssText.match(/<item>([\s\S]+?)<\/item>/gim);
@@ -230,5 +191,48 @@ export const parseShackRSS = (rssText: string) => {
         }
     }
     // sanitize our resulting response
-    return !arrEmpty(result) ? result : null;
+    return arrHas(result) ? result : null;
+};
+export const parseFetchResponse = async (textPromise: Promise<string>, parseType: ParseType) => {
+    const { chattyPics, instagram, chattyRSS, json, html }: ParseType = parseType || {};
+
+    const _json = typeof json === "boolean" ? (json as boolean) : (json as PurifyConfig);
+    const _html = typeof html === "boolean" ? (html as boolean) : (html as PurifyConfig);
+    const jsonPurifyConfig = objHas(_json as PurifyConfig) && (_json as PurifyConfig);
+    const htmlPurifyConfig = objHas(_html as PurifyConfig) && (_html as PurifyConfig);
+
+    const text = await textPromise;
+    try {
+        if (instagram) {
+            // sanitize Instagram graphQL cache to JSON
+            return parseInstagram(text);
+        } else if (chattyPics) {
+            // sanitize ChattyPics response to array of links
+            return parseChattypics(text);
+        } else if (chattyRSS && text) {
+            // sanitize and return as Shacknews RSS article list
+            return parseShackRSS(text);
+        } else if (html && text) {
+            // explicitly sanitize (don't return fragment)
+            return DOMPurify.sanitize(text) as string;
+        } else if (isHTML(text) && htmlPurifyConfig) {
+            // sanitize and return as DOM fragment (with optional DOMPurify config)
+            return sanitizeToFragment(text, htmlPurifyConfig) as DocumentFragment;
+        } else if (isHTML(text)) {
+            return sanitizeToFragment(text) as DocumentFragment;
+        } else if (isJSON(text) && jsonPurifyConfig) {
+            const parsed = safeJSON(text, jsonPurifyConfig);
+            if (parsed) return parsed;
+        } else if (isJSON(text)) {
+            // fallthrough: sanitize to JSON
+            const parsed = safeJSON(text);
+            if (parsed) return parsed;
+        }
+        // fallthrough: Gfycat (assume OK)
+        else if (text.length === 0) return true;
+    } catch (e) {
+        if (e) console.error("Parse failed:", e);
+        console.error("Parse failed!");
+    }
+    return null;
 };

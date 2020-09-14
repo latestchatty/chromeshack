@@ -2,7 +2,7 @@ import * as textFieldEdit from "text-field-edit";
 
 import { processPostBoxEvent } from "../core/events";
 
-const CommentTags = {
+export const CommentTags = {
     install() {
         processPostBoxEvent.addHandler(CommentTags.installCommentTags);
     },
@@ -129,5 +129,3 @@ const CommentTags = {
         textarea.scrollTop = scrollPosition;
     },
 };
-
-export default CommentTags;

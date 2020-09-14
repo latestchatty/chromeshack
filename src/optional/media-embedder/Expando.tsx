@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpandAlt, faCompressAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { classNames, getLinkType } from "../../core/common";
-import useResolvedLinks from "../../core/useResolvedLinks";
+import { useResolvedLinks } from "../../core/useResolvedLinks";
 
 import type { FCWithMediaProps, ExpandoProps } from "./index.d";
 
@@ -59,5 +59,4 @@ const RenderExpando = (props: ExpandoProps) => {
     );
 };
 
-const Expando = (props: ExpandoProps) => React.useMemo(() => <RenderExpando {...props} />, [RenderExpando]);
-export default Expando;
+export const Expando = (props: ExpandoProps) => React.useMemo(() => <RenderExpando {...props} />, [props]);

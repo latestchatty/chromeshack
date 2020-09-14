@@ -2,7 +2,7 @@ import { browser } from "webextension-polyfill-ts";
 
 import { scrollToElement, elementIsVisible } from "../core/common";
 
-const chatViewFix = async () => {
+export const chatViewFix = async () => {
     try {
         const is_enabled = await browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` });
         is_enabled &&
@@ -56,4 +56,3 @@ if (!document.getElementById("chatviewfix-wjs")) {
         /* eat empty object exceptions */
     }
 };
-export default chatViewFix;

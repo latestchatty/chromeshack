@@ -1,6 +1,6 @@
 import { settingsContains } from "../core/settings";
 
-const PostStyling = {
+export const PostStyling = {
     async install() {
         if (await settingsContains("hide_tagging_buttons")) document.body.className += " hide_tagging_buttons";
 
@@ -13,5 +13,3 @@ const PostStyling = {
         }
     },
 };
-
-export default PostStyling;

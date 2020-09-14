@@ -24,7 +24,7 @@
 
 /* custom twitter container */
 .twitter__container {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     border: 1px solid var(--twttr-bg-border-color);
     border-radius: 4px;
@@ -149,13 +149,14 @@ a#twitter__quote_displayname:hover {
 .twitter__quote__media__content img,
 .twitter__quote__media__content video {
     width: 100% !important;
+    height: auto !important;
     object-fit: contain !important;
     max-height: var(--max-social-item-height);
     max-width: var(--max-social-item-width);
     border: 1px solid var(--twttr-fg-border-color);
     border-radius: 8px;
     outline: none !important;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
 }
 

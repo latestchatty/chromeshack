@@ -9,7 +9,7 @@ const $ = jQuery;
  * Encodes string Astrals (Emoji's) into prefixed HTML entities to
  * workaround Chatty's poor support for unicode surrogate pairs.
  */
-const EmojiPoster = {
+export const EmojiPoster = {
     install() {
         processPostBoxEvent.addHandler(EmojiPoster.apply);
     },
@@ -30,7 +30,8 @@ const EmojiPoster = {
                     evt,
                     (e: MouseEvent | Event) => {
                         const this_elem = e.target as HTMLElement;
-                        if (this_elem.matches("#frm_submit")) {
+                        const isSubmit = this_elem?.matches("#frm_submit");
+                        if (isSubmit) {
                             // block any remaining attached listeners
                             e.preventDefault();
                             e.stopImmediatePropagation();
@@ -59,13 +60,12 @@ const EmojiPoster = {
     },
 
     handleSubmit(postText: string) {
+        const $submitBtn = $("#frm_submit");
         if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText).astralsCount > 0) {
             // normal post (either a single astral or some text)
-            $("#frm_submit").attr("disabled", "disabled").css("color", "#E9E9DE");
+            $submitBtn.attr("disabled", "disabled").css("color", "#E9E9DE");
             $("#postform").submit();
-            $("body").trigger("chatty-new-post-reply", [
-                $("#frm_submit").closest("div.root > ul > li").first().attr("id"),
-            ]);
+            $("body").trigger("chatty-new-post-reply", [$submitBtn.closest("div.root > ul > li").first().attr("id")]);
             return false;
         } else {
             // the server doesn't know that an astral is a single character
@@ -92,9 +92,8 @@ const EmojiPoster = {
     countText(text: string) {
         // sums to the real length of text containing astrals
         const _astralsCount = EmojiPoster.countAstrals(text)?.astralsLen;
-        const _count = _astralsCount ? text.length - _astralsCount : text.length;
         // should return true length of text minus encoded entities
-        return _count;
+        return _astralsCount ? text.length - _astralsCount : text.length;
     },
 
     countAstrals(text: string) {
@@ -105,5 +104,3 @@ const EmojiPoster = {
         return { astralsLen: _astralTextLen, astralsCount: _astralCount };
     },
 };
-
-export default EmojiPoster;

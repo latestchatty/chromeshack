@@ -5,7 +5,7 @@ import { enabledContains } from "../core/settings";
 import { elementFitsViewport, scrollToElement } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 
-interface RecentPostSubtree {
+export interface RecentPostSubtree {
     postAuthor: string;
     postPreviewHtml: string;
     postId: number;
@@ -15,7 +15,7 @@ export interface RecentPosts {
     mostRecentSubtree: RecentPostSubtree[];
 }
 
-const ThreadPane = {
+export const ThreadPane = {
     isEnabled: false,
 
     async install() {
@@ -241,5 +241,3 @@ const ThreadPane = {
         if ($a.hasClass("capped")) $a.removeClass("capped");
     },
 };
-
-export default ThreadPane;

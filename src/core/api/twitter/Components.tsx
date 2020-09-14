@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import useResolvedLinks from "../../useResolvedLinks";
-import { objHas, objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
+import { useResolvedLinks } from "../../useResolvedLinks";
+import { objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
 import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
 
 import type { TweetParsed } from "./twitter";
@@ -53,12 +53,10 @@ const CompiledMedia = (props: { mediaItems: string[]; className?: string }) => {
 };
 
 const Twitter = (props: { response: TweetParsed }) => {
-    const [component, setComponent] = useState(null);
     const { response } = props || {};
-    useEffect(() => {
-        /// render the parsed Tweet response as a React component
-        if (!objContainsProperty("unavailable", response) && !objEmpty(response)) {
-            setComponent(
+    return (
+        <>
+            {!objContainsProperty("unavailable", response) && !objEmpty(response) ? (
                 <div className="twitter__container">
                     <div className="twitter__header">
                         <a href={response.profilePicUrl} className="profile__pic__link">
@@ -116,47 +114,35 @@ const Twitter = (props: { response: TweetParsed }) => {
                         </div>
                     </div>
                     <div className="twitter__timestamp">{response.timestamp}</div>
-                </div>,
-            );
-        } else {
-            setComponent(
+                </div>
+            ) : (
                 <div className="twitter__container">
                     <div className="twitter__403">
                         <span>This tweet is unavailable.</span>
                     </div>
-                </div>,
-            );
-        }
-    }, []);
-    return component;
+                </div>
+            )}
+        </>
+    );
 };
 
-const useTweets = (tweetObj: TweetParsed) => {
+const accumulateTweets = (tweetObj: TweetParsed) => {
+    const tweetParents = arrHas(tweetObj?.tweetParents) ? tweetObj?.tweetParents : null;
+    const parents = tweetParents
+        ? tweetParents.reduce((acc, t, i) => {
+              acc.push(<Twitter key={i} response={t} />);
+              return acc;
+          }, [] as React.ReactNode[])
+        : null;
+    return parents?.length > 0 ? (
+        [...parents, <Twitter key={parents.length + 1} response={tweetObj} />]
+    ) : (
+        <Twitter response={tweetObj} />
+    );
+};
+export const useTweets = (props: { tweetObj: TweetParsed }) => {
+    const { tweetObj } = props || {};
     /// render Tweet children from a given twitter response object
-    const [children, setChildren] = useState(null as React.ReactNode | React.ReactNode[]);
-    useEffect(() => {
-        const accumulateTweets = () => {
-            const tweetParents = arrHas(tweetObj?.tweetParents) ? tweetObj?.tweetParents : null;
-            const parents = tweetParents
-                ? tweetParents.reduce((acc, t, i) => {
-                      acc.push(<Twitter key={i} response={t} />);
-                      return acc;
-                  }, [] as React.ReactNode[])
-                : null;
-            const withNewest =
-                parents?.length > 0 ? (
-                    [...parents, <Twitter key={parents.length + 1} response={tweetObj} />]
-                ) : (
-                    <Twitter response={tweetObj} />
-                );
-            return withNewest;
-        };
-        if (objHas(tweetObj)) {
-            const accumulatedTweets = accumulateTweets();
-            if (accumulatedTweets) setChildren(accumulatedTweets);
-        }
-    }, []);
-    return <>{children}</>;
+    const children = accumulateTweets(tweetObj);
+    return children && <>{children}</>;
 };
-
-export default useTweets;

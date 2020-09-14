@@ -1,6 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 
-const scrollByKeyFix = async () => {
+export const scrollByKeyFix = async () => {
     try {
         await browser.tabs.executeScript(null, {
             code: /*javascript*/ `
@@ -44,4 +44,3 @@ if (!document.getElementById("scrollbykeyfix-wjs")) {
         /* eat empty object exceptions */
     }
 };
-export default scrollByKeyFix;

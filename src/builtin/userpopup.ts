@@ -20,7 +20,7 @@ import { superTrim } from "../core/common";
         * First stab at profiles
 */
 
-const UserPopup = {
+export const UserPopup = {
     getShackUsername() {
         const username = document.getElementById("user_posts");
         return (username && username.innerText) || "";
@@ -146,6 +146,7 @@ const UserPopup = {
             }
 
             // Create menu items and add them to ulUser
+            const tagsUrlBase = "https://www.shacknews.com/tags-user?user=";
             const postsUrl = "https://www.shacknews.com/user/" + usernameTxt + "/posts";
             ulUser.appendChild(UserPopup.createListItem(your + " Posts", postsUrl));
 
@@ -164,21 +165,21 @@ const UserPopup = {
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : Stuff " + friendlyName + " Wrote",
-                    "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#authored_by_tab",
+                    tagsUrlBase + usernameTxt + "#authored_by_tab",
                     "userDropdown-lol",
                 ),
             );
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : Stuff " + friendlyName + " Tagged",
-                    "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#lold_by_tab",
+                    tagsUrlBase + usernameTxt + "#lold_by_tab",
                     "userDropdown-lol",
                 ),
             );
             ulUser.appendChild(
                 UserPopup.createListItem(
                     "[lol] : " + your + " Fan Train",
-                    "https://www.shacknews.com/tags-user?user=" + usernameTxt + "#fan_club_tab",
+                    tagsUrlBase + usernameTxt + "#fan_club_tab",
                     "userDropdown-lol",
                 ),
             );
@@ -244,5 +245,3 @@ const UserPopup = {
         }
     },
 };
-
-export default UserPopup;

@@ -141,7 +141,7 @@ export const StatusLine = (props: ImageUploaderComponentProps) => {
     const { status, error, isPending, animationEnd } = props || {};
     const statusClasses = classNames({
         fadeout: !isPending,
-        hidden: !(status.length > 0),
+        hidden: !status,
     });
     const msgClasses = classNames("truncate", { error });
     return (

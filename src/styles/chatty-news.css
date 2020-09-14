@@ -8,7 +8,7 @@
     --chatty-news-link-bg: #fff;
 }
 
-@media only screen and (max-width: 1190px) {
+/* @media only screen and (max-width: 1190px) {
     .chatty__news__enabled #chattynews__aligner {
         display: grid;
         grid-template-areas:
@@ -19,22 +19,23 @@
     .chatty__news__enabled .chatty-news,
     .chatty__news__enabled #chattynews__aligner #links__aligner,
     .chatty__news__enabled #chattynews__aligner > p:first-child {
-        /* put the article content children in a centered column */
         margin-left: auto;
         margin-right: auto;
     }
     .chatty__news__enabled .chatty-news {
-        /* ChattyNews box */
         grid-area: news;
     }
     .chatty__news__enabled #chattynews__aligner #links__aligner {
-        /* article links */
         grid-area: links;
     }
     .chatty__news__enabled #chattynews__aligner > p:first-child {
-        /* footer */
         grid-area: footer;
     }
+} */
+
+/* TODO: DEBUGGING ONLY! */
+div#page.theme2#page.takeover {
+    max-width: 100% !important;
 }
 
 /* use a responsive Twitch player up to a sane width */
@@ -42,10 +43,9 @@
     position: relative !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    padding-bottom: 56.25% !important;
+    /* let the player expand to fill the width of the article box */
+    padding-bottom: calc(56.25% - 1px) !important;
     overflow: hidden !important;
-    /* width pulled from 'media.css' */
-    max-width: var(--max-media-item-width);
 }
 .chatty__news__enabled > p:nth-child(2) > iframe {
     position: absolute !important;

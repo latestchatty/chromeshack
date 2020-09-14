@@ -12,12 +12,11 @@ export const decodeHTMLEntities = (text: string) => {
 
 export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
     // prioritize the highest bitrate source
-    const result = mediaArr.sort((a, b) => {
+    return mediaArr.sort((a, b) => {
         if (a.bitrate < b.bitrate) return 1;
         else if (a.bitrate > b.bitrate) return -1;
         return 0;
     });
-    return result;
 };
 
 export const collectMedia = (tweetMediaObj: TwitterResponseMediaItem[]) => {
@@ -109,8 +108,7 @@ export const fetchTweetParents = async (tweetObj: TweetParsed) => {
     if (pid) {
         const parentTweets = await fetchParents(pid, [] as TweetParsed[]);
         // push the rendered tweets into the tweetParents property of our OT
-        const mutated = arrHas(parentTweets) ? ({ ...tweetObj, tweetParents: parentTweets } as TweetParsed) : null;
-        return mutated;
+        return arrHas(parentTweets) ? ({ ...tweetObj, tweetParents: parentTweets } as TweetParsed) : null;
     } else return null;
 };
 
@@ -119,7 +117,6 @@ export const fetchTweets = async (tweetId: string) => {
     const showTweetThreads = await getEnabledSuboption("sl_show_tweet_threads");
     const tweetObj = await fetchTweet(tweetId);
     if (showTweetThreads && tweetObj.tweetParentId) {
-        const withParents = await fetchTweetParents(tweetObj);
-        return withParents;
+        return await fetchTweetParents(tweetObj);
     } else return tweetObj;
 };

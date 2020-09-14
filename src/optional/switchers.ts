@@ -11,7 +11,7 @@ interface SwitcherMatch extends ResolvedUser {
     matched: string;
 }
 
-const Switchers = {
+export const Switchers = {
     offenders: [
         { old: "gegtik", new: "boring gegtik" },
         { old: "thaperfectdrug", new: "Dave-A" },
@@ -76,5 +76,3 @@ const Switchers = {
         for (const icon of user_icons || []) icon.setAttribute("style", "display: none !important;");
     },
 };
-
-export default Switchers;

@@ -2,7 +2,7 @@ import { browser } from "webextension-polyfill-ts";
 
 import { processPostEvent } from "../core/events";
 
-const ModBanners = {
+export const ModBanners = {
     isEnabled: false,
 
     install() {
@@ -36,5 +36,3 @@ const ModBanners = {
         }
     },
 };
-
-export default ModBanners;

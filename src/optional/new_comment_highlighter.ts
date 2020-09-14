@@ -2,7 +2,7 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 import { processPostRefreshEvent, fullPostsCompletedEvent } from "../core/events";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
-const NewCommentHighlighter = {
+export const NewCommentHighlighter = {
     async install() {
         const is_enabled = await enabledContains("new_comment_highlighter");
         if (is_enabled) {
@@ -72,5 +72,3 @@ const NewCommentHighlighter = {
         return post ? parseInt((<HTMLElement>post.parentNode)?.id?.substr(5)) : null;
     },
 };
-
-export default NewCommentHighlighter;

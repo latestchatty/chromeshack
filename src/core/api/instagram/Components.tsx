@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import useResolvedLinks from "../../useResolvedLinks";
+import { useResolvedLinks } from "../../useResolvedLinks";
 import { classNames, fetchBackground } from "../../common";
 import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
 
@@ -22,11 +22,10 @@ const collectMedia = (media: InstagramShortcodeMedia) => {
 const CompiledMedia = (props: { mediaItems: string[] }) => {
     const { mediaItems } = props || {};
     // display wrapper for useResolvedLinks()
-    const resolved = useResolvedLinks({
+    return useResolvedLinks({
         links: mediaItems,
         options: { controls: true, clickTogglesVisible: false },
     });
-    return resolved as JSX.Element;
 };
 
 const parseDate = (timestamp: string) => {
@@ -172,13 +171,5 @@ const Instagram = (props: { response: InstagramParsed }) => {
     }
 };
 
-const useInstagram = (instagramObj: InstagramParsed) => {
-    /// render Instagram child from a given instagram response object
-    const [children, setChildren] = useState(null);
-    useEffect(() => {
-        if (instagramObj) setChildren(<Instagram response={instagramObj} />);
-    }, []);
-    return <>{children}</>;
-};
-
-export default useInstagram;
+// render Instagram child from a given instagram response object
+export const useInstagram = (instagramObj: InstagramParsed) => instagramObj && <Instagram response={instagramObj} />;

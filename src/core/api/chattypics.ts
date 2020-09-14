@@ -50,7 +50,7 @@ const handleChattypicsSuccess = (payload: UploadSuccessPayload, dispatch: Dispat
 const handleChattypicsFailure = (payload: UploadFailurePayload, dispatch: Dispatch<UploaderAction>) =>
     dispatch({ type: "UPLOAD_FAILURE", payload });
 
-const handleChattypicsUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
+export const handleChattypicsUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     try {
         const links: string[] = await doChattypicsUpload(data, dispatch);
         if (!arrEmpty(links)) handleChattypicsSuccess(links, dispatch);
@@ -60,4 +60,3 @@ const handleChattypicsUpload = async (data: UploadData, dispatch: Dispatch<Uploa
         handleChattypicsFailure({ code: 401, msg: e.message || `Something went wrong!` }, dispatch);
     }
 };
-export default handleChattypicsUpload;

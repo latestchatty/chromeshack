@@ -1,6 +1,6 @@
 import { stripHtml, superTrim } from "./common";
 
-const SentenceParser = {
+export const SentenceParser = {
     parseIntoLines(html: string) {
         const LINK_PLACEHOLDER = "%%link%%";
         const SPOILER_PLACEHOLDER = "%%spoiler%%";
@@ -45,5 +45,3 @@ const SentenceParser = {
         return sentences;
     },
 };
-
-export default SentenceParser;

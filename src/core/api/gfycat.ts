@@ -143,7 +143,7 @@ const handleGfycatUploadFailure = (payload: UploadFailurePayload, dispatch: Disp
     dispatch({ type: "UPLOAD_FAILURE", payload });
 };
 
-const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
+export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     /// FSM: dropKey (mediaUrl optional) -> upload (if applicable) -> status => resolve
     try {
         dispatch({ type: "UPLOAD_PENDING" });
@@ -180,4 +180,3 @@ const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderA
         handleGfycatUploadFailure({ code: 400, msg: e.message || `Something went wrong!` }, dispatch);
     }
 };
-export default handleGfycatUpload;

@@ -5,15 +5,15 @@ import { TP_Instance } from "../content";
 import { getEventId } from "../core/notifications";
 
 import type { NotifyEvent, NotifyResponse } from "../core/notifications";
-import ChromeShack from "../core/observers";
+import { ChromeShack } from "../core/observers";
 
-interface PendingPost {
+export interface PendingPost {
     postId: number;
     threadId: number;
     thread: HTMLElement;
 }
 
-const HighlightPendingPosts = {
+export const HighlightPendingPosts = {
     lastEventId: 0,
 
     lastIndex: -1,
@@ -170,5 +170,3 @@ const HighlightPendingPosts = {
         });
     },
 };
-
-export default HighlightPendingPosts;

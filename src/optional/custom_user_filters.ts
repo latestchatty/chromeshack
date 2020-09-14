@@ -3,7 +3,7 @@ import { processPostRefreshEvent } from "../core/events";
 import { HU_Instance, TP_Instance } from "../content";
 import { ResolvedUser } from "./highlight_users";
 
-const CustomUserFilters = {
+export const CustomUserFilters = {
     parsedUsers: [] as ResolvedUser[],
 
     rootPostCount: 0,
@@ -55,5 +55,3 @@ const CustomUserFilters = {
         if (TP_Instance.isEnabled) TP_Instance.apply();
     },
 };
-
-export default CustomUserFilters;

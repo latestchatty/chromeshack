@@ -3,7 +3,7 @@ import { processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 import { elemMatches, locatePostRefs, objContains } from "../core/common";
 
-const Collapse = {
+export const Collapse = {
     install() {
         processPostEvent.addHandler(Collapse.toggle);
     },
@@ -83,5 +83,3 @@ const Collapse = {
         }
     },
 };
-
-export default Collapse;

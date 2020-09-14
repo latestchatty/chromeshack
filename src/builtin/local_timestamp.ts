@@ -8,7 +8,7 @@ class GetTime {
     static fromDateToString = (jsDate: Date) => DateTime.fromJSDate(jsDate).toLocaleString(DateTime.DATETIME_MED);
 }
 
-const LocalTimeStamp = {
+export const LocalTimeStamp = {
     install() {
         processPostEvent.addHandler(LocalTimeStamp.adjustTime);
         processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
@@ -35,5 +35,3 @@ const LocalTimeStamp = {
         }
     },
 };
-
-export default LocalTimeStamp;

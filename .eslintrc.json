@@ -7,16 +7,18 @@
             "jsx": true
         }
     },
-    "plugins": ["@typescript-eslint", "react"],
+    "plugins": ["@typescript-eslint", "react", "sonarjs", "react-hooks"],
     "settings": {
         "react": {
             "version": "detect"
         }
     },
     "extends": [
+        "plugin:sonarjs/recommended",
         "plugin:@typescript-eslint/recommended",
         "prettier/@typescript-eslint",
         "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
         "plugin:prettier/recommended"
     ],
     "rules": {
@@ -24,6 +26,15 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
+        "sonarjs/no-duplicate-string": "off",
+        "sonarjs/cognitive-complexity": ["warn", 30],
+        "no-restricted-syntax": [
+            1,
+            {
+                "selector": "ExportDefaultDeclaration",
+                "message": "Prefer named exports"
+            }
+        ],
         "react/jsx-filename-extension": [
             "warn",
             {

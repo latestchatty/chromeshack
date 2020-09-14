@@ -55,7 +55,6 @@ import {
     waitToFetchSafe,
     safeJSON,
     parseFetchResponse,
-    parseShackRSS,
 } from "./fetch";
 import type { ParseType, FetchArgs, ShackRSSItem } from "./fetch";
 
@@ -68,7 +67,6 @@ export {
     waitToFetchSafe,
     safeJSON,
     parseFetchResponse,
-    parseShackRSS,
 };
 export { ParseType, FetchArgs, ShackRSSItem };
 

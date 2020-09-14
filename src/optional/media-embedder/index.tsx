@@ -6,7 +6,7 @@ import { arrHas, locatePostRefs, arrEmpty } from "../../core/common";
 import { enabledContains } from "../../core/settings";
 import { detectMediaLink } from "../../core/api";
 
-import Expando from "./Expando";
+import { Expando } from "./Expando";
 
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {
     const { links, item } = props || {};
@@ -25,7 +25,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
             }
         };
         if (children) mediaLinkReplacer();
-    }, [children]);
+    }, [item, children]);
     useEffect(() => {
         const resolveChildren = async () => {
             // tag all matching links and embed an Expando toggle for each one
@@ -61,11 +61,11 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
             if (detected) setChildren(detected);
         };
         resolveChildren();
-    }, []);
+    }, [links]);
     return <>{children}</>;
 };
 
-const MediaEmbedder = {
+export const MediaEmbedder = {
     install() {
         processPostEvent.addHandler(MediaEmbedder.processPost);
         processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
@@ -91,4 +91,3 @@ const MediaEmbedder = {
         })();
     },
 };
-export default MediaEmbedder;

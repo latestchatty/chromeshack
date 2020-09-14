@@ -1,7 +1,7 @@
 import { getSetting, setSetting, enabledContains } from "../core/settings";
 import { fetchSafe, safeInnerHTML, ShackRSSItem } from "../core/common";
 
-const ChattyNews = {
+export const ChattyNews = {
     async checkTime(delayInMs: number) {
         const curTime = new Date().getTime();
         const lastFetchTime = (await getSetting("chatty_news_lastfetchtime")) as number;
@@ -55,8 +55,10 @@ const ChattyNews = {
             const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
             const alignmentBox = document.createElement("div");
             const subAlignmentBox = document.createElement("div");
+            const linksContainerBox = document.createElement("div");
             alignmentBox.setAttribute("id", "chattynews__aligner");
             subAlignmentBox.setAttribute("id", "links__aligner");
+            linksContainerBox.setAttribute("id", "links__container");
             for (const [i, p] of articleChildren.entries() || []) {
                 // leave our other text centered at the bottom of the article box
                 if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
@@ -81,5 +83,3 @@ const ChattyNews = {
         }
     },
 };
-
-export default ChattyNews;

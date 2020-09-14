@@ -1,7 +1,7 @@
 import { enabledContains } from "../core/settings";
 
 /// optionally disable auto-play on the Chatty's article Twitch player
-const TwitchAutoplay = {
+export const TwitchAutoplay = {
     async install() {
         // loads on startup
         const is_enabled = await enabledContains("twitchauto");
@@ -13,4 +13,3 @@ const TwitchAutoplay = {
         }
     },
 };
-export default TwitchAutoplay;

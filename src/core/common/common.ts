@@ -10,10 +10,7 @@ export const objContains = (needle: any, haystack: any) => {
     else if (arrHas(haystack as string[])) return (haystack as string[]).find((x) => x === needle) || null;
     for (const k of Object.keys(haystack as Record<string, any>) || []) {
         const value = haystack[k];
-        if (arrHas(value)) {
-            const result = objContains(needle, value) as string;
-            if (result) return result;
-        } else if (typeof value === "object") {
+        if (arrHas(value) || typeof value === "object") {
             const result = objContains(needle, value) as string;
             if (result) return result;
         } else if (value === needle) return value;
@@ -62,20 +59,15 @@ export const isIframe = (href: string) => {
     else if (/xboxdvr\.com/.test(href)) return "xboxdvr";
     else return null;
 };
-export const getLinkType = (href: string) =>
-    isImage(href)
-        ? "image"
-        : isVideo(href)
-        ? "video"
-        : isIframe(href)
-        ? "iframe"
-        : /instagr\.am|instagram\./i.test(href)
-        ? "instagram"
-        : /twitter\./i.test(href)
-        ? "twitter"
-        : /shacknews\.com\/chatty\?id=\d+/i.test(href)
-        ? "chattypost"
-        : null;
+export const getLinkType = (href: string) => {
+    const _isImage = isImage(href) ? "image" : null;
+    const _isVideo = isVideo(href) ? "video" : null;
+    const _isIframe = isIframe(href) ? "iframe" : null;
+    const _isInstagram = /instagr\.am|instagram\./i.test(href) ? "instagram" : null;
+    const _isTwitter = /twitter\./i.test(href) ? "twitter" : null;
+    const _isChattypost = /shacknews\.com\/chatty\?id=\d+/i.test(href) ? "chattypost" : null;
+    return _isImage || _isVideo || _isIframe || _isInstagram || _isTwitter || _isChattypost;
+};
 
 export const isUrlArr = (dataArr: string[]) => {
     // every element of this array must contain a URL formatted string
@@ -101,6 +93,5 @@ export const packValidTypes = (types: string, fileList: File[] | FileList) => {
     // a string with comma delimited mime types
     const typeArr = types.split(",");
     // returns a File array with only matching file types in it
-    const files: File[] = [...fileList].filter((f) => typeArr.includes(f.type));
-    return files;
+    return [...fileList].filter((f) => typeArr.includes(f.type));
 };

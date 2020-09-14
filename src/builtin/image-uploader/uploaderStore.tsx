@@ -1,4 +1,4 @@
-import createStore, { ReducerState } from "../../core/createStore";
+import { createStore, ReducerState } from "../../core/createStore";
 import { packValidTypes } from "../../core/common";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
@@ -68,7 +68,7 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
             return { ...state, selectedTab: action.payload };
         case "LOAD_FILES": {
             const files = packValidTypes(state.formats, action.payload);
-            const isDisabled = !(files && files.length > 0);
+            const isDisabled = files?.length === 0;
             const isMultifile = state.multifile;
             return {
                 ...state,
@@ -79,7 +79,7 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
             };
         }
         case "LOAD_URL": {
-            const isDisabled = !(action.payload.length > 7);
+            const isDisabled = action.payload.length <= 7;
             return {
                 ...state,
                 urlData: action.payload,
@@ -156,5 +156,4 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
 };
 
 /// expose a custom hook for ease of use
-const useUploaderStore = createStore(UploaderReducer, initialState);
-export default useUploaderStore;
+export const useUploaderStore = createStore(UploaderReducer, initialState);

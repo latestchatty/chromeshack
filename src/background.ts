@@ -4,8 +4,8 @@ import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
 import { migrateSettings } from "./core/settings";
 import { startNotifications } from "./core/notifications";
 
-import chatViewFix from "./patches/chatViewFix";
-import scrollByKeyFix from "./patches/scrollByKeyFix";
+import { chatViewFix } from "./patches/chatViewFix";
+import { scrollByKeyFix } from "./patches/scrollByKeyFix";
 
 import type { WebRequest } from "webextension-polyfill-ts";
 
