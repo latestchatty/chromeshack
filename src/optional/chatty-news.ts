@@ -50,20 +50,19 @@ export const ChattyNews = {
         const is_enabled = await enabledContains("chatty_news");
         if (is_enabled) {
             if (document.querySelector("div.chatty-news")) return;
+
             // move all non-media elements into an alignment container for better responsiveness
             const articleBox = document.querySelector(".article-content") as HTMLElement;
             const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
             const alignmentBox = document.createElement("div");
             const subAlignmentBox = document.createElement("div");
-            const linksContainerBox = document.createElement("div");
             alignmentBox.setAttribute("id", "chattynews__aligner");
             subAlignmentBox.setAttribute("id", "links__aligner");
-            linksContainerBox.setAttribute("id", "links__container");
-            for (const [i, p] of articleChildren.entries() || []) {
-                // leave our other text centered at the bottom of the article box
+            // leave our other text centered at the bottom of the article box
+            for (const [i, p] of articleChildren.entries() || [])
                 if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
                 else alignmentBox.appendChild(p);
-            }
+
             alignmentBox?.appendChild(subAlignmentBox);
 
             let newsBox = document.createElement("div");
@@ -79,6 +78,8 @@ export const ChattyNews = {
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
+            if (await enabledContains("thread_pane")) articleBox?.classList?.add("thread__pane__enabled");
+
             articleBox?.classList?.add("chatty__news__enabled");
         }
     },

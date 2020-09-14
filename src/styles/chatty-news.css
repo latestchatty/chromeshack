@@ -8,7 +8,32 @@
     --chatty-news-link-bg: #fff;
 }
 
-/* @media only screen and (max-width: 1190px) {
+/* do something special when Two-Panel mode is enabled */
+@media only screen and (max-width: 1190px) {
+    .thread__pane__enabled.chatty__news__enabled #chattynews__aligner {
+        display: grid;
+        grid-template-areas:
+            "news"
+            "links"
+            "footer";
+    }
+    .thread__pane__enabled.chatty__news__enabled .chatty-news,
+    .thread__pane__enabled.chatty__news__enabled #chattynews__aligner #links__aligner,
+    .thread__pane__enabled.chatty__news__enabled #chattynews__aligner > p:first-child {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .thread__pane__enabled.chatty__news__enabled .chatty-news {
+        grid-area: news;
+    }
+    .thread__pane__enabled.chatty__news__enabled #chattynews__aligner #links__aligner {
+        grid-area: links;
+    }
+    .thread__pane__enabled.chatty__news__enabled #chattynews__aligner > p:first-child {
+        grid-area: footer;
+    }
+}
+@media only screen and (max-width: 750px) {
     .chatty__news__enabled #chattynews__aligner {
         display: grid;
         grid-template-areas:
@@ -31,11 +56,6 @@
     .chatty__news__enabled #chattynews__aligner > p:first-child {
         grid-area: footer;
     }
-} */
-
-/* TODO: DEBUGGING ONLY! */
-div#page.theme2#page.takeover {
-    max-width: 100% !important;
 }
 
 /* use a responsive Twitch player up to a sane width */
@@ -57,11 +77,17 @@ div#page.theme2#page.takeover {
     left: 0;
 }
 
+/* DEBUGGING PURPOSES ONLY! */
+/* div#page.theme2#page.takeover {
+    max-width: 100% !important;
+} */
+
 #chattynews__aligner {
     display: grid;
     grid-template-areas:
-        "left ... right"
+        "left spacer right"
         "footer footer footer";
+    justify-content: space-between;
 }
 
 /* align existing article elements */
