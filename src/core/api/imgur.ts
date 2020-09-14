@@ -167,7 +167,7 @@ const doImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction
 const doImgurCreateAlbum = async (hashes: string[]) => {
     const dataBody =
         hashes?.length > 0
-            ? (hashes as string[]).reduce((acc, p) => {
+            ? hashes.reduce((acc, p) => {
                   acc.append("deletehashes[]", p);
                   return acc;
               }, new FormData())

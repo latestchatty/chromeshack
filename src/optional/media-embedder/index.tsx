@@ -31,12 +31,12 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
             // tag all matching links and embed an Expando toggle for each one
             const detected = arrHas(links)
                 ? await links.reduce(async (acc, l, i) => {
-                      const _acc = await acc;
-                      const { postid } = locatePostRefs(l);
                       // avoid clobbering NWS links
                       const isNWS = l.closest(".fullpost.fpmod_nws");
                       const NWS_enabled = await enabledContains("nws_incognito");
                       const detected = (NWS_enabled && !isNWS) || !NWS_enabled ? await detectMediaLink(l.href) : null;
+                      const { postid } = locatePostRefs(l);
+                      const _acc = await acc;
                       if (detected) {
                           // tag the detected link in the DOM so we can replace it later
                           l.setAttribute("id", `tagged_${postid}-${i}`);

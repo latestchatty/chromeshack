@@ -76,7 +76,7 @@ const loadComponent = (response: ParsedResponse, options?: MediaOptions) => {
 const loadCarousel = (resolved: ParsedResponse[]) => {
     if (arrHas(resolved) && resolved.length > 1) {
         // if our media comes in an array reduce to rendered components
-        const children = (resolved as ParsedResponse[]).reduce((acc, v) => {
+        const children = resolved.reduce((acc, v) => {
             const { src: resolvedSrc, type: resolvedType } = v || {};
             const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType };
             const rendered = objHas(response) && loadComponent(response);
