@@ -12,8 +12,6 @@ import { isGiphy } from "./giphy";
 import { isImgur } from "./imgur";
 /// native social embeds
 import { isInstagram } from "./instagram";
-/// iframe media embeds
-import { isMixer } from "./mixer";
 /// resolvable iframe embeds
 import { isStreamable } from "./streamable";
 import { isTenor } from "./tenor";
@@ -66,11 +64,10 @@ export const detectMediaLink = async (href: string) => {
         const resolvableEmbeds = streamable;
         if (objHas(resolvableEmbeds)) return resolvableEmbeds;
 
-        const mixer = isMixer(href);
         const twitch = isTwitch(href);
         const xboxdvr = isXboxDVR(href);
         const youtube = isYoutube(href);
-        const iframeEmbeds = mixer || twitch || xboxdvr || youtube;
+        const iframeEmbeds = twitch || xboxdvr || youtube;
         if (objHas(iframeEmbeds)) return iframeEmbeds;
     }
     if (socialsEnabled) {

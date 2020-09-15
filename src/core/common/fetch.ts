@@ -60,7 +60,7 @@ export const fetchSafeLegacy = ({ url, fetchOpts, parseType }: FetchArgs): Promi
         xhrRequestLegacy(url, fetchOpts)
             .then((res: any) => {
                 const result = res && parseFetchResponse(res, parseType);
-                if (result) resolve(result);
+                if (result) return resolve(result);
                 console.error(res);
                 return reject(res);
             })
