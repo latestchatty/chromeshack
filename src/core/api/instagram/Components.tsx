@@ -37,7 +37,7 @@ export const fetchInstagramData = async (shortcode: string) => {
         const _matchGQL = parsed && parsed.gqlData.shortcode_media;
         const _isPrivate = _matchGQL && _matchGQL.owner.is_private;
         if (!_matchGQL || _isPrivate)
-            return { error: "This account or post has been made private or cannot be found:", url };
+            return { error: { msg: "This account or post has been made private or cannot be found:", url } };
         else if (_matchGQL)
             return {
                 metaLikes: _matchGQL.edge_media_preview_like.count.toLocaleString(),
@@ -160,7 +160,11 @@ const Instagram = (props: { response: InstagramParsed }) => {
         return (
             <div className="instagram__boundary">
                 <div className="instagram__container">
-                    <span className="instagram__error">{error}</span>
+                    <span className="instagram__error">
+                        {error.msg}
+                        <br />
+                        {error.url}
+                    </span>
                 </div>
             </div>
         );

@@ -51,5 +51,8 @@ export interface InstagramParsed {
     postUrl?: string;
     postCaption?: string;
     postMedia?: string[];
-    error?: string;
+    error?: {
+        msg: string;
+        url: string;
+    };
 }
