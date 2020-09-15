@@ -20,14 +20,6 @@ const collectMedia = (media: InstagramShortcodeMedia) => {
 
     return collector;
 };
-const CompiledMedia = (props: { mediaItems: string[] }) => {
-    const { mediaItems } = props || {};
-    // display wrapper for useResolvedLinks()
-    return useResolvedLinks({
-        links: mediaItems,
-        options: { controls: true, clickTogglesVisible: false },
-    });
-};
 
 const parseDate = (timestamp: string) => {
     const _date = new Date(0);
@@ -101,6 +93,7 @@ const InstagramCaption = ({ text }: { text: string }) => {
 
 const Instagram = (props: { response: InstagramParsed }) => {
     const { response } = props || {};
+
     const {
         metaLikes,
         metaComments,
@@ -113,6 +106,11 @@ const Instagram = (props: { response: InstagramParsed }) => {
         postMedia,
         error,
     } = response || {};
+    const resolvedLinks = useResolvedLinks({
+        links: postMedia,
+        options: { controls: true, clickTogglesVisible: false },
+    });
+
     if (!error)
         return (
             <div className="instagram__boundary">
@@ -146,9 +144,7 @@ const Instagram = (props: { response: InstagramParsed }) => {
                             </a>
                         </div>
                     </div>
-                    <div className="instagram__embed">
-                        <CompiledMedia mediaItems={postMedia} />
-                    </div>
+                    <div className="instagram__embed">{resolvedLinks}</div>
                     <div className={classNames("instagram__caption", { hidden: postCaption.length === 0 })}>
                         <InstagramCaption text={postCaption} />
                     </div>

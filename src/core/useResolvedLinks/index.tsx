@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { arrHas, objHas, isIframe, classNames } from "../common";
 import { ParsedResponse, detectMediaLink } from "../api";
 
-import { Carousel } from "../../optional/media-embedder/Carousel";
+import { Carousel } from "./Carousel";
 import { FlexVideo } from "./FlexVideo";
 
 import type { ResolvedLinkProps, MediaProps, MediaOptions } from "./index.d";
@@ -133,14 +133,12 @@ export const useResolvedLinks = (props: ResolvedLinkProps) => {
     const [resolved, setResolved] = useState(null as JSX.Element);
 
     useEffect(() => {
-        (async () => {
-            const children: JSX.Element = arrHas(links) ? await resolveLinks(links, options) : null;
-            const child: JSX.Element = link ? await resolveLink({ fallbackLink: link, options }) : null;
-            setResolved(children || child);
-        })();
-    }, [link, links, options]);
+        Promise.all([resolveLinks(links, options), resolveLink({ fallbackLink: link, options })]).then((children) => {
+            for (const child of children) if (child) setResolved(child);
+        });
+    }, []);
     // return rendered media embeds as components
-    return resolved && <>{resolved}</>;
+    return resolved;
 };
 
 export { MediaProps };

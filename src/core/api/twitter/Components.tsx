@@ -49,7 +49,7 @@ const CompiledMedia = (props: { mediaItems: string[]; className?: string }) => {
         links: mediaItems,
         options: { controls: true, clickTogglesVisible: false },
     });
-    return <div className={className}>{mediaChildren}</div>;
+    return mediaChildren && <div className={className}>{mediaChildren}</div>;
 };
 
 const Twitter = (props: { response: TweetParsed }) => {

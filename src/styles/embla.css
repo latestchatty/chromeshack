@@ -5,8 +5,6 @@
 
 .embla {
     position: relative;
-    /* respond to slide height changes */
-    transition: height 0.05s;
     max-width: var(--max-media-item-width) !important;
 }
 .embla__button {
@@ -51,6 +49,8 @@
     position: relative;
     overflow: hidden;
     width: 100%;
+    /* respond to slide height changes */
+    transition: height 0.05s;
 }
 .embla__viewport.is-draggable {
     cursor: move;
