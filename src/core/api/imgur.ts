@@ -93,6 +93,7 @@ const _post = async (url: string, data: string, fetchOpts?: Record<string, any>)
 export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResolution) => {
     try {
         const albumImageUrl = albumId && imageId && `${imgurApiAlbumBaseUrl}/${albumId}/image/${imageId}`;
+        const galleryUrl = galleryId && `${imgurApiAlbumBaseUrl}/${galleryId}`;
         const albumUrl = albumId && `${imgurApiAlbumBaseUrl}/${albumId}`;
         // since a shortcode could be either an image or an album try both
         const imageUrl = imageId ? `${imgurApiImageBaseUrl}/${imageId}` : `${imgurApiImageBaseUrl}/${albumId}`;
@@ -103,7 +104,7 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
         if (resolvedAlbumImage) return [resolvedAlbumImage];
 
         // next try resolving as a multi-image album
-        const _album: ImgurResponse = albumUrl && (await _fetch(albumUrl));
+        const _album: ImgurResponse = albumUrl ? await _fetch(albumUrl) : galleryUrl ? await _fetch(galleryUrl) : null;
         const resolvedMedia = arrHas(_album?.data?.images)
             ? _album.data.images.reduce((acc, v) => {
                   acc.push(v.mp4 || v.link);
