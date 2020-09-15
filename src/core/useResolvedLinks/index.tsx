@@ -103,8 +103,8 @@ export const resolveLink = async (opts: {
     // use the rendered component if it exists in our resolver object
     if (resolver?.component) return resolver.component;
     // pack our resolver results into a format our loader understands
-    const _src = (resolver && resolver[0].src) || resolver?.src || normalSrc;
-    const _type = (resolver && resolver[0].type) || resolver?.src || normalType;
+    const _src = (resolver && resolver[0]?.src) || resolver?.src || normalSrc;
+    const _type = (resolver && resolver[0]?.type) || resolver?.type || normalType;
     const resolved = _src ? { key: _src, src: _src, type: _type } : null;
     // override clickTogglesVisible to avoid clobbering Carousel page buttons
     return resolved ? loadComponent(resolved, { ...options, clickTogglesVisible: _type === "image" }) : null;
