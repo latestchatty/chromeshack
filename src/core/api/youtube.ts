@@ -2,7 +2,7 @@ import type { ParsedResponse } from "./";
 
 const parseLink = (href: string) => {
     // youtube videos and/or playlists (vid id: $1 || $3, playlist id: $2, offset: $4)
-    const isYoutube = /https?:\/\/(?:.+\.)?(?:youtu.be\/([\w-]+)(?:\?t=(\d+))?|youtube\..+?\/(?:.+v=([\w-]+)(?:&t=(\d+)?|&list=([\w-]+))?(?:.+&t=(\d+))?))/i.exec(
+    const isYoutube = /https?:\/\/(?:.+\.)?(?:youtu.be\/([\w-]+)(?:\?t=(\d+))?|youtube\..+?\/(?:(?:.+v=|embed\/)([\w-]+))(?:&t=(\d+)?|&list=([\w-]+))?(?:.+&t=(\d+))?)/i.exec(
         href,
     );
     // youtu.be videos
