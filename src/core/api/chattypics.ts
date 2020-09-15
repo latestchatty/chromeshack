@@ -11,8 +11,10 @@ import type { ParsedResponse } from "./";
 const chattyPicsUrl = "https://chattypics.com/upload.php";
 
 const parseLink = (href: string) => {
-    const isChattyPics = /https?:\/\/(?:.*?\.)?(?:chattypics|shackpics)\.com\/(?:.+file=(.+)|files\/(.+))/i.exec(href);
-    const src = isChattyPics ? `https://chattypics.com/files/${isChattyPics[1] || isChattyPics[2]}` : null;
+    const isChattyPics = /https?:\/\/(?:.*?\.)?(?:chattypics|shackpics)\.com\/(?:.+file=|files\/)([\w\-._@#$%^&!()[\]{}+']+\.(?:png|jpe?g|web[mp]|gifv?|mp4))/i.exec(
+        href,
+    );
+    const src = isChattyPics ? `https://chattypics.com/files/${isChattyPics[1]}` : null;
     const type = isVideo(src) ? { type: "video" } : isImage(src) ? { type: "image" } : null;
     return type ? ({ ...type, src } as ParsedResponse) : null;
 };
