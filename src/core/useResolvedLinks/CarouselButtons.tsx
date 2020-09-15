@@ -1,6 +1,6 @@
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
 
 const ChevronLeft = () => <FontAwesomeIcon className="embla__button__svg right" icon={faChevronLeft} />;
 export const PrevButton = ({ enabled, onClick }: { enabled: boolean; onClick: any }) => (

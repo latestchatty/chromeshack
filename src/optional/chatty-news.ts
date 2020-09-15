@@ -1,5 +1,5 @@
-import { getSetting, setSetting, enabledContains } from "../core/settings";
 import { fetchSafe, safeInnerHTML, ShackRSSItem } from "../core/common";
+import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const ChattyNews = {
     async checkTime(delayInMs: number) {

@@ -1,18 +1,16 @@
-import React, { useState, useCallback, useEffect } from "react";
+import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExpandAlt, faCompressAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
-
+import React, { useCallback, useEffect, useState } from "react";
 import { classNames, getLinkType } from "../../core/common";
 import { resolveLink } from "../../core/useResolvedLinks";
-
-import type { FCWithMediaProps, ExpandoProps } from "./index.d";
+import type { ExpandoProps, FCWithMediaProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
 const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
 
 const RenderExpando = (props: ExpandoProps) => {
-    const { response, idx, postid } = props || {};
+    const { response, idx, postid, options } = props || {};
     const { href, src, type } = response || {};
 
     const [toggled, setToggled] = useState(false);
@@ -40,11 +38,11 @@ const RenderExpando = (props: ExpandoProps) => {
             const _type = type ? type : getLinkType(src || href);
             const resolved = (await resolveLink({
                 link: src || href,
-                options: { clickTogglesVisible: _type === "image" },
+                options: { ...options, clickTogglesVisible: _type === "image" },
             })) as FCWithMediaProps;
             if (resolved) setChildren(resolved);
         })();
-    }, [href, src, props, response, type]);
+    }, [href, src, props, response, options, type]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>

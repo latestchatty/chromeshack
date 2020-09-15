@@ -1,6 +1,6 @@
+import { HU_Instance } from "../content";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
-import { HU_Instance } from "../content";
 import { ResolvedUser } from "./highlight_users";
 
 /**

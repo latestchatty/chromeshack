@@ -1,12 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
-
-import { arrHas, objHas, isIframe, classNames } from "../common";
-import { ParsedResponse, detectMediaLink } from "../api";
-
+import React, { useEffect, useRef, useState } from "react";
+import { detectMediaLink, ParsedResponse } from "../api";
+import { arrHas, classNames, isIframe, objHas } from "../common";
 import { Carousel } from "./Carousel";
 import { FlexVideo } from "./FlexVideo";
-
-import type { ResolvedLinkProps, MediaProps, MediaOptions } from "./index.d";
+import type { MediaOptions, MediaProps, ResolvedLinkProps } from "./index.d";
 
 export const Iframe = (props: MediaProps) => {
     const { src } = props || {};
@@ -159,4 +156,4 @@ export const ResolvedMedia = (props: {
     );
 };
 
-export { MediaProps };
+export { MediaProps, MediaOptions };

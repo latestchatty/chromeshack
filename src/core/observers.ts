@@ -1,18 +1,17 @@
 import { browser } from "webextension-polyfill-ts";
-
+import { arrHas, elemMatches, locatePostRefs } from "./common";
 import {
     fullPostsCompletedEvent,
-    processPostEvent,
-    processPostBoxEvent,
-    processPostRefreshEvent,
-    processReplyEvent,
     processEmptyTagsLoadedEvent,
-    processTagDataLoadedEvent,
+    processPostBoxEvent,
+    processPostEvent,
+    processPostRefreshEvent,
     processRefreshIntentEvent,
+    processReplyEvent,
+    processTagDataLoadedEvent,
 } from "./events";
-import { elemMatches, locatePostRefs, arrHas } from "./common";
-import { setSetting } from "./settings";
 import { setUsername } from "./notifications";
+import { setSetting } from "./settings";
 
 export interface DOMMutationDict {
     [key: string]: HTMLElement;

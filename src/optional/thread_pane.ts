@@ -1,9 +1,8 @@
 import jQuery from "jquery";
-const $ = jQuery;
-
-import { enabledContains } from "../core/settings";
 import { elementFitsViewport, scrollToElement } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
+import { enabledContains } from "../core/settings";
+const $ = jQuery;
 
 export interface RecentPostSubtree {
     postAuthor: string;

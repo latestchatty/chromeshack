@@ -1,7 +1,6 @@
-import { arrHas, objHas, fetchBackground } from "../../common";
+import { arrHas, fetchBackground, objHas } from "../../common";
 import { getEnabledSuboption } from "../../settings";
-
-import type { TweetParsed, TwitterResponse, TwitterResponseMediaItem, TwitterMediaItemVariant } from "./twitter";
+import type { TweetParsed, TwitterMediaItemVariant, TwitterResponse, TwitterResponseMediaItem } from "./twitter";
 
 export const decodeHTMLEntities = (text: string) => {
     // somewhat risky but lazy - we're okay with that (tweet text is pre-sanitized)

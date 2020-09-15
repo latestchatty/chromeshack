@@ -1,11 +1,10 @@
-import { enabledContains } from "../core/settings";
-import { processPostRefreshEvent, processNotifyEvent } from "../core/events";
-import { scrollToElement, scrollParentToChild, arrHas } from "../core/common";
 import { TP_Instance } from "../content";
-import { getEventId } from "../core/notifications";
-
+import { arrHas, scrollParentToChild, scrollToElement } from "../core/common";
+import { processNotifyEvent, processPostRefreshEvent } from "../core/events";
 import type { NotifyEvent, NotifyResponse } from "../core/notifications";
+import { getEventId } from "../core/notifications";
 import { ChromeShack } from "../core/observers";
+import { enabledContains } from "../core/settings";
 
 export interface PendingPost {
     postId: number;

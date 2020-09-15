@@ -1,23 +1,21 @@
 import { Dispatch } from "react";
-
+import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
+import type {
+    UploaderAction,
+    UploadFailurePayload,
+    UploadSuccessPayload,
+} from "../../builtin/image-uploader/uploaderStore";
+import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
 import {
-    arrHas,
     arrEmpty,
+    arrHas,
+    fetchSafe,
+    FormDataToJSON,
     isImage,
     isVideo,
     matchFileFormat,
-    FormDataToJSON,
-    fetchSafe,
     postBackground,
 } from "../common";
-import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
-
-import type {
-    UploaderAction,
-    UploadSuccessPayload,
-    UploadFailurePayload,
-} from "../../builtin/image-uploader/uploaderStore";
-import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
 import type { ParsedResponse } from "./";
 
 const imgurApiImageBaseUrl = "https://api.imgur.com/3/image";

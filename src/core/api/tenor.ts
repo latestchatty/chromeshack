@@ -1,5 +1,4 @@
 import { fetchSafe } from "../common";
-
 import type { ParsedResponse } from "./";
 
 const parseLink = (href: string) => {

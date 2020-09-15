@@ -1,6 +1,6 @@
+import { generatePreview, safeInnerHTML, scrollToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
-import { safeInnerHTML, generatePreview, scrollToElement } from "../core/common";
 
 export const PostPreview = {
     state: 0, // 0 = insert mode, 1 = preview mode

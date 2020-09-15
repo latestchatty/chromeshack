@@ -1,9 +1,7 @@
 import React from "react";
-
+import { arrHas, classNames, objContainsProperty, objEmpty } from "../../common";
 import { ResolvedMedia } from "../../useResolvedLinks";
-import { objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
-import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
-
+import { TwitterBadgeSVG, TwitterVerifiedSVG } from "./Icons";
 import type { TweetParsed } from "./twitter";
 
 const CompiledTweetText = ({ text }: { text: string }) => {

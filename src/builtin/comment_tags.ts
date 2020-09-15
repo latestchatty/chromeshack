@@ -1,5 +1,4 @@
 import * as textFieldEdit from "text-field-edit";
-
 import { processPostBoxEvent } from "../core/events";
 
 export const CommentTags = {

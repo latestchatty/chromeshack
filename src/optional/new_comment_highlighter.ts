@@ -1,5 +1,5 @@
+import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
-import { processPostRefreshEvent, fullPostsCompletedEvent } from "../core/events";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 export const NewCommentHighlighter = {

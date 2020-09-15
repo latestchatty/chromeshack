@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
-
-import { processPostEvent, processPostRefreshEvent } from "../../core/events";
-import { arrHas, locatePostRefs, arrEmpty } from "../../core/common";
-import { enabledContains } from "../../core/settings";
 import { detectMediaLink } from "../../core/api";
-
+import { arrEmpty, arrHas, locatePostRefs } from "../../core/common";
+import { processPostEvent, processPostRefreshEvent } from "../../core/events";
+import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
 
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {

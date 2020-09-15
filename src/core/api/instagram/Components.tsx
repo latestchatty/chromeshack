@@ -1,10 +1,8 @@
 import React from "react";
-
-import { ResolvedMedia } from "../../useResolvedLinks";
 import { classNames, fetchBackground } from "../../common";
-import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
-
-import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./instagram";
+import { ResolvedMedia } from "../../useResolvedLinks";
+import { CommentsIcon, InstagramLogo, LikesIcon } from "./Icons";
+import type { InstagramParsed, InstagramResponse, InstagramShortcodeMedia } from "./instagram";
 
 const collectMedia = (media: InstagramShortcodeMedia) => {
     const links = [] as string[];

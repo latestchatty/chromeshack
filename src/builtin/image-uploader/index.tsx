@@ -1,9 +1,8 @@
 import React from "react";
 import { render } from "react-dom";
-
 import { processPostBoxEvent } from "../../core/events";
-import { useUploaderStore } from "./uploaderStore";
 import { ImageUploaderApp } from "./ImageUploaderApp";
+import { useUploaderStore } from "./uploaderStore";
 
 export const ImageUploader = {
     install() {

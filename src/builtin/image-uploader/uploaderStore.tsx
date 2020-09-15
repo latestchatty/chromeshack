@@ -1,5 +1,5 @@
-import { createStore, ReducerState } from "../../core/createStore";
 import { packValidTypes } from "../../core/common";
+import { createStore, ReducerState } from "../../core/createStore";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
 export const videoFormats =

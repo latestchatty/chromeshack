@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common";
-import { UploaderState, UploaderAction } from "./uploaderStore";
+import { UploaderAction, UploaderState } from "./uploaderStore";
 
 interface ImageUploaderComponentProps {
     id?: string;

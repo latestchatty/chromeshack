@@ -1,7 +1,6 @@
 import DOMPurify from "dompurify";
 import { browser } from "webextension-polyfill-ts";
-
-import { objHas, arrHas, isHTML, isJSON, sanitizeToFragment } from "./";
+import { arrHas, isHTML, isJSON, objHas, sanitizeToFragment } from "./";
 
 export type PurifyConfig = Record<string, any>;
 export interface ParseType {

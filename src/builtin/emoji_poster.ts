@@ -1,7 +1,7 @@
 /*eslint no-control-regex: 0*/
 import jQuery from "jquery";
-import { processPostBoxEvent } from "../core/events";
 import { safeInnerHTML } from "../core/common";
+import { processPostBoxEvent } from "../core/events";
 
 const $ = jQuery;
 

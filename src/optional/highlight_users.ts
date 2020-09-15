@@ -1,6 +1,6 @@
-import { getSetting, enabledContains, HighlightGroup } from "../core/settings";
 import { insertStyle } from "../core/common";
 import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
+import { enabledContains, getSetting, HighlightGroup } from "../core/settings";
 
 export interface ResolvedUser {
     id: string;

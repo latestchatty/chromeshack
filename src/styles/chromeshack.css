@@ -369,3 +369,12 @@ p.emoji-tagline > span {
 body.side-menu {
     background: rgb(113, 46, 62);
 }
+
+/* fix oneliner who-tag'd popup width */
+#page.theme2 ul.interacted-user-list {
+    width: unset !important;
+}
+#page.theme2 ul.interacted-user-list li {
+    position: relative;
+    width: 100% !important;
+}

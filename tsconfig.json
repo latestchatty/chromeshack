@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "baseUrl": "./src",
         "target": "es2018",
         "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
         "module": "commonjs",

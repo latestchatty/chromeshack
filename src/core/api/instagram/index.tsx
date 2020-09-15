@@ -1,8 +1,6 @@
 import React, { useMemo } from "react";
-
-import { useInstagram, fetchInstagramData } from "./Components";
-
 import type { ParsedResponse } from "../../api";
+import { fetchInstagramData, useInstagram } from "./Components";
 import type { InstagramParsed } from "./instagram.d";
 
 const parseLink = (href: string) => {

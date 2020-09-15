@@ -1,9 +1,7 @@
 import React, { useMemo } from "react";
-
+import type { ParsedResponse } from "../../api";
 import { useTweets } from "./Components";
 import { fetchTweets } from "./helpers";
-
-import type { ParsedResponse } from "../../api";
 import type { TweetParsed } from "./twitter.d";
 
 const parseLink = (href: string) => {

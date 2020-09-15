@@ -1,5 +1,4 @@
 import React from "react";
-
 import { classNames } from "../../common";
 
 export const TwitterVerifiedSVG = (props: { active: boolean }) => {

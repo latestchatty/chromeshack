@@ -1,5 +1,4 @@
 import { isImage, isVideo } from "../common";
-
 import type { ParsedResponse } from "./";
 
 const parseLink = (href: string) => {

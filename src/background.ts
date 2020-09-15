@@ -1,13 +1,10 @@
+import type { WebRequest } from "webextension-polyfill-ts";
 import { browser } from "webextension-polyfill-ts";
-
-import { fetchSafe, JSONToFormData, FetchArgs } from "./core/common";
-import { migrateSettings } from "./core/settings";
+import { FetchArgs, fetchSafe, JSONToFormData } from "./core/common";
 import { startNotifications } from "./core/notifications";
-
+import { migrateSettings } from "./core/settings";
 import { chatViewFix } from "./patches/chatViewFix";
 import { scrollByKeyFix } from "./patches/scrollByKeyFix";
-
-import type { WebRequest } from "webextension-polyfill-ts";
 
 type OnMessageRequestName =
     | "launchIncognito"

@@ -1,14 +1,14 @@
-import {
-    filtersContains,
-    addFilter,
-    removeFilter,
-    highlightGroupContains,
-    addHighlightUser,
-    removeHighlightUser,
-    enabledContains,
-    getMutableHighlights,
-} from "../core/settings";
 import { superTrim } from "../core/common";
+import {
+    addFilter,
+    addHighlightUser,
+    enabledContains,
+    filtersContains,
+    getMutableHighlights,
+    highlightGroupContains,
+    removeFilter,
+    removeHighlightUser,
+} from "../core/settings";
 
 /*
     Shack: User Popup

@@ -1,10 +1,8 @@
 import { browser } from "webextension-polyfill-ts";
-
 import { fetchSafe } from "./common";
-import { getSetting, setSetting, getEnabled } from "./settings";
 import { processNotifyEvent } from "./events";
-
 import { ChromeShack } from "./observers";
+import { getEnabled, getSetting, setSetting } from "./settings";
 
 export const getEventId = async () => (await getSetting("nEventId")) as Promise<number>;
 export const setEventId = async (eventId: number) => await setSetting("nEventId", eventId);

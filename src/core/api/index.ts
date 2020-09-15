@@ -1,28 +1,27 @@
 import { objHas } from "../common";
 import { enabledContains } from "./../settings";
-
 /// normal image/video embeds
 import { isChattypics } from "./chattypics";
-import { isDropbox } from "./dropbox";
-import { isGiphy } from "./giphy";
-import { isTwimg } from "./twimg";
-import { isDirectMedia } from "./directmedia";
-/// iframe media embeds
-import { isMixer } from "./mixer";
-import { isTwitch } from "./twitch";
-import { isXboxDVR } from "./xboxdvr";
-import { isYoutube } from "./youtube";
-/// native social embeds
-import { isInstagram } from "./instagram";
-import { isTwitter } from "./twitter";
-/// resolvable media embeds
-import { isImgur } from "./imgur";
-import { isGfycat } from "./gfycat";
-import { isTenor } from "./tenor";
-/// resolvable iframe embeds
-import { isStreamable } from "./streamable";
 /// special embeds
 import { isChattyLink } from "./chattypost";
+import { isDirectMedia } from "./directmedia";
+import { isDropbox } from "./dropbox";
+import { isGfycat } from "./gfycat";
+import { isGiphy } from "./giphy";
+/// resolvable media embeds
+import { isImgur } from "./imgur";
+/// native social embeds
+import { isInstagram } from "./instagram";
+/// iframe media embeds
+import { isMixer } from "./mixer";
+/// resolvable iframe embeds
+import { isStreamable } from "./streamable";
+import { isTenor } from "./tenor";
+import { isTwimg } from "./twimg";
+import { isTwitch } from "./twitch";
+import { isTwitter } from "./twitter";
+import { isXboxDVR } from "./xboxdvr";
+import { isYoutube } from "./youtube";
 
 export type ParsedType = "image" | "video" | "iframe" | "instagram" | "twitter" | "chattypost";
 export interface ParsedResponse {

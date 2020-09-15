@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef } from "react";
-
+import { useEffect, useRef, useState } from "react";
 import type { IntersectionObserverConfig } from "./index.d";
 
 export const useIntersectObserver = (config: IntersectionObserverConfig) => {

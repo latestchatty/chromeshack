@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
 import { useEmblaCarousel } from "embla-carousel/react";
-
+import React, { useCallback, useEffect, useState } from "react";
 import { arrHas } from "../common";
-import { PrevButton, NextButton } from "./CarouselButtons";
+import { NextButton, PrevButton } from "./CarouselButtons";
 
 require("../../styles/embla.css");
 

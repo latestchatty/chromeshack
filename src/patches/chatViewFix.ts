@@ -1,6 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-
-import { scrollToElement, elementIsVisible } from "../core/common";
+import { elementIsVisible, scrollToElement } from "../core/common";
 
 export const chatViewFix = async () => {
     try {

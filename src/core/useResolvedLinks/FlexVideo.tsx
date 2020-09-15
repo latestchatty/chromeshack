@@ -1,11 +1,9 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import { faVolumeMute, faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
-
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { classNames } from "../common";
+import type { HTMLVideoElementWithAudio, MediaProps, OverlayProps } from "./index.d";
 import { useIntersectObserver } from "./useIntersectObserver";
-
-import type { OverlayProps, MediaProps, HTMLVideoElementWithAudio } from "./index.d";
 
 const VolumeUpIcon = () => <FontAwesomeIcon className="unmute__icon" icon={faVolumeUp} />;
 const VolumeMuteIcon = () => <FontAwesomeIcon className="mute__icon" icon={faVolumeMute} />;

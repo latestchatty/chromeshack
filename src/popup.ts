@@ -1,24 +1,23 @@
 import { browser } from "webextension-polyfill-ts";
-
-import { objEmpty, removeChildren, superTrim, elemMatches, objContainsProperty, safeInnerHTML } from "./core/common";
+import { elemMatches, objContainsProperty, objEmpty, removeChildren, safeInnerHTML, superTrim } from "./core/common";
 import {
-    getEnabled,
-    getSetting,
-    getSettings,
-    setSetting,
-    setSettings,
-    resetSettings,
-    filtersContains,
-    getEnabledSuboption,
-    setHighlightGroup,
-    highlightGroupContains,
     addHighlightUser,
     DefaultSettings,
+    filtersContains,
+    getEnabled,
+    getEnabledSuboption,
+    getSetting,
+    getSettings,
     HighlightGroup,
+    highlightGroupContains,
     mergeHighlightGroups,
-    migrateSettings,
-    setEnabledSuboption,
     mergeUserFilters,
+    migrateSettings,
+    resetSettings,
+    setEnabledSuboption,
+    setHighlightGroup,
+    setSetting,
+    setSettings,
 } from "./core/settings";
 
 require("./styles/popup.css");

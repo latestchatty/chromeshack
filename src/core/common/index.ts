@@ -1,26 +1,56 @@
 import {
+    arrEmpty,
+    arrHas,
+    classNames,
+    getFileCount,
+    getLinkType,
+    isFileArr,
+    isHTML,
+    isIframe,
+    isImage,
+    isJSON,
+    isUrlArr,
+    isVideo,
+    objContains,
+    objContainsProperty,
+    objEmpty,
+    objHas,
+    packValidTypes,
+} from "./common";
+import type { PostRefs, PreviewReplacements } from "./dom";
+import {
+    afterElem,
+    appendLinksToField,
+    convertUrlToLink,
+    elementFitsViewport,
+    elementIsVisible,
+    elemMatches,
+    FormDataToJSON,
+    generatePreview,
+    getCookieValue,
+    insertStyle,
+    JSONToFormData,
+    locatePostRefs,
+    matchFileFormat,
+    removeChildren,
+    safeInnerHTML,
+    sanitizeToFragment,
+    scrollParentToChild,
+    scrollToElement,
     stripHtml,
     superTrim,
-    insertStyle,
-    getCookieValue,
-    convertUrlToLink,
-    generatePreview,
-    scrollToElement,
-    scrollParentToChild,
-    elementIsVisible,
-    elementFitsViewport,
-    removeChildren,
-    sanitizeToFragment,
-    safeInnerHTML,
-    FormDataToJSON,
-    JSONToFormData,
-    appendLinksToField,
-    matchFileFormat,
-    afterElem,
-    elemMatches,
-    locatePostRefs,
 } from "./dom";
-import type { PreviewReplacements, PostRefs } from "./dom";
+import type { FetchArgs, ParseType, ShackRSSItem } from "./fetch";
+import {
+    fetchBackground,
+    fetchSafe,
+    fetchSafeLegacy,
+    parseFetchResponse,
+    postBackground,
+    safeJSON,
+    waitToFetchSafe,
+    xhrRequestLegacy,
+} from "./fetch";
 
 export {
     stripHtml,
@@ -45,19 +75,6 @@ export {
     locatePostRefs,
 };
 export { PreviewReplacements, PostRefs };
-
-import {
-    xhrRequestLegacy,
-    fetchSafeLegacy,
-    fetchSafe,
-    fetchBackground,
-    postBackground,
-    waitToFetchSafe,
-    safeJSON,
-    parseFetchResponse,
-} from "./fetch";
-import type { ParseType, FetchArgs, ShackRSSItem } from "./fetch";
-
 export {
     xhrRequestLegacy,
     fetchSafeLegacy,
@@ -69,26 +86,6 @@ export {
     parseFetchResponse,
 };
 export { ParseType, FetchArgs, ShackRSSItem };
-
-import {
-    arrHas,
-    arrEmpty,
-    objHas,
-    objContains,
-    objContainsProperty,
-    objEmpty,
-    isHTML,
-    isJSON,
-    classNames,
-    isVideo,
-    isImage,
-    isIframe,
-    getLinkType,
-    isUrlArr,
-    isFileArr,
-    getFileCount,
-    packValidTypes,
-} from "./common";
 export {
     arrHas,
     arrEmpty,

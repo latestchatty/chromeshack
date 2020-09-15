@@ -1,7 +1,6 @@
 import React from "react";
-import { fetchSafe, safeInnerHTML } from "../common";
-
 import type { ParsedResponse } from ".";
+import { fetchSafe, safeInnerHTML } from "../common";
 
 const parseLink = (href: string) => {
     const isRootPost = /shacknews\.com\/chatty\?id=\d+/i.exec(href);

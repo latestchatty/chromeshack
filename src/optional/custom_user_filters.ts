@@ -1,6 +1,6 @@
-import { getSetting, getEnabledSuboption, enabledContains } from "../core/settings";
-import { processPostRefreshEvent } from "../core/events";
 import { HU_Instance, TP_Instance } from "../content";
+import { processPostRefreshEvent } from "../core/events";
+import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
 
 export const CustomUserFilters = {

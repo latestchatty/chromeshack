@@ -1,6 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-
-import { arrHas, objEmpty, superTrim, objContains } from "./common";
+import { arrHas, objContains, objEmpty, superTrim } from "./common";
 
 export interface HighlightGroup {
     name?: string;

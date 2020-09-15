@@ -1,20 +1,3 @@
-import { ChromeShack } from "./core/observers";
-
-import { ChattyNews } from "./optional/chatty-news";
-import { TwitchAutoplay } from "./optional/twitch_autoplay";
-import { CustomUserFilters } from "./optional/custom_user_filters";
-import { DinoGegtik } from "./optional/dinogegtik";
-import { HighlightPendingPosts } from "./optional/highlight_pending_new_posts";
-import { HighlightUsers } from "./optional/highlight_users";
-import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
-import { NwsIncognito } from "./optional/nws_incognito";
-import { PostPreview } from "./optional/post_preview";
-import { PostStyling } from "./optional/post_style";
-import { SparklyComic } from "./optional/sparkly_comic";
-import { Switchers } from "./optional/switchers";
-import { ThreadPane } from "./optional/thread_pane";
-import { MediaEmbedder } from "./optional/media-embedder";
-
 import { CodeTagFix } from "./builtin/codetagfix";
 import { Collapse } from "./builtin/collapse";
 import { CommentTags } from "./builtin/comment_tags";
@@ -24,8 +7,22 @@ import { LocalTimeStamp } from "./builtin/local_timestamp";
 import { ModBanners } from "./builtin/mod_banners";
 import { PostLengthCounter } from "./builtin/post_length_counter";
 import { UserPopup } from "./builtin/userpopup";
-
 import { TM_Instance } from "./core/notifications";
+import { ChromeShack } from "./core/observers";
+import { ChattyNews } from "./optional/chatty-news";
+import { CustomUserFilters } from "./optional/custom_user_filters";
+import { DinoGegtik } from "./optional/dinogegtik";
+import { HighlightPendingPosts } from "./optional/highlight_pending_new_posts";
+import { HighlightUsers } from "./optional/highlight_users";
+import { MediaEmbedder } from "./optional/media-embedder";
+import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
+import { NwsIncognito } from "./optional/nws_incognito";
+import { PostPreview } from "./optional/post_preview";
+import { PostStyling } from "./optional/post_style";
+import { SparklyComic } from "./optional/sparkly_comic";
+import { Switchers } from "./optional/switchers";
+import { ThreadPane } from "./optional/thread_pane";
+import { TwitchAutoplay } from "./optional/twitch_autoplay";
 
 require("./styles/chatty-news.css");
 require("./styles/chromeshack.css");

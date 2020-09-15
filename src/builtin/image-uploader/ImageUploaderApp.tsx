@@ -1,13 +1,11 @@
-import React, { useRef, useEffect, useCallback } from "react";
-
-import { useUploaderStore, UploaderState } from "./uploaderStore";
-import { ToggleChildren, Tab, DropArea, UrlInput, Button, StatusLine } from "./Components";
-
-import { handleImgurUpload } from "../../core/api/imgur";
-import { handleGfycatUpload } from "../../core/api/gfycat";
+import React, { useCallback, useEffect, useRef } from "react";
 import { handleChattypicsUpload } from "../../core/api/chattypics";
-import { arrHas, appendLinksToField } from "../../core/common";
+import { handleGfycatUpload } from "../../core/api/gfycat";
+import { handleImgurUpload } from "../../core/api/imgur";
+import { appendLinksToField, arrHas } from "../../core/common";
 import { getSetting, setSetting } from "../../core/settings";
+import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
+import { UploaderState, useUploaderStore } from "./uploaderStore";
 
 export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {

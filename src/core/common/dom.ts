@@ -1,9 +1,7 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
-
 import { arrHas, objHas } from "./";
-
 import type { PurifyConfig } from "./fetch";
 
 const $ = jQuery;

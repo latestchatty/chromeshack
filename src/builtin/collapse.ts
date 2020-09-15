@@ -1,7 +1,7 @@
 import { CS_Instance } from "../content";
+import { elemMatches, locatePostRefs, objContains } from "../core/common";
 import { processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
-import { elemMatches, locatePostRefs, objContains } from "../core/common";
 
 export const Collapse = {
     install() {
