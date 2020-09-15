@@ -328,3 +328,11 @@ span.instagram__post__details {
     text-decoration: underline !important;
     color: var(--instgrm-fg-color1) !important;
 }
+
+/* media embedder bug workarounds */
+.twitter__media__content img,
+.twitter__quote__media__content img,
+.instagram__embed img {
+    /* don't show nested pictures as toggleable */
+    cursor: default !important;
+}
