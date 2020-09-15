@@ -3,12 +3,11 @@ import type { ParsedResponse } from ".";
 import { fetchSafe, safeInnerHTML } from "../common";
 
 const parseLink = (href: string) => {
-    const isRootPost = /shacknews\.com\/chatty\?id=\d+/i.exec(href);
-    const chattyPostIdMatch = /[?&]id=([^&#]*)/.exec(href);
-    return isRootPost
+    const isChattyPost = /https?:\/\/(?:.+\.)?shacknews\.com\/chatty\?id=(\d+)/i.exec(href);
+    return isChattyPost
         ? ({
-              href: isRootPost[0],
-              args: [chattyPostIdMatch[1]],
+              href: isChattyPost[0],
+              args: [isChattyPost[1]],
               type: "chattypost",
               cb: getChattyPost,
           } as ParsedResponse)
