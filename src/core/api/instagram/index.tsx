@@ -3,7 +3,7 @@ import React, { useMemo } from "react";
 import { useInstagram, fetchInstagramData } from "./Components";
 
 import type { ParsedResponse } from "../../api";
-import type { InstagramParsed } from "./index.d";
+import type { InstagramParsed } from "./instagram.d";
 
 const parseLink = (href: string) => {
     const isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/(?:p|tv)\/([\w-]+)\/?/i.exec(href);
@@ -23,8 +23,7 @@ const InstagramWrapper = (props: { response: InstagramParsed }) => {
     /// wrap useInstagram() returning a memoized render of <Instagram />
     const { response } = props || {};
     const instagram = useInstagram(response);
-    const memoizedInstagram = useMemo(() => instagram, [instagram]);
-    return <>{memoizedInstagram}</>;
+    return useMemo(() => instagram, [instagram]);
 };
 
 export const getInstagram = async (...args: string[]) => {

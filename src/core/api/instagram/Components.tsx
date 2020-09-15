@@ -1,24 +1,23 @@
 import React from "react";
 
-import { useResolvedLinks } from "../../useResolvedLinks";
+import { ResolvedMedia } from "../../useResolvedLinks";
 import { classNames, fetchBackground } from "../../common";
 import { InstagramLogo, LikesIcon, CommentsIcon } from "./Icons";
 
-import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./index.d";
+import type { InstagramShortcodeMedia, InstagramResponse, InstagramParsed } from "./instagram";
 
 const collectMedia = (media: InstagramShortcodeMedia) => {
-    const collector = [];
+    const links = [] as string[];
     if (media.__typename === "GraphSidecar")
         media.edge_sidecar_to_children.edges.forEach((edge) => {
             Object.entries(edge).forEach((item) => {
                 // pick the video url of this item, or the smallest of the media choices (640x640)
-                collector.push(item[1].video_url != null ? item[1].video_url : item[1].display_resources[0].src);
+                links.push(item[1].video_url != null ? item[1].video_url : item[1].display_resources[0].src);
             });
         });
-    else if (media.__typename === "GraphVideo") collector.push(media.video_url);
-    else if (media.__typename === "GraphImage") collector.push(media.display_resources[0].src);
-
-    return collector;
+    else if (media.__typename === "GraphVideo") links.push(media.video_url);
+    else if (media.__typename === "GraphImage") links.push(media.display_resources[0].src);
+    return links;
 };
 
 const parseDate = (timestamp: string) => {
@@ -106,10 +105,6 @@ const Instagram = (props: { response: InstagramParsed }) => {
         postMedia,
         error,
     } = response || {};
-    const resolvedLinks = useResolvedLinks({
-        links: postMedia,
-        options: { controls: true, clickTogglesVisible: false },
-    });
 
     if (!error)
         return (
@@ -144,7 +139,11 @@ const Instagram = (props: { response: InstagramParsed }) => {
                             </a>
                         </div>
                     </div>
-                    <div className="instagram__embed">{resolvedLinks}</div>
+                    <ResolvedMedia
+                        className="instagram__embed"
+                        mediaLinks={postMedia}
+                        options={{ controls: true, clickTogglesVisible: false }}
+                    />
                     <div className={classNames("instagram__caption", { hidden: postCaption.length === 0 })}>
                         <InstagramCaption text={postCaption} />
                     </div>

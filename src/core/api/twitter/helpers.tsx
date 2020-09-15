@@ -20,19 +20,18 @@ export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
 };
 
 export const collectMedia = (tweetMediaObj: TwitterResponseMediaItem[]) => {
-    const result: string[] = [];
+    const links = [] as string[];
     for (const item of Object.values(tweetMediaObj) || [])
         if ((item.type === "video" || item.type === "animated_gif") && item.video_info.variants) {
             const sorted = sortByBitrate(item.video_info.variants.filter((x) => x.content_type === "video/mp4"));
             for (const vidItem of sorted) {
-                result.push(vidItem.url);
+                links.push(vidItem.url);
                 break; // bail on the first match (highest res)
             }
         } else if (item.type === "photo" && item.media_url_https) {
-            result.push(item.media_url_https);
+            links.push(item.media_url_https);
         }
-
-    return result;
+    return links;
 };
 
 export const renderTweetObj = async (response: TwitterResponse) => {
@@ -45,7 +44,7 @@ export const renderTweetObj = async (response: TwitterResponse) => {
             displayName: response.user.name,
             realName: response.user.screen_name,
             tweetText: decodeHTMLEntities(response.full_text),
-            tweetMediaItems: response.extended_entities ? collectMedia(response.extended_entities.media) : [],
+            tweetMediaItems: response.extended_entities ? collectMedia(response.extended_entities.media) : null,
             timestamp: new Date(Date.parse(response.created_at)).toLocaleString(),
             userVerified: response.user.verified,
         };
@@ -61,7 +60,7 @@ export const renderTweetObj = async (response: TwitterResponse) => {
                     quotedText: response.quoted_status.full_text,
                     quotedMediaItems: response.quoted_status.extended_entities
                         ? collectMedia(response.quoted_status.extended_entities.media)
-                        : [],
+                        : null,
                     quotedUserVerified: response.quoted_status.user.verified,
                 },
             };

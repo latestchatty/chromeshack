@@ -87,7 +87,7 @@ const loadCarousel = (resolved: ParsedResponse[]) => {
     }
     return null;
 };
-const resolveLink = async (opts: {
+export const resolveLink = async (opts: {
     link?: string;
     fallbackLink?: string;
     options?: MediaOptions;
@@ -109,36 +109,54 @@ const resolveLink = async (opts: {
     const _src = (resolver && resolver[0].src) || resolver?.src || normalSrc;
     const _type = (resolver && resolver[0].type) || resolver?.src || normalType;
     const resolved = _src ? { key: _src, src: _src, type: _type } : null;
-    return resolved ? loadComponent(resolved, options) : null;
+    // override clickTogglesVisible to avoid clobbering Carousel page buttons
+    return resolved ? loadComponent(resolved, { ...options, clickTogglesVisible: _type === "image" }) : null;
 };
-const resolveLinks = async (links: string[], options?: MediaOptions) => {
+export const resolveLinks = async (links: string[], options?: MediaOptions) => {
     // process each link in our list then reduce into a rendered component
-    const _resolved = arrHas(links)
-        ? await links.reduce(async (acc: Promise<React.ReactNode[]>, l) => {
-              const resolving = await resolveLink({ link: l, options });
-              const _acc = await acc;
-              if (resolving) _acc.push(resolving);
-              return _acc;
-          }, Promise.resolve([]))
-        : null;
-    // wrap with a Carousel container if appropriate
-    if (arrHas(_resolved) && _resolved.length > 1) return <Carousel slides={_resolved} />;
-    else if (_resolved?.length === 1) return _resolved[0] as JSX.Element;
-    else return null;
+    const result = [];
+    for (const link of links) {
+        const resolving = await resolveLink({ link, options });
+        if (resolving) result.push(resolving);
+    }
+    if (arrHas(result) && result.length > 1) return <Carousel slides={result} />;
+    else return result[0];
 };
 
-export const useResolvedLinks = (props: ResolvedLinkProps) => {
-    /// returns a rendered component after resolving its associated media link(s)
+const useResolvedLinks = (props: ResolvedLinkProps) => {
+    /// hook that exposes a rendered media component and a loaded state boolean
     const { link, links, options } = props || {};
     const [resolved, setResolved] = useState(null as JSX.Element);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     useEffect(() => {
-        Promise.all([resolveLinks(links, options), resolveLink({ fallbackLink: link, options })]).then((children) => {
-            for (const child of children) if (child) setResolved(child);
-        });
-    }, [link, links, options]);
+        const resolveChildren = async () => {
+            const children = links && (await resolveLinks(links, options));
+            const child = link && (await resolveLink({ fallbackLink: link, options }));
+            if (children || child) {
+                setResolved(children || child);
+                setHasLoaded(true);
+            }
+        };
+        if (!hasLoaded) resolveChildren();
+    }, [link, links, options, hasLoaded]);
     // return rendered media embeds as components
-    return resolved;
+    return { resolved, hasLoaded };
+};
+export const ResolvedMedia = (props: {
+    id?: string;
+    className?: string;
+    mediaLinks: string[];
+    options?: MediaOptions;
+}) => {
+    // exposes a user-friendly component that uses useResolvedLinks to return media
+    const { id, className, mediaLinks, options } = props || {};
+    const { resolved, hasLoaded } = useResolvedLinks({ links: mediaLinks, options });
+    return (
+        <div id={id} className={className}>
+            {hasLoaded ? resolved : <div />}
+        </div>
+    );
 };
 
 export { MediaProps };

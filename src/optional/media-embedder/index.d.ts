@@ -1,14 +1,14 @@
-import type { FlexVideoProps } from "../../core/useResolvedLinks";
+import type { ParsedResponse } from "../../core/api";
 
-export interface ExpandoProps extends FlexVideoProps {
-    link: HTMLAnchorElement;
+export interface ExpandoProps {
+    response: ParsedResponse;
     idx: string;
     postid?: string;
-    options?: FlexVideoProps;
 }
 
 export interface FCWithMediaProps extends JSX.Element {
     props: {
         src?: string;
+        slides?: JSX.Element[];
     };
 }

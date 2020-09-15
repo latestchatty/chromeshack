@@ -49,8 +49,7 @@
     position: relative;
     overflow: hidden;
     width: 100%;
-    /* respond to slide height changes */
-    transition: height 0.05s;
+    transition: height 25ms;
 }
 .embla__viewport.is-draggable {
     cursor: move;

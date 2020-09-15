@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExpandAlt, faCompressAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { classNames, getLinkType } from "../../core/common";
-import { useResolvedLinks } from "../../core/useResolvedLinks";
+import { resolveLink } from "../../core/useResolvedLinks";
 
 import type { FCWithMediaProps, ExpandoProps } from "./index.d";
 
@@ -12,18 +12,15 @@ const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faC
 const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
 
 const RenderExpando = (props: ExpandoProps) => {
+    const { response, idx, postid } = props || {};
+    const { href, src, type } = response || {};
+
     const [toggled, setToggled] = useState(false);
+    const [children, setChildren] = useState(null as JSX.Element);
 
-    const { link, idx, postid, options } = props || {};
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
-
     const expandoClasses = classNames("medialink", { toggled });
     const mediaClasses = classNames("media", { hidden: !toggled });
-    const children = useResolvedLinks({ link: link.href, options });
-    // pull the 'src' from props if we have a rendered component
-    const type = (children as FCWithMediaProps)?.props?.src
-        ? getLinkType((children as FCWithMediaProps).props.src)
-        : getLinkType(link.href);
 
     const handleToggleClick = useCallback(
         (e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>) => {
@@ -33,19 +30,30 @@ const RenderExpando = (props: ExpandoProps) => {
         [toggled, setToggled],
     );
     const handleNewClick = useCallback(() => {
-        const _href = (children as FCWithMediaProps)?.props?.src || link?.href;
+        const _href = (children as FCWithMediaProps)?.props?.src || src;
         const newWindow = window.open(_href, "_blank", "noopener,noreferrer");
         if (newWindow) newWindow.opener = null;
-    }, [link, children]);
+    }, [src, children]);
+
+    useEffect(() => {
+        (async () => {
+            const _type = type ? type : getLinkType(src || href);
+            const resolved = (await resolveLink({
+                link: src || href,
+                options: { clickTogglesVisible: _type === "image" },
+            })) as FCWithMediaProps;
+            if (resolved) setChildren(resolved);
+        })();
+    }, [href, src, props, response, type]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
             <a
-                href={link.href}
+                href={href || src}
                 title={toggled ? "Hide embedded media" : "Show embedded media"}
                 onClick={handleToggleClick}
             >
-                <span>{link.href}</span>
+                <span>{href || src}</span>
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
             <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>

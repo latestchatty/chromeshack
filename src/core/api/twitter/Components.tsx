@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useResolvedLinks } from "../../useResolvedLinks";
+import { ResolvedMedia } from "../../useResolvedLinks";
 import { objEmpty, objContainsProperty, arrHas, classNames } from "../../common";
 import { TwitterVerifiedSVG, TwitterBadgeSVG } from "./Icons";
 
@@ -42,18 +42,9 @@ const CompiledTweetText = ({ text }: { text: string }) => {
     return <span>{output}</span>;
 };
 
-const CompiledMedia = (props: { mediaItems: string[]; className?: string }) => {
-    const { mediaItems, className } = props || {};
-    // display wrapper for useResolvedLinks()
-    const mediaChildren = useResolvedLinks({
-        links: mediaItems,
-        options: { controls: true, clickTogglesVisible: false },
-    });
-    return mediaChildren && <div className={className}>{mediaChildren}</div>;
-};
-
 const Twitter = (props: { response: TweetParsed }) => {
     const { response } = props || {};
+    const mediaOptions = { controls: true, clickTogglesVisible: false };
     return (
         <>
             {!objContainsProperty("unavailable", response) && !objEmpty(response) ? (
@@ -79,7 +70,11 @@ const Twitter = (props: { response: TweetParsed }) => {
                         <div className="twitter__text__content">
                             <CompiledTweetText text={response.tweetText} />
                         </div>
-                        <CompiledMedia className="twitter__media__content" mediaItems={response?.tweetMediaItems} />
+                        <ResolvedMedia
+                            className="twitter__media__content"
+                            mediaLinks={response?.tweetMediaItems}
+                            options={mediaOptions}
+                        />
                         <div className={classNames("twitter__quote__content", { hidden: !response.tweetQuoted })}>
                             {response.tweetQuoted && (
                                 <>
@@ -105,9 +100,10 @@ const Twitter = (props: { response: TweetParsed }) => {
                                     <div className="twitter__quote__text__content">
                                         <CompiledTweetText text={response.tweetQuoted?.quotedText} />
                                     </div>
-                                    <CompiledMedia
+                                    <ResolvedMedia
                                         className="twitter__quote__media__content"
-                                        mediaItems={response.tweetQuoted?.quotedMediaItems}
+                                        mediaLinks={response.tweetQuoted?.quotedMediaItems}
+                                        options={mediaOptions}
                                     />
                                 </>
                             )}
@@ -143,6 +139,5 @@ const accumulateTweets = (tweetObj: TweetParsed) => {
 export const useTweets = (props: { tweetObj: TweetParsed }) => {
     const { tweetObj } = props || {};
     /// render Tweet children from a given twitter response object
-    const children = accumulateTweets(tweetObj);
-    return children && <>{children}</>;
+    return accumulateTweets(tweetObj);
 };
