@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames, fetchBackground } from "../../common";
+import { classNames, decodeHTML, fetchBackground } from "../../common";
 import { ResolvedMedia } from "../../useResolvedLinks";
 import { CommentsIcon, InstagramLogo, LikesIcon } from "./Icons";
 import type { InstagramParsed, InstagramResponse, InstagramShortcodeMedia } from "./instagram";
@@ -49,7 +49,7 @@ export const fetchInstagramData = async (shortcode: string) => {
                 postUrl: `https://instagr.am/p/${_matchGQL.shortcode}/`,
                 postCaption:
                     _matchGQL.edge_media_to_caption.edges.length > 0
-                        ? _matchGQL.edge_media_to_caption.edges[0].node.text
+                        ? decodeHTML(_matchGQL.edge_media_to_caption.edges[0].node.text)
                         : "",
                 postMedia: collectMedia(_matchGQL),
             };

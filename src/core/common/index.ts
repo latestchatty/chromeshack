@@ -22,9 +22,11 @@ import {
     afterElem,
     appendLinksToField,
     convertUrlToLink,
+    decodeHTML,
     elementFitsViewport,
     elementIsVisible,
     elemMatches,
+    encodeHTML,
     FormDataToJSON,
     generatePreview,
     getCookieValue,
@@ -73,6 +75,8 @@ export {
     afterElem,
     elemMatches,
     locatePostRefs,
+    decodeHTML,
+    encodeHTML,
 };
 export { PreviewReplacements, PostRefs };
 export {

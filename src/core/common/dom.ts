@@ -305,11 +305,25 @@ export interface PostRefs {
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
     // match the first fullpost container (up/cur first, then down)
-    const post = postElem?.closest("li.sel") as HTMLElement;
+    const post = postElem?.closest && (postElem?.closest("li.sel") as HTMLElement);
     const is_root = !!elemMatches(post, ".root > ul > li, div.root");
     const root = (post?.closest(".root > ul > li") as HTMLElement) || post?.querySelector(".root > ul > li");
     const rootid = root?.id?.substr(5);
     const postid = post?.id?.substr(5);
     const result = { post, postid, root, rootid, is_root };
     return objHas(result) ? result : null;
+};
+
+export const decodeHTML = (text: string) => {
+    // warning! make sure to sanitize before decoding!
+    const ta = document.createElement("p");
+    if (text) ta.innerHTML = text;
+    return ta.textContent || text;
+};
+
+export const encodeHTML = (text: string) => {
+    // warning! make sure to sanitize before encoding!
+    const ta = document.createElement("p");
+    if (text) ta.textContent = text;
+    return ta.innerHTML || text;
 };

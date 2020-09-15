@@ -1,13 +1,6 @@
-import { arrHas, fetchBackground, objHas } from "../../common";
+import { arrHas, decodeHTML, fetchBackground, objHas } from "../../common";
 import { getEnabledSuboption } from "../../settings";
 import type { TweetParsed, TwitterMediaItemVariant, TwitterResponse, TwitterResponseMediaItem } from "./twitter";
-
-export const decodeHTMLEntities = (text: string) => {
-    // somewhat risky but lazy - we're okay with that (tweet text is pre-sanitized)
-    const ta = document.createElement("textarea");
-    if (text) ta.innerHTML = text;
-    return ta.value || "";
-};
 
 export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
     // prioritize the highest bitrate source
@@ -42,7 +35,7 @@ export const renderTweetObj = async (response: TwitterResponse) => {
             profilePicUrl: `https://twitter.com/${response.user.screen_name}`,
             displayName: response.user.name,
             realName: response.user.screen_name,
-            tweetText: decodeHTMLEntities(response.full_text),
+            tweetText: decodeHTML(response.full_text),
             tweetMediaItems: response.extended_entities ? collectMedia(response.extended_entities.media) : null,
             timestamp: new Date(Date.parse(response.created_at)).toLocaleString(),
             userVerified: response.user.verified,
@@ -56,7 +49,7 @@ export const renderTweetObj = async (response: TwitterResponse) => {
                     quotedDisplayName: response.quoted_status.user.name,
                     quotedRealName: response.quoted_status.user.screen_name,
                     quotedProfilePic: response.quoted_status.user.profile_image_url_https,
-                    quotedText: response.quoted_status.full_text,
+                    quotedText: decodeHTML(response.quoted_status.full_text),
                     quotedMediaItems: response.quoted_status.extended_entities
                         ? collectMedia(response.quoted_status.extended_entities.media)
                         : null,
