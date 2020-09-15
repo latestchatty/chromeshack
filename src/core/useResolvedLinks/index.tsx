@@ -136,7 +136,7 @@ export const useResolvedLinks = (props: ResolvedLinkProps) => {
         Promise.all([resolveLinks(links, options), resolveLink({ fallbackLink: link, options })]).then((children) => {
             for (const child of children) if (child) setResolved(child);
         });
-    }, []);
+    }, [link, links, options]);
     // return rendered media embeds as components
     return resolved;
 };
