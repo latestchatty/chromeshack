@@ -54,7 +54,7 @@ export const classNames = (...args: any[]) => {
     return !arrEmpty(result) ? result.join(" ") : "";
 };
 
-export const isVideo = (href: string) => /\.?(mp4|gifv|webm)/i.test(href);
+export const isVideo = (href: string) => /\.?(mp4|gifv|webm|mov)/i.test(href);
 export const isImage = (href: string) => /\.?(jpe?g|gif(?!v)|png|webp)/i.test(href);
 export const isIframe = (href: string) => {
     if (/youtu(\.be\/|be\.\w+\/)/.test(href)) return "youtube";
