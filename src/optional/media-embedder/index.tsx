@@ -12,7 +12,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
     const { links, item } = props || {};
     const [children, setChildren] = useState(null);
     useEffect(() => {
-        const mediaLinkReplacer = () => {
+        const mediaLinkReplacer = async () => {
             if (!item) return;
             /// replace each link with its mounted version
             const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
@@ -21,7 +21,10 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                 const postid = _this.dataset.postid;
                 const idx = _this.dataset.idx;
                 const matched = item.querySelector(`div#expando_${postid}-${idx}`);
-                if (matched) link.replaceWith(matched);
+                // avoid clobbering NWS links (part deux)
+                const isNWS = _this.closest(".fullpost.fpmod_nws");
+                const NWS_enabled = await enabledContains("nws_incognito");
+                if ((matched && isNWS && !NWS_enabled) || (matched && !isNWS)) link.replaceWith(matched);
             }
         };
         if (children) mediaLinkReplacer();
@@ -31,10 +34,7 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
             // tag all matching links and embed an Expando toggle for each one
             const detected = arrHas(links)
                 ? await links.reduce(async (acc, l, i) => {
-                      // avoid clobbering NWS links
-                      const isNWS = l.closest(".fullpost.fpmod_nws");
-                      const NWS_enabled = await enabledContains("nws_incognito");
-                      const detected = (NWS_enabled && !isNWS) || !NWS_enabled ? await detectMediaLink(l.href) : null;
+                      const detected = await detectMediaLink(l.href);
                       const { postid } = locatePostRefs(l);
                       const _acc = await acc;
                       if (detected) {
