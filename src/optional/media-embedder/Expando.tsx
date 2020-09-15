@@ -1,7 +1,7 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useState } from "react";
-import { classNames, getLinkType } from "../../core/common";
+import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { resolveLink } from "../../core/useResolvedLinks";
 import type { ExpandoProps, FCWithMediaProps } from "./index.d";
 
@@ -11,21 +11,27 @@ const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faE
 
 const RenderExpando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
-    const { href, src, type } = response || {};
+    const { href, src, type: _type } = response || {};
 
     const [toggled, setToggled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element);
+    const [type, setType] = useState(_type as string);
 
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
     const mediaClasses = classNames("media", { hidden: !toggled });
 
     const handleToggleClick = useCallback(
-        (e: React.MouseEvent<HTMLAnchorElement | HTMLDivElement, MouseEvent>) => {
+        (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e.preventDefault();
-            setToggled(!toggled);
+            const _this = e?.target as HTMLElement;
+            const _parent = _this.offsetParent as HTMLElement;
+            const _mediaParent = elemMatches(_parent, "div.media");
+            const _fullpostParent = elemMatches(_parent, "div.fullpost");
+            // only clickTogglesVisible on media when an image or link
+            if ((_mediaParent && type === "image") || _fullpostParent) setToggled(!toggled);
         },
-        [toggled, setToggled],
+        [toggled, type],
     );
     const handleNewClick = useCallback(() => {
         const _href = (children as FCWithMediaProps)?.props?.src || src;
@@ -35,14 +41,18 @@ const RenderExpando = (props: ExpandoProps) => {
 
     useEffect(() => {
         (async () => {
-            const _type = type ? type : getLinkType(src || href);
+            // try to use our existing parsed type
+            let __type = _type ? _type : getLinkType(src || href);
             const resolved = (await resolveLink({
                 link: src || href,
-                options: { ...options, clickTogglesVisible: _type === "image" },
+                options: { ...options, clickTogglesVisible: __type === "image" },
             })) as FCWithMediaProps;
+            // update our type from our resolved component if provided
+            __type = __type ? __type : getLinkType(resolved?.props?.src);
+            if (__type) setType(__type);
             if (resolved) setChildren(resolved);
         })();
-    }, [href, src, props, response, options, type]);
+    }, [href, src, props, response, options, _type]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
@@ -58,7 +68,7 @@ const RenderExpando = (props: ExpandoProps) => {
                 <ExternalLink />
             </a>
             {/* click-to-toggle visibility only for 'image' type embeds */}
-            <div className={mediaClasses} onClick={type === "image" ? handleToggleClick : undefined}>
+            <div className={mediaClasses} onClick={handleToggleClick}>
                 {toggled ? children : null}
             </div>
         </div>
