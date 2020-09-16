@@ -7,12 +7,7 @@
             "jsx": true
         }
     },
-    "plugins": [
-        "@typescript-eslint",
-        "react",
-        "sonarjs",
-        "react-hooks"
-    ],
+    "plugins": ["@typescript-eslint", "react", "sonarjs", "react-hooks"],
     "settings": {
         "react": {
             "version": "detect"
@@ -27,19 +22,13 @@
         "plugin:prettier/recommended"
     ],
     "rules": {
-        "curly": [
-            2,
-            "multi",
-            "consistent"
-        ],
+        "curly": [2, "multi", "consistent"],
+        "no-use-before-define": "warn",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "sonarjs/no-duplicate-string": "off",
-        "sonarjs/cognitive-complexity": [
-            "warn",
-            30
-        ],
+        "sonarjs/cognitive-complexity": ["warn", 30],
         "no-restricted-syntax": [
             1,
             {
@@ -50,10 +39,7 @@
         "react/jsx-filename-extension": [
             "warn",
             {
-                "extensions": [
-                    ".jsx",
-                    ".tsx"
-                ]
+                "extensions": [".jsx", ".tsx"]
             }
         ],
         "prettier/prettier": [
@@ -65,10 +51,7 @@
     },
     "overrides": [
         {
-            "files": [
-                "*.ts",
-                "*.tsx"
-            ],
+            "files": ["*.ts", "*.tsx"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": [
                     2,
