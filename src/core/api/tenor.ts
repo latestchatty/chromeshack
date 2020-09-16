@@ -1,14 +1,7 @@
 import { fetchSafe } from "../common";
 import type { ParsedResponse } from "./";
 
-const parseLink = (href: string) => {
-    const isTenor = /https?:\/\/(?:.+\.)?tenor\.com\/(?:images\/.+\/.+\?itemid=(\d+)|.+-(\d+)$)/i.exec(href);
-    return isTenor ? ({ href, args: [isTenor[1] || isTenor[2]], type: "video", cb: getTenor } as ParsedResponse) : null;
-};
-
-export const isTenor = (href: string) => parseLink(href);
-
-export const resolveTenor = async (shortcode: string) => {
+const resolveTenor = async (shortcode: string) => {
     const __obf = atob("UE9JODJZS1NWRENQ");
     if (shortcode) {
         const response = await fetchSafe({
@@ -24,3 +17,10 @@ export const getTenor = async (...args: any[]) => {
     const resolved = await resolveTenor(shortcode);
     return resolved ? { src: resolved, type: "video" } : null;
 };
+
+const parseLink = (href: string) => {
+    const isTenor = /https?:\/\/(?:.+\.)?tenor\.com\/(?:images\/.+\/.+\?itemid=(\d+)|.+-(\d+)$)/i.exec(href);
+    return isTenor ? ({ href, args: [isTenor[1] || isTenor[2]], type: "video", cb: getTenor } as ParsedResponse) : null;
+};
+
+export const isTenor = (href: string) => parseLink(href);

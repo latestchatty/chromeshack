@@ -1,13 +1,6 @@
 import { fetchBackground } from "../common";
 import type { ParsedResponse } from "./";
 
-const parseLink = (href: string) => {
-    const isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(href);
-    return isStreamable
-        ? ({ href, args: [isStreamable[1]], type: "iframe", cb: getStreamable } as ParsedResponse)
-        : null;
-};
-
 const resolveStreamable = async (shortcode: string) => {
     const __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
     const json = await fetchBackground({
@@ -20,10 +13,17 @@ const resolveStreamable = async (shortcode: string) => {
     return url_match ? url_match[1] : null;
 };
 
-export const isStreamable = (href: string) => parseLink(href);
-
 export const getStreamable = async (...args: any[]) => {
     const [shortcode] = args || [];
     const src = shortcode ? await resolveStreamable(shortcode) : null;
     return src ? { src, type: "iframe" } : null;
 };
+
+const parseLink = (href: string) => {
+    const isStreamable = /https?:\/\/streamable\.com\/([\w]+)/i.exec(href);
+    return isStreamable
+        ? ({ href, args: [isStreamable[1]], type: "iframe", cb: getStreamable } as ParsedResponse)
+        : null;
+};
+
+export const isStreamable = (href: string) => parseLink(href);

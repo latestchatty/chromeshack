@@ -9,13 +9,6 @@ export const setEventId = async (eventId: number) => await setSetting("nEventId"
 export const getUsername = async () => (await getSetting("nUsername")) as Promise<string>;
 export const setUsername = async (username: string) => await setSetting("nUsername", username);
 
-interface NotifyMsg {
-    name: string;
-    data: NotifyResponse;
-}
-interface NewestEventResponse {
-    eventId: number;
-}
 export interface NotifyEvent {
     eventData: {
         parentAuthor?: string;
@@ -47,6 +40,13 @@ export interface NotifyResponse {
     error?: boolean;
     code?: string;
     message?: string;
+}
+interface NotifyMsg {
+    name: string;
+    data: NotifyResponse;
+}
+interface NewestEventResponse {
+    eventId: number;
 }
 
 export const TabMessenger = {

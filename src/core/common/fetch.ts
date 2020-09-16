@@ -28,92 +28,6 @@ export interface ShackRSSItem {
     medialink?: string;
 }
 
-export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
-    // promisified legacy XHR helper using XMLHttpRequest()
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open(objHas(optionsObj) ? optionsObj.method : "GET", url);
-        if (objHas(optionsObj) && optionsObj.headers) {
-            const headers = optionsObj.headers as Record<string, any>;
-            for (const key of Object.keys(headers) || []) {
-                const value = headers[key] as string;
-                xhr.setRequestHeader(key, value);
-            }
-        }
-
-        xhr.onload = function () {
-            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
-                resolve(xhr.response);
-
-            reject({ status: this.status, statusText: xhr.statusText });
-        };
-        xhr.onerror = function () {
-            reject({ status: this.status, statusText: xhr.statusText });
-        };
-        xhr.send();
-    });
-};
-
-export const fetchSafeLegacy = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
-    // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
-    return new Promise((resolve, reject) => {
-        xhrRequestLegacy(url, fetchOpts)
-            .then((res: any) => {
-                const result = res && parseFetchResponse(res, parseType);
-                if (result) return resolve(result);
-                console.error(res);
-                return reject(res);
-            })
-            .catch((err) => {
-                console.error(err);
-                return reject(err);
-            });
-    });
-};
-
-export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
-    // used for sanitizing fetches
-    // fetchOpts gets destructured in 'xhrRequest()'
-    // parseType gets destructured into override bools:
-    //   chattyPics: for parsing the post-upload HTML from Chattypics
-    //   instagram: for embedded instagram graphQL parsing
-    //   chattyRSS: to force parsing RSS to a sanitized JSON object
-    //   html: to force parsing as HTML fragment
-    // NOTE: HTML type gets sanitized to a document fragment
-    return new Promise((resolve, reject) =>
-        fetch(url, fetchOpts)
-            .then(async (res) => {
-                const result = (res?.ok || res?.statusText === "OK") && res.text();
-                const parsed = result ? parseFetchResponse(result, parseType) : null;
-                if (parsed) return resolve(parsed);
-                console.error(res);
-                return reject(res);
-            })
-            .catch((err) => {
-                console.error(err);
-                return reject(err);
-            }),
-    );
-};
-
-// sugar for the CORB-safe versions of fetchSafe() GET/POST
-export const fetchBackground = ({ url, fetchOpts, parseType }: FetchArgs) =>
-    browser.runtime.sendMessage({ name: "corbFetch", url, fetchOpts, parseType });
-export const postBackground = ({ url, fetchOpts, parseType, data }: PostArgs) =>
-    browser.runtime.sendMessage({
-        name: "corbPost",
-        url,
-        fetchOpts,
-        parseType,
-        data,
-    });
-
-const waitToResolve = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-export const waitToFetchSafe = async (timeout: number, fetchArgs: FetchArgs) => {
-    await waitToResolve(timeout);
-    return await fetchSafe(fetchArgs);
-};
-
 const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
     if (val && Array.isArray(val)) {
         const _arr = [] as any[];
@@ -235,4 +149,90 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
         console.error("Parse failed!");
     }
     return null;
+};
+
+export const xhrRequestLegacy = (url: string, optionsObj?: RequestInit) => {
+    // promisified legacy XHR helper using XMLHttpRequest()
+    return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open(objHas(optionsObj) ? optionsObj.method : "GET", url);
+        if (objHas(optionsObj) && optionsObj.headers) {
+            const headers = optionsObj.headers as Record<string, any>;
+            for (const key of Object.keys(headers) || []) {
+                const value = headers[key] as string;
+                xhr.setRequestHeader(key, value);
+            }
+        }
+
+        xhr.onload = function () {
+            if ((this.status >= 200 && this.status < 300) || xhr.statusText.toUpperCase().indexOf("OK") > -1)
+                resolve(xhr.response);
+
+            reject({ status: this.status, statusText: xhr.statusText });
+        };
+        xhr.onerror = function () {
+            reject({ status: this.status, statusText: xhr.statusText });
+        };
+        xhr.send();
+    });
+};
+
+export const fetchSafeLegacy = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
+    // used for sanitizing legacy fetches (takes type: [(JSON) | HTML])
+    return new Promise((resolve, reject) => {
+        xhrRequestLegacy(url, fetchOpts)
+            .then((res: any) => {
+                const result = res && parseFetchResponse(res, parseType);
+                if (result) return resolve(result);
+                console.error(res);
+                return reject(res);
+            })
+            .catch((err) => {
+                console.error(err);
+                return reject(err);
+            });
+    });
+};
+
+export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
+    // used for sanitizing fetches
+    // fetchOpts gets destructured in 'xhrRequest()'
+    // parseType gets destructured into override bools:
+    //   chattyPics: for parsing the post-upload HTML from Chattypics
+    //   instagram: for embedded instagram graphQL parsing
+    //   chattyRSS: to force parsing RSS to a sanitized JSON object
+    //   html: to force parsing as HTML fragment
+    // NOTE: HTML type gets sanitized to a document fragment
+    return new Promise((resolve, reject) =>
+        fetch(url, fetchOpts)
+            .then(async (res) => {
+                const result = (res?.ok || res?.statusText === "OK") && res.text();
+                const parsed = result ? parseFetchResponse(result, parseType) : null;
+                if (parsed) return resolve(parsed);
+                console.error(res);
+                return reject(res);
+            })
+            .catch((err) => {
+                console.error(err);
+                return reject(err);
+            }),
+    );
+};
+
+// sugar for the CORB-safe versions of fetchSafe() GET/POST
+export const fetchBackground = ({ url, fetchOpts, parseType }: FetchArgs) =>
+    browser.runtime.sendMessage({ name: "corbFetch", url, fetchOpts, parseType });
+export const postBackground = ({ url, fetchOpts, parseType, data }: PostArgs) =>
+    browser.runtime.sendMessage({
+        name: "corbPost",
+        url,
+        fetchOpts,
+        parseType,
+        data,
+    });
+
+const waitToResolve = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitToFetchSafe = async (timeout: number, fetchArgs: FetchArgs) => {
+    await waitToResolve(timeout);
+    return await fetchSafe(fetchArgs);
 };

@@ -2,20 +2,6 @@ import React from "react";
 import type { ParsedResponse } from ".";
 import { fetchSafe, safeInnerHTML } from "../common";
 
-const parseLink = (href: string) => {
-    const isChattyPost = /https?:\/\/(?:.+\.)?shacknews\.com\/chatty\?id=(\d+)/i.exec(href);
-    return isChattyPost
-        ? ({
-              href: isChattyPost[0],
-              args: [isChattyPost[1]],
-              type: "chattypost",
-              cb: getChattyPost,
-          } as ParsedResponse)
-        : null;
-};
-
-export const isChattyLink = (href: string) => parseLink(href);
-
 const fetchChattyPost = async (postid: string) => {
     const singlePost = postid && `https://www.shacknews.com/frame_chatty.x?root=&id=${postid}`;
     if (singlePost) {
@@ -56,3 +42,17 @@ export const getChattyPost = async (...args: any[]) => {
     const component = <Chattypost html={postElemText} />;
     return postElemText ? { component, type: "chattypost" } : null;
 };
+
+const parseLink = (href: string) => {
+    const isChattyPost = /https?:\/\/(?:.+\.)?shacknews\.com\/chatty\?id=(\d+)/i.exec(href);
+    return isChattyPost
+        ? ({
+              href: isChattyPost[0],
+              args: [isChattyPost[1]],
+              type: "chattypost",
+              cb: getChattyPost,
+          } as ParsedResponse)
+        : null;
+};
+
+export const isChattyLink = (href: string) => parseLink(href);

@@ -26,27 +26,20 @@ require("./styles/popup.css");
  * Highlight Users' Support
  */
 
+const getRandomNum = (min: number, max: number, precision?: number) =>
+    parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
+
 // https://stackoverflow.com/a/25873123
 const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(25, 100)}%, ${getRandomNum(35, 60)}%, 1)`;
 
 const getRandomInt = (min: number, max: number) =>
     Math.floor(Math.random() * (Math.ceil(max) - Math.floor(min))) + Math.ceil(min);
 
-const getRandomNum = (min: number, max: number, precision?: number) =>
-    parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
-
 const trimName = (name: string) =>
     name
         .trim()
         .replace(/[\W\s]+/g, "")
         .toLowerCase();
-
-const showHighlightGroups = async () => {
-    const highlightGroups = document.getElementById("highlight_groups");
-    removeChildren(highlightGroups);
-    const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-    for (const group of groups || []) addHighlightGroup(null, group);
-};
 
 const getHighlightGroup = (groupElem?: HTMLElement) => {
     // serialize a highlight group
@@ -74,16 +67,6 @@ const getHighlightGroups = async () => {
     if (highlightRecords.length > 0) return await setSetting("highlight_groups", highlightRecords);
 };
 
-const newHighlightGroup = (name?: string, css?: string, username?: string) => {
-    // return a new group with a random color as its default css
-    return {
-        enabled: true,
-        name: name && name.length > 0 ? name : `New Group ${getRandomInt(1, 999999)}`,
-        css: css && css.length > 0 ? css : `color: ${randomHsl()} !important;`,
-        users: username && username.length > 0 ? [username] : [],
-    } as HighlightGroup;
-};
-
 let debouncedUpdate = null as ReturnType<typeof setTimeout>;
 const delayedTextUpdate = (e: Event) => {
     if (debouncedUpdate) clearTimeout(debouncedUpdate);
@@ -99,6 +82,16 @@ const delayedTextUpdate = (e: Event) => {
         await setHighlightGroup(realGroupName, updatedGroup);
         groupLabel.dataset.name = updatedGroup.name;
     }, 500);
+};
+
+const newHighlightGroup = (name?: string, css?: string, username?: string) => {
+    // return a new group with a random color as its default css
+    return {
+        enabled: true,
+        name: name && name.length > 0 ? name : `New Group ${getRandomInt(1, 999999)}`,
+        css: css && css.length > 0 ? css : `color: ${randomHsl()} !important;`,
+        users: username && username.length > 0 ? [username] : [],
+    } as HighlightGroup;
 };
 
 const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
@@ -234,38 +227,16 @@ const addHighlightGroup = (e: Event, group?: HighlightGroup) => {
     if (e && (<HTMLElement>e.target).matches("#add_highlight_group")) getHighlightGroups();
 };
 
+const showHighlightGroups = async () => {
+    const highlightGroups = document.getElementById("highlight_groups");
+    removeChildren(highlightGroups);
+    const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
+    for (const group of groups || []) addHighlightGroup(null, group);
+};
+
 /*
  * Custom User Filters Support
  */
-const showUserFilters = async () => {
-    const filters = (await getSetting("user_filters")) as string[];
-    const usersLst = document.getElementById("filtered_users") as HTMLSelectElement;
-    removeChildren(usersLst);
-
-    for (const filter of filters || []) {
-        const newOption = document.createElement("option");
-        newOption.textContent = filter;
-        newOption.value = filter;
-        usersLst.appendChild(newOption);
-    }
-
-    const addFilterBtn = document.getElementById("add_user_filter_btn");
-    addFilterBtn.removeEventListener("click", addUserFilter);
-    addFilterBtn.addEventListener("click", addUserFilter);
-    const delFilterBtn = document.getElementById("remove_user_filter_btn");
-    delFilterBtn.removeEventListener("click", removeUserFilter);
-    delFilterBtn.addEventListener("click", removeUserFilter);
-    usersLst.removeEventListener("change", filterOptionsChanged);
-    usersLst.addEventListener("change", filterOptionsChanged);
-};
-
-const filterOptionsChanged = (e: Event) => {
-    const filterElem = (e.target as HTMLSelectElement).closest("#custom_user_filters_settings");
-    const selected = (<HTMLSelectElement>document.getElementById("filtered_users")).options.selectedIndex;
-    const removeBtn = filterElem.querySelector("#remove_user_filter_btn");
-    if (selected > -1) removeBtn.removeAttribute("disabled");
-    else if (selected === -1) removeBtn.setAttribute("disabled", "");
-};
 
 const getUserFilters = async () => {
     // serialize user filters to extension storage
@@ -300,6 +271,36 @@ const removeUserFilter = async () => {
     for (const option of selectedOptions || []) option.parentNode.removeChild(option);
     removeBtnElem.setAttribute("disabled", "");
     await getUserFilters();
+};
+
+const filterOptionsChanged = (e: Event) => {
+    const filterElem = (e.target as HTMLSelectElement).closest("#custom_user_filters_settings");
+    const selected = (<HTMLSelectElement>document.getElementById("filtered_users")).options.selectedIndex;
+    const removeBtn = filterElem.querySelector("#remove_user_filter_btn");
+    if (selected > -1) removeBtn.removeAttribute("disabled");
+    else if (selected === -1) removeBtn.setAttribute("disabled", "");
+};
+
+const showUserFilters = async () => {
+    const filters = (await getSetting("user_filters")) as string[];
+    const usersLst = document.getElementById("filtered_users") as HTMLSelectElement;
+    removeChildren(usersLst);
+
+    for (const filter of filters || []) {
+        const newOption = document.createElement("option");
+        newOption.textContent = filter;
+        newOption.value = filter;
+        usersLst.appendChild(newOption);
+    }
+
+    const addFilterBtn = document.getElementById("add_user_filter_btn");
+    addFilterBtn.removeEventListener("click", addUserFilter);
+    addFilterBtn.addEventListener("click", addUserFilter);
+    const delFilterBtn = document.getElementById("remove_user_filter_btn");
+    delFilterBtn.removeEventListener("click", removeUserFilter);
+    delFilterBtn.addEventListener("click", removeUserFilter);
+    usersLst.removeEventListener("change", filterOptionsChanged);
+    usersLst.addEventListener("change", filterOptionsChanged);
 };
 
 /*
@@ -369,6 +370,30 @@ const saveOptions = (e: MouseEvent) => {
         }
     })();
 };
+
+const parseSettingsString = (input: string, cbRef?: () => void) => {
+    // rudimentary way of checking if a settings string is a valid JSON object
+    try {
+        const parsed = input?.length > 0 && JSON.parse(superTrim(input));
+        if (parsed && objContainsProperty("version", parsed)) return input;
+        return false;
+    } catch (e) {
+        alert("Input is not a valid settings string!");
+        const importExportField = document.getElementById("import_export_field") as HTMLInputElement;
+        if (importExportField) importExportField.value = "";
+        if (cbRef) cbRef(); // force a field update
+        console.error(e);
+        return false;
+    }
+};
+
+function handleImportExportField() {
+    const field = document.getElementById("import_export_field") as HTMLInputElement;
+    const importExportBtn = document.getElementById("import_export_btn") as HTMLButtonElement;
+    const result = parseSettingsString(field.value, this);
+    if (result) importExportBtn.textContent = "Import Settings";
+    else importExportBtn.textContent = "Export To Clipboard";
+}
 
 const clearSettings = (e: MouseEvent) => {
     (async () => {
@@ -458,30 +483,6 @@ const importSettings = async (settingsField: HTMLInputElement) => {
         alert("Something went wrong when importing, check the console!");
         return false;
     }
-};
-
-const parseSettingsString = (input: string) => {
-    // rudimentary way of checking if a settings string is a valid JSON object
-    try {
-        const parsed = input?.length > 0 && JSON.parse(superTrim(input));
-        if (parsed && objContainsProperty("version", parsed)) return input;
-        return false;
-    } catch (e) {
-        alert("Input is not a valid settings string!");
-        const importExportField = document.getElementById("import_export_field") as HTMLInputElement;
-        if (importExportField) importExportField.value = "";
-        handleImportExportField(); // force a field update
-        console.error(e);
-        return false;
-    }
-};
-
-const handleImportExportField = () => {
-    const field = document.getElementById("import_export_field") as HTMLInputElement;
-    const importExportBtn = document.getElementById("import_export_btn") as HTMLButtonElement;
-    const result = parseSettingsString(field.value);
-    if (result) importExportBtn.textContent = "Import Settings";
-    else importExportBtn.textContent = "Export To Clipboard";
 };
 
 const handleImportExportSettings = () => {

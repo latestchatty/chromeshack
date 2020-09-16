@@ -23,19 +23,19 @@ export const objContains = (needle: any, haystack: any) => {
 export const objContainsProperty = (key: string, obj: Record<string, any>) =>
     obj && Object.prototype.hasOwnProperty.call(obj, key);
 
-export const isHTML = (text: string) => {
-    // https://stackoverflow.com/a/15458968
-    if (!text || (text && isJSON(text))) return false;
-    const doc = new DOMParser().parseFromString(text, "text/html");
-    return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
-};
-
 export const isJSON = (text: string) => {
     try {
         if (text && JSON.parse(text)) return true;
     } catch (err) {
         return false;
     }
+};
+
+export const isHTML = (text: string) => {
+    // https://stackoverflow.com/a/15458968
+    if (!text || (text && isJSON(text))) return false;
+    const doc = new DOMParser().parseFromString(text, "text/html");
+    return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
 };
 
 export const classNames = (...args: any[]) => {

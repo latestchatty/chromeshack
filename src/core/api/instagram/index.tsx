@@ -3,6 +3,19 @@ import type { ParsedResponse } from "../../api";
 import { fetchInstagramData, useInstagram } from "./Components";
 import type { InstagramParsed } from "./instagram.d";
 
+const InstagramWrapper = (props: { response: InstagramParsed }) => {
+    /// wrap useInstagram() returning a memoized render of <Instagram />
+    const { response } = props || {};
+    const instagram = useInstagram(response);
+    return useMemo(() => instagram, [instagram]);
+};
+
+export const getInstagram = async (...args: string[]) => {
+    const [shortcode] = args || [];
+    const response = shortcode ? await fetchInstagramData(shortcode) : null;
+    return response ? { component: <InstagramWrapper response={response} />, type: "instagram" } : null;
+};
+
 const parseLink = (href: string) => {
     const isInstagram = /https?:\/\/(?:www\.|)(?:instagr.am|instagram.com)(?:\/.*|)\/(?:p|tv)\/([\w-]+)\/?/i.exec(href);
     return isInstagram
@@ -16,19 +29,6 @@ const parseLink = (href: string) => {
 };
 
 export const isInstagram = (href: string) => parseLink(href);
-
-const InstagramWrapper = (props: { response: InstagramParsed }) => {
-    /// wrap useInstagram() returning a memoized render of <Instagram />
-    const { response } = props || {};
-    const instagram = useInstagram(response);
-    return useMemo(() => instagram, [instagram]);
-};
-
-export const getInstagram = async (...args: string[]) => {
-    const [shortcode] = args || [];
-    const response = shortcode ? await fetchInstagramData(shortcode) : null;
-    return response ? { component: <InstagramWrapper response={response} />, type: "instagram" } : null;
-};
 
 export { fetchInstagramData, useInstagram };
 export type { InstagramParsed };

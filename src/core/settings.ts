@@ -214,22 +214,32 @@ export const DefaultSettings: Settings = {
 
 /// GETTERS
 
-export const getSettingsVersion = async () => (await getSetting("version", 0)) as number;
-export const getManifestVersion = () => parseFloat(browser.runtime.getManifest().version);
-
-export const getSetting = async (key: string, defaultVal?: any) => {
-    const settings = await getSettings();
-    if (!settingsContains(key)) setSetting(key, defaultVal);
-    return settings[key] || null;
-};
 export const getSettings = async () => {
     let settings = (await browser.storage.local.get()) as Settings;
+    // overwrite settings store with defaults if unpopulated
     if (objEmpty(settings)) {
         await browser.storage.local.set(DefaultSettings);
         settings = browser.storage.local.get();
     }
     return settings;
 };
+
+export const settingsContains = async (key: string) => {
+    const settings = (await getSettings()) as Settings;
+    return objContains(key, settings);
+};
+
+export const setSetting = async (key: string, val: any) => await browser.storage.local.set({ [key]: val });
+
+export const getSetting = async (key: string, defaultVal?: any) => {
+    const settings = await getSettings();
+    // overwrite key with default (if provided)
+    if (!settingsContains(key)) setSetting(key, defaultVal);
+    return settings[key] || null;
+};
+
+export const getSettingsVersion = async () => (await getSetting("version", 0)) as number;
+export const getManifestVersion = () => parseFloat(browser.runtime.getManifest().version);
 
 export const getEnabled = async (key?: string) => {
     const enabled = (await getSetting("enabled_scripts")) as string[];
@@ -285,8 +295,6 @@ export const setEnabledSuboption = async (key: string) => {
     if (!options.includes(key) && key.length > 0) options.push(key);
     return await setSetting("enabled_suboptions", options);
 };
-
-export const setSetting = async (key: string, val: any) => await browser.storage.local.set({ [key]: val });
 
 export const setSettings = async (obj: Settings) => {
     await browser.storage.local.clear();
@@ -353,11 +361,6 @@ export const removeFilter = async (username: string) => {
 };
 
 /// CONTAINERS
-
-export const settingsContains = async (key: string) => {
-    const settings = (await getSettings()) as Settings;
-    return objContains(key, settings);
-};
 
 export const enabledContains = async (key: string) => {
     const enabled = await getEnabled();

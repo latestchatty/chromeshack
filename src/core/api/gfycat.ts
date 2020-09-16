@@ -35,15 +35,6 @@ interface GfycatResponse {
     };
 }
 
-const parseLink = (href: string) => {
-    const _isGfycat = /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i.exec(href);
-    return _isGfycat
-        ? ({ href, args: [_isGfycat[1] || _isGfycat[2]], type: "video", cb: getGfycat } as ParsedResponse)
-        : null;
-};
-
-export const isGfycat = (href: string) => parseLink(href);
-
 export const doResolveGfycat = async (...args: any[]) => {
     const [gfyname] = args;
     /// resolves a gfycat nonce to its media url
@@ -62,6 +53,15 @@ export const doResolveGfycat = async (...args: any[]) => {
 };
 
 export const getGfycat = async (...args: any[]) => (args ? await doResolveGfycat(...args) : null);
+
+const parseLink = (href: string) => {
+    const _isGfycat = /https?:\/\/(?:.*?\.)?gfycat.com\/(?:.*\/([\w]+)|([\w]+)|([\w]+)-.*?)/i.exec(href);
+    return _isGfycat
+        ? ({ href, args: [_isGfycat[1] || _isGfycat[2]], type: "video", cb: getGfycat } as ParsedResponse)
+        : null;
+};
+
+export const isGfycat = (href: string) => parseLink(href);
 
 const doGfycatDropKey = async (data?: UploadData) => {
     /// notifies the Gfycat drop endpoint that we wish to upload media
