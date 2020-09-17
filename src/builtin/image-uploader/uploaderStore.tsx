@@ -45,7 +45,7 @@ export interface UploaderState extends ReducerState {
 }
 const initialState: UploaderState = {
     visible: true,
-    multifile: false,
+    multifile: true,
     filesDisabled: false,
     urlDisabled: false,
     uploadDisabled: true,
