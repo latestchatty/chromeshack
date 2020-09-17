@@ -51,7 +51,7 @@ browser.runtime.onMessage.addListener(
                     url: request.url,
                     fetchOpts: {
                         ...request.fetchOpts,
-                        method: request.fetchOpts.method || "POST",
+                        method: request.fetchOpts?.method ? request.fetchOpts.method : "POST",
                         body: _fd,
                     },
                     parseType: request.parseType,
