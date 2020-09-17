@@ -373,6 +373,7 @@ body.side-menu {
 /* fix oneliner who-tag'd popup width */
 #page.theme2 ul.interacted-user-list {
     width: unset !important;
+    white-space: nowrap;
 }
 #page.theme2 ul.interacted-user-list li {
     position: relative;
