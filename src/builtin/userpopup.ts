@@ -95,7 +95,7 @@ export const UserPopup = {
         const isApplied = ulUser.querySelector("#filter-list");
         if (isApplied) isApplied.parentNode.removeChild(isApplied);
         if (ulUser) {
-            if (await enabledContains("custom_user_filters")) {
+            if (await enabledContains(["custom_user_filters"])) {
                 const filtersHas = await filtersContains(username);
                 const filterCustomItem = UserPopup.createFilterListItem(
                     `${filtersHas ? "Remove from" : "Add to"} Custom Filters`,
@@ -104,7 +104,7 @@ export const UserPopup = {
                 filterCustomItem.addEventListener("click", (e: MouseEvent) => UserPopup.handleFilterUser(e, username));
                 container.appendChild(filterCustomItem);
             }
-            if (await enabledContains("highlight_users")) {
+            if (await enabledContains(["highlight_users"])) {
                 const highlightGroups = await getMutableHighlights();
                 for (const group of highlightGroups || []) {
                     const groupContainsUser = await highlightGroupContains(group.name, username);

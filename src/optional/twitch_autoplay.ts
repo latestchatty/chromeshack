@@ -4,7 +4,7 @@ import { enabledContains } from "../core/settings";
 export const TwitchAutoplay = {
     async install() {
         // loads on startup
-        const is_enabled = await enabledContains("twitchauto");
+        const is_enabled = await enabledContains(["twitchauto"]);
         if (is_enabled) {
             const articlePlayer = document.querySelector(".article-content iframe");
             let src = articlePlayer?.getAttribute("src");

@@ -46,13 +46,10 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
     useEffect(() => {
         if (!links) return;
         const detectLinks = async () => {
-            const isNWS = links[0]?.closest(".fullpost.fpmod_nws");
-            const NWS_enabled = await enabledContains("nws_incognito");
             // tag all matching links and save their resolved responses
             const detectedLinks = arrHas(links)
                 ? await links.reduce(async (acc, l, i) => {
                       // avoid clobbering NWS links
-                      if (isNWS && NWS_enabled) return acc;
                       const _detected = await detectMediaLink(l.href);
                       const { postid } = locatePostRefs(l);
                       const _acc = await acc;
@@ -80,12 +77,18 @@ export const MediaEmbedder = {
     },
 
     processPost(item: HTMLElement) {
-        // render inside a hidden container in each fullpost
-        const postbody = item?.querySelector(".sel > .fullpost > .postbody");
-        const links = [...postbody?.querySelectorAll("a")] as HTMLAnchorElement[];
-        const embedded = [...postbody?.querySelectorAll("div.medialink")] as HTMLElement[];
-
         (async () => {
+            // don't do processing if we don't need to
+            const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
+            const isNWS = item?.closest(".fullpost.fpmod_nws");
+            const NWS_enabled = await enabledContains(["nws_incognito"]);
+            if (!is_enabled || (isNWS && NWS_enabled)) return;
+
+            // render inside a hidden container in each fullpost
+            const postbody = item?.querySelector(".sel > .fullpost > .postbody");
+            const links = [...postbody?.querySelectorAll("a")] as HTMLAnchorElement[];
+            const embedded = [...postbody?.querySelectorAll("div.medialink")] as HTMLElement[];
+
             if (arrHas(links) && arrEmpty(embedded)) {
                 if (!postbody?.querySelector("#react-media-manager")) {
                     const container = document.createElement("div");

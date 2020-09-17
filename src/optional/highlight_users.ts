@@ -14,7 +14,7 @@ export const HighlightUsers = {
     cache: [] as ResolvedUser[],
 
     async install() {
-        const is_enabled = await enabledContains("highlight_users");
+        const is_enabled = await enabledContains(["highlight_users"]);
         if (is_enabled) {
             fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
             // refresh our styling state when refreshing a post

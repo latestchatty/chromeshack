@@ -24,7 +24,7 @@ export const HighlightPendingPosts = {
     marked: [] as HTMLElement[],
 
     async install() {
-        const is_enabled = await enabledContains("highlight_pending_new_posts");
+        const is_enabled = await enabledContains(["highlight_pending_new_posts"]);
         if (is_enabled) HighlightPendingPosts.apply();
     },
 

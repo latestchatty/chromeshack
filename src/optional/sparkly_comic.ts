@@ -10,7 +10,7 @@ export const SparklyComic = {
     userMatch: [] as ResolvedUser[],
 
     async install() {
-        const is_enabled = await enabledContains("sparkly_comic");
+        const is_enabled = await enabledContains(["sparkly_comic"]);
         if (is_enabled) processPostEvent.addHandler(SparklyComic.installComic);
     },
 

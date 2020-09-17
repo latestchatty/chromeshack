@@ -26,7 +26,7 @@ export const Switchers = {
     resolved: [] as SwitcherMatch[],
 
     async install() {
-        const is_enabled = await enabledContains("switchers");
+        const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
             Switchers.cacheSwitchers();
             processPostEvent.addHandler(Switchers.loadSwitchers);

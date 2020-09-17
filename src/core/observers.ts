@@ -109,6 +109,7 @@ export const ChromeShack = {
             childList: true,
         });
 
+        // raise an event before we start processing posts
         ChromeShack.processFullPosts();
 
         document.addEventListener("click", (e: MouseEvent) => {
@@ -127,11 +128,11 @@ export const ChromeShack = {
      * Core DOM mutation events (chatty/post loading)
      */
     processFullPosts() {
-        // process fullposts
-        const items = [...document.querySelectorAll("div.fullpost")] as HTMLElement[];
-        for (const item of items || []) {
-            const { post, postid, root, rootid, is_root } = locatePostRefs(item) || {};
-            if (post && rootid) ChromeShack.processPost(post, root, postid, rootid, is_root);
+        const fullposts = document.getElementsByClassName("fullpost");
+        for (let i = fullposts.length - 1; i >= 0; i--) {
+            const node = fullposts[i] as HTMLElement;
+            const { post, postid, root, rootid, is_root } = locatePostRefs(node);
+            if (root || post) ChromeShack.processPost(post, root, postid, rootid, is_root);
         }
         if (ChromeShack.debugEvents) console.log("raising fullPostsCompletedEvent");
         fullPostsCompletedEvent.raise();

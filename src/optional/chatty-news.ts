@@ -47,7 +47,7 @@ export const ChattyNews = {
     },
 
     async install() {
-        const is_enabled = await enabledContains("chatty_news");
+        const is_enabled = await enabledContains(["chatty_news"]);
         if (is_enabled) {
             if (document.querySelector("div.chatty-news")) return;
 
@@ -78,7 +78,7 @@ export const ChattyNews = {
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
-            if (await enabledContains("thread_pane")) articleBox?.classList?.add("thread__pane__enabled");
+            if (await enabledContains(["thread_pane"])) articleBox?.classList?.add("thread__pane__enabled");
 
             articleBox?.classList?.add("chatty__news__enabled");
         }

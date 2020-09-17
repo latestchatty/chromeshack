@@ -18,7 +18,7 @@ export const DinoGegtik = {
     userMatches: [] as ResolvedUser[],
 
     async install() {
-        const is_enabled = await enabledContains("dinogegtik");
+        const is_enabled = await enabledContains(["dinogegtik"]);
         if (is_enabled) processPostEvent.addHandler(DinoGegtik.installComic);
     },
 

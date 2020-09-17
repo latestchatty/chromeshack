@@ -18,7 +18,7 @@ export const ThreadPane = {
     isEnabled: false,
 
     async install() {
-        const is_enabled = await enabledContains("thread_pane");
+        const is_enabled = await enabledContains(["thread_pane"]);
         if (is_enabled)
             try {
                 ThreadPane.isEnabled = true;

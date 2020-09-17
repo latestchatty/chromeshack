@@ -9,7 +9,7 @@ export const CustomUserFilters = {
     rootPostCount: 0,
 
     async install() {
-        const is_enabled = await enabledContains("custom_user_filters");
+        const is_enabled = await enabledContains(["custom_user_filters"]);
         if (is_enabled) {
             processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
             CustomUserFilters.applyFilter();

@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
-import { arrHas, objHas } from "./";
+import { arrHas } from "./";
 import type { PurifyConfig } from "./fetch";
 
 const $ = jQuery;
@@ -304,14 +304,15 @@ export interface PostRefs {
 }
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
-    // match the first fullpost container (up/cur first, then down)
-    const post = postElem?.closest && (postElem?.closest("li.sel") as HTMLElement);
-    const is_root = !!elemMatches(post, ".root > ul > li, div.root");
-    const root = (post?.closest(".root > ul > li") as HTMLElement) || post?.querySelector(".root > ul > li");
-    const rootid = root?.id?.substr(5);
+    const _parent = postElem.parentNode as HTMLElement;
+    const post = elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
+    const root = postElem.classList?.contains("op")
+        ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
+        : (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
     const postid = post?.id?.substr(5);
-    const result = { post, postid, root, rootid, is_root };
-    return objHas(result) ? result : null;
+    const rootid = root?.id?.substr(5);
+    const is_root = rootid && postid && rootid === postid;
+    return postid && rootid ? { post, postid, root, rootid, is_root } : null;
 };
 
 export const decodeHTML = (text: string) => {

@@ -362,9 +362,11 @@ export const removeFilter = async (username: string) => {
 
 /// CONTAINERS
 
-export const enabledContains = async (key: string) => {
+export const enabledContains = async (keys: string[]) => {
     const enabled = await getEnabled();
-    return enabled ? enabled.includes(key) : false;
+    for (const key of keys || []) if (enabled.includes(key)) return true;
+
+    return false;
 };
 
 export const highlightsContains = async (username: string): Promise<HighlightGroup[]> => {

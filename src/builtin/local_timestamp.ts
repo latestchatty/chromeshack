@@ -1,37 +1,66 @@
-import { DateTime } from "luxon";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
 
-class GetTime {
-    static asDate = () => DateTime.local().toJSDate();
-    static asString = () => DateTime.local().toLocaleString(DateTime.DATETIME_MED);
-    static fromStrToDate = (dateStr: string) => new Date(Date.parse(dateStr));
-    static fromDateToString = (jsDate: Date) => DateTime.fromJSDate(jsDate).toLocaleString(DateTime.DATETIME_MED);
-}
-
 export const LocalTimeStamp = {
+    hasLoaded: false,
+
     install() {
-        processPostEvent.addHandler(LocalTimeStamp.adjustTime);
         processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
+        processPostEvent.addHandler(LocalTimeStamp.adjustTime);
+        LocalTimeStamp.adjustTime();
     },
 
     fixTime(rawDateStr: string) {
-        // usually in format: Jan 1, 1976, 12:01am PDST
-        // NOTE: The Chatty page can report wrong timestamps due to a nuChatty bug
-        const fixAMPM = rawDateStr.replace(/(am\s|pm\s)/, (m1) => ` ${m1.toUpperCase()}`);
-        return GetTime.fromDateToString(GetTime.fromStrToDate(fixAMPM));
+        // from: Sep 16, 2020 5:24pm PDT (server)
+        // to: Sep 16, 2020, 6:24PM MDT (client)
+        // NOTE: The Chatty page can report wrong timestamps due to a backend server bug
+        try {
+            const fixAMPM = rawDateStr.replace(/(am\s|pm\s)/, (m1) => ` ${m1.toUpperCase()}`);
+            const toDT = new Date(fixAMPM);
+            // use native JS to format a date string
+            const toStr = toDT.toLocaleDateString("en", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                timeZoneName: "short",
+            });
+            return toStr ? toStr : rawDateStr;
+        } catch (e) {
+            console.error(e);
+        }
+    },
+    replaceTime(dateStr: string, postDate: HTMLElement) {
+        const timeText = document.createTextNode(dateStr);
+        const textNode = postDate?.childNodes[1];
+        if (textNode?.nodeType === 3) textNode.parentNode.replaceChild(timeText, textNode);
     },
 
-    adjustTime(item: HTMLElement) {
-        const postDate = <HTMLElement>item?.querySelector("div.postdate");
-        const dateStr = postDate?.innerText;
-        if (dateStr) {
-            const localizedTime = LocalTimeStamp.fixTime(dateStr);
-            const timestamp = document.createElement("span");
-            timestamp.id = "local-time";
-            timestamp.innerText = localizedTime;
-            // remove only text child of postdate
-            for (const c of postDate.childNodes) if (c.nodeType === 3) c.remove();
-            if (!postDate.querySelector("#local-time")) postDate.appendChild(timestamp);
+    adjustTime(post?: HTMLElement, rootid?: string) {
+        // change all visible dates in one large batch
+        const postDate = post?.querySelector("div.postdate") as HTMLElement;
+        if (postDate && LocalTimeStamp.hasLoaded) {
+            const dateStr = postDate?.innerText;
+            const fixedTime = LocalTimeStamp.fixTime(dateStr);
+            if (fixedTime) {
+                LocalTimeStamp.replaceTime(fixedTime, postDate);
+                LocalTimeStamp.hasLoaded = false;
+            }
+            return; // bail
+        }
+
+        let dates = [] as HTMLElement[];
+        if (rootid) {
+            const root = document.getElementById(`item_${rootid}`);
+            dates = [...root?.querySelectorAll("div.postdate")] as HTMLElement[];
+        } else {
+            dates = [...document.querySelectorAll("div.postdate")] as HTMLElement[];
+        }
+        if (dates) LocalTimeStamp.hasLoaded = true;
+        for (const postdate of dates) {
+            const dateStr = postdate?.innerText;
+            const fixedTime = LocalTimeStamp.fixTime(dateStr);
+            if (fixedTime) LocalTimeStamp.replaceTime(fixedTime, postdate);
         }
     },
 };

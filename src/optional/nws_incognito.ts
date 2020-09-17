@@ -12,7 +12,7 @@ import { enabledContains } from "../core/settings";
 
 export const NwsIncognito = {
     async install() {
-        const is_enabled = await enabledContains("nws_incognito");
+        const is_enabled = await enabledContains(["nws_incognito"]);
         if (is_enabled) processPostEvent.addHandler(NwsIncognito.hookToNwsPosts);
     },
 

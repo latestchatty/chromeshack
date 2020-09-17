@@ -8,7 +8,7 @@ export const PostPreview = {
     previewTimer: null as ReturnType<typeof setTimeout>,
 
     async install() {
-        const is_enabled = await enabledContains("post_preview");
+        const is_enabled = await enabledContains(["post_preview"]);
         if (is_enabled) processPostBoxEvent.addHandler(PostPreview.apply);
     },
 

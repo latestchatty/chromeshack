@@ -4,7 +4,7 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 export const NewCommentHighlighter = {
     async install() {
-        const is_enabled = await enabledContains("new_comment_highlighter");
+        const is_enabled = await enabledContains(["new_comment_highlighter"]);
         if (is_enabled) {
             fullPostsCompletedEvent.addHandler(NewCommentHighlighter.highlight);
             processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);

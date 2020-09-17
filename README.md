@@ -25,7 +25,6 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [Embla](https://github.com/davidcetinkaya/embla-carousel)
 -   [jQuery](https://github.com/jquery/jquery)
 -   [DOMPurify](https://github.com/cure53/DOMPurify)
--   [Luxon](https://github.com/moment/luxon)
 -   [WebExtension-Polyfill](https://github.com/mozilla/webextension-polyfill)
 -   [React](https://github.com/facebook/react)
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
