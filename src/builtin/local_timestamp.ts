@@ -1,3 +1,4 @@
+import { arrHas } from "../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
 
 export const LocalTimeStamp = {
@@ -6,7 +7,7 @@ export const LocalTimeStamp = {
     install() {
         processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
         processPostEvent.addHandler(LocalTimeStamp.adjustTime);
-        LocalTimeStamp.adjustTime();
+        LocalTimeStamp.batchAdjustTime();
     },
 
     fixTime(rawDateStr: string) {
@@ -30,37 +31,41 @@ export const LocalTimeStamp = {
             console.error(e);
         }
     },
+
     replaceTime(dateStr: string, postDate: HTMLElement) {
         const timeText = document.createTextNode(dateStr);
-        const textNode = postDate?.childNodes[1];
+        // either a fullpost with a timer or a reply without one
+        const textNode = postDate?.childNodes[1] || postDate?.childNodes[0];
         if (textNode?.nodeType === 3) textNode.parentNode.replaceChild(timeText, textNode);
     },
 
-    adjustTime(post?: HTMLElement, rootid?: string) {
-        // change all visible dates in one large batch
-        const postDate = post?.querySelector("div.postdate") as HTMLElement;
-        if (postDate && LocalTimeStamp.hasLoaded) {
-            const dateStr = postDate?.innerText;
-            const fixedTime = LocalTimeStamp.fixTime(dateStr);
-            if (fixedTime) {
-                LocalTimeStamp.replaceTime(fixedTime, postDate);
-                LocalTimeStamp.hasLoaded = false;
-            }
-            return; // bail
+    adjustPostTime(elem: HTMLElement) {
+        const dateStr = elem?.innerText;
+        const fixedTime = dateStr && LocalTimeStamp.fixTime(dateStr);
+        const is_corrected = elem?.classList?.contains("timestamp_corrected");
+        if (fixedTime && !is_corrected) {
+            LocalTimeStamp.replaceTime(fixedTime, elem);
+            elem?.classList?.add("timestamp_corrected");
         }
+    },
 
+    batchAdjustTime() {
+        const postDates = document.getElementsByClassName("postdate");
+        for (const date of postDates || []) LocalTimeStamp.adjustPostTime(date as HTMLElement);
+        LocalTimeStamp.hasLoaded = true;
+    },
+
+    adjustTime(post?: HTMLElement, rootid?: string) {
+        // change dates per given root
         let dates = [] as HTMLElement[];
-        if (rootid) {
-            const root = document.getElementById(`item_${rootid}`);
-            dates = [...root?.querySelectorAll("div.postdate")] as HTMLElement[];
-        } else {
-            dates = [...document.querySelectorAll("div.postdate")] as HTMLElement[];
-        }
-        if (dates) LocalTimeStamp.hasLoaded = true;
-        for (const postdate of dates) {
-            const dateStr = postdate?.innerText;
-            const fixedTime = LocalTimeStamp.fixTime(dateStr);
-            if (fixedTime) LocalTimeStamp.replaceTime(fixedTime, postdate);
+
+        const root = rootid && document.getElementById(`item_${rootid}`);
+        if (post) dates = [...post?.getElementsByClassName("postdate")] as HTMLElement[];
+        else if (rootid) dates = [...root?.getElementsByClassName("postdate")] as HTMLElement[];
+
+        if ((arrHas(dates) && LocalTimeStamp.hasLoaded) || post) {
+            for (const postdate of dates || []) LocalTimeStamp.adjustPostTime(postdate as HTMLElement);
+            LocalTimeStamp.hasLoaded = false;
         }
     },
 };
