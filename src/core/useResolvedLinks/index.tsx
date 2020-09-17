@@ -106,7 +106,7 @@ export const useResolvedLinks = (props: URLProps) => {
     const memoizedChildren = useMemo(() => loadChildren, [loadChildren]);
 
     useEffect(() => {
-        if (!hasLoaded && toggled) memoizedChildren();
+        if ((!hasLoaded && toggled) || (!hasLoaded && toggled === undefined)) memoizedChildren();
     }, [hasLoaded, toggled, memoizedChildren]);
     return { resolved, hasLoaded };
 };
