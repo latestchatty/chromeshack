@@ -59,7 +59,7 @@ export const fetchInstagramData = async (shortcode: string) => {
 };
 
 const InstagramCaption = ({ text }: { text: string }) => {
-    const tagsReplaced = text?.split(/([#@][A-Za-z0-9\._]+|[\r\n])/gm);
+    const tagsReplaced = text?.split(/([#@][a-zA-Z\u00C0-\u017F0-9\.-_]+|[\r\n])/gm);
     const output = [];
     for (const [i, m] of tagsReplaced.entries() || []) {
         const isHash = m?.match(/^#/);
