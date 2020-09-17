@@ -27,11 +27,10 @@ const RenderExpando = (props: ExpandoProps) => {
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e.preventDefault();
             const _this = e?.target as HTMLElement;
-            const _parent = _this.offsetParent as HTMLElement;
-            const _mediaParent = elemMatches(_parent, "div.media");
-            const _fullpostParent = elemMatches(_parent, "div.fullpost");
+            const _mediaParent = elemMatches(_this.offsetParent as HTMLElement, "div.media");
+            const _expando = elemMatches(_this.nextElementSibling as HTMLElement, "div.expando");
             // only clickTogglesVisible on media when an image or expando link
-            if ((_mediaParent && type === "image") || _fullpostParent) setToggled(!toggled);
+            if ((_mediaParent && type === "image") || _expando) setToggled(!toggled);
         },
         [toggled, type],
     );
