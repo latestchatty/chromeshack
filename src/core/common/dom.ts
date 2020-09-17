@@ -312,7 +312,7 @@ export const locatePostRefs = (postElem: HTMLElement) => {
     const postid = post?.id?.substr(5);
     const rootid = root?.id?.substr(5);
     const is_root = rootid && postid && rootid === postid;
-    return postid && rootid ? { post, postid, root, rootid, is_root } : null;
+    return { post, postid, root, rootid, is_root };
 };
 
 export const decodeHTML = (text: string) => {
