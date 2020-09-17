@@ -78,7 +78,10 @@ export const ChattyNews = {
             newsBox = await ChattyNews.populateNewsBox(newsBox);
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
-            if (await enabledContains(["thread_pane"])) articleBox?.classList?.add("thread__pane__enabled");
+            // double check this is the full chatty page
+            const is_chatty = document.querySelector("pagenavigation");
+            if ((await enabledContains(["thread_pane"])) && is_chatty)
+                articleBox?.classList?.add("thread__pane__enabled");
 
             articleBox?.classList?.add("chatty__news__enabled");
         }
