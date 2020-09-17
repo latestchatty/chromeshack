@@ -80,9 +80,9 @@ export const MediaEmbedder = {
         (async () => {
             // don't do processing if we don't need to
             const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
-            const isNWS = item?.closest(".fullpost.fpmod_nws");
+            const isNWS = item?.querySelector(".fullpost.fpmod_nws");
             const NWS_enabled = await enabledContains(["nws_incognito"]);
-            if (!is_enabled || (isNWS && NWS_enabled)) return;
+            if ((isNWS && NWS_enabled) || !is_enabled) return;
 
             // render inside a hidden container in each fullpost
             const postbody = item?.querySelector(".sel > .fullpost > .postbody");
