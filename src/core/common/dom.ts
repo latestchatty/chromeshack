@@ -253,8 +253,8 @@ export const appendLinksToField = (field: HTMLInputElement, links: string[]) => 
         ? links
               .reduce((pv, v, i) => {
                   // make sure we leave space after the link text is inserted
-                  if (i === 0 && field.value.length > 0) pv.push(`\n\n${v}\n`);
-                  else pv.push(`${v}\n\n`);
+                  if (i === 0 && field.value.length > 0) pv.push(`\n${v}\n`);
+                  else pv.push(`${v}\n`);
                   return pv;
               }, [])
               .join("")
