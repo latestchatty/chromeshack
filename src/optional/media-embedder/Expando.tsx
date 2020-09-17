@@ -2,7 +2,7 @@ import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useState } from "react";
 import { classNames, elemMatches } from "../../core/common";
-import { resolveChildren } from "../../core/useResolvedLinks";
+import { useResolvedLinks } from "../../core/useResolvedLinks";
 import type { ExpandoProps, FCWithMediaProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
@@ -15,6 +15,7 @@ const RenderExpando = (props: ExpandoProps) => {
 
     const [toggled, setToggled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element);
+    const { resolved, hasLoaded } = useResolvedLinks({ response, options, toggled });
 
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
@@ -40,10 +41,9 @@ const RenderExpando = (props: ExpandoProps) => {
 
     useEffect(() => {
         (async () => {
-            const resolved = await resolveChildren({ response, options });
-            if (resolved) return setChildren(resolved);
+            if (toggled && hasLoaded) setChildren(resolved);
         })();
-    }, [href, src, props, response, options]);
+    }, [toggled, hasLoaded, resolved]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>

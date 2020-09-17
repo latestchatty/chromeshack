@@ -1,3 +1,4 @@
+import { ResolvedResponse } from "../../optional/media-embedder";
 import { ParsedResponse } from "../api";
 
 interface FlexVideoOptionsProps {
@@ -20,6 +21,24 @@ export interface MediaProps extends MediaOptions {
     id?: string;
     classes?: string;
     links?: string[];
+    options?: MediaOptions;
+}
+
+export interface URLProps {
+    link?: string;
+    links?: string[];
+    response?: ParsedResponse | ResolvedResponse;
+    responses?: ResolvedResponse[];
+    components?: JSX.Element[];
+    options?: MediaOptions;
+    key?: number | string;
+    toggled?: boolean;
+}
+
+export interface ResolvedMediaProps {
+    id?: string;
+    className?: string;
+    links: string[];
     options?: MediaOptions;
 }
 
