@@ -1,3 +1,5 @@
+import { ParsedResponse } from "../api";
+
 interface FlexVideoOptionsProps {
     loop?: boolean;
     muted?: boolean;
@@ -24,6 +26,8 @@ export interface MediaProps extends MediaOptions {
 export interface ResolvedLinkProps {
     link?: string;
     links?: string[];
+    response?: ParsedResponse;
+    responses?: ParsedResponse[];
     options?: MediaOptions;
 }
 

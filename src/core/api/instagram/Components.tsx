@@ -1,6 +1,6 @@
 import React from "react";
 import { classNames, decodeHTML, fetchBackground } from "../../common";
-import { ResolvedMedia } from "../../useResolvedLinks";
+import { ResolveMedia } from "../../useResolvedLinks";
 import { CommentsIcon, InstagramLogo, LikesIcon } from "./Icons";
 import type { InstagramParsed, InstagramResponse, InstagramShortcodeMedia } from "./instagram";
 
@@ -137,9 +137,9 @@ const Instagram = (props: { response: InstagramParsed }) => {
                             </a>
                         </div>
                     </div>
-                    <ResolvedMedia
+                    <ResolveMedia
                         className="instagram__embed"
-                        mediaLinks={postMedia}
+                        links={postMedia}
                         options={{ controls: true, clickTogglesVisible: false }}
                     />
                     <div className={classNames("instagram__caption", { hidden: postCaption.length === 0 })}>

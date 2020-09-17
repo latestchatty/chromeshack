@@ -1,154 +1,162 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+import type { ResolvedResponse } from "../../optional/media-embedder";
 import { detectMediaLink, ParsedResponse } from "../api";
-import { arrHas, classNames, isIframe, objHas } from "../common";
+import { arrHas } from "../common";
 import { Carousel } from "./Carousel";
+import { Iframe, Image } from "./Components";
 import { FlexVideo } from "./FlexVideo";
-import type { MediaOptions, MediaProps, ResolvedLinkProps } from "./index.d";
+import type { MediaOptions, MediaProps } from "./index.d";
 
-export const Iframe = (props: MediaProps) => {
-    const { src } = props || {};
-    if (!src) return null;
+interface URLProps {
+    link?: string;
+    links?: string[];
+    response?: ParsedResponse | ResolvedResponse;
+    responses?: ResolvedResponse[];
+    components?: JSX.Element[];
+    options?: MediaOptions;
+    key?: number | string;
+}
 
-    const iframeType = isIframe(src);
-    const isTwitch = iframeType && iframeType === "twitch";
-    const isYoutube = iframeType && iframeType === "youtube";
-    const isGeneric = iframeType && !isTwitch && !isYoutube;
-    const classes = classNames({
-        "iframe-container": isGeneric,
-        "twitch-container": isTwitch,
-        "yt-container": isYoutube,
-    });
+interface ResolvedMediaProps {
+    id?: string;
+    className?: string;
+    links: string[];
+    options?: MediaOptions;
+}
 
-    return (
-        <div className="iframe__boundary">
-            <div className={classes}>
-                <iframe
-                    title={src}
-                    src={src}
-                    frameBorder="0"
-                    scrolling="no"
-                    allowFullScreen
-                    allow={isYoutube ? "autoplay; encrypted-media" : ""}
-                />
-            </div>
-        </div>
-    );
-};
-
-export const Image = (props: MediaProps) => {
-    const { classes: _classes, src, options } = props || {};
-    const [classes, setClasses] = useState("");
-    const [isSlide, setIsSlide] = useState(false);
-    const imageRef = useRef<HTMLImageElement>();
-    // click-to-toggle enabled by default
-    const { clickTogglesVisible = true } = options || {};
-
-    useEffect(() => {
-        const img = imageRef.current;
-        const _isSlide = img?.closest(".embla__slide__inner");
-        if (img && _isSlide) {
-            setIsSlide(!!_isSlide);
-            // disable click-to-toggle pointer if we're a child of a slide
-            setClasses(classNames(_classes));
-        } else if (img) {
-            setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
-        }
-    }, [imageRef, isSlide, _classes, clickTogglesVisible]);
-
-    return src && <img className={classes} src={src} alt="" ref={imageRef} />;
-};
-
-const loadComponent = (response: ParsedResponse, options?: MediaOptions) => {
-    const { type } = response || {};
-    let { src } = response || {};
+const loadComponent = (opts: URLProps) => {
+    // takes a ParsedResponse and returns a rendered media component
+    const { response, key } = opts || {};
+    const { type } = (response as ParsedResponse) || {};
+    let { options } = opts || {};
+    let { src } = (response as ParsedResponse) || {};
+    // override clickTogglesVisible for image components
+    options = { ...options, clickTogglesVisible: type === "image" };
     // special case: normalize gifv to mp4 (imgur directmedia match)
     if (type === "video" && src && /imgur/.test(src)) src = src.replace(".gifv", ".mp4");
     // feed 'src' into an embeddable common media component depending on link type
-    if (type === "image") return <Image key={src} src={src} options={options} />;
-    else if (type === "video") return <FlexVideo key={src} src={src} {...options} />;
-    else if (type === "iframe") return <Iframe key={src} src={src} />;
+    if (type === "image") return <Image key={key || src} src={src} options={options} />;
+    else if (type === "video") return <FlexVideo key={key || src} src={src} {...options} />;
+    else if (type === "iframe") return <Iframe key={key || src} src={src} />;
     else return null;
 };
-const loadCarousel = (resolved: ParsedResponse[]) => {
-    if (arrHas(resolved) && resolved.length > 1) {
-        // if our media comes in an array reduce to rendered components
-        const children = resolved.reduce((acc, v) => {
-            const { src: resolvedSrc, type: resolvedType } = v || {};
-            const response = { key: resolvedSrc, src: resolvedSrc, type: resolvedType };
-            const rendered = objHas(response) && loadComponent(response);
-            if (rendered) acc.push(rendered);
-            return acc;
-        }, [] as React.ReactNode[]);
-        // pack them into a Carousel container for a better user experience
-        if (arrHas(children)) return <Carousel slides={children} />;
-    }
-    return null;
+
+const resolveResponse = async (opts: URLProps) => {
+    // takes a ParsedResponse (usually from Expando or resolveLink) and returns a media component
+    const { response, options } = opts || {};
+    const { href, src, component, args, cb } = (response as ParsedResponse) || {};
+    // if a component exists in the response or the callback result then return it
+    const resolved = cb && (await cb(...args));
+    if (React.isValidElement(component) || React.isValidElement(resolved?.component))
+        return component || resolved?.component;
+    // if the resolver callback returns an array of links just return them
+    else if (arrHas(resolved)) return resolved;
+    // otherwise we just return a component from the provided 'src' in the ParsedResponse
+    else
+        return resolved?.src || src
+            ? loadComponent({ response: resolved || response, options, key: src || href })
+            : null;
 };
-export const resolveLink = async (opts: {
-    link?: string;
-    fallbackLink?: string;
-    options?: MediaOptions;
-}): Promise<JSX.Element> => {
-    const { link, fallbackLink, options } = opts || {};
-    const _link = link ? link : fallbackLink;
-    // grab a link resolver object from the url given to us
-    const parsed = await detectMediaLink(_link);
-    // rename our initial result for normal media types to avoid conflicts later
-    const { src: normalSrc, args, cb, type: normalType } = parsed || {};
-    // if our resolver object contains a callback then use it
-    const resolver = args ? await cb(...args) : null;
-    // return a rendered Carousel containing our media
-    const carouselChildren = arrHas(resolver) && loadCarousel(resolver);
-    if (carouselChildren) return carouselChildren;
-    // use the rendered component if it exists in our resolver object
-    if (resolver?.component) return resolver.component;
-    // pack our resolver results into a format our loader understands
-    const _src = (resolver && resolver[0]?.src) || resolver?.src || normalSrc;
-    const _type = (resolver && resolver[0]?.type) || resolver?.type || normalType;
-    const resolved = _src ? { key: _src, src: _src, type: _type } : null;
-    // override clickTogglesVisible to avoid clobbering Carousel page buttons
-    return resolved ? loadComponent(resolved, { ...options, clickTogglesVisible: _type === "image" }) : null;
+const resolveLink = async (opts: URLProps) => {
+    // takes either a url or a ParsedResponse and resolves its async callback
+    const { link, response, options, key } = opts || {};
+    const detected = link && (await detectMediaLink(link));
+    const _response = (response as ParsedResponse) || detected;
+    const resolved = _response?.cb ? await resolveResponse({ response: _response, options }) : _response;
+    const component = React.isValidElement(resolved)
+        ? resolved
+        : resolved?.src
+        ? loadComponent({ response: resolved, options, key })
+        : null;
+    return component || null;
 };
-export const resolveLinks = async (links: string[], options?: MediaOptions) => {
-    // process each link in our list then reduce into a rendered component
-    const result = [];
-    for (const link of links) {
-        const resolving = await resolveLink({ link, options });
-        if (resolving) result.push(resolving);
-    }
-    if (arrHas(result) && result.length > 1) return <Carousel slides={result} />;
-    else return result[0];
+const resolveLinks = async (opts: URLProps) => {
+    // takes urls or ResolvedResponses and resolves them into a list of media components
+    const { links, responses, options } = opts || {};
+    // otherwise try to resolve into media components
+    const resolvedSources: JSX.Element[] = arrHas(links)
+        ? await links.reduce(async (acc: Promise<JSX.Element[]>, l, i) => {
+              // we assume our link is a direct media url
+              const resolved = await resolveLink({ link: l, options });
+              const _acc = await acc;
+              if (resolved) _acc.push(resolved);
+              return _acc;
+          }, Promise.resolve([]))
+        : null;
+    const resolvedResponses: JSX.Element[] = arrHas(responses)
+        ? await responses.reduce(async (acc: Promise<JSX.Element[]>, r, i) => {
+              const resolved = await resolveResponse({ response: r, options, key: i });
+              const _acc = await acc;
+              if (resolved) _acc.push(resolved);
+              return _acc;
+          }, Promise.resolve([]))
+        : null;
+    return resolvedSources || resolvedResponses;
+};
+const resolveAlbum = async (opts: URLProps) => {
+    const { links, responses, components, options } = opts || {};
+    // don't try to resolve an existing list of media components
+    const _components = arrHas(components) && React.isValidElement(components[0]) ? components : null;
+    if (arrHas(_components)) return <Carousel slides={_components} />;
+    // since we've got either a list of links or response objects let's resolve them
+    const slides = arrHas(links)
+        ? await resolveLinks({ links, options })
+        : arrHas(responses)
+        ? await resolveLinks({ responses, options })
+        : null;
+    // return a Carousel if we have enough slides
+    // edge case: return the first component in case of Imgur single-item albums
+    return arrHas(slides) && slides.length > 1 ? <Carousel slides={slides} /> : arrHas(slides) ? slides[0] : null;
 };
 
-const useResolvedLinks = (props: ResolvedLinkProps) => {
-    /// hook that exposes a rendered media component and a loaded state boolean
-    const { link, links, options } = props || {};
+export const resolveChildren = async (opts: URLProps) => {
+    const { links, response, options } = opts || {};
+    const rResolved = response && (await resolveResponse({ response, options }));
+    const lResolved = links && (await resolveLinks({ links, options }));
+    // return a media component(s) from our resolved results
+    const _component = React.isValidElement(rResolved) ? rResolved : React.isValidElement(lResolved) ? lResolved : null;
+    // otherwise attempt to resolve into a media component
+    const _album =
+        arrHas(lResolved) && React.isValidElement(lResolved[0])
+            ? lResolved
+            : arrHas(rResolved) && !React.isValidElement(rResolved)
+            ? rResolved
+            : arrHas(lResolved) && !React.isValidElement(lResolved)
+            ? lResolved
+            : null;
+    if (_album) {
+        const resolved = !React.isValidElement(_album[0])
+            ? await resolveAlbum({ responses: _album })
+            : (await resolveAlbum({ components: _album })) || null;
+        return React.isValidElement(resolved) ? resolved : null;
+    } else if (_component) {
+        return _component;
+    }
+};
+export const useResolvedLinks = (props: URLProps) => {
+    // takes a url(s) or response(s) and exposes media component(s) and a load-state boolean
+    const { links, response, options } = props || {};
+
     const [resolved, setResolved] = useState(null as JSX.Element);
     const [hasLoaded, setHasLoaded] = useState(false);
 
     useEffect(() => {
-        const resolveChildren = async () => {
-            const children = links && (await resolveLinks(links, options));
-            const child = link && (await resolveLink({ fallbackLink: link, options }));
-            if (children || child) {
-                setResolved(children || child);
-                setHasLoaded(true);
+        (async () => {
+            if (!hasLoaded) {
+                const resolved = await resolveChildren({ links, response, options });
+                if (resolved) {
+                    setResolved(resolved);
+                    setHasLoaded(true);
+                }
             }
-        };
-        if (!hasLoaded) resolveChildren();
-    }, [link, links, options, hasLoaded]);
-    // return rendered media embeds as components
+        })();
+    }, [links, response, options, hasLoaded]);
     return { resolved, hasLoaded };
 };
-export const ResolvedMedia = (props: {
-    id?: string;
-    className?: string;
-    mediaLinks: string[];
-    options?: MediaOptions;
-}) => {
-    // exposes a user-friendly component that uses useResolvedLinks to return media
-    const { id, className, mediaLinks, options } = props || {};
-    const { resolved, hasLoaded } = useResolvedLinks({ links: mediaLinks, options });
+export const ResolveMedia = (props: ResolvedMediaProps) => {
+    // use useResolvedLinks to return media components from a list of urls
+    const { id, className, links, options } = props || {};
+    const { resolved, hasLoaded } = useResolvedLinks({ links, options });
     return (
         <div id={id} className={className}>
             {hasLoaded ? resolved : <div />}

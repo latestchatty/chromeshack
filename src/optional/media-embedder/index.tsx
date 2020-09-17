@@ -1,53 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
+import type { ParsedResponse } from "../../core/api";
 import { detectMediaLink } from "../../core/api";
 import { arrEmpty, arrHas, locatePostRefs } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
 
+export interface ResolvedResponse {
+    postid: string;
+    idx: string;
+    response: ParsedResponse;
+}
+
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {
     const { links, item } = props || {};
-    const [children, setChildren] = useState(null);
+    const [responses, setResponses] = useState([] as ResolvedResponse[]);
+    const [children, setChildren] = useState(null as React.ReactNode[]);
     useEffect(() => {
         const mediaLinkReplacer = async () => {
             if (!item) return;
-            /// replace each link with its mounted version
+            // replace each link with its mounted version
             const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
             for (const link of taggedLinks || []) {
                 const _this = link as HTMLAnchorElement;
                 const postid = _this.dataset.postid;
                 const idx = _this.dataset.idx;
                 const matched = item.querySelector(`div#expando_${postid}-${idx}`);
-                // avoid clobbering NWS links (part deux)
-                const isNWS = _this.closest(".fullpost.fpmod_nws");
-                const NWS_enabled = await enabledContains("nws_incognito");
-                if ((matched && isNWS && !NWS_enabled) || (matched && !isNWS)) link.replaceWith(matched);
+                if (matched) link.replaceWith(matched);
             }
         };
         if (children) mediaLinkReplacer();
     }, [item, children]);
     useEffect(() => {
-        const resolveChildren = async () => {
-            // tag all matching links and embed an Expando toggle for each one
-            const detected = arrHas(links)
+        if (!responses) return;
+
+        const _children = [];
+        for (const response of responses) {
+            const { postid, idx, response: _response } = response || {};
+            _children.push(<Expando key={idx} postid={postid} idx={idx} response={_response} />);
+        }
+        // return our rendered Expando links
+        if (arrHas(_children)) setChildren(_children);
+    }, [responses]);
+    useEffect(() => {
+        if (!links) return;
+        const detectLinks = async () => {
+            const isNWS = links[0]?.closest(".fullpost.fpmod_nws");
+            const NWS_enabled = await enabledContains("nws_incognito");
+            // tag all matching links and save their resolved responses
+            const detectedLinks = arrHas(links)
                 ? await links.reduce(async (acc, l, i) => {
-                      const detected = await detectMediaLink(l.href);
+                      // avoid clobbering NWS links
+                      if (isNWS && NWS_enabled) return acc;
+                      const _detected = await detectMediaLink(l.href);
                       const { postid } = locatePostRefs(l);
                       const _acc = await acc;
-                      if (detected) {
+                      if (_detected) {
                           // tag the detected link in the DOM so we can replace it later
                           l.setAttribute("id", `tagged_${postid}-${i}`);
                           l.setAttribute("data-postid", postid);
                           l.setAttribute("data-idx", i.toString());
-                          _acc.push(<Expando key={i} response={detected} postid={postid} idx={i.toString()} />);
+                          _acc.push({ postid, idx: i.toString(), response: _detected });
                       }
                       return _acc;
-                  }, Promise.resolve([] as React.ReactChild[]))
+                  }, Promise.resolve([] as ResolvedResponse[]))
                 : null;
-            if (detected) setChildren(detected);
+            if (detectedLinks) setResponses(detectedLinks);
         };
-        resolveChildren();
+        detectLinks();
     }, [links]);
     return <>{children}</>;
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { arrHas, classNames, objContainsProperty, objEmpty } from "../../common";
-import { ResolvedMedia } from "../../useResolvedLinks";
+import { ResolveMedia } from "../../useResolvedLinks";
 import { TwitterBadgeSVG, TwitterVerifiedSVG } from "./Icons";
 import type { TweetParsed } from "./twitter";
 
@@ -68,9 +68,9 @@ const Twitter = (props: { response: TweetParsed }) => {
                         <div className="twitter__text__content">
                             <CompiledTweetText text={response.tweetText} />
                         </div>
-                        <ResolvedMedia
+                        <ResolveMedia
                             className="twitter__media__content"
-                            mediaLinks={response?.tweetMediaItems}
+                            links={response.tweetMediaItems}
                             options={mediaOptions}
                         />
                         <div className={classNames("twitter__quote__content", { hidden: !response.tweetQuoted })}>
@@ -88,19 +88,21 @@ const Twitter = (props: { response: TweetParsed }) => {
                                             href={response.tweetQuoted ? response.tweetQuoted.quotedUrl : "#"}
                                             id="twitter__quote__displayname"
                                         >
-                                            {response.tweetQuoted ? response.tweetQuoted.quotedDisplayName : ""}
+                                            {response.tweetQuoted.quotedDisplayName || ""}
                                         </a>
-                                        <TwitterVerifiedSVG active={!!response?.tweetQuoted.quotedUserVerified} />
+                                        <TwitterVerifiedSVG active={!!response.tweetQuoted.quotedUserVerified} />
                                         <span className="twitter__quote__realname">
-                                            {response.tweetQuoted ? `@${response.tweetQuoted.quotedRealName}` : ""}
+                                            {response.tweetQuoted.quotedRealName
+                                                ? `@${response.tweetQuoted.quotedRealName}`
+                                                : ""}
                                         </span>
                                     </div>
                                     <div className="twitter__quote__text__content">
-                                        <CompiledTweetText text={response.tweetQuoted?.quotedText} />
+                                        <CompiledTweetText text={response.tweetQuoted.quotedText} />
                                     </div>
-                                    <ResolvedMedia
+                                    <ResolveMedia
                                         className="twitter__quote__media__content"
-                                        mediaLinks={response.tweetQuoted?.quotedMediaItems}
+                                        links={response.tweetQuoted.quotedMediaItems}
                                         options={mediaOptions}
                                     />
                                 </>

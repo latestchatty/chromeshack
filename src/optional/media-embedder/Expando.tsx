@@ -1,8 +1,8 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useEffect, useState } from "react";
-import { classNames, elemMatches, getLinkType } from "../../core/common";
-import { resolveLink } from "../../core/useResolvedLinks";
+import { classNames, elemMatches } from "../../core/common";
+import { resolveChildren } from "../../core/useResolvedLinks";
 import type { ExpandoProps, FCWithMediaProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
@@ -11,11 +11,10 @@ const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faE
 
 const RenderExpando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
-    const { href, src, type: _type } = response || {};
+    const { href, src, type } = response || {};
 
     const [toggled, setToggled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element);
-    const [type, setType] = useState(_type as string);
 
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
@@ -41,23 +40,15 @@ const RenderExpando = (props: ExpandoProps) => {
 
     useEffect(() => {
         (async () => {
-            // try to use our existing parsed type
-            let __type = _type ? _type : getLinkType(src || href);
-            const resolved = (await resolveLink({
-                link: src || href,
-                options: { ...options, clickTogglesVisible: __type === "image" },
-            })) as FCWithMediaProps;
-            // update our type from our resolved component if provided
-            __type = __type ? __type : getLinkType(resolved?.props?.src);
-            if (__type) setType(__type);
-            if (resolved) setChildren(resolved);
+            const resolved = await resolveChildren({ response, options });
+            if (resolved) return setChildren(resolved);
         })();
-    }, [href, src, props, response, options, _type]);
+    }, [href, src, props, response, options]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
             <a
-                href={href || src}
+                href={src || href}
                 title={toggled ? "Hide embedded media" : "Show embedded media"}
                 onClick={handleToggleClick}
             >

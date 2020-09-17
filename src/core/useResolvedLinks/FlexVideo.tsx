@@ -85,28 +85,30 @@ export const FlexVideo = (props: MediaProps) => {
     }, [videoRef, isVisible, wasPaused]);
 
     return (
-        <div className="media__boundary">
-            <MuteOverlay
-                predicate={controls}
-                visibility={muteToggle}
-                audioEnabled={hasAudio}
-                onClick={handleMuteToggle}
-            />
-            <video
-                key={src}
-                ref={videoRef}
-                className={_classes}
-                src={src}
-                loop={loop}
-                muted={muted}
-                controls={controls}
-                autoPlay={autoPlay}
-                onClick={handlePlayToggle}
-                // onPlaying is required to detect audio in Chrome
-                onPlaying={handleVideoState}
-                // onLoadedData is required to detect audio in Firefox
-                onLoadedData={handleVideoState}
-            />
-        </div>
+        src && (
+            <div className="media__boundary">
+                <MuteOverlay
+                    predicate={controls}
+                    visibility={muteToggle}
+                    audioEnabled={hasAudio}
+                    onClick={handleMuteToggle}
+                />
+                <video
+                    key={src}
+                    ref={videoRef}
+                    className={_classes}
+                    src={src}
+                    loop={loop}
+                    muted={muted}
+                    controls={controls}
+                    autoPlay={autoPlay}
+                    onClick={handlePlayToggle}
+                    // onPlaying is required to detect audio in Chrome
+                    onPlaying={handleVideoState}
+                    // onLoadedData is required to detect audio in Firefox
+                    onLoadedData={handleVideoState}
+                />
+            </div>
+        )
     );
 };
