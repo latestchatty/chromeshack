@@ -1,9 +1,9 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { useResolvedLinks } from "../../core/useResolvedLinks";
-import type { ExpandoProps, FCWithMediaProps } from "./index.d";
+import type { ExpandoProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
@@ -17,6 +17,7 @@ const RenderExpando = (props: ExpandoProps) => {
     const [children, setChildren] = useState(null as JSX.Element);
     const [type, setType] = useState(_type as string);
     const { resolved, hasLoaded } = useResolvedLinks({ response, options, toggled });
+    const newTabHref = useRef(href || src);
 
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
@@ -29,16 +30,20 @@ const RenderExpando = (props: ExpandoProps) => {
             const _parent = _this.offsetParent as HTMLElement;
             const _mediaParent = elemMatches(_parent, "div.media");
             const _fullpostParent = elemMatches(_parent, "div.fullpost");
-            // only clickTogglesVisible on media when an image or link
+            // only clickTogglesVisible on media when an image or expando link
             if ((_mediaParent && type === "image") || _fullpostParent) setToggled(!toggled);
         },
         [toggled, type],
     );
-    const handleNewClick = useCallback(() => {
-        const _href = (children as FCWithMediaProps)?.props?.src || src;
-        const newWindow = window.open(_href, "_blank", "noopener,noreferrer");
-        if (newWindow) newWindow.opener = null;
-    }, [src, children]);
+    const handleNewClick = useCallback(
+        (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+            e.preventDefault();
+            // use the href before the resolved src link
+            const newWindow = window.open(newTabHref?.current, "_blank", "noopener,noreferrer");
+            if (newWindow) newWindow.opener = null;
+        },
+        [newTabHref],
+    );
 
     useEffect(() => {
         (async () => {
@@ -60,10 +65,9 @@ const RenderExpando = (props: ExpandoProps) => {
                 <span>{href || src}</span>
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
-            <a className="expandalt" title="Open in new tab" onClick={handleNewClick}>
+            <a className="expandalt" title="Open in new tab" href={newTabHref?.current || ""} onClick={handleNewClick}>
                 <ExternalLink />
             </a>
-            {/* click-to-toggle visibility only for 'image' type embeds */}
             <div className={mediaClasses} onClick={handleToggleClick}>
                 {toggled ? children : null}
             </div>
