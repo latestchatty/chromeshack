@@ -44,18 +44,25 @@
     left: -1px;
 }
 #shacktags_legend_toggle {
-    width: 100%;
+    width: 100% !important;
+    max-width: 194px !important;
 }
 #shacktags_legend > a {
-    align-self: flex-end;
     display: flex !important;
     justify-content: center !important;
-    margin: 0 0 0.33em 0 !important;
+    margin: 0 0 0.25em 0 !important;
     padding: 0.25em !important;
 }
 #shacktags_legend_table {
-    margin: 0 0 0.15rem 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
     padding: 0 !important;
+}
+#shacktags_legend_table td > span,
+#shacktags_legend_table td > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .post_sub_container #react-container {
@@ -64,16 +71,22 @@
     min-width: 250px;
     width: 100%;
 }
+#uploader-toggle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 span#toggleLabel {
     display: flex;
     justify-content: center;
-    align-content: center;
-    padding: 3px;
+    align-items: center;
+    height: 22px;
     background-color: black;
     color: var(--postbox-afgh);
-    width: 100%;
+    width: calc(100% + 3px);
     cursor: pointer;
-    margin: 0 0 0.33em 0;
+    margin: 0 0 0.25em 0;
 }
 span#toggleLabel:hover {
     color: var(--chatty-la);
