@@ -79,11 +79,6 @@
     left: 0;
 }
 
-/* DEBUGGING PURPOSES ONLY! */
-div#page.theme2#page.takeover {
-    max-width: 100% !important;
-}
-
 #chattynews__aligner {
     display: grid;
     grid-template-areas:
