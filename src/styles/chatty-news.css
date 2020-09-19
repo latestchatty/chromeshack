@@ -12,6 +12,7 @@
 @media only screen and (max-width: 1190px) {
     .thread__pane__enabled.chatty__news__enabled #chattynews__aligner {
         display: grid;
+        justify-content: center;
         grid-template-areas:
             "news"
             "links"
@@ -36,6 +37,7 @@
 @media only screen and (max-width: 750px) {
     .chatty__news__enabled #chattynews__aligner {
         display: grid;
+        justify-content: center;
         grid-template-areas:
             "news"
             "links"
@@ -78,9 +80,9 @@
 }
 
 /* DEBUGGING PURPOSES ONLY! */
-/* div#page.theme2#page.takeover {
+div#page.theme2#page.takeover {
     max-width: 100% !important;
-} */
+}
 
 #chattynews__aligner {
     display: grid;
