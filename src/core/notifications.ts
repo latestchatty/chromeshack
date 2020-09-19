@@ -87,7 +87,8 @@ const notificationClicked = (notificationId: string) => {
 const matchNotification = async (nEvent: NotifyEvent) => {
     const loggedInUsername = (await getUsername())?.toLowerCase();
     const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
-    const postEventHasMe = nEvent?.eventData?.post?.body?.includes(loggedInUsername);
+    const postEventBody = nEvent?.eventData?.post?.body?.toLowerCase();
+    const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
     if (postEventHasMe) return "Post contains your name.";
     else if (parentAuthorIsMe) return "Replied to you.";
