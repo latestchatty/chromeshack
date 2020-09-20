@@ -75,6 +75,11 @@ span.newcommenthighlighter {
     border-left-style: solid;
     padding-left: 2px !important;
 }
+div.oneline.olmod_informative span.newcommenthighlighter,
+div.oneline.olmod_nws span.newcommenthighlighter {
+    /* leave room for left-justified inline icons */
+    padding-left: 22px !important;
+}
 
 /* shack userpopup */
 body .in,
