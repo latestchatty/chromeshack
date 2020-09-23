@@ -11,7 +11,6 @@ import {
     processTagDataLoadedEvent,
 } from "./events";
 import { setUsername } from "./notifications";
-import { setSetting } from "./settings";
 
 export interface DOMMutationDict {
     [key: string]: HTMLElement;
@@ -82,17 +81,12 @@ export const ChromeShack = {
     },
 
     install() {
-        const username = document.getElementById("user_posts");
-        setSetting("username", username ? username.innerText : ""); // fire and forget
+        // set our current logged-in username once upon refreshing the Chatty
+        const loggedInUsername = document.getElementById("user_posts")?.innerText || "";
+        if (loggedInUsername) setUsername(loggedInUsername);
 
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList: MutationRecord[]) => {
-            (async () => {
-                // set our current logged-in username once upon refreshing the Chatty
-                const loggedInUsername = document.getElementById("user_posts")?.innerText || "";
-                if (loggedInUsername) await setUsername(loggedInUsername);
-            })();
-
             try {
                 //if (ChromeShack.debugEvents) console.log("mutation:", mutationsList);
                 ChromeShack.detectTagMutation(mutationsList);
