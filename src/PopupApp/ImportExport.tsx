@@ -38,12 +38,6 @@ export const ImportExport = () => {
                         parsed.highlight_groups,
                         DefaultSettings.highlight_groups,
                     );
-                    console.log(
-                        "merged groups:",
-                        mergedGroups,
-                        parsed.highlight_groups,
-                        DefaultSettings.highlight_groups,
-                    );
                     const combinedSettings = {
                         ...DefaultSettings,
                         ...{

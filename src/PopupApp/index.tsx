@@ -40,7 +40,6 @@ export const PopupApp = () => {
         const handler = setTimeout(() => {
             (async () => {
                 try {
-                    console.log("updating state:", JSON.stringify(state).length, state);
                     await setSettingsState(state);
                 } catch (e) {
                     console.error(e);
