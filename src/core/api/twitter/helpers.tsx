@@ -20,9 +20,8 @@ export const collectMedia = (tweetMediaObj: TwitterResponseMediaItem[]) => {
                 links.push(vidItem.url);
                 break; // bail on the first match (highest res)
             }
-        } else if (item.type === "photo" && item.media_url_https) {
-            links.push(item.media_url_https);
-        }
+        } else if (item.type === "photo" && item.media_url_https) links.push(item.media_url_https);
+
     return links;
 };
 
@@ -62,9 +61,8 @@ export const renderTweetObj = async (response: TwitterResponse) => {
                 ...result,
                 tweetParentId: response.in_reply_to_status_id_str,
             };
-    } else {
-        result = { unavailable: true };
-    }
+    } else result = { unavailable: true };
+
     return result;
 };
 
@@ -103,9 +101,7 @@ export const fetchTweetParents = async (tweetObj: TweetParsed) => {
         const parentTweets = await fetchParents(pid, [] as TweetParsed[]);
         // push the rendered tweets into the tweetParents property of our OT
         return arrHas(parentTweets) ? ({ ...tweetObj, tweetParents: parentTweets } as TweetParsed) : null;
-    } else {
-        return null;
-    }
+    } else return null;
 };
 
 export const fetchTweets = async (tweetId: string) => {

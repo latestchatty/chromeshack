@@ -20,7 +20,7 @@ module.exports = {
     entry: {
         content: "./src/content.ts",
         background: "./src/background.ts",
-        popup: "./src/popup.ts",
+        popup: "./src/popup.tsx",
     },
 
     output: {
@@ -67,7 +67,7 @@ module.exports = {
             onEnd: [
                 {
                     copy: [
-                        { source: path.resolve(workspace, "popup.html"), destination: dist },
+                        { source: path.resolve(assets, "popup.html"), destination: dist },
                         { source: path.resolve(assets, "release_notes.html"), destination: dist },
                         { source: path.resolve(assets, "manifest.json"), destination: dist },
                         { source: path.resolve(rootDir, "*.md"), destination: dist },

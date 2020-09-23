@@ -25,9 +25,7 @@ const fetchChattyPost = async (postid: string) => {
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
         // return the post as a sanitized string of HTML (without the container)
         return container.firstElementChild?.innerHTML;
-    } else {
-        return null as string;
-    }
+    } else return null as string;
 };
 
 const Chattypost = (props: { html: string }) => {

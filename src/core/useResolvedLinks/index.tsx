@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useMemo, useState } from "react";
 import { detectMediaLink, ParsedResponse } from "../api";
 import { arrHas } from "../common";
 import { Carousel } from "./Carousel";
@@ -29,14 +29,13 @@ const resolveComponent = async (opts: URLProps): Promise<JSX.Element> => {
     const { href, src, component, args, cb } = (response as ParsedResponse) || {};
     // if a component exists in the response or the callback result then return it
     const resolved = cb && (await cb(...args));
-    if (React.isValidElement(component) || React.isValidElement(resolved?.component))
-        return component || resolved?.component;
+    if (isValidElement(component) || isValidElement(resolved?.component)) return component || resolved?.component;
     // if we have a list of responses (Imgur) then load them into media components
     const aResolved =
         arrHas(resolved) && resolved[0].src
             ? (resolved as ParsedResponse[]).reduce((acc: JSX.Element[], r, i) => {
                   const _component = r?.src && loadComponent({ response: r, options, key: i.toString() });
-                  if (React.isValidElement(_component)) acc.push(_component);
+                  if (isValidElement(_component)) acc.push(_component);
                   return acc;
               }, [])
             : null;
@@ -54,11 +53,10 @@ const resolveLink = async (opts: URLProps) => {
     const detected = typeof link === "string" && (await detectMediaLink(link));
     const resolved = detected && (await resolveComponent({ response: detected, options }));
     // if we're provided a component return it
-    if (React.isValidElement(resolved) || React.isValidElement(detected?.component))
-        return detected?.component || resolved;
+    if (isValidElement(resolved) || isValidElement(detected?.component)) return detected?.component || resolved;
     // otherwise load a media component from our response
     const pResolved = resolved as ParsedResponse;
-    const rComponent = pResolved?.component && React.isValidElement(pResolved.component) ? pResolved.component : null;
+    const rComponent = pResolved?.component && isValidElement(pResolved.component) ? pResolved.component : null;
     const lComponent = pResolved?.src ? loadComponent({ response: pResolved, options }) : null;
     return rComponent || lComponent;
 };
@@ -70,7 +68,7 @@ const resolveAlbum = async (opts: URLProps) => {
         const resolved = [] as JSX.Element[];
         for (const link of links || []) {
             const _resolved = await resolveLink({ link, options });
-            if (React.isValidElement(_resolved)) resolved.push(_resolved);
+            if (isValidElement(_resolved)) resolved.push(_resolved);
         }
         // wrap media in a Carousel if necessary
         if (arrHas(resolved) && resolved.length > 1) return <Carousel slides={resolved} />;

@@ -7,12 +7,12 @@ import type { TweetParsed } from "./twitter";
 const CompiledTweetText = ({ text }: { text: string }) => {
     if (!text) return <span />;
     // try to parse our tags, links, and text content into a set of rendered links
-    const tagsReplaced = text.split(/([#@][a-zA-Z\u00C0-\u017F0-9\.-_]+)|(https:\/\/t.co\/\w+)/gm);
+    const tagsReplaced = text.split(/([#@][\da-zA-Z\u00C0-\u017F\.-_]+)|(https:\/\/t.co\/\w+)/gm);
     const output = [];
     for (const [i, m] of tagsReplaced.entries() || []) {
-        const isHash = m?.match(/^#/);
-        const isTag = m?.match(/^@/);
-        const isLink = m?.match(/^https/);
+        const isHash = m?.startsWith("#");
+        const isTag = m?.startsWith("@");
+        const isLink = m?.startsWith("https");
         if (isHash) {
             const hash = m?.replace("#", "");
             output.push(
@@ -27,15 +27,13 @@ const CompiledTweetText = ({ text }: { text: string }) => {
                     @{tag}
                 </a>,
             );
-        } else if (isLink) {
+        } else if (isLink)
             output.push(
                 <a key={i} className="twitter-embed-link" href={m}>
                     {m}
                 </a>,
             );
-        } else if (m) {
-            output.push(m);
-        }
+        else if (m) output.push(m);
     }
     return <span>{output}</span>;
 };

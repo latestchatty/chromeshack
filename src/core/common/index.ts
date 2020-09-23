@@ -51,6 +51,7 @@ import {
     postBackground,
     safeJSON,
     waitToFetchSafe,
+    waitToResolve,
     xhrRequestLegacy,
 } from "./fetch";
 
@@ -88,6 +89,7 @@ export {
     waitToFetchSafe,
     safeJSON,
     parseFetchResponse,
+    waitToResolve,
 };
 export { ParseType, FetchArgs, ShackRSSItem };
 export {

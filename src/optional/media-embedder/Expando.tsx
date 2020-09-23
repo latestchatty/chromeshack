@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { useResolvedLinks } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
@@ -74,4 +74,4 @@ const RenderExpando = (props: ExpandoProps) => {
     );
 };
 
-export const Expando = (props: ExpandoProps) => React.useMemo(() => <RenderExpando {...props} />, [props]);
+export const Expando = (props: ExpandoProps) => useMemo(() => <RenderExpando {...props} />, [props]);

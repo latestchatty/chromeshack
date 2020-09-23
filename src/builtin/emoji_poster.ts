@@ -67,10 +67,9 @@ export const EmojiPoster = {
             $("#postform").submit();
             $("body").trigger("chatty-new-post-reply", [$submitBtn.closest("div.root > ul > li").first().attr("id")]);
             return false;
-        } else {
-            // the server doesn't know that an astral is a single character
-            return alert("Please post something at least 5 characters long.");
         }
+        // the server doesn't know that an astral is a single character
+        else return alert("Please post something at least 5 characters long.");
     },
 
     handleEncoding(text: string) {

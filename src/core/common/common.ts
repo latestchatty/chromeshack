@@ -13,9 +13,7 @@ export const objContains = (needle: any, haystack: any) => {
         if (arrHas(value) || typeof value === "object") {
             const result = objContains(needle, value) as string;
             if (result) return result;
-        } else if (value === needle) {
-            return value;
-        }
+        } else if (value === needle) return value;
     }
     return null;
 };
@@ -47,9 +45,7 @@ export const classNames = (...args: any[]) => {
         if (typeof arg === "object" && arg !== null) {
             const keys = Object.keys(arg);
             for (const k of keys) if (arg[k]) result.push(k);
-        } else if (typeof arg === "string" && arg !== null && arg) {
-            result.push(arg);
-        }
+        } else if (typeof arg === "string" && arg !== null && arg) result.push(arg);
 
     return !arrEmpty(result) ? result.join(" ") : "";
 };

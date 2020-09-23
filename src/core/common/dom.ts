@@ -30,9 +30,7 @@ export const insertStyle = (css: string, containerName: string) => {
         style.setAttribute("id", containerName);
         style.appendChild(document.createTextNode(css));
         document.getElementsByTagName("head")[0].appendChild(style);
-    } else if (style.id) {
-        style.innerHTML = css;
-    }
+    } else if (style.id) style.innerHTML = css;
 };
 
 export const getCookieValue = (name: string, defaultValue: string) => {

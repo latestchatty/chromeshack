@@ -134,12 +134,12 @@ export const UserPopup = {
             let your = "Your";
             let vanitySearch = "Vanity Search";
             let parentAuthor = "Parent Author Search";
-            if (friendlyName == "You") {
+            if (friendlyName == "You")
                 // Add the account link to the dropdown menu
                 ulUser.appendChild(
                     UserPopup.createListItem("Shack Account", "/settings", "userDropdown-lol userDropdown-separator"),
                 );
-            } else {
+            else {
                 your = friendlyName + "'s";
                 vanitySearch = 'Search for "' + friendlyName + '"';
                 parentAuthor = friendlyName + ": Parent Author Search";
@@ -228,9 +228,8 @@ export const UserPopup = {
                     UserPopup.toggleDropdowns(this_elem);
                     if (!this_elem.querySelector("ul.userDropdown"))
                         UserPopup.displayUserMenu(this_elem, UserPopup.getShackUsername(), "You");
-                } else if (!this_elem.closest("ul.userDropdown") || !this_elem.matches("a#userDropdownTrigger")) {
+                } else if (!this_elem.closest("ul.userDropdown") || !this_elem.matches("a#userDropdownTrigger"))
                     UserPopup.toggleDropdowns();
-                }
             } catch (e) {
                 console.error(e);
             }

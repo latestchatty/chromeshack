@@ -1,5 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-import { arrHas, objContains, objEmpty, superTrim } from "./common";
+import { arrHas, objContains, objEmpty, objHas, superTrim } from "./common";
 
 export interface HighlightGroup {
     name?: string;
@@ -14,6 +14,7 @@ export interface Settings {
     enabled_suboptions?: string[];
     collapsed_threads?: string[];
     user_filters?: string[];
+    notifications?: string[];
     highlight_groups?: HighlightGroup[];
     nEventId?: number;
     nUsername?: string;
@@ -38,6 +39,8 @@ export const DefaultSettings: Settings = {
     collapsed_threads: [],
 
     user_filters: [],
+
+    notifications: [],
 
     highlight_groups: [
         {
@@ -382,6 +385,18 @@ export const highlightGroupContains = async (groupName: string, username: string
     return null;
 };
 
+export const highlightGroupsEqual = (groupA: HighlightGroup, groupB: HighlightGroup) => {
+    // deep equality check of two HighlightGroups by ordinality
+    if (!objHas(groupA) || !objHas(groupB)) return false;
+    const { built_in: built_inA, enabled: enabledA, name: nameA, css: cssA, users: usersA } = groupA;
+    const { built_in: built_inB, enabled: enabledB, name: nameB, css: cssB, users: usersB } = groupB;
+    if (built_inA !== built_inB || enabledA !== enabledB) return false;
+    if (nameA.toUpperCase() !== nameB.toUpperCase() || cssA.toUpperCase() !== cssB.toUpperCase()) return false;
+    if (usersA?.length !== usersB?.length || (!usersA && usersB) || (!usersB && usersA)) return false;
+    for (const userA of usersA || []) if (!usersB.includes(userA)) return false;
+    return true;
+};
+
 export const filtersContains = async (username: string): Promise<string> => {
     const filters = (await getSetting("user_filters")) as string[];
     return filters.find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) || null;
@@ -419,25 +434,23 @@ export const mergeUserFilters = async (newUsers: string[]) => {
         : [];
 };
 
-export const mergeHighlightGroups = async (newGroups: HighlightGroup[]) => {
-    const oldGroups = (await getSetting("highlight_groups")) as HighlightGroup[];
+export const mergeHighlightGroups = async (newGroups: HighlightGroup[], oldGroups: HighlightGroup[]) => {
     const builtinGroups = arrHas(oldGroups) ? oldGroups.filter((g) => g.built_in) : [];
-    // try to intelligently merge default, old, and parsed groups
+    // try to intelligently merge default, old, and new groups
     return arrHas(newGroups)
-        ? newGroups.reduce((acc, v) => {
+        ? newGroups.reduce((acc, g) => {
               // compare ordinal group names (users can exist in multiple groups)
-              const foundIdx = acc.findIndex((y) => y.name?.toUpperCase() === v.name?.toUpperCase());
-              // update existing member with the newest duplicate group found
-              if (foundIdx > -1) {
-                  acc[foundIdx] = v;
-              } else {
+              const foundIdx = acc.findIndex((y) => y?.name?.toUpperCase() === g?.name?.toUpperCase());
+              // update existing builtin with the fresh group (preserving defaults)
+              if (foundIdx > -1) acc[foundIdx] = { ...acc[foundIdx], enabled: g.enabled, css: g.css };
+              else {
                   // only allow unique users in a given group (compare ordinal name)
-                  const uniqueUsers = v.users?.filter(
-                      (x, i, s) => s.findIndex((y) => y.toUpperCase() === x.toUpperCase()) === i,
+                  const uniqueUsers = g.users?.filter(
+                      (x, i, s) => s.findIndex((u) => u.toUpperCase() === x.toUpperCase()) === i,
                   );
-                  if (uniqueUsers) v.users = uniqueUsers;
+                  if (uniqueUsers) g.users = uniqueUsers;
                   // a group name is required to accumulate
-                  if (v.name) acc.push(v);
+                  if (g.name) acc.push(g);
               }
               return acc;
           }, builtinGroups)
@@ -458,11 +471,10 @@ export const mergeSettings = async (newSettings: { [key: string]: any }) => {
                 if (foundIdx > -1 && v.new) {
                     settings[key][foundIdx] = v.new;
                     settings[key] = (settings[key] as string[]).filter((x, i, s) => s.indexOf(x) === i);
-                } else if (foundIdx > -1 && v.new === null) {
+                } else if (foundIdx > -1 && v.new === null)
                     settings[key] = (settings[key] as string[])
                         .splice(foundIdx)
                         .filter((x, i, s) => s.indexOf(x) === i);
-                }
             }
         else if (val === null && key && settings[key]) delete settings[key];
 
@@ -505,9 +517,8 @@ export const migrateSettings = async () => {
     if (last_version !== current_version) {
         await setEnabledSuboption("show_rls_notes");
         await updateSettingsVersion();
-    } else {
-        await updateSettingsVersion();
-    }
+    } else await updateSettingsVersion();
+
     // only show release notes automatically once after the version is updated
     const show_notes = await getEnabledSuboption("show_rls_notes");
     const imported = await getEnabledSuboption("imported");

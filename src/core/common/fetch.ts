@@ -115,24 +115,23 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
 
     const text = await textPromise;
     try {
-        if (instagram) {
+        if (instagram)
             // sanitize Instagram graphQL cache to JSON
             return parseInstagram(text);
-        } else if (chattyPics) {
+        else if (chattyPics)
             // sanitize ChattyPics response to array of links
             return parseChattypics(text);
-        } else if (chattyRSS && text) {
+        else if (chattyRSS && text)
             // sanitize and return as Shacknews RSS article list
             return parseShackRSS(text);
-        } else if (html && text) {
+        else if (html && text)
             // explicitly sanitize (don't return fragment)
             return DOMPurify.sanitize(text) as string;
-        } else if (isHTML(text) && htmlPurifyConfig) {
+        else if (isHTML(text) && htmlPurifyConfig)
             // sanitize and return as DOM fragment (with optional DOMPurify config)
             return sanitizeToFragment(text, htmlPurifyConfig) as DocumentFragment;
-        } else if (isHTML(text)) {
-            return sanitizeToFragment(text) as DocumentFragment;
-        } else if (isJSON(text) && jsonPurifyConfig) {
+        else if (isHTML(text)) return sanitizeToFragment(text) as DocumentFragment;
+        else if (isJSON(text) && jsonPurifyConfig) {
             const parsed = safeJSON(text, jsonPurifyConfig);
             if (parsed) return parsed;
         } else if (isJSON(text)) {
@@ -141,9 +140,7 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
             if (parsed) return parsed;
         }
         // fallthrough: Gfycat (assume OK)
-        else if (text.length === 0) {
-            return true;
-        }
+        else if (text.length === 0) return true;
     } catch (e) {
         if (e) console.error("Parse failed:", e);
         console.error("Parse failed!");
@@ -231,7 +228,7 @@ export const postBackground = ({ url, fetchOpts, parseType, data }: PostArgs) =>
         data,
     });
 
-const waitToResolve = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const waitToResolve = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const waitToFetchSafe = async (timeout: number, fetchArgs: FetchArgs) => {
     await waitToResolve(timeout);
     return await fetchSafe(fetchArgs);

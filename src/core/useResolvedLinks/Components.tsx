@@ -48,9 +48,7 @@ export const Image = (props: MediaProps) => {
             setIsSlide(!!_isSlide);
             // disable click-to-toggle pointer if we're a child of a slide
             setClasses(classNames(_classes));
-        } else if (img) {
-            setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
-        }
+        } else if (img) setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
     }, [imageRef, isSlide, _classes, clickTogglesVisible]);
 
     return src && <img className={classes} src={src} alt="" ref={imageRef} />;

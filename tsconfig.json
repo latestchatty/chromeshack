@@ -4,7 +4,7 @@
         "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
         "module": "commonjs",
         "esModuleInterop": true,
-        "importsNotUsedAsValues": "preserve",
+        //"importsNotUsedAsValues": "preserve",
         "allowSyntheticDefaultImports": true,
         "alwaysStrict": true,
         "noImplicitAny": true,

@@ -35,10 +35,9 @@ export const CustomUserFilters = {
                 // remove all subreplies along with the matched post
                 const matchedNode = ol?.parentNode;
                 while (matchedNode?.firstChild) matchedNode?.removeChild(matchedNode?.firstChild);
-            } else if (fp && root && CustomUserFilters.rootPostCount > 2) {
+            } else if (fp && root && CustomUserFilters.rootPostCount > 2)
                 // only remove root if we're in thread mode
                 root?.parentNode?.removeChild(root);
-            }
         }
     },
 

@@ -99,10 +99,9 @@ export const CommentTags = {
             whiteSpaceBefore = /^\s\s*/.test(input);
             whiteSpaceBefore = /\s\s*$/.test(input);
             input = input.replace(/^\s\s*/, "").replace(/\s\s*$/, "");
-        } else {
-            // break up curly braces that confuse the shack
-            input = input.replace(/^{/, "\n{").replace(/}$/, "}\n");
         }
+        // break up curly braces that confuse the shack
+        else input = input.replace(/^{/, "\n{").replace(/}$/, "}\n");
 
         const mutatedComment =
             textarea.value.substring(0, start) +

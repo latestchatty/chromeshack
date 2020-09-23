@@ -1,10 +1,6 @@
 import { Dispatch } from "react";
 import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
-import type {
-    UploaderAction,
-    UploadFailurePayload,
-    UploadSuccessPayload,
-} from "../../builtin/image-uploader/uploaderStore";
+import type { UploaderAction, UploadFailurePayload, UploadSuccessPayload } from "../../builtin/image-uploader/index.d";
 import {
     fetchSafe,
     fetchSafeLegacy,
@@ -161,9 +157,7 @@ export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<Up
                         { code: 500, msg: `Unable to resolve the uploaded Gfycat: ${key}` },
                         dispatch,
                     );
-            } else {
-                return handleGfycatUploadFailure(urlUpload, dispatch);
-            }
+            } else return handleGfycatUploadFailure(urlUpload, dispatch);
         } else if (isFileArr(data as File[])) {
             await doGfycatUpload(data, key);
             // our status resolver handles the success/failure dispatch
@@ -171,9 +165,7 @@ export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<Up
             if (typeof encodedGfy === "string") {
                 const media = await doResolveGfycat(encodedGfy);
                 if (media?.src) handleGfycatUploadSuccess([media.src], dispatch);
-            } else {
-                handleGfycatUploadFailure(encodedGfy, dispatch);
-            }
+            } else handleGfycatUploadFailure(encodedGfy, dispatch);
         }
     } catch (e) {
         if (e) console.error(e);

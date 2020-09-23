@@ -1,5 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-import { fetchSafe } from "./common";
+import { arrHas, fetchSafe } from "./common";
 import { processNotifyEvent } from "./events";
 import { ChromeShack } from "./observers";
 import { getEnabled, getSetting, setSetting } from "./settings";
@@ -86,12 +86,18 @@ const notificationClicked = (notificationId: string) => {
 
 const matchNotification = async (nEvent: NotifyEvent) => {
     const loggedInUsername = (await getUsername())?.toLowerCase();
+    const matches = (await getSetting("notifications")) as string[];
     const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
     const postEventBody = nEvent?.eventData?.post?.body?.toLowerCase();
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
-    if (postEventHasMe) return "Post contains your name.";
-    else if (parentAuthorIsMe) return "Replied to you.";
+    const postEventHasMatches = matches?.reduce((acc, m) => {
+        if (postEventBody.indexOf(m.toLowerCase()) > -1) acc.push(m);
+        return acc;
+    }, []);
+    if (postEventHasMe) return "Someone mentioned your name.";
+    else if (parentAuthorIsMe) return "Someone replied to you.";
+    else if (arrHas(postEventHasMatches)) return "Post contains at least one text match.";
     else return null;
 };
 
@@ -143,14 +149,12 @@ const pollNotifications = async () => {
                 await setInitialNotificationsEventId();
                 // busy signal - recheck on next tick
                 setTimeout(pollNotifications, greenLightTimer);
-            } else {
-                // fail - recheck on next tock
-                setTimeout(pollNotifications, redLightTimer);
             }
-        } else {
-            // recheck every tick for enablement
-            setTimeout(pollNotifications, greenLightTimer);
+            // fail - recheck on next tock
+            else setTimeout(pollNotifications, redLightTimer);
         }
+        // recheck every tick for enablement
+        else setTimeout(pollNotifications, greenLightTimer);
     } catch (e) {
         console.log(e);
         // retry every tock

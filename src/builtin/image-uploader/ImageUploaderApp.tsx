@@ -5,7 +5,8 @@ import { handleImgurUpload } from "../../core/api/imgur";
 import { appendLinksToField, arrHas } from "../../core/common";
 import { getSetting, setSetting } from "../../core/settings";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
-import { UploaderState, useUploaderStore } from "./uploaderStore";
+import type { UploaderState } from "./index.d";
+import { useUploaderStore } from "./uploaderStore";
 
 export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {
