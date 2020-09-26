@@ -155,8 +155,11 @@ export const ThreadPane = {
         const $cloned = $rootPostbodyDiv.clone();
         // replace normal and embedded links with a styled defunct replica
         $cloned.find("a, div.medialink").replaceWith(function () {
-            const link = this.nodeName === "DIV" ? this.querySelector("a") : (this as HTMLAnchorElement);
-            return $(`<span class="cs_thread_pane_link">${link?.href}</span>`);
+            const link = this.nodeName === "DIV" ? this.querySelector("a > span") : (this as HTMLAnchorElement);
+            const linkText = (link as HTMLSpanElement)?.innerText
+                ? ((link as HTMLSpanElement).innerText as string)
+                : ((link as HTMLAnchorElement)?.href as string);
+            return $(`<span class="cs_thread_pane_link">${linkText}</span>`);
         });
         // remove any copied embed containers from the copied postbody
         $cloned.find("#react-media-manager").remove();
