@@ -47,13 +47,18 @@ const RenderExpando = (props: ExpandoProps) => {
     );
     const handleRefreshClick = useCallback(() => {
         (async () => {
+            setToggled(false);
             const freshChildren = await resolveChildren({ response, options });
-            if (isValidElement(freshChildren)) setChildren(freshChildren);
+            if (isValidElement(freshChildren)) {
+                setChildren(freshChildren); // less graceful approach than URL hook
+                setToggled(true);
+            }
         })();
     }, [response, options]);
 
     useEffect(() => {
         (async () => {
+            // URL hook or resolveChildren() rendered so update type
             const __type = resolved?.props?.src && getLinkType(resolved.props.src);
             if (toggled && hasLoaded) {
                 setChildren(resolved);
