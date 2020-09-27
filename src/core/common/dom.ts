@@ -288,8 +288,8 @@ export const afterElem = (siblingElem: HTMLElement, elem: HTMLElement) => {
 
 /// checks if a non-text node is a matching Element
 export const elemMatches = (elem: HTMLElement, selector: string) => {
-    if (elem && elem.nodeType !== 3 && elem.matches(selector)) return elem;
-    else return null;
+    if (!elem || elem.nodeType === 3 || !elem.matches) return null;
+    else if (elem?.matches(selector)) return elem;
 };
 
 /// takes an Element of a post and returns post/root information
