@@ -14,3 +14,9 @@ export interface FCWithMediaProps extends JSX.Element {
         slides?: JSX.Element[];
     };
 }
+
+export interface ResolvedResponse {
+    postid: string;
+    idx: string;
+    response: ParsedResponse;
+}

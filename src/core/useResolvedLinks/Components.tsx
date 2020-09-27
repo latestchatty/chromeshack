@@ -3,7 +3,8 @@ import { classNames, isIframe } from "../common";
 import type { MediaProps } from "./index.d";
 
 export const Iframe = (props: MediaProps) => {
-    const { src } = props || {};
+    const { src, options } = props || {};
+    const { openByDefault } = options || {};
 
     const iframeType = isIframe(src);
     const isTwitch = iframeType && iframeType === "twitch";
@@ -14,6 +15,7 @@ export const Iframe = (props: MediaProps) => {
         "twitch-container": isTwitch,
         "yt-container": isYoutube,
     });
+    const ytNoAutoplay = isYoutube && openByDefault && src.replace("?autoplay=1", "");
 
     return (
         src && (
@@ -21,7 +23,7 @@ export const Iframe = (props: MediaProps) => {
                 <div className={classes}>
                     <iframe
                         title={src}
-                        src={src}
+                        src={ytNoAutoplay || src}
                         frameBorder="0"
                         scrolling="no"
                         allowFullScreen

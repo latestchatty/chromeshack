@@ -9,12 +9,16 @@ interface FlexVideoOptionsProps {
     clickTogglesPlay?: boolean;
 }
 
+interface IframeOptionsProps {
+    openByDefault?: boolean;
+}
+
 interface ImageOptionsProps {
     clickTogglesVisible?: boolean;
     toggleHandler?: () => void;
 }
 
-export type MediaOptions = FlexVideoOptionsProps & ImageOptionsProps;
+export type MediaOptions = FlexVideoOptionsProps & IframeOptionsProps & ImageOptionsProps;
 
 export interface MediaProps extends MediaOptions {
     src: string;

@@ -64,7 +64,13 @@ export const Suboption = (props: {
 
     return (
         <div className={classNames("suboption", classes, { indent: indented })} id={id}>
-            <input type="checkbox" className="suboption" id={optionid} checked={isChecked} onChange={setChecked} />
+            <input
+                type="checkbox"
+                className="suboption"
+                id={optionid}
+                checked={isChecked}
+                onChange={setChecked}
+            ></input>
             <label htmlFor={optionid ? optionid : undefined}>{label}</label>
             {children}
         </div>

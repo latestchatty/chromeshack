@@ -1,17 +1,19 @@
-import { faCompressAlt, faExpandAlt, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
-import { useResolvedLinks } from "../../core/useResolvedLinks";
+import { resolveChildren, useResolvedLinks } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
 const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
+const RefreshIcon = () => <FontAwesomeIcon className="refresh__icon" icon={faRedoAlt} />;
 
 const RenderExpando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
     const { href, src, type: _type } = response || {};
+    const { openByDefault } = options || {};
 
     const [toggled, setToggled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element);
@@ -43,6 +45,12 @@ const RenderExpando = (props: ExpandoProps) => {
         },
         [newTabHref],
     );
+    const handleRefreshClick = useCallback(() => {
+        (async () => {
+            const freshChildren = await resolveChildren({ response, options });
+            if (isValidElement(freshChildren)) setChildren(freshChildren);
+        })();
+    }, [response, options]);
 
     useEffect(() => {
         (async () => {
@@ -53,6 +61,10 @@ const RenderExpando = (props: ExpandoProps) => {
             }
         })();
     }, [toggled, hasLoaded, resolved]);
+    useEffect(() => {
+        // auto-toggle all detected embeds if the user has it enabled
+        if (openByDefault !== undefined) setToggled(openByDefault);
+    }, [openByDefault]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
@@ -64,7 +76,10 @@ const RenderExpando = (props: ExpandoProps) => {
                 <span>{href || src}</span>
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
-            <a className="expandalt" title="Open in new tab" href={newTabHref?.current || ""} onClick={handleNewClick}>
+            <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>
+                <RefreshIcon />
+            </a>
+            <a className="expandbtn" title="Open in new tab" href={newTabHref?.current || ""} onClick={handleNewClick}>
                 <ExternalLink />
             </a>
             <div className={mediaClasses} onClick={handleToggleClick}>

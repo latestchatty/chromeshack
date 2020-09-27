@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
-import type { ParsedResponse } from "../../core/api";
 import { detectMediaLink } from "../../core/api";
 import { arrEmpty, arrHas, locatePostRefs } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
-
-export interface ResolvedResponse {
-    postid: string;
-    idx: string;
-    response: ParsedResponse;
-}
+import type { ResolvedResponse } from "./index.d";
 
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {
     const { links, item } = props || {};
     const [responses, setResponses] = useState([] as ResolvedResponse[]);
     const [children, setChildren] = useState(null as React.ReactNode[]);
+    const [openByDefault, setOpenByDefault] = useState(false);
     useEffect(() => {
         const mediaLinkReplacer = async () => {
             if (!item) return;
@@ -35,14 +30,16 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
     useEffect(() => {
         if (!responses) return;
 
-        const _children = [];
+        const _children = [] as JSX.Element[];
         for (const response of responses) {
             const { postid, idx, response: _response } = response || {};
-            _children.push(<Expando key={idx} postid={postid} idx={idx} response={_response} />);
+            _children.push(
+                <Expando key={idx} postid={postid} idx={idx} response={_response} options={{ openByDefault }} />,
+            );
         }
         // return our rendered Expando links
         if (arrHas(_children)) setChildren(_children);
-    }, [responses]);
+    }, [responses, openByDefault]);
     useEffect(() => {
         if (!links) return;
         const detectLinks = async () => {
@@ -67,6 +64,12 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
         };
         detectLinks();
     }, [links]);
+    useEffect(() => {
+        (async () => {
+            const _openByDefault = await enabledContains(["auto_open_embeds"]);
+            if (_openByDefault) setOpenByDefault(_openByDefault);
+        })();
+    }, []);
     return <>{children}</>;
 };
 

@@ -83,7 +83,7 @@ const HighlightGroup = (props: { name: string }) => {
                     value={nameInput}
                     onChange={setInput}
                     readOnly={localGroup.built_in}
-                ></input>
+                />
                 <button id="remove_group" onClick={handleDelGroup}>
                     Remove
                 </button>

@@ -61,12 +61,17 @@ div.expando {
     display: inline-block;
     margin: 0 0.33em;
 }
-.expando svg.expand__icon,
-.expando svg.compress__icon,
-.expando svg.external__icon {
+svg.expand__icon,
+svg.compress__icon,
+svg.external__icon,
+svg.refresh__icon {
     fill: "white";
     height: 12px !important;
     width: 12px !important;
+}
+a.reloadbtn,
+a.expandbtn {
+    margin: 0 0.5em 0 0 !important;
 }
 
 .iframe__boundary {

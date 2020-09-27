@@ -1,4 +1,4 @@
-import React, { isValidElement, useCallback, useEffect, useMemo, useState } from "react";
+import React, { isValidElement, useEffect, useState } from "react";
 import { detectMediaLink, ParsedResponse } from "../api";
 import { arrHas } from "../common";
 import { Carousel } from "./Carousel";
@@ -19,7 +19,7 @@ const loadComponent = (opts: URLProps) => {
     // feed 'src' into an embeddable common media component depending on link type
     if (type === "image") return <Image key={key || src} src={src} options={options} />;
     else if (type === "video") return <FlexVideo key={key || src} src={src} {...options} />;
-    else if (type === "iframe") return <Iframe key={key || src} src={src} />;
+    else if (type === "iframe") return <Iframe key={key || src} src={src} options={options} />;
     else return null;
 };
 
@@ -78,34 +78,31 @@ const resolveAlbum = async (opts: URLProps) => {
         console.error(e);
     }
 };
-const resolveChildren = async (opts: URLProps) => {
+
+export const resolveChildren = async (opts: URLProps) => {
     const { links, response, options } = opts || {};
     const cResolved = response && (await resolveComponent({ response, options }));
     const lResolved = arrHas(links) && resolveAlbum({ links, options });
     return cResolved || lResolved;
 };
-
 export const useResolvedLinks = (props: URLProps) => {
     // takes a url(s) or response(s) and exposes media component(s) and a load-state boolean
     const { links, response, options, toggled } = props || {};
 
     const [resolved, setResolved] = useState(null as JSX.Element);
     const [hasLoaded, setHasLoaded] = useState(false);
-    const loadChildren = useCallback(() => {
-        (async () => {
-            // avoid refetching children if they've been fetched once
-            const _resolved = await resolveChildren({ links, response, options });
-            if (_resolved) {
-                setResolved(_resolved);
-                setHasLoaded(true);
-            }
-        })();
-    }, [links, response, options]);
-    const memoizedChildren = useMemo(() => loadChildren, [loadChildren]);
 
     useEffect(() => {
-        if ((!hasLoaded && toggled) || (!hasLoaded && toggled === undefined)) memoizedChildren();
-    }, [hasLoaded, toggled, memoizedChildren]);
+        if ((!hasLoaded && toggled) || (!hasLoaded && toggled === undefined))
+            (async () => {
+                // avoid refetching children if they've been fetched once
+                const _resolved = await resolveChildren({ links, response, options });
+                if (_resolved) {
+                    setResolved(_resolved);
+                    setHasLoaded(true);
+                }
+            })();
+    }, [hasLoaded, toggled, links, response, options]);
     return { resolved, hasLoaded };
 };
 export const ResolveMedia = (props: ResolvedMediaProps) => {
