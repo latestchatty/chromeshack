@@ -1,3 +1,6 @@
+// required to debug React components in development mode via standalone
+if (process.env.NODE_ENV === "development") require("react-devtools");
+
 import { CodeTagFix } from "./builtin/codetagfix";
 import { Collapse } from "./builtin/collapse";
 import { CommentTags } from "./builtin/comment_tags";

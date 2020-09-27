@@ -1,6 +1,6 @@
 {
     "name": "chromeshack",
-    "version": "1.6.9",
+    "version": "1.7.1",
     "description": "Collection of scripts for Shacknews.",
     "repository": "https://github.com/latestchatty/chromeshack",
     "scripts": {
@@ -32,6 +32,7 @@
         "@typescript-eslint/eslint-plugin": "4.2.0",
         "@typescript-eslint/parser": "4.2.0",
         "archiver": "^5.0.2",
+        "copy-webpack-plugin": "^6.1.1",
         "css-loader": "^4.3.0",
         "eslint": "^7.9.0",
         "eslint-config-airbnb": "^18.2.0",
@@ -50,6 +51,7 @@
         "mini-css-extract-plugin": "^0.11.2",
         "prettier": "^2.1.2",
         "prettier-plugin-organize-imports": "^1.1.1",
+        "react-devtools": "^4.8.2",
         "terser": "^5.3.2",
         "terser-webpack-plugin": "^4.2.2",
         "ts-loader": "^8.0.4",

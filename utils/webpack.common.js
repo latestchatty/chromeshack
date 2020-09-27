@@ -1,16 +1,10 @@
 /* eslint-disable */
-const webpack = require("webpack");
 const path = require("path");
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
-const rootDir = path.resolve(__dirname, "..");
-const dist = path.resolve(rootDir, "./dist");
-const distImages = path.resolve(dist, "./images");
-const workspace = path.resolve(rootDir, "./src");
-const assets = path.resolve(workspace, "./assets");
-const assetImages = path.resolve(assets, "./images");
+const { paths } = require("./webpack.globals");
 
 module.exports = {
     stats: "minimal",
@@ -24,7 +18,7 @@ module.exports = {
     },
 
     output: {
-        path: dist,
+        path: paths.dist,
         filename: "[name].js",
     },
 
@@ -56,9 +50,6 @@ module.exports = {
                 files: "./src/**/*.{ts,tsx}",
             },
         }),
-        new webpack.DefinePlugin({
-            __REACT_DEVTOOLS_GLOBAL_HOOK__: "({ isDisabled: true })",
-        }),
         new MiniCssExtractPlugin({
             filename: "[name].css",
             chunkFilename: "[id].css",
@@ -67,11 +58,10 @@ module.exports = {
             onEnd: [
                 {
                     copy: [
-                        { source: path.resolve(assets, "popup.html"), destination: dist },
-                        { source: path.resolve(assets, "release_notes.html"), destination: dist },
-                        { source: path.resolve(assets, "manifest.json"), destination: dist },
-                        { source: path.resolve(rootDir, "*.md"), destination: dist },
-                        { source: assetImages, destination: distImages },
+                        { source: path.resolve(paths.assets, "popup.html"), destination: paths.dist },
+                        { source: path.resolve(paths.assets, "release_notes.html"), destination: paths.dist },
+                        { source: path.resolve(paths.rootDir, "*.md"), destination: paths.dist },
+                        { source: paths.assetImages, destination: paths.distImages },
                     ],
                 },
             ],
