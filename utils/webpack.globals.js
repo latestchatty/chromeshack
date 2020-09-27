@@ -22,12 +22,6 @@ const transformPkgVer = () => {
 const modifyManifestVer = (manifestJSON) => {
     return { ...manifestJSON, version: transformPkgVer() };
 };
-const modifyManifestDev = (manifestJSON) => {
-    return {
-        ...manifestJSON,
-        content_security_policy: "script-src 'self' http://localhost:8097; object-src 'self'",
-    };
-};
 
 const modifyManifestChrome = (manifestJSON) => {
     return { ...modifyManifestVer(manifestJSON), update_url: "http://clients2.google.com/service/update2/crx" };
@@ -48,7 +42,6 @@ const modifyManifestDevChrome = (buffer) => {
     const _manifest = buffer && JSON.parse(buffer.toString());
     const mutatedManifest = {
         ...modifyManifestChrome(_manifest),
-        ...modifyManifestDev(_manifest),
     };
     // return a formatted JSON file
     return Buffer.from(JSON.stringify(mutatedManifest, null, 2));
@@ -57,7 +50,6 @@ const modifyManifestDevFirefox = (buffer) => {
     const _manifest = buffer && JSON.parse(buffer.toString());
     const mutatedManifest = {
         ...modifyManifestFirefox(_manifest),
-        ...modifyManifestDev(_manifest),
     };
     return Buffer.from(JSON.stringify(mutatedManifest, null, 2));
 };
