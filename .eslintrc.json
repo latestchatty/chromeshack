@@ -39,7 +39,7 @@
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "sonarjs/no-duplicate-string": "off",
-        "sonarjs/cognitive-complexity": ["warn", 30],
+        "sonarjs/cognitive-complexity": ["warn", 35],
         "no-restricted-syntax": [
             1,
             {
