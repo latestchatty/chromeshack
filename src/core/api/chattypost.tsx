@@ -1,6 +1,6 @@
 import React from "react";
 import type { ParsedResponse } from ".";
-import { fetchSafe, safeInnerHTML } from "../common";
+import { elemMatches, fetchSafe, safeInnerHTML } from "../common";
 
 const fetchChattyPost = async (postid: string) => {
     const singlePost = postid && `https://www.shacknews.com/frame_chatty.x?root=&id=${postid}`;
@@ -30,8 +30,15 @@ const fetchChattyPost = async (postid: string) => {
 
 const Chattypost = (props: { html: string }) => {
     const { html } = props || {};
+    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const _this =
+            e?.target && elemMatches(e.target as HTMLAnchorElement, "div.getPost .postbody > a")
+                ? (e.target as HTMLAnchorElement)
+                : null;
+        if (_this?.href) window.open(_this.href, "_blank", "noopener,noreferrer");
+    };
     // return a simple React wrapper for the sanitized HTML
-    return <div className="getPost" dangerouslySetInnerHTML={{ __html: html }} />;
+    return <div className="getPost" dangerouslySetInnerHTML={{ __html: html }} onClick={handleClick} />;
 };
 
 export const getChattyPost = async (...args: any[]) => {
