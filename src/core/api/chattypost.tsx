@@ -1,5 +1,6 @@
 import React from "react";
 import type { ParsedResponse } from ".";
+import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import { elemMatches, fetchSafe, safeInnerHTML } from "../common";
 
 const fetchChattyPost = async (postid: string) => {
@@ -13,6 +14,8 @@ const fetchChattyPost = async (postid: string) => {
         const fullpost = container.querySelector("div.fullpost");
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
+        const postdate = fullpost.querySelector("div.postdate") as HTMLElement;
+        if (postdate) LocalTimeStamp.adjustPostTime(postdate);
         // return the post as a sanitized string of HTML (without the container)
         return container.firstElementChild?.innerHTML;
     } else return null as string;
