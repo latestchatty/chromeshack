@@ -18,7 +18,7 @@ declare global {
 }
 const isChromeBrowser = !window.browser ? true : false;
 
-export const PopupApp = () => {
+const PopupApp = () => {
     const { useStoreState, useStoreDispatch } = usePopupStore;
     const state = useStoreState() as PopupState;
     const dispatch = useStoreDispatch();
@@ -251,3 +251,5 @@ export const PopupApp = () => {
         </div>
     );
 };
+
+export { PopupApp };

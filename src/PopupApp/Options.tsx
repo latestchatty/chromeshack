@@ -22,7 +22,7 @@ const useOption = (opts: { key: string; val: string; type: OptionsTypes }) => {
     return { isChecked, setChecked };
 };
 
-export const OptionButton = (props: {
+const OptionButton = (props: {
     id: string;
     classes?: string;
     label?: string;
@@ -47,7 +47,7 @@ export const OptionButton = (props: {
     );
 };
 
-export const Suboption = (props: {
+const Suboption = (props: {
     label: string;
     optionid: string;
     id?: string;
@@ -77,7 +77,7 @@ export const Suboption = (props: {
     );
 };
 
-export const Option = (props: {
+const Option = (props: {
     id: string;
     label: string;
     classes?: string;
@@ -105,7 +105,7 @@ export const Option = (props: {
     );
 };
 
-export const OptionGroup = (props: {
+const OptionGroup = (props: {
     label: string;
     id?: string;
     classes?: string;
@@ -129,3 +129,5 @@ export const OptionGroup = (props: {
         </div>
     );
 };
+
+export { Option, OptionButton, Suboption, OptionGroup };

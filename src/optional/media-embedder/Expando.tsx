@@ -94,4 +94,6 @@ const RenderExpando = (props: ExpandoProps) => {
     );
 };
 
-export const Expando = (props: ExpandoProps) => useMemo(() => <RenderExpando {...props} />, [props]);
+const Expando = (props: ExpandoProps) => useMemo(() => <RenderExpando {...props} />, [props]);
+
+export { Expando };

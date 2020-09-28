@@ -24,7 +24,7 @@ const MuteOverlay = (props: OverlayProps) => {
     );
 };
 
-export const FlexVideo = (props: MediaProps) => {
+const FlexVideo = (props: MediaProps) => {
     const { classes, src } = props || {};
     // set some sensible defaults
     const { loop = true, muted = true, controls = false, autoPlay = true, clickTogglesPlay = true } = props || {};
@@ -112,3 +112,5 @@ export const FlexVideo = (props: MediaProps) => {
         )
     );
 };
+
+export { FlexVideo };

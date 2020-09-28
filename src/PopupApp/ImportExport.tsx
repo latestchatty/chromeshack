@@ -14,7 +14,7 @@ import { getState } from "./actions";
 import { copyToClipboard, objConditionalFilter } from "./helpers";
 import { usePopupStore } from "./popupStore";
 
-export const ImportExport = () => {
+const ImportExport = () => {
     const { useStoreDispatch } = usePopupStore;
     const dispatch = useStoreDispatch();
 
@@ -134,3 +134,5 @@ export const ImportExport = () => {
         </>
     );
 };
+
+export { ImportExport };

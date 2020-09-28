@@ -79,13 +79,13 @@ const resolveAlbum = async (opts: URLProps) => {
     }
 };
 
-export const resolveChildren = async (opts: URLProps) => {
+const resolveChildren = async (opts: URLProps) => {
     const { links, response, options } = opts || {};
     const cResolved = response && (await resolveComponent({ response, options }));
     const lResolved = arrHas(links) && resolveAlbum({ links, options });
     return cResolved || lResolved;
 };
-export const useResolvedLinks = (props: URLProps) => {
+const useResolvedLinks = (props: URLProps) => {
     // takes a url(s) or response(s) and exposes media component(s) and a load-state boolean
     const { links, response, options, toggled } = props || {};
 
@@ -105,7 +105,7 @@ export const useResolvedLinks = (props: URLProps) => {
     }, [hasLoaded, toggled, links, response, options]);
     return { resolved, hasLoaded };
 };
-export const ResolveMedia = (props: ResolvedMediaProps) => {
+const ResolveMedia = (props: ResolvedMediaProps) => {
     // use useResolvedLinks to return media components from a list of urls
     const { id, className, links, options } = props || {};
     const { resolved, hasLoaded } = useResolvedLinks({ links, options });
@@ -116,4 +116,5 @@ export const ResolveMedia = (props: ResolvedMediaProps) => {
     );
 };
 
+export { resolveChildren, useResolvedLinks, ResolveMedia };
 export { MediaProps, MediaOptions };

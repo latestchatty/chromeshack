@@ -25,7 +25,7 @@ const parseDate = (timestamp: string) => {
     return `${_date.toLocaleString().split(",")[0]} ${_date.toLocaleTimeString()}`;
 };
 
-export const fetchInstagramData = async (shortcode: string) => {
+const fetchInstagramData = async (shortcode: string) => {
     try {
         const url = `https://www.instagram.com/p/${shortcode}/`;
         const parsed: InstagramResponse =
@@ -168,4 +168,6 @@ const Instagram = (props: { response: InstagramParsed }) => {
 };
 
 // render Instagram child from a given instagram response object
-export const useInstagram = (instagramObj: InstagramParsed) => instagramObj && <Instagram response={instagramObj} />;
+const useInstagram = (instagramObj: InstagramParsed) => instagramObj && <Instagram response={instagramObj} />;
+
+export { useInstagram, fetchInstagramData };

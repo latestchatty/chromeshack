@@ -19,7 +19,7 @@ const EmblaSlides = (props: { slides: React.ReactNode[] }) => {
     return <>{arrHas(slides) && slides.map((s, i) => <EmblaSlide key={i}>{s}</EmblaSlide>)}</>;
 };
 
-export const Carousel = (props: { slides: React.ReactNode[] }) => {
+const Carousel = (props: { slides: React.ReactNode[] }) => {
     const { slides } = props || {};
 
     const [viewportRef, embla] = useEmblaCarousel({ speed: 30 });
@@ -78,3 +78,5 @@ export const Carousel = (props: { slides: React.ReactNode[] }) => {
         </div>
     );
 };
+
+export { Carousel };

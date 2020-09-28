@@ -134,8 +134,10 @@ const accumulateTweets = (tweetObj: TweetParsed) => {
         <Twitter response={tweetObj} />
     );
 };
-export const useTweets = (props: { tweetObj: TweetParsed }) => {
+const useTweets = (props: { tweetObj: TweetParsed }) => {
     const { tweetObj } = props || {};
     /// render Tweet children from a given twitter response object
     return accumulateTweets(tweetObj);
 };
+
+export { useTweets };

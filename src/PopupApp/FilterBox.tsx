@@ -5,7 +5,7 @@ import { addFilter, delFilters } from "./actions";
 import type { FilterTypes } from "./index.d";
 import { usePopupStore } from "./popupStore";
 
-export const FilterBox = (props: {
+const FilterBox = (props: {
     id: string;
     type: FilterTypes | "UPDATE_HIGHLIGHTGROUP";
     classes?: string;
@@ -110,3 +110,5 @@ export const FilterBox = (props: {
         </div>
     );
 };
+
+export { FilterBox };

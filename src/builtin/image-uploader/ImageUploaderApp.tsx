@@ -12,7 +12,7 @@ export type UploadData = string[] | File[];
 interface ImageUploaderAppProps {
     parentRef: HTMLElement;
 }
-export const ImageUploaderApp = (props: ImageUploaderAppProps) => {
+const ImageUploaderApp = (props: ImageUploaderAppProps) => {
     const { useStoreState: useUploaderState, useStoreDispatch: useUploaderDispatch } = useUploaderStore;
     const state = useUploaderState() as UploaderState;
     const dispatch = useUploaderDispatch();
@@ -137,3 +137,5 @@ export const ImageUploaderApp = (props: ImageUploaderAppProps) => {
         </ToggleChildren>
     );
 };
+
+export { ImageUploaderApp };

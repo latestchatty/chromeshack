@@ -115,7 +115,7 @@ const HighlightGroup = (props: { name: string }) => {
     );
 };
 
-export const HighlightGroups = () => {
+const HighlightGroups = () => {
     const { useStoreState, useStoreDispatch } = usePopupStore;
     const state = useStoreState() as PopupState;
     const dispatch = useStoreDispatch();
@@ -132,3 +132,5 @@ export const HighlightGroups = () => {
         </div>
     );
 };
+
+export { HighlightGroups };

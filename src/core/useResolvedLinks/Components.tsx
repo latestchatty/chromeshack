@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { classNames, isIframe } from "../common";
 import type { MediaProps } from "./index.d";
 
-export const Iframe = (props: MediaProps) => {
+const Iframe = (props: MediaProps) => {
     const { src, options } = props || {};
     const { openByDefault } = options || {};
 
@@ -40,7 +40,7 @@ export const Iframe = (props: MediaProps) => {
     );
 };
 
-export const Image = (props: MediaProps) => {
+const Image = (props: MediaProps) => {
     const { classes: _classes, src, options } = props || {};
     const [classes, setClasses] = useState("");
     const [isSlide, setIsSlide] = useState(false);
@@ -60,3 +60,5 @@ export const Image = (props: MediaProps) => {
 
     return src && <img className={classes} src={src} alt="" ref={imageRef} />;
 };
+
+export { Image, Iframe };
