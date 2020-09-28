@@ -2,9 +2,10 @@
 import React, { useEffect } from "react";
 import { browser } from "webextension-polyfill-ts";
 import { classNames } from "../core/common";
-import { resetSettings } from "../core/settings";
+import { getSettings, resetSettings } from "../core/settings";
 import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";
+import { exportSettings } from "./helpers";
 import { HighlightGroups } from "./HighlightGroups";
 import { ImportExport } from "./ImportExport";
 import type { PopupState } from "./index.d";
@@ -40,7 +41,13 @@ const PopupApp = () => {
         const handler = setTimeout(() => {
             (async () => {
                 try {
+                    const before = JSON.stringify(await getSettings());
                     await setSettingsState(state);
+                    const after = await exportSettings();
+                    const afterSettings = JSON.stringify(await getSettings());
+                    console.log(
+                        `PopupApp state, exported: ${after.length} bytes, total: ${afterSettings.length} bytes (${before.length} bytes)`,
+                    );
                 } catch (e) {
                     console.error(e);
                 }
