@@ -9,16 +9,6 @@ const fetchChattyPost = async (postid: string) => {
         const container = document.createElement("div");
         if (elemText) safeInnerHTML(elemText, container);
         else return null;
-
-        const _postNode = container.childNodes[1] as HTMLElement;
-        // honor spoiler tags' click event when embedded
-        const spoilerTag = _postNode?.querySelector("span.jt_spoiler");
-        if (spoilerTag)
-            spoilerTag.addEventListener("click", (e: MouseEvent) => {
-                const this_node = e?.target as HTMLElement;
-                this_node?.setAttribute("class", "jt_spoiler_clicked");
-            });
-
         // strip any mod banners from this embedded post (they look weird)
         const fullpost = container.querySelector("div.fullpost");
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
@@ -31,11 +21,21 @@ const fetchChattyPost = async (postid: string) => {
 const Chattypost = (props: { html: string }) => {
     const { html } = props || {};
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        const _this =
-            e?.target && elemMatches(e.target as HTMLAnchorElement, "div.getPost .postbody > a")
-                ? (e.target as HTMLAnchorElement)
-                : null;
-        if (_this?.href) window.open(_this.href, "_blank", "noopener,noreferrer");
+        const _this = e?.target as HTMLElement;
+        // handle all typical links in embedded chattyposts
+        const pbLink = _this && (elemMatches(_this, "div.getPost .postbody > a") as HTMLAnchorElement);
+        const userLink = _this && (elemMatches(_this, "div.getPost .user > a") as HTMLAnchorElement);
+        const permaLink = _this && (elemMatches(_this, "div.getPost div.postnumber > a") as HTMLAnchorElement);
+        const mailLink = _this && (elemMatches(_this, "div.getPost a.shackmsg > img")?.parentNode as HTMLAnchorElement);
+        const spoilerTag = _this && (elemMatches(_this, "div.getPost span.jt_spoiler") as HTMLSpanElement);
+        const _href = pbLink?.href || userLink?.href || permaLink?.href || mailLink?.href;
+        if (_href) {
+            e?.preventDefault();
+            window.open(_href, "_blank", "noopener,noreferrer");
+        } else if (spoilerTag && !spoilerTag.classList?.contains("jt_spoiler_clicked")) {
+            spoilerTag.classList.remove("jt_spoiler");
+            spoilerTag.classList.add("jt_spoiler_clicked");
+        }
     };
     // return a simple React wrapper for the sanitized HTML
     return <div className="getPost" dangerouslySetInnerHTML={{ __html: html }} onClick={handleClick} />;
