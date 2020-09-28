@@ -73,6 +73,15 @@ a.reloadbtn,
 a.expandbtn {
     margin: 0 0.5em 0 0 !important;
 }
+/* expando reload button suspense animation */
+svg.refresh__icon.loading {
+    animation: rotate 0.33s linear 1;
+}
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 .iframe__boundary {
     /* enforce maximum iframe dimensions */

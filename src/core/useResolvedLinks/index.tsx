@@ -81,40 +81,32 @@ const resolveAlbum = async (opts: URLProps) => {
 
 const resolveChildren = async (opts: URLProps) => {
     const { links, response, options } = opts || {};
-    const cResolved = response && (await resolveComponent({ response, options }));
+    const cResolved = response && (await resolveComponent({ links, response, options }));
     const lResolved = arrHas(links) && resolveAlbum({ links, options });
     return cResolved || lResolved;
 };
 const useResolvedLinks = (props: URLProps) => {
-    // takes a url(s) or response(s) and exposes media component(s) and a load-state boolean
     const { links, response, options, toggled } = props || {};
-
     const [resolved, setResolved] = useState(null as JSX.Element);
-    const [hasLoaded, setHasLoaded] = useState(false);
-
     useEffect(() => {
-        if ((!hasLoaded && toggled) || (!hasLoaded && toggled === undefined))
-            (async () => {
-                // avoid refetching children if they've been fetched once
-                const _resolved = await resolveChildren({ links, response, options });
-                if (_resolved) {
-                    setResolved(_resolved);
-                    setHasLoaded(true);
-                }
-            })();
-    }, [hasLoaded, toggled, links, response, options]);
-    return { resolved, hasLoaded };
+        (async () => {
+            const _children = await resolveChildren({ links, options });
+            if (isValidElement(_children)) setResolved(_children);
+        })();
+    }, [links, response, options, toggled]);
+    return resolved;
 };
 const ResolveMedia = (props: ResolvedMediaProps) => {
     // use useResolvedLinks to return media components from a list of urls
     const { id, className, links, options } = props || {};
-    const { resolved, hasLoaded } = useResolvedLinks({ links, options });
+    const children = useResolvedLinks({ links, options });
+
     return (
         <div id={id} className={className}>
-            {hasLoaded ? resolved : <div />}
+            {isValidElement(children) ? children : <div />}
         </div>
     );
 };
 
-export { resolveChildren, useResolvedLinks, ResolveMedia };
+export { resolveChildren, ResolveMedia };
 export { MediaProps, MediaOptions };

@@ -1,14 +1,14 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
-import { resolveChildren, useResolvedLinks } from "../../core/useResolvedLinks";
+import { resolveChildren } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
 const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
-const RefreshIcon = () => <FontAwesomeIcon className="refresh__icon" icon={faRedoAlt} />;
+const RefreshIcon = ({ classes }: { classes: string }) => <FontAwesomeIcon className={classes} icon={faRedoAlt} />;
 
 const RenderExpando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
@@ -17,13 +17,32 @@ const RenderExpando = (props: ExpandoProps) => {
 
     const [toggled, setToggled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element);
+    const [hasLoaded, setHasLoaded] = useState(false);
     const [type, setType] = useState(_type as string);
-    const { resolved, hasLoaded } = useResolvedLinks({ response, options, toggled });
     const newTabHref = useRef(href || src);
 
     const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
     const mediaClasses = classNames("media", { hidden: !toggled });
+    const reloadClasses = classNames("refresh__icon", { loading: hasLoaded });
+
+    const loadChildren = useCallback(() => {
+        (async () => {
+            setChildren(null as JSX.Element); // less graceful reload
+            const _children = await resolveChildren({ response, options });
+            const __type = _children?.props?.src && getLinkType(_children.props.src);
+            if (_children) {
+                setChildren(_children);
+                setHasLoaded(true);
+            }
+            if (__type) setType(__type);
+        })();
+        return () => {
+            setToggled(false);
+            setHasLoaded(false);
+            setChildren(null as JSX.Element);
+        };
+    }, [response, options]);
 
     const handleToggleClick = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -45,27 +64,16 @@ const RenderExpando = (props: ExpandoProps) => {
         },
         [newTabHref],
     );
-    const handleRefreshClick = useCallback(() => {
-        (async () => {
-            setToggled(false);
-            const freshChildren = await resolveChildren({ response, options });
-            if (isValidElement(freshChildren)) {
-                setChildren(freshChildren); // less graceful approach than URL hook
-                setToggled(true);
-            }
-        })();
-    }, [response, options]);
 
+    const handleRefreshClick = () => {
+        setHasLoaded(false);
+        // use a delay so we see the animation each time
+        setTimeout(() => loadChildren(), 100);
+    };
     useEffect(() => {
-        (async () => {
-            // URL hook or resolveChildren() rendered so update type
-            const __type = resolved?.props?.src && getLinkType(resolved.props.src);
-            if (toggled && hasLoaded) {
-                setChildren(resolved);
-                setType(__type);
-            }
-        })();
-    }, [toggled, hasLoaded, resolved]);
+        if (toggled) loadChildren();
+    }, [toggled, loadChildren]);
+
     useEffect(() => {
         // auto-toggle all detected embeds if the user has it enabled
         if (openByDefault !== undefined) setToggled(openByDefault);
@@ -82,7 +90,7 @@ const RenderExpando = (props: ExpandoProps) => {
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
             <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>
-                <RefreshIcon />
+                <RefreshIcon classes={reloadClasses} />
             </a>
             <a className="expandbtn" title="Open in new tab" href={newTabHref?.current || ""} onClick={handleNewClick}>
                 <ExternalLink />
