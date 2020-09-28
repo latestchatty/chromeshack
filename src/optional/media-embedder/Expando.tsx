@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { resolveChildren } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
@@ -68,7 +68,10 @@ const RenderExpando = (props: ExpandoProps) => {
     const handleRefreshClick = () => {
         setHasLoaded(false);
         // use a delay so we see the animation each time
-        setTimeout(() => loadChildren(), 100);
+        setTimeout(() => {
+            loadChildren();
+            if (!toggled) setToggled(true);
+        }, 100);
     };
     useEffect(() => {
         if (toggled) loadChildren();
@@ -89,9 +92,11 @@ const RenderExpando = (props: ExpandoProps) => {
                 <span>{href || src}</span>
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
-            <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>
-                <RefreshIcon classes={reloadClasses} />
-            </a>
+            {isValidElement(children) && (
+                <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>
+                    <RefreshIcon classes={reloadClasses} />
+                </a>
+            )}
             <a className="expandbtn" title="Open in new tab" href={newTabHref?.current || ""} onClick={handleNewClick}>
                 <ExternalLink />
             </a>
