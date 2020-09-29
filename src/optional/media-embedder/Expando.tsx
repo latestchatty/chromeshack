@@ -15,7 +15,7 @@ const RenderExpando = (props: ExpandoProps) => {
     const { href, src, type: _type } = response || {};
     const { openByDefault } = options || {};
 
-    const [toggled, setToggled] = useState(false);
+    const [toggled, setToggled] = useState(openByDefault || false);
     const [children, setChildren] = useState(null as JSX.Element);
     const [hasLoaded, setHasLoaded] = useState(false);
     const [type, setType] = useState(_type as string);
@@ -28,7 +28,6 @@ const RenderExpando = (props: ExpandoProps) => {
 
     const loadChildren = useCallback(() => {
         (async () => {
-            setChildren(null as JSX.Element); // less graceful reload
             const _children = await resolveChildren({ response, options });
             const __type = _children?.props?.src && getLinkType(_children.props.src);
             if (_children) {
@@ -37,11 +36,6 @@ const RenderExpando = (props: ExpandoProps) => {
             }
             if (__type) setType(__type);
         })();
-        return () => {
-            setToggled(false);
-            setHasLoaded(false);
-            setChildren(null as JSX.Element);
-        };
     }, [response, options]);
 
     const handleToggleClick = useCallback(
@@ -49,7 +43,10 @@ const RenderExpando = (props: ExpandoProps) => {
             e.preventDefault();
             const _this = e?.target as HTMLElement;
             const _mediaParent = elemMatches(_this.offsetParent as HTMLElement, "div.media");
-            const _expando = elemMatches(_this.nextElementSibling as HTMLElement, "div.expando");
+            // find the nearest expando parent
+            const _expando =
+                elemMatches(_this.nextElementSibling as HTMLElement, "div.expando") ||
+                (_this.closest("div.expando") as HTMLElement);
             // only clickTogglesVisible on media when an image or expando link
             if ((_mediaParent && type === "image") || _expando) setToggled(!toggled);
         },
@@ -58,7 +55,6 @@ const RenderExpando = (props: ExpandoProps) => {
     const handleNewClick = useCallback(
         (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
             e.preventDefault();
-            // use the href before the resolved src link
             const newWindow = window.open(newTabHref?.current, "_blank", "noopener,noreferrer");
             if (newWindow) newWindow.opener = null;
         },
@@ -66,21 +62,19 @@ const RenderExpando = (props: ExpandoProps) => {
     );
 
     const handleRefreshClick = () => {
+        // less graceful reload method
         setHasLoaded(false);
+        setChildren(null as JSX.Element);
         // use a delay so we see the animation each time
         setTimeout(() => {
             loadChildren();
-            if (!toggled) setToggled(true);
+            // should be visible?
+            if (children) setToggled(true);
         }, 100);
     };
     useEffect(() => {
         if (toggled) loadChildren();
     }, [toggled, loadChildren]);
-
-    useEffect(() => {
-        // auto-toggle all detected embeds if the user has it enabled
-        if (openByDefault !== undefined) setToggled(openByDefault);
-    }, [openByDefault]);
 
     return (
         <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
@@ -90,7 +84,9 @@ const RenderExpando = (props: ExpandoProps) => {
                 onClick={handleToggleClick}
             >
                 <span>{href || src}</span>
-                <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
+                <div className="expando" onClick={handleToggleClick}>
+                    {toggled ? <CompressIcon /> : <ExpandIcon />}
+                </div>
             </a>
             {isValidElement(children) && (
                 <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>
