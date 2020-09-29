@@ -157,7 +157,18 @@ div.getPost div.postbody {
     margin: 0.25em 0.25em 1em 1.5em;
     padding: 0 0 1em 0;
 }
-div.getPost span.user a {
+div.getPost span.user a,
+div.getPost span.user_getPost a {
     text-decoration: none;
+}
+/* workaround to avoid nuLOL tagline injection */
+div.getPost span.user_getPost {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-weight: bold;
+    color: #f3e7b5;
+    font-family: sans-serif;
 }
 /* End Chattypost Embedder */

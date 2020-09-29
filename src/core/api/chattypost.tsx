@@ -12,8 +12,16 @@ const fetchChattyPost = async (postid: string) => {
         else return null;
         // strip any mod banners from this embedded post (they look weird)
         const fullpost = container.querySelector("div.fullpost");
+
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
+
+        const isChatty = document.getElementById("newcommentbutton");
+        const userLine = isChatty && fullpost?.querySelector("span.user");
+        // workaround to avoid nuLOL tagline injection on the main Chatty
+        if (userLine) userLine.setAttribute("class", "user_getPost");
+
+        // fix timestamp for embedded chatty post
         const postdate = fullpost.querySelector("div.postdate") as HTMLElement;
         if (postdate) LocalTimeStamp.adjustPostTime(postdate);
         // return the post as a sanitized string of HTML (without the container)
