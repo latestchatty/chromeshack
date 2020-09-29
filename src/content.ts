@@ -34,6 +34,7 @@ require("./styles/embed_socials.css");
 require("./styles/image_uploader.css");
 require("./styles/media.css");
 require("./styles/two_pane.css");
+require("./styles/userpopup.css");
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;
