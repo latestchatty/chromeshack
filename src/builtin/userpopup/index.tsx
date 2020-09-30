@@ -7,7 +7,7 @@ import { UserPopupApp } from "./UserPopupApp";
 export const UserPopup = {
     async clickHandler(e: MouseEvent) {
         const _this = e?.target as HTMLElement;
-        const userLink = _this && elemMatches(_this, "span.user > a");
+        const userLink = !elemMatches(_this, "div.getPost span.user > a") ? elemMatches(_this, "span.user > a") : null;
         const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
         const accountName = accountLink
             ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.innerText
