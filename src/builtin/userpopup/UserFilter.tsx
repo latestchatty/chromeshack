@@ -1,3 +1,4 @@
+/* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect, useState } from "react";
 import { addFilter, enabledContains, filtersContains, removeFilter } from "../../core/settings";
 
