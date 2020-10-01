@@ -58,15 +58,17 @@ const FilterBox = (props: {
             if (inputRef.current) inputRef.current.focus();
         }
     };
-    const handleEnterOnInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") handleFilterAddBtn();
-    };
     const handleFiltersDelBtn = () => {
         if (type !== "UPDATE_HIGHLIGHTGROUP") delFilters(options, selected, type, dispatch);
         else delFilters(options, selected, type, dispatch, groups, groupName);
         setSelected([]);
     };
-
+    const handleEnterOnInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") handleFilterAddBtn();
+    };
+    const handleDelOnSelect = (e: React.KeyboardEvent<HTMLSelectElement>) => {
+        if (e.key === "Delete" || e.key === "Backspace") handleFiltersDelBtn();
+    };
     useEffect(() => {
         setOptionVals(options);
     }, [options, groups, selected]);
@@ -81,6 +83,7 @@ const FilterBox = (props: {
                 value={selected}
                 onChange={handleSelectChange}
                 onClick={handleSelectClick}
+                onKeyUp={handleDelOnSelect}
                 multiple={true}
             >
                 {optionVals &&
