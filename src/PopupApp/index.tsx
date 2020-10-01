@@ -153,7 +153,7 @@ const PopupApp = () => {
                 >
                     <FilterBox
                         id="match_notifications"
-                        infolabel="Manage custom phrases to watch for:"
+                        infolabel="Manage custom phrases to watch for (case insensitive):"
                         type="SET_NOTIFICATIONS"
                         options={state.notifications}
                     />

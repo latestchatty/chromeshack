@@ -97,7 +97,7 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     }, []);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
-    else if (arrHas(postEventHasMatches)) return "Post contains at least one text match.";
+    else if (arrHas(postEventHasMatches)) return `Post contains phrases: ${postEventHasMatches.join(", ")}`;
     else return null;
 };
 
