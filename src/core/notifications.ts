@@ -92,12 +92,12 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
     const postEventHasMatches = matches?.reduce((acc, m) => {
-        if (postEventBody.indexOf(m.toLowerCase()) > -1) acc.push(m);
+        if (!parentAuthorIsMe && postEventBody.indexOf(m.toLowerCase()) > -1) acc.push(m);
         return acc;
     }, []);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
-    else if (arrHas(postEventHasMatches)) return `Post contains phrases: ${postEventHasMatches.join(", ")}`;
+    else if (arrHas(postEventHasMatches)) return `Someone mentioned phrases: ${postEventHasMatches.join(", ")}.`;
     else return null;
 };
 
