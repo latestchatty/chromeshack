@@ -13,8 +13,9 @@ const FilterBox = (props: {
     options?: string[];
     groups?: HighlightGroup[];
     groupName?: string;
+    allowTrailingSpace?: boolean;
 }) => {
-    const { id, type, classes, infolabel, options, groups, groupName } = props || {};
+    const { id, type, classes, infolabel, options, groups, groupName, allowTrailingSpace = false } = props || {};
 
     const [optionVals, setOptionVals] = useState([] as string[]);
     const [textField, setTextField] = useState("");
@@ -48,8 +49,9 @@ const FilterBox = (props: {
         setTextField(val);
     };
     const handleFilterAddBtn = () => {
-        if (textField?.length >= 2 && textField?.match(/[^\s\r\n]+/i)) {
-            const trimmed = textField.trim();
+        if (textField?.length >= 2 && textField?.match(/[^\h\r\n]+/i)) {
+            // allow a single space before/after if requested
+            const trimmed = allowTrailingSpace ? textField.replace(/\h\h+/, " ") : textField.trim();
             if (type !== "UPDATE_HIGHLIGHTGROUP") addFilter(options, trimmed, type, dispatch);
             else addFilter(options, trimmed, type, dispatch, groups, groupName);
             setTextField("");
