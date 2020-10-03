@@ -1,5 +1,5 @@
 import { insertStyle } from "../core/common";
-import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
+import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting, HighlightGroup } from "../core/settings";
 
 export interface ResolvedUser {
@@ -16,9 +16,9 @@ export const HighlightUsers = {
     async install() {
         const is_enabled = await enabledContains(["highlight_users"]);
         if (is_enabled) {
-            fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
             // refresh our styling state when refreshing a post
             processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
+            await HighlightUsers.applyFilter();
         }
     },
 
