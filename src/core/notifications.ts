@@ -63,12 +63,12 @@ export const TabMessenger = {
     connect() {
         // NOTE: call this from a content script
         browser.runtime.onMessage.addListener((msg: NotifyMsg) => {
+            if (ChromeShack.debugEvents) console.log("TabMessenger received:", msg);
             if (msg.name === "notifyEvent") return Promise.resolve(processNotifyEvent.raise(msg.data));
-            return Promise.resolve(true);
+            else return Promise.resolve(true);
         });
     },
 };
-export const TM_Instance = TabMessenger;
 
 const setInitialNotificationsEventId = async () => {
     const resp: NewestEventResponse = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
@@ -107,7 +107,7 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     } else return null;
 };
 
-const handleEventSignal = (msg: NotifyMsg) => TM_Instance?.send(msg);
+const handleEventSignal = (msg: NotifyMsg) => TabMessenger?.send(msg);
 
 const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;

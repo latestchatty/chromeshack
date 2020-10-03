@@ -10,7 +10,7 @@ import { LocalTimeStamp } from "./builtin/local_timestamp";
 import { ModBanners } from "./builtin/mod_banners";
 import { PostLengthCounter } from "./builtin/post_length_counter";
 import { UserPopup } from "./builtin/userpopup";
-import { TM_Instance } from "./core/notifications";
+import { TabMessenger } from "./core/notifications";
 import { ChromeShack } from "./core/observers";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
@@ -41,8 +41,8 @@ export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 export const TP_Instance = ThreadPane;
 
-// spin up a tab listener for notification messages
-TM_Instance.connect();
+// open a message channel for WinChatty events
+TabMessenger.connect();
 
 try {
     Promise.all([
