@@ -89,11 +89,11 @@ const FilterBox = (props: {
                 multiple={true}
             >
                 {optionVals &&
-                    optionVals.map((o, i) => (
-                        <option key={i} value={o}>
-                            {o}
-                        </option>
-                    ))}
+                    optionVals.map((o, i) => {
+                        const innerText = o.replace(/[\s]+/gm, "&nbsp;");
+                        // force options to show trailing spaces if present in state
+                        return <option key={i} value={o} dangerouslySetInnerHTML={{ __html: innerText }}></option>;
+                    })}
             </select>
             <div className="filter_box_inputs">
                 <input

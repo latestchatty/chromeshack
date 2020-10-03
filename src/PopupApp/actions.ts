@@ -56,7 +56,7 @@ export const addFilter = (
     groups?: HighlightGroup[],
     groupName?: string,
 ) => {
-    const foundIdx = filters?.findIndex((f) => f.toUpperCase() === val.toUpperCase());
+    const foundIdx = filters?.findIndex((f) => f.trim().toUpperCase() === val.trim().toUpperCase());
     if (type !== "UPDATE_HIGHLIGHTGROUP" && foundIdx === -1) dispatch({ type, payload: [...filters, val] });
     else if (foundIdx === -1) {
         const _type = type as "UPDATE_HIGHLIGHTGROUP";
@@ -77,7 +77,10 @@ export const delFilters = (
     if (type !== "UPDATE_HIGHLIGHTGROUP")
         dispatch({
             type,
-            payload: options.reduce((acc, o) => acc.filter((f) => f.toUpperCase() !== o.toUpperCase()), filters),
+            payload: options.reduce(
+                (acc, o) => acc.filter((f) => f.trim().toUpperCase() !== o.trim().toUpperCase()),
+                filters,
+            ),
         });
     else {
         let group = { ...groups.find((g) => g.name.toUpperCase() === groupName.toUpperCase()) };

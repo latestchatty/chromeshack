@@ -20,7 +20,7 @@ export const stripHtml = (html: string) => {
 };
 
 export const superTrim = (input: string) => {
-    return input.replace(/^\s+|\s+$/g, "");
+    return input.replace(/^[\h\r\n]+|[\h\r\n]+$/gm, "");
 };
 
 export const insertStyle = (css: string, containerName: string) => {

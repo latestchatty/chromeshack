@@ -92,14 +92,19 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
     const postEventHasMatches = matches?.reduce((acc, m) => {
-        if (!parentAuthorIsMe && postEventBody.indexOf(m.toLowerCase()) > -1) acc.push(`"${m}"`);
+        const mToLower = m.toLowerCase();
+        const matchesBody = postEventBody.indexOf(mToLower) > -1;
+        const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
+        // trim extra trailing space from phrase matches for posterity
+        if (!parentAuthorIsMe && matchesBody && !wasAdded) acc.push(m.trim());
         return acc;
-    }, []);
+    }, [] as string[]);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
-    else if (arrHas(postEventHasMatches))
-        return `Someone mentioned phrases: ${postEventHasMatches.join(", ")}`.slice(0, 118) + "...";
-    else return null;
+    else if (arrHas(postEventHasMatches)) {
+        const message = `Someone mentioned: ${postEventHasMatches.join(", ")}`;
+        return `${message.slice(0, 115)}...`;
+    } else return null;
 };
 
 const handleEventSignal = (msg: NotifyMsg) => TM_Instance?.send(msg);
