@@ -88,20 +88,21 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const loggedInUsername = (await getUsername())?.toLowerCase();
     const matches = (await getSetting("notifications")) as string[];
     const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
+    const postAuthor = nEvent?.eventData?.post?.author?.toLowerCase();
     const postEventBody = nEvent?.eventData?.post?.body?.toLowerCase();
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
+    const postAuthorIsMe = postAuthor === loggedInUsername;
     const postEventHasMatches = matches?.reduce((acc, m) => {
         const mToLower = m.toLowerCase();
-        const matchesBody = postEventBody.indexOf(mToLower) > -1;
         const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
         // trim extra trailing space from phrase matches for posterity
-        if (!parentAuthorIsMe && matchesBody && !wasAdded) acc.push(m.trim());
+        if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
         return acc;
     }, [] as string[]);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
-    else if (arrHas(postEventHasMatches)) {
+    else if (!postAuthorIsMe && arrHas(postEventHasMatches)) {
         const message = `Someone mentioned: ${postEventHasMatches.join(", ")}`;
         return `${message.slice(0, 115)}...`;
     } else return null;
