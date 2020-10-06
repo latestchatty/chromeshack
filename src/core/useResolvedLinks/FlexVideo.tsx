@@ -61,7 +61,6 @@ const FlexVideo = (props: MediaProps) => {
         else if (vid) setHasAudio(false);
     };
     const handlePlayToggle = () => {
-        e.preventDefault();
         const vid = observedElem as HTMLVideoElementWithAudio;
         if (vid && clickTogglesPlay && isVidPlaying(vid)) {
             vid.pause();
