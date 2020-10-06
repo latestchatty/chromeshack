@@ -1,0 +1,223 @@
+/* two-pane layout ***************************************************************************************************/
+:root {
+    --thread-pane-width: 400px;
+    --thread-pane-horizontal-margin: 10px;
+    --thread-pane-card-padding: 10px;
+    --thread-pane-card-spacing: 10px;
+    --thread-pane-card-outer-width: calc(var(--thread-pane-width) - 2 * var(--thread-pane-horizontal-margin));
+    --thread-pane-card-inner-width: calc(var(--thread-pane-card-outer-width) - 2 * var(--thread-pane-card-padding));
+    --thread-pane-reply-preview-max-width: 200px;
+    --thread-pane-reply-author-max-width: 100px;
+    --thread-pane-reply-indent: 10px;
+    --thread-pane-root-body-max-height: 60px;
+    --thread-pane-scrollbar-width: 20px; /* estimated */
+}
+
+body.cs_thread_pane_enable {
+    margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
+}
+
+body.cs_thread_pane_enable header {
+    margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
+    width: calc(100% - var(--thread-pane-width) - var(--thread-pane-scrollbar-width)) !important;
+}
+
+div#cs_thread_pane {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
+    height: 100%;
+    background: #111;
+    overflow-y: scroll;
+}
+
+div#cs_thread_pane_list {
+    padding-bottom: 300px;
+    animation: 0.33s easein;
+}
+/* loading the cards should be less jarring */
+@keyframes easein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+div.cs_thread_pane_card {
+    background: #222;
+    margin-left: var(--thread-pane-horizontal-margin);
+    margin-right: var(--thread-pane-horizontal-margin);
+    margin-top: var(--thread-pane-card-spacing);
+    width: var(--thread-pane-card-inner-width);
+    padding: var(--thread-pane-card-padding);
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid #222;
+}
+
+div.cs_thread_pane_card .jt_spoiler {
+    cursor: pointer;
+}
+
+div.cs_thread_pane_card_nws {
+    border-left: 1px solid #f02e01;
+}
+
+div.cs_thread_pane_card_informative {
+    border-left: 1px solid #00bff3;
+}
+
+div.cs_thread_pane_card_political {
+    border-left: 1px solid #f8a500;
+}
+
+div.cs_thread_pane_card_ontopic {
+    border-left: 1px solid #444;
+}
+
+div.cs_thread_pane_card_refresh_pending {
+    /* don't override the mod tag on the left side */
+    border-right: 1px dotted #87ceeb;
+}
+
+div.cs_thread_pane_root_author {
+    font-family: sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    color: rgb(221, 221, 221);
+}
+
+div.cs_thread_pane_root_body {
+    font-family: sans-serif;
+    font-size: 12px;
+    margin-top: 5px;
+    line-height: 125%;
+    overflow: hidden;
+    max-height: var(--thread-pane-root-body-max-height);
+    position: relative;
+}
+
+div.cs_thread_pane_root_body:after {
+    content: "";
+    position: absolute;
+    top: calc(var(--thread-pane-root-body-max-height) - 15px);
+    left: 0;
+    height: 15px;
+    width: 100%;
+    background: linear-gradient(rgba(34, 34, 34, 0), rgb(34, 34, 34));
+}
+
+span.cs_thread_pane_link {
+    text-decoration: underline;
+}
+
+.cs_flash_animation {
+    animation: cs_flash_animation_keyframes 0.5s ease-out;
+}
+@keyframes cs_flash_animation_keyframes {
+    0% {
+        background-color: #205353;
+    }
+    50% {
+        background-color: #205353;
+    }
+    100% {
+        background-color: #202224;
+    }
+}
+.cs_dim_animation {
+    animation: cs_dim_animation_keyframes 0.5s ease-out;
+}
+
+@keyframes cs_dim_animation_keyframes {
+    0% {
+        border-color: #ffffff;
+    }
+    50% {
+        border-color: #ffffff;
+    }
+    100% {
+        border-color: #222;
+        border-left-color: #444;
+    }
+}
+
+div.cs_thread_pane_replies {
+    padding-top: 15px;
+    margin-left: calc(-1 * var(--thread-pane-horizontal-margin));
+    margin-right: calc(-1 * var(--thread-pane-horizontal-margin));
+}
+
+div.cs_thread_pane_reply {
+    padding-left: var(--thread-pane-reply-indent);
+    font-family: arial;
+    font-size: 11px;
+}
+div.reply_most_recent {
+    font-weight: bold;
+}
+/* successive indentation without nesting */
+div.cs_thread_pane_reply:nth-child(1) {
+    margin-left: 10px;
+}
+div.cs_thread_pane_reply:nth-child(2) {
+    margin-left: 20px;
+}
+div.cs_thread_pane_reply:nth-child(3) {
+    margin-left: 30px;
+}
+div.cs_thread_pane_reply:nth-child(4) {
+    margin-left: 40px;
+}
+
+div.cs_thread_pane_reply_arrow {
+    display: inline-block;
+    padding-right: 5px;
+    text-align: left;
+    height: 15px;
+    vertical-align: top;
+    color: #666;
+}
+
+div.cs_thread_pane_reply_preview {
+    display: inline-block;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 15px;
+}
+
+div.cs_thread_pane_reply_divider {
+    display: inline-block;
+    width: 10px;
+    text-align: center;
+    height: 15px;
+    vertical-align: top;
+    color: #666;
+}
+
+div.cs_thread_pane_reply_author {
+    display: inline-block;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #f3e7b5;
+    height: 15px;
+}
+
+div.cs_thread_pane_post_count {
+    float: right;
+    font-family: arial;
+    font-size: 11px;
+    color: #555;
+}
+
+/* fix for Lola background offset */
+body.cs_thread_pane_enable .takeover-skin.active img {
+    left: -759px !important;
+}

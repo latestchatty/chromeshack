@@ -1,7 +1,6 @@
 // required to debug React components in development mode via standalone
 if (process.env.NODE_ENV === "development") require("react-devtools");
 
-import { CodeTagFix } from "./builtin/codetagfix";
 import { Collapse } from "./builtin/collapse";
 import { CommentTags } from "./builtin/comment_tags";
 import { EmojiPoster } from "./builtin/emoji_poster";
@@ -26,15 +25,15 @@ import { SparklyComic } from "./optional/sparkly_comic";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/thread_pane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
-
-require("./styles/chatty-news.css");
-require("./styles/chromeshack.css");
-require("./styles/comic_scripts.css");
-require("./styles/embed_socials.css");
-require("./styles/image_uploader.css");
-require("./styles/media.css");
-require("./styles/two_pane.css");
-require("./styles/userpopup.css");
+import "./styles/chatty-news.css";
+import "./styles/chromeshack.css";
+import "./styles/comic_scripts.css";
+import "./styles/embed_socials.css";
+import "./styles/highlight_pending.css";
+import "./styles/image_uploader.css";
+import "./styles/media.css";
+import "./styles/threadpane.css";
+import "./styles/userpopup.css";
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;
@@ -62,7 +61,6 @@ try {
         TP_Instance.install(),
         MediaEmbedder.install(),
     ]).then(() => {
-        CodeTagFix.install();
         Collapse.install();
         CommentTags.install();
         EmojiPoster.install();

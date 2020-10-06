@@ -8,7 +8,7 @@ const InstagramWrapper = (props: { response: InstagramParsed }) => {
     const [children, setChildren] = useState(null);
     useEffect(() => {
         if (!children) setChildren(<Instagram response={response} />);
-    }, []);
+    }, [children, response]);
     return children;
 };
 
