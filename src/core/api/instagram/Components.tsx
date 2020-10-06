@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames, decodeHTML, fetchBackground } from "../../common";
+import { classNames, decodeHTML, elemMatches, fetchBackground } from "../../common";
 import { ResolveMedia } from "../../useResolvedLinks";
 import { CommentsIcon, InstagramLogo, LikesIcon } from "./Icons";
 import type { InstagramParsed, InstagramResponse, InstagramShortcodeMedia } from "./instagram";
@@ -101,10 +101,19 @@ const Instagram = (props: { response: InstagramParsed }) => {
         error,
     } = response || {};
 
+    const handleLinkClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const _this = e?.target as HTMLElement;
+        const _link = (elemMatches(_this, "a") || _this?.closest("a")) as HTMLAnchorElement;
+        if (_link?.href) {
+            e.preventDefault();
+            window.open(_link.href, "_blank", "noopener,noreferrer");
+        }
+    };
+
     if (!error)
         return (
             <div className="instagram__boundary">
-                <div className="instagram__container">
+                <div className="instagram__container" onClick={handleLinkClick}>
                     <div className="instagram__header">
                         <a href={`https://instagr.am/${authorName}/`} className="instagram__profile__a">
                             <img className="instagram__author__pic circle" src={authorPic} alt="" />
@@ -167,7 +176,4 @@ const Instagram = (props: { response: InstagramParsed }) => {
         );
 };
 
-// render Instagram child from a given instagram response object
-const useInstagram = (instagramObj: InstagramParsed) => instagramObj && <Instagram response={instagramObj} />;
-
-export { useInstagram, fetchInstagramData };
+export { Instagram, fetchInstagramData };

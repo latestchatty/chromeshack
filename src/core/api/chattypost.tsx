@@ -34,15 +34,11 @@ const Chattypost = (props: { html: string }) => {
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         const _this = e?.target as HTMLElement;
         // handle all typical links in embedded chattyposts
-        const pbLink = _this && (elemMatches(_this, "div.getPost .postbody > a") as HTMLAnchorElement);
-        const userLink = _this && (elemMatches(_this, "div.getPost .user > a") as HTMLAnchorElement);
-        const permaLink = _this && (elemMatches(_this, "div.getPost div.postnumber > a") as HTMLAnchorElement);
-        const mailLink = _this && (elemMatches(_this, "div.getPost a.shackmsg > img")?.parentNode as HTMLAnchorElement);
+        const _link = (elemMatches(_this, "a") || _this?.closest("a")) as HTMLAnchorElement;
         const spoilerTag = _this && (elemMatches(_this, "div.getPost span.jt_spoiler") as HTMLSpanElement);
-        const _href = pbLink?.href || userLink?.href || permaLink?.href || mailLink?.href;
-        if (_href) {
+        if (_link?.href) {
             e?.preventDefault();
-            window.open(_href, "_blank", "noopener,noreferrer");
+            window.open(_link.href, "_blank", "noopener,noreferrer");
         } else if (spoilerTag && !spoilerTag.classList?.contains("jt_spoiler_clicked")) {
             spoilerTag.classList.remove("jt_spoiler");
             spoilerTag.classList.add("jt_spoiler_clicked");

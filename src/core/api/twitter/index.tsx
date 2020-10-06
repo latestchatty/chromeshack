@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import type { ParsedResponse } from "../../api";
 import { useTweets } from "./Components";
 import { fetchTweets } from "./helpers";
@@ -7,9 +7,7 @@ import type { TweetParsed } from "./twitter.d";
 const TwitterWrapper = (props: { response: TweetParsed }) => {
     /// wrap useTweets() returning memoized renders of <Twitter /> FC's
     const { response } = props || {};
-    const tweets = useTweets({ tweetObj: response });
-    const memoizedTweets = useMemo(() => tweets, [tweets]);
-    return <>{memoizedTweets}</>;
+    return useTweets({ tweetObj: response });
 };
 
 export const getTwitter = async (...args: string[]) => {

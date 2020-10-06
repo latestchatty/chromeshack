@@ -1,5 +1,5 @@
-import React from "react";
-import { arrHas, classNames, objContainsProperty, objEmpty } from "../../common";
+import React, { useEffect, useState } from "react";
+import { arrHas, classNames, elemMatches, objContainsProperty, objEmpty } from "../../common";
 import { ResolveMedia } from "../../useResolvedLinks";
 import { TwitterBadgeSVG, TwitterVerifiedSVG } from "./Icons";
 import type { TweetParsed } from "./twitter";
@@ -41,10 +41,20 @@ const CompiledTweetText = ({ text }: { text: string }) => {
 const Twitter = (props: { response: TweetParsed }) => {
     const { response } = props || {};
     const mediaOptions = { controls: true, clickTogglesVisible: false };
+
+    const handleLinkClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const _this = e?.target as HTMLElement;
+        const _link = (elemMatches(_this, "a") || _this?.closest("a")) as HTMLAnchorElement;
+        if (_link?.href) {
+            e.preventDefault();
+            window.open(_link.href, "_blank", "noopener,noreferrer");
+        }
+    };
+
     return (
         <>
             {!objContainsProperty("unavailable", response) && !objEmpty(response) ? (
-                <div className="twitter__container">
+                <div className="twitter__container" onClick={handleLinkClick}>
                     <div className="twitter__header">
                         <a href={response.profilePicUrl} className="profile__pic__link">
                             <img className="user__profile__pic" alt="" src={response.profilePic} />
@@ -136,8 +146,12 @@ const accumulateTweets = (tweetObj: TweetParsed) => {
 };
 const useTweets = (props: { tweetObj: TweetParsed }) => {
     const { tweetObj } = props || {};
+    const [tweets, setTweets] = useState(null);
+    useEffect(() => {
+        if (!tweets) setTweets(accumulateTweets(tweetObj));
+    }, [tweetObj, tweets]);
     /// render Tweet children from a given twitter response object
-    return accumulateTweets(tweetObj);
+    return <>{tweets}</>;
 };
 
 export { useTweets };
