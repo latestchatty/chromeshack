@@ -19,6 +19,13 @@
             "group": "build",
             "isBackground": true,
             "problemMatcher": ["$ts-checker5-eslint-webpack-watch", "$ts-checker5-webpack-watch"]
+        },
+        {
+            "type": "npm",
+            "script": "cypress",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": []
         }
     ]
 }

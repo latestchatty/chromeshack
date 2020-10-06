@@ -3,11 +3,12 @@ import { elementIsVisible, scrollToElement } from "../core/common";
 
 export const chatViewFix = async () => {
     try {
-        const is_enabled = await browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` });
-        is_enabled &&
-            (await browser.tabs.executeScript(null, {
+        const result = await browser.tabs.executeScript(null, { code: `window.monkeyPatchCVF === undefined` });
+        const is_enabled = result?.[0];
+        if (is_enabled)
+            await browser.tabs.executeScript(null, {
                 code: /*javascript*/ `
-/// monkeypatch for Chatty's broken scroll-to-post functionality
+// monkeypatch for Chatty's broken scroll-to-post functionality
 if (!document.getElementById("chatviewfix-wjs")) {
     function clickItem(b, f) {
         const d = window.frames.dom_iframe;
@@ -50,7 +51,7 @@ if (!document.getElementById("chatviewfix-wjs")) {
     bodyRef.appendChild(chatViewFixElem);
     undefined;
 }`,
-            }));
+            });
     } catch (e) {
         /* eat empty object exceptions */
     }
