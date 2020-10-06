@@ -19,7 +19,7 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
         };
         // only expose the boolean state of the visibility threshold (for ease of use)
         observer.current = new IntersectionObserver(([e]) => {
-            if (e?.intersectionRatio > threshold) setIsVisible(true);
+            if (e?.isIntersecting) setIsVisible(true);
             else setIsVisible(false);
         }, config);
         // avoid dropping our ref
@@ -29,5 +29,5 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
         return () => _observer.disconnect();
     }, [configOpts, observedElem, root, threshold]);
     // expose an element setter and our boolean visibility state
-    return { setObservedElem, isVisible };
+    return { observedElem, setObservedElem, isVisible };
 };

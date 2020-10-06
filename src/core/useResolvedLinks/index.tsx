@@ -85,27 +85,23 @@ const resolveChildren = async (opts: URLProps) => {
     const lResolved = arrHas(links) && resolveAlbum({ links, options });
     return cResolved || lResolved;
 };
-const useResolvedLinks = (props: URLProps) => {
-    const { links, response, options, toggled } = props || {};
-    const [resolved, setResolved] = useState(null as JSX.Element);
-    useEffect(() => {
-        (async () => {
-            const _children = await resolveChildren({ links, options });
-            if (isValidElement(_children)) setResolved(_children);
-        })();
-    }, [links, response, options, toggled]);
-    return resolved;
-};
 const ResolveMedia = (props: ResolvedMediaProps) => {
     // use useResolvedLinks to return media components from a list of urls
     const { id, className, links, options } = props || {};
-    const children = useResolvedLinks({ links, options });
+    const [children, setChildren] = useState(null);
 
-    return (
+    useEffect(() => {
+        (async () => {
+            const resolved = await resolveChildren({ links, options });
+            if (isValidElement(resolved) && !children) setChildren(resolved);
+        })();
+    }, [links, options, children]);
+
+    return children ? (
         <div id={id} className={className}>
-            {isValidElement(children) ? children : <div />}
+            {children}
         </div>
-    );
+    ) : null;
 };
 
 export { resolveChildren, ResolveMedia };

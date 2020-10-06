@@ -1,6 +1,6 @@
 import { faVolumeMute, faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { classNames } from "../common";
 import type { HTMLVideoElementWithAudio, MediaProps, OverlayProps } from "./index.d";
 import { useIntersectObserver } from "./useIntersectObserver";
@@ -35,14 +35,14 @@ const FlexVideo = (props: MediaProps) => {
     const [hasAudio, setHasAudio] = useState(false);
     const videoRef = useRef<HTMLVideoElementWithAudio>(null);
     // visibility threshold before firing play/pause event
-    const { setObservedElem, isVisible } = useIntersectObserver({
+    const { observedElem, setObservedElem, isVisible } = useIntersectObserver({
         threshold: 0.66,
         delay: 500,
         trackVisibility: true,
     });
 
-    const handleMuteToggle = useCallback(() => {
-        const vid = videoRef.current;
+    const handleMuteToggle = () => {
+        const vid = observedElem as HTMLVideoElementWithAudio;
         if (vid && !muteToggle && !controls) {
             vid.muted = true;
             setMuteToggle(true);
@@ -50,9 +50,9 @@ const FlexVideo = (props: MediaProps) => {
             vid.muted = false;
             setMuteToggle(false);
         }
-    }, [videoRef, muteToggle, controls]);
-    const handleVideoState = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-        const vid = e.target as HTMLVideoElementWithAudio;
+    };
+    const handleVideoState = () => {
+        const vid = observedElem as HTMLVideoElementWithAudio;
         // supports Firefox and Chrome only (via their respective APIs)
         const mozHasAudio = vid?.mozHasAudio;
         const wkAudioByteCount = vid?.webkitAudioDecodedByteCount;
@@ -60,9 +60,9 @@ const FlexVideo = (props: MediaProps) => {
         if (vid && _hasAudio) setHasAudio(_hasAudio);
         else if (vid) setHasAudio(false);
     };
-    const handlePlayToggle = (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
+    const handlePlayToggle = () => {
         e.preventDefault();
-        const vid = e.target as HTMLVideoElementWithAudio;
+        const vid = observedElem as HTMLVideoElementWithAudio;
         if (vid && clickTogglesPlay && isVidPlaying(vid)) {
             vid.pause();
             setWasPaused(true);
@@ -73,16 +73,15 @@ const FlexVideo = (props: MediaProps) => {
     };
 
     useEffect(() => {
-        const vid = videoRef.current;
         // setup visibility observer
-        if (vid) setObservedElem(vid);
-    }, [videoRef, setObservedElem]);
-    useEffect(() => {
         const vid = videoRef.current;
-        if (vid)
-            if (vid && isVisible && !wasPaused) vid.play();
-            else if (vid) vid.pause();
-    }, [videoRef, isVisible, wasPaused]);
+        if (vid && !observedElem) setObservedElem(vid);
+    }, [observedElem, setObservedElem]);
+    useEffect(() => {
+        const _vid = observedElem as HTMLVideoElementWithAudio;
+        if (_vid && isVisible && !wasPaused) _vid.play();
+        else if (_vid) _vid.pause();
+    }, [observedElem, isVisible, wasPaused]);
 
     return (
         src && (
