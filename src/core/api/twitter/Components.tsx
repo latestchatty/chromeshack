@@ -12,7 +12,7 @@ const CompiledTweetText = ({ text }: { text: string }) => {
     for (const [i, m] of tagsReplaced.entries() || []) {
         const isHash = m?.startsWith("#");
         const isTag = m?.startsWith("@");
-        const isLink = m?.startsWith("https");
+        const isLink = m?.match(/^[\s\h]+?https?:\/\//i);
         if (isHash) {
             const hash = m?.replace("#", "");
             output.push(

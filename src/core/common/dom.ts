@@ -326,3 +326,12 @@ export const encodeHTML = (text: string) => {
     if (text) ta.textContent = text;
     return ta.innerHTML || text;
 };
+
+export const disableTwitch = () => {
+    const twitch = document.querySelector(".featured-article-content iframe");
+    const _p = twitch?.closest("p");
+    if (twitch) {
+        twitch.parentNode.removeChild(twitch);
+        _p?.parentNode?.removeChild(_p);
+    }
+};
