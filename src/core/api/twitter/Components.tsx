@@ -27,13 +27,15 @@ const CompiledTweetText = ({ text }: { text: string }) => {
                     @{tag}
                 </a>,
             );
-        } else if (isLink)
+        } else if (isLink) {
+            // don't include the self-tweet link in our span
+            if (i + 1 === tagsReplaced.length - 1) continue;
             output.push(
                 <a key={i} className="twitter-embed-link" href={m}>
                     {m}
                 </a>,
             );
-        else if (m) output.push(m);
+        } else if (m) output.push(m);
     }
     return <span>{output}</span>;
 };
