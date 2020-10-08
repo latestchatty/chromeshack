@@ -9,10 +9,12 @@ div#postbox {
     border: 1px solid #aeae9b;
     background: #222;
     height: 200px;
-    width: 97.8%;
     padding: 0.5rem;
     margin: 0 auto;
     overflow-y: auto;
+}
+#previewArea.hidden {
+    display: none !important;
 }
 /* workaround for busted jt_code tag */
 pre.jt_code {
@@ -204,17 +206,25 @@ span.user > img.chatty-user-icons:nth-child(1) {
 }
 
 /* emoji tagline on the postbox form */
-#postform fieldset p.emoji-tagline {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    font-size: 12px;
-    margin: 0 !important;
+#postform fieldset div.emoji-tagline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-p.emoji-tagline > span {
+div.emoji-tagline span {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 12px;
+}
+div.emoji-tagline > span > span {
     font-weight: bold;
-    font-style: italic;
-    padding: 0 0.5em 0 0.5em;
+}
+div#postbox fieldset {
+    /* workaround for responsiveness at small widths */
+    max-width: calc(100% - 1px) !important;
+    min-width: 0 !important;
 }
 
 /* try to blend background color on wide screens */

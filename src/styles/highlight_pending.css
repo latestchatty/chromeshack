@@ -1,5 +1,32 @@
+:root {
+    --hpnp__fg-color: white;
+    --hpnp__bg-color: rgb(144, 138, 157);
+    --hpnp__bg-hover-color: rgb(92, 80, 112);
+    --hpnp__border-color: rgb(85, 85, 85);
+    --hpnp__border-hover-color: rgb(111, 96, 136);
+    --hpnp__font-family: "Shack Sans", sans-serif;
+}
+
 /* pending post highlighter */
-#post_highlighter_container {
+@media (min-width: 1024px) {
+    /* pinned & unpinned desktop modes */
+    header:not(.pinned) #hpnp__app__container {
+        top: -9px;
+        left: 70px;
+    }
+    header.pinned #hpnp__app__container {
+        top: -2px;
+        left: 0px;
+    }
+}
+@media (max-width: 1024px) {
+    /* pinned mobile mode */
+    #hpnp__app__container {
+        top: -2px;
+        left: 0px;
+    }
+}
+#hpnp__app__container {
     display: flex;
     position: relative;
     z-index: 9999;
@@ -9,9 +36,22 @@
     top: -26px;
     left: 196px;
 }
-#post_highlighter_container.hidden {
-    display: none !important;
+
+#hpnp__container {
+    display: inline-flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    color: var(--hpnp__fg-color) !important;
+    background-color: var(--hpnp__bg-color) !important;
+    border-color: var(--hpnp__border-color) !important;
+    user-select: none;
 }
+#hpnp__container:hover {
+    background-color: var(--hpnp__bg-hover-color) !important;
+    border-color: var(--hpnp__border-hover-color) !important;
+}
+
 a#jump_to_new_post {
     display: inline-flex;
     position: absolute;
@@ -31,32 +71,29 @@ a#jump_to_new_post {
     cursor: pointer;
     line-height: 16px;
 }
-@media (min-width: 1024px) {
-    /* pinned & unpinned desktop modes */
-    header:not(.pinned) a#jump_to_new_post {
-        top: -9px;
-        left: 70px;
-    }
-    header.pinned a#jump_to_new_post {
-        top: -2px;
-        left: 0px;
-    }
-}
-@media (max-width: 1024px) {
-    /* pinned mobile mode */
-    a#jump_to_new_post {
-        top: -2px;
-        left: 0px;
-    }
-}
-#post_highlighter_container a#jump_to_new_post:hover {
-    background-color: #5c5070;
-    border-color: #6f6088;
-}
+
 a.refresh_pending {
     /* override post refresh button */
     background: skyblue;
     border-radius: 10px;
     width: 14px !important;
     height: 15px !important;
+}
+
+#hpnp__container #statustext {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: var(--hpnp__font-family);
+}
+#hpnp__container #prev__btn,
+#hpnp__container #next__btn {
+    border-color: transparent;
+    outline: none;
+    cursor: pointer;
+}
+svg.hpnp__prev__icon,
+svg.hpnp__next__icon {
+    height: 17px;
+    width: 17px;
+    color: white;
 }

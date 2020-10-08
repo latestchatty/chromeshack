@@ -49,10 +49,10 @@ export const EmojiPoster = {
 
             // educate the user on how to open the OS' Emoji Picker
             const _postFormParent = postBox?.querySelector("#postform fieldset") as HTMLElement;
-            const _emojiTaglineElem = document.createElement("p");
+            const _emojiTaglineElem = document.createElement("div");
             _emojiTaglineElem.setAttribute("class", "emoji-tagline");
             safeInnerHTML(
-                "Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.",
+                "<span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.</span>",
                 _emojiTaglineElem,
             );
             _postFormParent?.appendChild(_emojiTaglineElem);

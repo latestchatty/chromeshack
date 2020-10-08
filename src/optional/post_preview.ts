@@ -24,8 +24,8 @@ export const PostPreview = {
         previewButton.textContent = "Preview";
         postButton.parentNode.insertBefore(previewButton, postButton.nextSibling);
         const previewArea = document.createElement("div");
+        previewArea.classList?.add("hidden");
         previewArea.id = "previewArea";
-        previewArea.style.display = "none";
         form_body.parentNode.insertBefore(previewArea, form_body);
         PostPreview.installClickEvent(item);
     },
@@ -64,7 +64,7 @@ export const PostPreview = {
         const replyInput = this_node?.querySelector("#frm_body") as HTMLInputElement;
         const previewBox = this_node?.querySelector("#previewArea") as HTMLInputElement;
         if (!replyInput || !previewBox) return;
-        previewBox.style.display = "block";
+        previewBox.classList?.remove("hidden");
         PostPreview.delayedPreview(this_node);
         replyInput.addEventListener("input", PostPreview.updatePreview, true);
         replyInput.focus();
@@ -78,7 +78,7 @@ export const PostPreview = {
         const replyInput = this_node?.querySelector("#frm_body") as HTMLInputElement;
         const previewBox = this_node?.querySelector("#previewArea") as HTMLInputElement;
         if (!replyInput || !previewBox) return;
-        previewBox.style.display = "none";
+        previewBox.classList?.add("hidden");
         replyInput?.removeEventListener("input", PostPreview.updatePreview, true);
         replyInput?.focus();
         scrollToElement(replyInput);
