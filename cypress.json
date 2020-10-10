@@ -1,3 +1,13 @@
 {
-    "defaultCommandTimeout": 10000
+    "viewportHeight": 768,
+    "viewportWidth": 900,
+    "defaultCommandTimeout": 10000,
+    "video": false,
+    "reporter": "mochawesome",
+    "reporterOptions": {
+        "reportDir": "mochawesome-report",
+        "overwrite": false,
+        "html": false,
+        "json": true
+    }
 }

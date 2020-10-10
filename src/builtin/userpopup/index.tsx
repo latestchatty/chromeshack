@@ -16,8 +16,6 @@ export const UserPopup = {
 
         if (userLink || accountLink) {
             e.preventDefault();
-            e.stopPropagation();
-
             const _username = userLink?.innerText || accountName;
             const _elem = userLink || accountLink;
             const containerRef = _elem?.querySelector(".userDropdown") as HTMLUListElement;

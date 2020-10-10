@@ -3,73 +3,83 @@
     --hpnp__bg-color: rgb(144, 138, 157);
     --hpnp__bg-hover-color: rgb(92, 80, 112);
     --hpnp__border-color: rgb(85, 85, 85);
-    --hpnp__border-hover-color: rgb(111, 96, 136);
+    --hpnp__fg-hover-color: rgb(111, 96, 136);
+    --hpnp__active-color: rgb(60, 60, 60);
     --hpnp__font-family: "Shack Sans", sans-serif;
 }
 
 /* pending post highlighter */
-@media (min-width: 1024px) {
-    /* pinned & unpinned desktop modes */
-    header:not(.pinned) #hpnp__app__container {
-        top: -9px;
-        left: 70px;
-    }
-    header.pinned #hpnp__app__container {
-        top: -2px;
-        left: 0px;
-    }
-}
-@media (max-width: 1024px) {
-    /* pinned mobile mode */
-    #hpnp__app__container {
-        top: -2px;
-        left: 0px;
-    }
+a.hpnp__enabled {
+    display: flex !important;
 }
 #hpnp__app__container {
-    display: flex;
     position: relative;
+    display: inline-flex;
     z-index: 9999;
-    /*  resets */
     padding: 0;
     margin: 0;
-    top: -26px;
-    left: 196px;
+}
+header:not(.pinned) #hpnp__app__container {
+    max-height: 29px;
+    top: 10px;
+    left: 10px;
+}
+header.pinned #hpnp__app__container {
+    max-height: 22px;
+    top: 5px;
+    left: 10px;
 }
 
 #hpnp__container {
-    display: inline-flex;
-    position: absolute;
+    display: flex;
     align-items: center;
     justify-content: center;
     color: var(--hpnp__fg-color) !important;
     background-color: var(--hpnp__bg-color) !important;
     border-color: var(--hpnp__border-color) !important;
     user-select: none;
+    cursor: pointer;
+}
+
+#hpnp__container #statustext {
+    position: relative;
+    margin-top: 2px;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: var(--hpnp__font-family);
+}
+#hpnp__container #prev__btn,
+#hpnp__container #next__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-color: transparent;
+    outline: none;
+    background-color: transparent;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 #hpnp__container:hover {
     background-color: var(--hpnp__bg-hover-color) !important;
     border-color: var(--hpnp__border-hover-color) !important;
 }
+#prev__btn:active > svg,
+#next__btn:active > svg,
+#hpnp__container #statustext:active {
+    color: var(--hpnp__active-color) !important;
+}
 
-a#jump_to_new_post {
-    display: inline-flex;
-    position: absolute;
-    align-self: center;
-    justify-self: center;
-    justify-content: center;
-    align-content: center;
-    border: 1px solid #555;
-    background: #908a9d;
-    font-size: 20px;
-    font-weight: 600;
+#hpnp__container #prev__btn {
+    margin: 0 4px 0 3px !important;
+}
+#hpnp__container #next__btn {
+    margin: 0 3px 0 4px !important;
+}
+svg.hpnp__prev__icon,
+svg.hpnp__next__icon {
+    height: 16px !important;
+    width: 6px !important;
     color: white;
-    font-family: "Shack Sans", sans-serif;
-    -webkit-user-select: none;
-    padding: 4px 3px 2px 2px;
-    white-space: nowrap;
-    cursor: pointer;
-    line-height: 16px;
 }
 
 a.refresh_pending {
@@ -78,22 +88,4 @@ a.refresh_pending {
     border-radius: 10px;
     width: 14px !important;
     height: 15px !important;
-}
-
-#hpnp__container #statustext {
-    font-size: 20px;
-    font-weight: 600;
-    font-family: var(--hpnp__font-family);
-}
-#hpnp__container #prev__btn,
-#hpnp__container #next__btn {
-    border-color: transparent;
-    outline: none;
-    cursor: pointer;
-}
-svg.hpnp__prev__icon,
-svg.hpnp__next__icon {
-    height: 17px;
-    width: 17px;
-    color: white;
 }

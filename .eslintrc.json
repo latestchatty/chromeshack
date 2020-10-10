@@ -7,7 +7,7 @@
             "jsx": true
         }
     },
-    "plugins": ["@typescript-eslint", "prettier", "import", "react", "sonarjs", "react-hooks"],
+    "plugins": ["@typescript-eslint", "prettier", "import", "react", "react-hooks"],
     "settings": {
         "react": {
             "version": "detect"
@@ -21,7 +21,6 @@
     },
     "extends": [
         "plugin:prettier/recommended",
-        "plugin:sonarjs/recommended",
         "plugin:import/errors",
         "plugin:import/warnings",
         "plugin:import/typescript",
@@ -38,8 +37,6 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "sonarjs/no-duplicate-string": "off",
-        "sonarjs/cognitive-complexity": ["warn", 35],
         "no-restricted-syntax": [
             1,
             {

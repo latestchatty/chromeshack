@@ -79,6 +79,16 @@ export const ChromeShack = {
             }
         }
     },
+    processObserverInstalled() {
+        (async () => {
+            // catch and eat errors here because this is harmless in this context:
+            // https://github.com/mozilla/webextension-polyfill/issues/130
+            // monkey patch the 'clickItem()' method on Chatty once we're done loading
+            await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
+            // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
+            await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
+        })();
+    },
 
     install() {
         // set our current logged-in username once upon refreshing the Chatty
@@ -103,9 +113,6 @@ export const ChromeShack = {
             childList: true,
         });
 
-        // raise an event before we start processing posts
-        ChromeShack.processFullPosts();
-
         document.addEventListener("click", (e: MouseEvent) => {
             const _this = e?.target as HTMLElement;
             const refreshBtn = elemMatches(_this, ".fullpost .refresh > a");
@@ -116,6 +123,10 @@ export const ChromeShack = {
                 ChromeShack.handleRefreshIntent(post, root, postid, rootid, is_root);
             }
         });
+
+        // raise an event before we start processing posts
+        ChromeShack.processObserverInstalled();
+        ChromeShack.processFullPosts();
     },
 
     /*
@@ -131,15 +142,6 @@ export const ChromeShack = {
         if (ChromeShack.debugEvents) console.log("raising fullPostsCompletedEvent");
         fullPostsCompletedEvent.raise();
         ChromeShack.hasInitialized = true;
-
-        (async () => {
-            // catch and eat errors here because this is harmless in this context:
-            // https://github.com/mozilla/webextension-polyfill/issues/130
-            // monkey patch the 'clickItem()' method on Chatty once we're done loading
-            await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
-            // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
-            await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
-        })();
     },
     processPost(post: HTMLElement, root: HTMLElement, postid: string, rootid: string, is_root: boolean) {
         if (ChromeShack.debugEvents) console.log("raising processPostEvent:", post, rootid, is_root);

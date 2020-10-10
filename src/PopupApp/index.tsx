@@ -91,7 +91,7 @@ const PopupApp = () => {
                         <Suboption
                             id="social_loader_settings"
                             optionid="sl_show_tweet_threads"
-                            label="Show Twitter threads when opening Twitter links."
+                            label="Show Twitter threads when opening Twitter links"
                         />
                     </Option>
                     <Option

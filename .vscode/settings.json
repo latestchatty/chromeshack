@@ -2,13 +2,12 @@
     "editor.tabSize": 4,
     "files.eol": "\n",
     "files.insertFinalNewline": true,
-    "editor.formatOnSave": true,
-    "eslint.enable": true,
     "eslint.packageManager": "npm",
     "eslint.alwaysShowStatus": true,
     "eslint.lintTask.enable": true,
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": true
+        "source.fixAll": true
     },
     "typescript.tsdk": "./node_modules/typescript/lib"
 }

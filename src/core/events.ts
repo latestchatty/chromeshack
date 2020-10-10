@@ -34,3 +34,7 @@ export const processPostRefreshEvent = new LiteEvent<any>();
 export const processEmptyTagsLoadedEvent = new LiteEvent<any>();
 export const processTagDataLoadedEvent = new LiteEvent<any>();
 export const processNotifyEvent = new LiteEvent<any>();
+// react app events
+export const pendingPostsUpdateEvent = new LiteEvent<any>();
+export const userFilterUpdateEvent = new LiteEvent<any>();
+export const hpnpJumpToPostEvent = new LiteEvent<any>();

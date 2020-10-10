@@ -23,20 +23,18 @@ const Iframe = (props: MediaProps) => {
             : src;
 
     return (
-        src && (
-            <div className="iframe__boundary">
-                <div className={classes}>
-                    <iframe
-                        title={src}
-                        src={_src}
-                        frameBorder="0"
-                        scrolling="no"
-                        allowFullScreen
-                        allow={isYoutube ? "autoplay; encrypted-media" : ""}
-                    />
-                </div>
+        <div className="iframe__boundary">
+            <div className={classes}>
+                <iframe
+                    title={src}
+                    src={_src}
+                    frameBorder="0"
+                    scrolling="no"
+                    allowFullScreen
+                    allow={isYoutube ? "autoplay; encrypted-media" : ""}
+                />
             </div>
-        )
+        </div>
     );
 };
 
@@ -58,7 +56,7 @@ const Image = (props: MediaProps) => {
         } else if (img) setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
     }, [imageRef, isSlide, _classes, clickTogglesVisible]);
 
-    return src && <img className={classes} src={src} alt="" ref={imageRef} />;
+    return <img className={classes} src={src} alt="" ref={imageRef} />;
 };
 
 export { Image, Iframe };

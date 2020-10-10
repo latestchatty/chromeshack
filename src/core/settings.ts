@@ -218,13 +218,60 @@ export const DefaultSettings: Settings = {
 /// GETTERS
 
 export const getSettings = async () => {
-    let settings = (await browser.storage.local.get()) as Settings;
-    // overwrite settings store with defaults if unpopulated
-    if (objEmpty(settings)) {
-        await browser.storage.local.set(DefaultSettings);
-        settings = browser.storage.local.get();
+    try {
+        let settings = (await browser.storage.local.get()) as Settings;
+        const transients = localStorage["transient-data"];
+        const transOpts = localStorage["transient-opts"];
+        const transientData = transients && JSON.parse(transients);
+        const transientOpts = transOpts && JSON.parse(transOpts);
+
+        // build a settings object from stringified JSON passed into localStorage
+        let withTransient: Settings = {};
+        if (transientData) {
+            localStorage.clear();
+            console.log("detected transient settings:", transients, transOpts);
+            withTransient = Object.entries(transientData).reduce((acc, [k, v]) => {
+                // combine incoming data with existing subkey
+                const _arr = Array.isArray(settings[k]) && (settings[k] as string[]);
+                const _obj = !_arr && objHas(settings[k]) && (settings[k] as Record<string, any>);
+
+                const _defArr = Array.isArray(DefaultSettings[k]) && (DefaultSettings[k] as string[]);
+                const _defObj = !_defArr && (DefaultSettings[k] as Record<string, any>);
+                const foundVal = JSON.stringify(_arr).indexOf(JSON.stringify(v)) > -1;
+
+                const _reducedNoDefaults = _arr
+                    ? { ...acc, [k]: [..._arr, ...(v as string[])] }
+                    : { ...acc, [k]: { ..._obj, ...(v as Record<string, any>) } };
+                const _reducedDefaults = _defArr
+                    ? { ...acc, [k]: [..._defArr, ...(v as string[])] }
+                    : { ...acc, [k]: { ..._defObj, ...(v as Record<string, any>) } };
+
+                if (!foundVal && !transientOpts?.overwrite) return _reducedNoDefaults;
+                else if (!foundVal && transientOpts?.overwrite) return _reducedDefaults;
+                else return acc;
+            }, {} as Settings);
+            if (objHas(withTransient)) {
+                // overwrite settings with transient data passed into localStorage
+                settings = transientOpts?.overwrite
+                    ? { ...DefaultSettings, ...withTransient }
+                    : { ...settings, ...withTransient };
+                await browser.storage.local.set(settings);
+            }
+        }
+
+        if (objEmpty(settings)) {
+            // overwrite settings store with defaults if unpopulated
+            const resetState = objHas(withTransient)
+                ? { ...DefaultSettings, ...withTransient }
+                : { ...DefaultSettings };
+            await browser.storage.local.set(resetState);
+            const freshSettings = browser.storage.local.get();
+            settings = freshSettings;
+        }
+        return settings;
+    } catch (e) {
+        if (e) console.error(e);
     }
-    return settings;
 };
 
 export const settingsContains = async (key: string) => {

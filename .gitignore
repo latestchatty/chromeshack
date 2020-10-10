@@ -9,3 +9,4 @@ Session.vim
 dist.crx
 dist.pem
 tsconfig.tsbuildinfo
+mochawesome-report

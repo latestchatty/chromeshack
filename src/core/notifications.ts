@@ -9,29 +9,33 @@ export const setEventId = async (eventId: number) => await setSetting("nEventId"
 export const getUsername = async () => (await getSetting("nUsername")) as Promise<string>;
 export const setUsername = async (username: string) => await setSetting("nUsername", username);
 
+export type EventType = "lolCountsUpdate" | "newPost";
+export type PostCategory = "ontopic" | "nws" | "stupid" | "political" | "tangent" | "informative";
+export type LOLTags = "lol" | "inf" | "unf" | "tag" | "wtf" | "wow" | "aww";
+export interface LOLTagUpdate {
+    count: number;
+    postId?: number;
+    tag: LOLTags;
+}
 export interface NotifyEvent {
     eventData: {
         parentAuthor?: string;
         post?: {
             author?: string;
             body?: string;
-            category?: string;
+            category?: PostCategory;
             date?: string;
             id?: number;
-            lols?: any[];
+            lols?: LOLTagUpdate[] | [];
             parentId?: number;
             threadId?: number;
         };
         postId?: number;
-        updates?: {
-            count: number;
-            postId: number;
-            tag: string;
-        }[];
+        updates?: LOLTagUpdate[] | [];
     };
     eventDate: string;
-    eventId: number;
-    eventType: string;
+    eventId: string;
+    eventType: EventType;
 }
 export interface NotifyResponse {
     events: NotifyEvent[] | [];
@@ -41,6 +45,7 @@ export interface NotifyResponse {
     code?: string;
     message?: string;
 }
+
 interface NotifyMsg {
     name: string;
     data: NotifyResponse;

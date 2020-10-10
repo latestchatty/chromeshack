@@ -1,5 +1,5 @@
-import { HU_Instance, TP_Instance } from "../content";
-import { processPostRefreshEvent } from "../core/events";
+import { HU_Instance } from "../content";
+import { processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
 import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
 
@@ -22,7 +22,7 @@ export const CustomUserFilters = {
         return CustomUserFilters.parsedUsers.filter((v) => v.name === username);
     },
 
-    async removeOLsFromUserId(id: string) {
+    async removeOLsFromUserId(id: string, user: string) {
         let postElems: Element[];
         const hideFPs = await getEnabledSuboption("cuf_hide_fullposts");
         if (hideFPs) postElems = [...document.querySelectorAll(`div.olauthor_${id}, div.fpauthor_${id}`)];
@@ -39,6 +39,7 @@ export const CustomUserFilters = {
                 // only remove root if we're in thread mode
                 root?.parentNode?.removeChild(root);
         }
+        userFilterUpdateEvent.raise(user);
     },
 
     async applyFilter() {
@@ -47,9 +48,6 @@ export const CustomUserFilters = {
         CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
         for (const filteredUser of filteredUsers)
             for (const userMatch of CustomUserFilters.resolveUser(filteredUser) || [])
-                await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id);
-
-        // refresh threadpane after removing posts to avoid unnecessary redraws
-        if (TP_Instance.isEnabled) TP_Instance.apply();
+                await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id, userMatch.name);
     },
 };

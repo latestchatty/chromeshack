@@ -13,15 +13,11 @@ export const isVidPlaying = (v: HTMLVideoElement) => !!(v.currentTime > 0 && !v.
 const MuteOverlay = (props: OverlayProps) => {
     const { visibility, predicate, audioEnabled, onClick } = props || {};
     const _predicate = predicate !== undefined ? predicate : false;
-    return (
-        <>
-            {!_predicate && audioEnabled ? (
-                <div className="mute__overlay__container" onClick={onClick} title={visibility ? "Unmute" : "Mute"}>
-                    {visibility ? <VolumeUpIcon /> : <VolumeMuteIcon />}
-                </div>
-            ) : null}
-        </>
-    );
+    return _predicate && audioEnabled ? (
+        <div className="mute__overlay__container" onClick={onClick} title={visibility ? "Unmute" : "Mute"}>
+            {visibility ? <VolumeUpIcon /> : <VolumeMuteIcon />}
+        </div>
+    ) : null;
 };
 
 const FlexVideo = (props: MediaProps) => {
@@ -29,6 +25,7 @@ const FlexVideo = (props: MediaProps) => {
     // set some sensible defaults
     const { loop = true, muted = true, controls = false, autoPlay = true, clickTogglesPlay = true } = props || {};
     const _classes = classNames(classes, { canToggle: clickTogglesPlay });
+    const isFirefox = !window.chrome;
 
     const [muteToggle, setMuteToggle] = useState(muted);
     const [wasPaused, setWasPaused] = useState(false);
@@ -42,17 +39,17 @@ const FlexVideo = (props: MediaProps) => {
     });
 
     const handleMuteToggle = () => {
-        const vid = observedElem as HTMLVideoElementWithAudio;
-        if (vid && !muteToggle && !controls) {
+        const vid = videoRef.current as HTMLVideoElementWithAudio;
+        if (vid && !muteToggle) {
             vid.muted = true;
             setMuteToggle(true);
-        } else if (vid && !controls) {
+        } else if (vid) {
             vid.muted = false;
             setMuteToggle(false);
         }
     };
     const handleVideoState = () => {
-        const vid = observedElem as HTMLVideoElementWithAudio;
+        const vid = videoRef.current as HTMLVideoElementWithAudio;
         // supports Firefox and Chrome only (via their respective APIs)
         const mozHasAudio = vid?.mozHasAudio;
         const wkAudioByteCount = vid?.webkitAudioDecodedByteCount;
@@ -60,8 +57,8 @@ const FlexVideo = (props: MediaProps) => {
         if (vid && _hasAudio) setHasAudio(_hasAudio);
         else if (vid) setHasAudio(false);
     };
-    const handlePlayToggle = () => {
-        const vid = observedElem as HTMLVideoElementWithAudio;
+    const handlePlayToggle = (e: React.MouseEvent<HTMLVideoElement, MouseEvent>) => {
+        const vid = e?.target as HTMLVideoElementWithAudio;
         if (vid && clickTogglesPlay && isVidPlaying(vid)) {
             vid.pause();
             setWasPaused(true);
@@ -83,31 +80,30 @@ const FlexVideo = (props: MediaProps) => {
     }, [observedElem, isVisible, wasPaused]);
 
     return (
-        src && (
-            <div className="media__boundary">
-                <MuteOverlay
-                    predicate={controls}
-                    visibility={muteToggle}
-                    audioEnabled={hasAudio}
-                    onClick={handleMuteToggle}
-                />
-                <video
-                    key={src}
-                    ref={videoRef}
-                    className={_classes}
-                    src={src}
-                    loop={loop}
-                    muted={muted}
-                    controls={controls}
-                    autoPlay={autoPlay}
-                    onClick={handlePlayToggle}
-                    // onPlaying is required to detect audio in Chrome
-                    onPlaying={handleVideoState}
-                    // onLoadedData is required to detect audio in Firefox
-                    onLoadedData={handleVideoState}
-                />
-            </div>
-        )
+        <div className="media__boundary" style={isFirefox ? { position: "relative" } : undefined}>
+            <MuteOverlay
+                predicate={isFirefox || !controls}
+                visibility={muteToggle}
+                audioEnabled={hasAudio}
+                onClick={handleMuteToggle}
+            />
+            <video
+                key={src}
+                ref={videoRef}
+                className={_classes}
+                src={src}
+                loop={loop}
+                muted={muted}
+                // controls conflict with onClick events on Firefox
+                controls={!isFirefox ? controls : false}
+                autoPlay={autoPlay}
+                onClick={handlePlayToggle}
+                // onPlaying is required to detect audio in Chrome
+                onPlaying={handleVideoState}
+                // onLoadedData is required to detect audio in Firefox
+                onLoadedData={handleVideoState}
+            />
+        </div>
     );
 };
 

@@ -14,7 +14,8 @@ import { ChromeShack } from "./core/observers";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
 import { DinoGegtik } from "./optional/dinogegtik";
-import { HighlightPendingPosts } from "./optional/highlight_pending_new_posts";
+//import { HighlightPendingPosts } from "./optional/highlight_pending_new_posts";
+import { HighlightPendingPosts } from "./optional/highlightpending";
 import { HighlightUsers } from "./optional/highlight_users";
 import { MediaEmbedder } from "./optional/media-embedder";
 import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
@@ -23,7 +24,7 @@ import { PostPreview } from "./optional/post_preview";
 import { PostStyling } from "./optional/post_style";
 import { SparklyComic } from "./optional/sparkly_comic";
 import { Switchers } from "./optional/switchers";
-import { ThreadPane } from "./optional/thread_pane";
+import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import "./styles/chatty-news.css";
 import "./styles/chromeshack.css";
@@ -38,7 +39,6 @@ import "./styles/userpopup.css";
 // save some important refs for later
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
-export const TP_Instance = ThreadPane;
 
 // open a message channel for WinChatty events
 TabMessenger.connect();
@@ -58,7 +58,7 @@ try {
         DinoGegtik.install(),
         SparklyComic.install(),
         Switchers.install(),
-        TP_Instance.install(),
+        ThreadPane.install(),
         MediaEmbedder.install(),
     ]).then(() => {
         Collapse.install();

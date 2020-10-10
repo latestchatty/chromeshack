@@ -29,18 +29,23 @@ export interface ShackRSSItem {
 }
 
 const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
-    if (val && Array.isArray(val)) {
-        const _arr = [] as any[];
-        for (const subval of val) _arr.push(sanitizeObj(subval));
-        return _arr;
-    } else if (val && typeof val === "object" && Object.keys(val).length > 0) {
-        const _obj = {} as Record<string, any>;
-        for (const key in val) _obj[key] = sanitizeObj(val[key]);
-        return _obj;
-    } else {
+    const _objKeys = val && typeof val === "object" && Object.keys(val);
+    if (Array.isArray(val))
+        return val.reduce((acc, v) => {
+            acc.push(sanitizeObj(v));
+            return acc;
+        }, []);
+    else if (_objKeys?.length > 0)
+        return _objKeys.reduce((acc, k) => {
+            acc[k] = sanitizeObj(val[k]);
+            return acc;
+        }, {} as Record<string | number, any>);
+    else {
+        // we only need to sanitize strings here
         if (val === null) return null;
         if (typeof val === "boolean" && val) return true;
         if (typeof val === "boolean" && !val) return false;
+        else if (typeof val === "number") return val;
         else return DOMPurify.sanitize(val, purifyConfig);
     }
 };
