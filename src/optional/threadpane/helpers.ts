@@ -33,12 +33,15 @@ const getMod = (postElem: HTMLElement) => {
 };
 
 const getAuthor = (postElem: HTMLElement) => {
-    const _elem = elemMatches(postElem, ".oneline") || elemMatches(postElem, "li");
-    const username = _elem?.querySelector(`span.user a, span.oneline_user`);
+    const _elem =
+        elemMatches(postElem, "div.root > ul > li, div.root") ||
+        elemMatches(postElem, ".oneline") ||
+        elemMatches(postElem, "li");
+    const username = _elem?.querySelector("span.user a, span.oneline_user");
     return (username as HTMLElement)?.innerText?.split(" - ")[0] || "";
 };
 
-const parsePost = (postElem: HTMLElement, limit?: number, prevParse?: ParsedReply) => {
+const parseReply = (postElem: HTMLElement) => {
     const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
     const postid = parseInt(post?.id.substr(5));
     const oneline = post?.querySelector(".oneline") as HTMLElement;
@@ -63,21 +66,19 @@ const parsePost = (postElem: HTMLElement, limit?: number, prevParse?: ParsedRepl
 export const getRecents = (divRootElem: HTMLElement) => {
     // find the most recent posts in a thread - newest to oldest
     let lastRecentRef: HTMLElement;
-    // find the newest post then hand off to getReplyTree()
+    // find the most recent post in ascending age
     for (let i = 0; i < 10 && !lastRecentRef; i++)
         if (!lastRecentRef) lastRecentRef = divRootElem.querySelector(`div.oneline${i}`) as HTMLElement;
     const recentRootId = lastRecentRef && parseInt(lastRecentRef.closest("div.root")?.id?.substr(5));
-    // save a ref to our most recent post
     const mostRecentRef = lastRecentRef;
-    // collect our parents into an array
+    // walk up the reply tree to a distance limit of 4 parents
     const recentTree = [] as ParsedReply[];
     for (let i = 0; i < 4 && lastRecentRef; i++) {
-        const _parsed = parsePost(lastRecentRef);
+        const _parsed = parseReply(lastRecentRef);
         lastRecentRef = _parsed.parentRef;
-        if (_parsed?.postid !== recentRootId) recentTree.push(_parsed);
+        // put our replies in render order (oldest to newest)
+        if (_parsed?.postid !== recentRootId) recentTree.unshift(_parsed);
     }
-    // sort oldest to newest (as it would be rendered)
-    recentTree.reverse();
     return {
         mostRecentRef,
         recentTree,
@@ -86,6 +87,8 @@ export const getRecents = (divRootElem: HTMLElement) => {
 };
 
 export const clonePostBody = (postElem: HTMLElement) => {
+    // post body is empty (probably nuked)
+    if (postElem?.innerText.length === 0) return null;
     const clone = postElem?.cloneNode(true) as HTMLElement;
     // clean up the postbody before processing
     const elements = [...clone?.querySelectorAll("a, div.medialink, .jt_spoiler")];
@@ -111,24 +114,34 @@ export const clonePostBody = (postElem: HTMLElement) => {
     return trimBodyHTML(clone);
 };
 
+const parseRoot = (rootElem: HTMLElement) => {
+    const root = elemMatches(rootElem, "div.root");
+    const rootid = root && parseInt(root?.id?.substr(5));
+    if (rootid < 1 || rootid > 50000000) {
+        console.error(`The thread ID of ${rootid} seems bogus.`);
+        return null;
+    }
+    const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
+    const author = getAuthor(rootLi);
+    const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
+    if (!author || !body) {
+        console.error(`Encountered what looks like a nuked post:`, rootid, root);
+        return null;
+    }
+    const mod = getMod(rootLi?.querySelector(".fullpost"));
+    const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
+    const recents = getRecents(root);
+    return { author, body, count, mod, recents, rootid } as ParsedPost;
+};
+
 export const parsePosts = (divThreadsElem: HTMLElement) => {
     try {
         const roots = [...divThreadsElem?.querySelectorAll("div.root")] as HTMLElement[];
-        const _cards = [] as ParsedPost[];
-        for (const root of roots || []) {
-            const rootid = parseInt(root.getAttribute("id")?.substr(5));
-            if (rootid < 1 || rootid > 50000000) throw Error(`The thread ID of ${rootid} seems bogus.`);
-
-            const _root = rootid && (root.querySelector("ul > li.sel") as HTMLElement);
-            const mod = getMod(_root?.querySelector(".fullpost"));
-            const author = rootid && (_root.querySelector("div.postmeta span.user > a") as HTMLElement)?.innerText;
-            const body = rootid && clonePostBody(_root.querySelector("div.postbody") as HTMLElement);
-            const _posts = [..._root?.querySelectorAll("div.capcontainer li")];
-            const count = _posts?.length;
-            const recents = getRecents(_root);
-            _cards.push({ author, body, count, mod, recents, rootid } as ParsedPost);
-        }
-        return _cards;
+        return roots?.reduce((acc, r) => {
+            const parsed = parseRoot(r);
+            if (parsed) acc.push(parsed);
+            return acc;
+        }, [] as ParsedPost[]);
     } catch (e) {
         console.error(e);
     }
