@@ -32,7 +32,7 @@ export const ChromeShack = {
 
                     for (const addedNode of mutation.addedNodes || []) {
                         const added = addedNode as HTMLElement;
-                        const addedParent = addedNode?.parentNode as HTMLElement;
+                        const addedParent = added?.parentNode as HTMLElement;
                         // reply/refresh = added?.matches("div.root")
                         if (elemMatches(addedParent, "li[id^='item_']")) {
                             // check for opening a fullpost

@@ -1,4 +1,3 @@
-import type { PostEventArgs } from "../core";
 import { generatePreview, safeInnerHTML, scrollToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
@@ -13,11 +12,11 @@ export const PostPreview = {
         if (is_enabled) processPostBoxEvent.addHandler(PostPreview.apply);
     },
 
-    apply({ post }: PostEventArgs) {
+    apply(postbox: HTMLElement) {
         // script is already injected
-        if (post?.querySelector("#previewButton")) return;
-        const postButton = post.querySelector("#frm_submit");
-        const form_body = post.querySelector("#frm_body");
+        if (postbox?.querySelector("#previewButton")) return;
+        const postButton = postbox.querySelector("#frm_submit");
+        const form_body = postbox.querySelector("#frm_body");
         if (!postButton || !form_body) return;
         const previewButton = document.createElement("button");
         previewButton.id = "previewButton";
@@ -28,7 +27,7 @@ export const PostPreview = {
         previewArea.classList?.add("hidden");
         previewArea.id = "previewArea";
         form_body.parentNode.insertBefore(previewArea, form_body);
-        PostPreview.installClickEvent(post);
+        PostPreview.installClickEvent(postbox);
     },
 
     replyToggleHandler(e: MouseEvent) {
