@@ -1,10 +1,13 @@
 import type { ParsedResponse } from "../../core/api";
 import type { MediaOptions } from "../../core/useResolvedLinks";
 
-export interface ExpandoProps {
+export interface ResolvedResponse {
+    postid: number;
+    idx: number;
     response: ParsedResponse;
-    idx: string;
-    postid?: string;
+}
+
+export interface ExpandoProps extends ResolvedResponse {
     options?: MediaOptions;
 }
 
@@ -13,10 +16,4 @@ export interface FCWithMediaProps extends JSX.Element {
         src?: string;
         slides?: JSX.Element[];
     };
-}
-
-export interface ResolvedResponse {
-    postid: string;
-    idx: string;
-    response: ParsedResponse;
 }

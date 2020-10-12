@@ -9,9 +9,9 @@ export const ImageUploader = {
         processPostBoxEvent.addHandler(ImageUploader.installForm);
     },
 
-    installForm(item: HTMLElement) {
+    installForm(postbox: HTMLElement) {
         const { Provider: UploaderProvider } = useUploaderStore;
-        const postForm = item.querySelector("#postform");
+        const postForm = postbox?.querySelector("#postform");
 
         const postFooter = document.createElement("div");
         postFooter.setAttribute("class", "post_sub_container");
@@ -29,7 +29,7 @@ export const ImageUploader = {
 
         return render(
             <UploaderProvider>
-                <ImageUploaderApp parentRef={item} />
+                <ImageUploaderApp parentRef={postbox} />
             </UploaderProvider>,
             renderContainer,
         );

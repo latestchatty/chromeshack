@@ -23,7 +23,7 @@ const fetchChattyPost = async (postid: string) => {
 
         // fix timestamp for embedded chatty post
         const postdate = fullpost.querySelector("div.postdate") as HTMLElement;
-        if (postdate) LocalTimeStamp.adjustPostTime(postdate);
+        if (postdate) LocalTimeStamp.adjustPostTime({ post: postdate });
         // return the post as a sanitized string of HTML (without the container)
         return container.firstElementChild?.innerHTML;
     } else return null as string;

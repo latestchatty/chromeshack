@@ -1,5 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { processPostEvent } from "../core/events";
+import type { PostEventArgs } from "../core/index.d";
 
 export const ModBanners = {
     isEnabled: false,
@@ -11,12 +12,12 @@ export const ModBanners = {
         processPostEvent.addHandler(ModBanners.processPost);
     },
 
-    processPost(elem: HTMLElement) {
-        if (ModBanners.isEnabled) {
-            const _isOfftopic = elem.querySelector("li > div.fullpost.fpmod_offtopic:not(.getPost)") as HTMLElement;
-            const _isStupid = elem.querySelector("li > div.fullpost.fpmod_stupid:not(.getPost)") as HTMLElement;
-            const _isPolitical = elem.querySelector("li > div.fullpost.fpmod_political:not(.getPost)") as HTMLElement;
-            const _isInformative = elem.querySelector(
+    processPost({ post }: PostEventArgs) {
+        if (ModBanners.isEnabled && post) {
+            const _isOfftopic = post.querySelector("li > div.fullpost.fpmod_offtopic:not(.getPost)") as HTMLElement;
+            const _isStupid = post.querySelector("li > div.fullpost.fpmod_stupid:not(.getPost)") as HTMLElement;
+            const _isPolitical = post.querySelector("li > div.fullpost.fpmod_political:not(.getPost)") as HTMLElement;
+            const _isInformative = post.querySelector(
                 "li > div.fullpost.fpmod_informative:not(.getPost)",
             ) as HTMLElement;
             if (_isOfftopic) {

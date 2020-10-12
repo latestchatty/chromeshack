@@ -1,4 +1,4 @@
-import { stripHtml, superTrim } from "./common";
+import { stripHtml, superTrim } from "./";
 
 export const SentenceParser = {
     parseIntoLines(html: string) {

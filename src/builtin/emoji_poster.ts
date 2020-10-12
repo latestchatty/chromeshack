@@ -14,9 +14,9 @@ export const EmojiPoster = {
         processPostBoxEvent.addHandler(EmojiPoster.apply);
     },
 
-    apply(postBox: HTMLElement) {
+    apply(postbox: HTMLElement) {
         // install only once per postbox
-        const _postBtn = postBox.querySelector("button#frm_submit") as HTMLButtonElement;
+        const _postBtn = postbox.querySelector("button#frm_submit") as HTMLButtonElement;
         if (!_postBtn?.hasAttribute("cloned")) {
             // remove all events on the 'Post' button so we can intercept submission
             const _clonedPostBtn = _postBtn.cloneNode(true) as HTMLElement;
@@ -48,7 +48,7 @@ export const EmojiPoster = {
             });
 
             // educate the user on how to open the OS' Emoji Picker
-            const _postFormParent = postBox?.querySelector("#postform fieldset") as HTMLElement;
+            const _postFormParent = postbox?.querySelector("#postform fieldset") as HTMLElement;
             const _emojiTaglineElem = document.createElement("div");
             _emojiTaglineElem.setAttribute("class", "emoji-tagline");
             safeInnerHTML(

@@ -1,5 +1,6 @@
 import { arrHas } from "../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
+import type { PostEventArgs } from "../core/index.d";
 
 export const LocalTimeStamp = {
     hasLoaded: false,
@@ -39,32 +40,31 @@ export const LocalTimeStamp = {
         if (textNode?.nodeType === 3) textNode.parentNode.replaceChild(timeText, textNode);
     },
 
-    adjustPostTime(elem: HTMLElement) {
-        const dateStr = elem?.innerText;
+    adjustPostTime({ post }: PostEventArgs) {
+        const dateStr = post?.innerText;
         const fixedTime = dateStr && LocalTimeStamp.fixTime(dateStr);
-        const is_corrected = elem?.classList?.contains("timestamp_corrected");
+        const is_corrected = post?.classList?.contains("timestamp_corrected");
         if (fixedTime && !is_corrected) {
-            LocalTimeStamp.replaceTime(fixedTime, elem);
-            elem?.classList?.add("timestamp_corrected");
+            LocalTimeStamp.replaceTime(fixedTime, post);
+            post.classList?.add("timestamp_corrected");
         }
     },
 
     batchAdjustTime() {
         const postDates = document.getElementsByClassName("postdate");
-        for (const date of postDates || []) LocalTimeStamp.adjustPostTime(date as HTMLElement);
+        for (const date of postDates || []) LocalTimeStamp.adjustPostTime({ post: <HTMLElement>date });
         LocalTimeStamp.hasLoaded = true;
     },
 
-    adjustTime(post?: HTMLElement, rootid?: string) {
+    adjustTime({ post, root }: PostEventArgs) {
         // change dates per given root
         let dates = [] as HTMLElement[];
 
-        const root = rootid && document.getElementById(`item_${rootid}`);
-        if (post) dates = [...post?.getElementsByClassName("postdate")] as HTMLElement[];
-        else if (rootid) dates = [...root?.getElementsByClassName("postdate")] as HTMLElement[];
+        if (post) dates = [...post.getElementsByClassName("postdate")] as HTMLElement[];
+        else if (root) dates = [...root.getElementsByClassName("postdate")] as HTMLElement[];
 
         if ((arrHas(dates) && LocalTimeStamp.hasLoaded) || post) {
-            for (const postdate of dates || []) LocalTimeStamp.adjustPostTime(postdate as HTMLElement);
+            for (const postdate of dates || []) LocalTimeStamp.adjustPostTime({ post: <HTMLElement>postdate });
             LocalTimeStamp.hasLoaded = false;
         }
     },

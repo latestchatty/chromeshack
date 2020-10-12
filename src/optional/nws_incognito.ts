@@ -1,4 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
+import type { PostEventArgs } from "../core";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 
@@ -16,8 +17,8 @@ export const NwsIncognito = {
         if (is_enabled) processPostEvent.addHandler(NwsIncognito.hookToNwsPosts);
     },
 
-    hookToNwsPosts(item: HTMLElement) {
-        const nwsLinks = [...item.querySelectorAll(".sel .fpmod_nws .postbody a, .op.fpmod_nws .postbody a")];
+    hookToNwsPosts({ post }: PostEventArgs) {
+        const nwsLinks = [...post?.querySelectorAll(".sel .fpmod_nws .postbody a, .op.fpmod_nws .postbody a")];
         for (const link of nwsLinks || []) {
             // avoid reapplying
             const _link = link as HTMLElement;

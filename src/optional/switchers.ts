@@ -1,4 +1,5 @@
 import { HU_Instance } from "../content";
+import { PostEventArgs } from "../core";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
@@ -52,13 +53,12 @@ export const Switchers = {
             }
     },
 
-    loadSwitchers(item: HTMLElement) {
+    loadSwitchers({ post }: PostEventArgs) {
         for (const offender of Switchers.resolved || []) {
-            const offenderOLs = [...item.querySelectorAll(`div.olauthor_${offender.id}`)];
-            const offenderFPs = [...item.querySelectorAll(`div.fpauthor_${offender.id}`)];
+            const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
+            const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
             const offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (const post of offenderPosts)
-                Switchers.rewritePost(post as HTMLElement, offender.name, offender.matched);
+            for (const post of offenderPosts) Switchers.rewritePost(post, offender.name, offender.matched);
         }
     },
 

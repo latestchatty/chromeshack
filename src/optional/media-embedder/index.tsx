@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
+import { PostEventArgs } from "../../core";
 import { detectMediaLink } from "../../core/api";
 import { arrEmpty, arrHas, locatePostRefs } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
@@ -53,9 +54,9 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                       if (_detected) {
                           // tag the detected link in the DOM so we can replace it later
                           l.setAttribute("id", `tagged_${postid}-${i}`);
-                          l.setAttribute("data-postid", postid);
-                          l.setAttribute("data-idx", i.toString());
-                          _acc.push({ postid, idx: i.toString(), response: _detected });
+                          l.setAttribute("data-postid", `${postid}`);
+                          l.setAttribute("data-idx", `${i}`);
+                          _acc.push({ postid, idx: i, response: _detected });
                       }
                       return _acc;
                   }, Promise.resolve([] as ResolvedResponse[]))
@@ -79,16 +80,16 @@ export const MediaEmbedder = {
         processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
     },
 
-    processPost(item: HTMLElement) {
+    processPost({ post }: PostEventArgs) {
         (async () => {
             // don't do processing if we don't need to
             const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
-            const isNWS = item?.querySelector(".fullpost.fpmod_nws");
+            const isNWS = post?.querySelector(".fullpost.fpmod_nws");
             const NWS_enabled = await enabledContains(["nws_incognito"]);
             if ((isNWS && NWS_enabled) || !is_enabled) return;
 
             // render inside a hidden container in each fullpost
-            const postbody = item?.querySelector(".sel > .fullpost > .postbody");
+            const postbody = post?.querySelector(".sel > .fullpost > .postbody");
             const links = [...postbody?.querySelectorAll("a")] as HTMLAnchorElement[];
             const embedded = [...postbody?.querySelectorAll("div.medialink")] as HTMLElement[];
 
@@ -100,7 +101,7 @@ export const MediaEmbedder = {
                     postbody.appendChild(container);
                 }
                 const mount = postbody?.querySelector("#react-media-manager");
-                if (mount) render(<MediaEmbedderWrapper links={links} item={item} />, mount);
+                if (mount) render(<MediaEmbedderWrapper links={links} item={post} />, mount);
             }
         })();
     },

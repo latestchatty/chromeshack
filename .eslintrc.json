@@ -30,7 +30,7 @@
         "prettier/@typescript-eslint"
     ],
     "rules": {
-        "curly": [2, "multi"],
+        "curly": [1, "multi"],
         "no-use-before-define": [0],
         "multiline-ternary": "off",
         "@typescript-eslint/no-use-before-define": [1],
@@ -63,7 +63,7 @@
             "files": ["*.ts", "*.tsx"],
             "rules": {
                 "@typescript-eslint/no-unused-vars": [
-                    2,
+                    1,
                     {
                         "args": "none"
                     }

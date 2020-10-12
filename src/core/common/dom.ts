@@ -1,6 +1,7 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
+import type { PostEventArgs } from "../../core/index.d";
 import { arrHas } from "./";
 import type { PurifyConfig } from "./fetch";
 
@@ -307,10 +308,10 @@ export const locatePostRefs = (postElem: HTMLElement) => {
     const root = postElem.classList?.contains("op")
         ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
         : (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
-    const postid = post?.id?.substr(5);
-    const rootid = root?.id?.substr(5);
+    const postid = parseInt(post?.id?.substr(5));
+    const rootid = parseInt(root?.id?.substr(5));
     const is_root = rootid && postid && rootid === postid;
-    return { post, postid, root, rootid, is_root };
+    return { post, postid, root, rootid, is_root } as PostEventArgs;
 };
 
 export const decodeHTML = (text: string) => {

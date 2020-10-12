@@ -6,24 +6,24 @@ export const PostLengthCounter = {
     updateTimer: null as ReturnType<typeof setTimeout>,
 
     install() {
-        processPostBoxEvent.addHandler(PostLengthCounter.install);
+        processPostBoxEvent.addHandler(PostLengthCounter.apply);
     },
 
-    apply(item: HTMLElement) {
+    apply(postbox: HTMLElement) {
         // script is already injected
-        if (item.querySelector(".post_length_counter_text")) return;
+        if (postbox?.querySelector(".post_length_counter_text")) return;
         // install a div at the top of the post box
-        const position = item.querySelector("div.csubmit");
-        const child = document.createElement("div");
+        const position = postbox?.querySelector("div.csubmit");
         if (!position) return;
+        const child = document.createElement("div");
         child.setAttribute("class", "post_length_counter_text");
         position.parentNode.insertBefore(child, position);
-        processPostBoxEvent.addHandler(() => PostLengthCounter.plcHandler(item));
+        processPostBoxEvent.addHandler(() => PostLengthCounter.plcHandler(postbox));
     },
 
-    update(item: HTMLElement) {
-        const counter = item?.querySelector("div.post_length_counter_text") as HTMLElement;
-        const textarea = item?.querySelector("textarea#frm_body") as HTMLInputElement;
+    update(postbox: HTMLElement) {
+        const counter = postbox?.querySelector("div.post_length_counter_text") as HTMLElement;
+        const textarea = postbox?.querySelector("textarea#frm_body") as HTMLInputElement;
         const rawPostText = textarea?.value;
         const encodedText = rawPostText && EmojiPoster.handleEncoding(rawPostText);
         const textCount = encodedText && EmojiPoster.countText(encodedText);
@@ -36,10 +36,10 @@ export const PostLengthCounter = {
                     : `Characters remaining in post preview: ${PostLengthCounter.MAX_POST_BYTES - charCount}`;
     },
 
-    plcHandler(item: HTMLElement) {
-        PostLengthCounter.update(item);
+    plcHandler(postbox: HTMLElement) {
+        PostLengthCounter.update(postbox);
         // only update the counter when they stop typing for performance
-        item.querySelector("textarea#frm_body").addEventListener("keyup", () => {
+        postbox?.querySelector("textarea#frm_body").addEventListener("keyup", () => {
             if (PostLengthCounter.updateTimer) clearTimeout(PostLengthCounter.updateTimer);
             PostLengthCounter.updateTimer = setTimeout(PostLengthCounter.update, 250);
         });

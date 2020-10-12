@@ -1,8 +1,8 @@
 import { browser } from "webextension-polyfill-ts";
 import { HU_Instance } from "../content";
-import { safeInnerHTML } from "../core/common";
+import type { PostEventArgs } from "../core";
+import { safeInnerHTML, SentenceParser } from "../core/common";
 import { processPostEvent } from "../core/events";
-import { SentenceParser } from "../core/sentence_parser";
 import { enabledContains } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
 
@@ -22,14 +22,14 @@ export const DinoGegtik = {
         if (is_enabled) processPostEvent.addHandler(DinoGegtik.installComic);
     },
 
-    installComic(item: HTMLElement, id: string) {
-        const fullpost = item?.querySelector("div.fullpost") as HTMLDivElement;
+    installComic({ post, rootid }: PostEventArgs) {
+        const fullpost = post?.querySelector("div.fullpost") as HTMLDivElement;
         const targetUsernames = ["gegtik", "boring gegtik"];
         DinoGegtik.userMatches = HU_Instance.resolveUsers().filter((x) => targetUsernames.includes(x.name));
         // we have a fullpost, and its className contains gegtik's user id
         for (const match of DinoGegtik.userMatches)
             if (fullpost?.classList.contains(`fpauthor_${match.id}`)) {
-                const comic_id = `dinogegtik_${id}`;
+                const comic_id = `dinogegtik_${rootid}`;
                 // comic is already here!
                 if (document.getElementById(comic_id)) return;
 
