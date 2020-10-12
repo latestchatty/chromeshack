@@ -1,11 +1,22 @@
 import { PostEventArgs } from "../core";
 import { elemMatches, locatePostRefs } from "../core/common";
-import { processPostEvent, processRefreshIntentEvent } from "../core/events";
+import {
+    collapsedPostEvent,
+    fullPostsCompletedEvent,
+    processPostEvent,
+    processRefreshIntentEvent,
+} from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
+    localTime: null as number,
+
     install() {
         processPostEvent.addHandler(Collapse.toggle);
+        fullPostsCompletedEvent.addHandler(() => {
+            // refresh our cached timestamp when done loading
+            Collapse.localTime = new Date().getTime();
+        });
     },
 
     collapseHandler(e: MouseEvent) {
@@ -23,20 +34,35 @@ export const Collapse = {
         return { idx: foundIdx, collapsed };
     },
 
+    async cullAfterCollapseTime() {
+        const maxTime = 1000 * 60 * 60 * 18; // 18hr limit
+        // try to grab a cached timestamp rather than updating every post
+        const curTime = Collapse.localTime ? Collapse.localTime : new Date().getTime();
+        const lastCollapseTime = (await getSetting("last_collapse_time")) as number;
+        const diffTime = Math.abs(curTime - lastCollapseTime);
+        if (!lastCollapseTime || diffTime > maxTime) {
+            await setSetting("last_collapse_time", curTime);
+            await setSetting("collapsed_threads", []);
+        }
+    },
+
     toggle({ post, root, rootid, is_root }: PostEventArgs) {
         // only process for root posts
         if (post && is_root) {
             const rootContainer = root.closest("div.root") as HTMLElement;
             const close = post.querySelector("a.closepost");
             const show = post.querySelector("a.showpost");
-            document.addEventListener("click", Collapse.collapseHandler);
-            // check if thread should be collapsed
-            Collapse.findCollapsed(rootid.toString()).then(({ idx }) => {
-                if (idx > -1) {
-                    rootContainer?.classList?.add("collapsed");
-                    close.setAttribute("class", "closepost hidden");
-                    show.setAttribute("class", "showpost");
-                }
+            Collapse.cullAfterCollapseTime().then(() => {
+                document.addEventListener("click", Collapse.collapseHandler);
+                // check if thread should be collapsed
+                Collapse.findCollapsed(rootid.toString()).then(({ idx }) => {
+                    if (idx > -1) {
+                        collapsedPostEvent.raise(rootid, true);
+                        rootContainer?.classList?.add("collapsed");
+                        close.setAttribute("class", "closepost hidden");
+                        show.setAttribute("class", "showpost");
+                    }
+                });
             });
         }
     },
@@ -50,6 +76,7 @@ export const Collapse = {
                 // remove a bunch if it gets too big
                 if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
                 setSetting("collapsed_threads", collapsed);
+                collapsedPostEvent.raise(id, true);
             }
         });
     },
@@ -59,6 +86,7 @@ export const Collapse = {
             if (idx > -1) {
                 collapsed.splice(idx, 1);
                 setSetting("collapsed_threads", collapsed);
+                collapsedPostEvent.raise(id, false);
             }
         });
     },

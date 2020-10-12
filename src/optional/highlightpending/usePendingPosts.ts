@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { PostEventArgs } from "../../core";
 import { arrHas, scrollToElement } from "../../core/common";
 import {
     hpnpJumpToPostEvent,
@@ -42,9 +43,9 @@ const usePendingPosts = () => {
     }, [pendings, pendingIdx]);
 
     const updateRefreshed = useCallback(
-        (refreshElem: HTMLElement) => {
+        ({ post }: PostEventArgs) => {
             // update the list of pending posts when one of them is refreshed
-            const threadid = parseInt(refreshElem?.closest("div.root > ul > li[id^='item_']")?.id?.substr(5));
+            const threadid = parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substr(5));
             const filtered = pendings.filter((p) => p.threadId !== threadid);
             const newIdx = filtered.length - 1 > 0 ? filtered.length - 1 : 0;
             const newPendings = arrHas(filtered) ? [...filtered] : [];

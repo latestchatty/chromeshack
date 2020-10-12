@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react";
-import { elementFitsViewport, scrollParentToChild, scrollToElement } from "../../core/common";
+import { PostEventArgs } from "../../core";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
-import { flashCard, flashPost, getRecents } from "./helpers";
+import { getRecents, jumpToPost } from "./helpers";
 import type { ParsedPost, ParsedReply } from "./index.d";
 
 const useThreadPaneCard = (post: ParsedPost) => {
     const [pending, setPending] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
     const [localPost, setLocalPost] = useState(post);
     const { recents, rootid } = localPost || {};
     const [localRecents, setLocalRecents] = useState(recents);
@@ -15,41 +16,33 @@ const useThreadPaneCard = (post: ParsedPost) => {
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e?.preventDefault();
             e?.stopPropagation();
-            const thread = document.querySelector(`div.root > ul > li#item_${rootid}`);
-            // scroll the root fullpost into full view
-            if (thread) scrollToElement(thread as HTMLElement, true);
+            jumpToPost({ rootid, options: { cardFlash: true, postFlash: true, scrollPost: true, collapsed } });
         },
-        [rootid],
+        [rootid, collapsed],
     );
     const handleCardClick = useCallback(() => {
         const _mostRecent = localRecents?.mostRecentRef;
         const _nearestLi = (_mostRecent?.parentNode as HTMLElement)?.closest("li");
-        const postid = _nearestLi?.id?.substr(5);
+        const postid = parseInt(_nearestLi?.id?.substr(5));
+        jumpToPost({ postid, rootid, options: { cardFlash: true, postFlash: true, scrollPost: true, collapsed } });
+    }, [localRecents, collapsed, rootid]);
+    const handleJumpToPost = useCallback(
+        (threadid: number) => {
+            jumpToPost({
+                rootid: threadid,
+                options: { cardFlash: true, postFlash: true, scrollParent: true, collapsed },
+            });
+        },
+        [collapsed],
+    );
 
-        const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
-        const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
-        const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
-        if (divRoot && liElem && card) {
-            // uncap the root thread
-            if (divRoot?.classList?.contains("capped")) divRoot.classList.remove("capped");
-            // try to fit the whole rootpost in view or scroll to the reply
-            if (elementFitsViewport(divRoot)) scrollToElement(divRoot, true);
-            else scrollToElement(liElem);
-            flashPost(divRoot, liElem);
-            flashCard(card);
-        }
-    }, [localRecents, rootid]);
-    const handleJumpToPost = useCallback((threadId: number) => {
-        const cardList = document.querySelector("div#cs_thread_pane") as HTMLElement;
-        const card = document.querySelector(`#item_${threadId}.cs_thread_pane_card`) as HTMLElement;
-        const divRoot = document.querySelector(`#root_${threadId}`) as HTMLDivElement;
-        if (cardList && card) {
-            scrollParentToChild(cardList, card);
-            flashCard(card);
-            flashPost(divRoot);
-        }
-    }, []);
-
+    const updateCollapsed = useCallback(
+        (threadid: number, is_collapsed: boolean) => {
+            if (threadid === rootid && is_collapsed) setCollapsed(true);
+            else if (threadid === rootid && !is_collapsed) setCollapsed(false);
+        },
+        [rootid],
+    );
     const updatePending = useCallback(
         (pendings: PendingPost[]) => {
             // highlight this post if HPP flags the thread
@@ -61,9 +54,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const refreshedThread = useCallback(
-        (_1: any, _2: any, _3: any, threadid: string) => {
-            const _threadid = parseInt(threadid) || 0;
-            if (_threadid === rootid) {
+        ({ rootid: threadid }: PostEventArgs) => {
+            if (threadid === rootid) {
                 setPending(false);
                 const threadRoot = document.querySelector(`div.root#root_${rootid}`);
                 const newRecents = threadRoot && getRecents(threadRoot as HTMLElement);
@@ -95,6 +87,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         [localRecents, localPost],
     );
     return {
+        collapsed,
         handleClickThreadShortcut,
         handleCardClick,
         handleJumpToPost,
@@ -104,6 +97,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         localPost,
         localRecents,
         pending,
+        updateCollapsed,
     };
 };
 export { useThreadPaneCard };

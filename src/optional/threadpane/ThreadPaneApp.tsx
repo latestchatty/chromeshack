@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { arrHas, classNames } from "../../core/common";
 import {
+    collapsedPostEvent,
     hpnpJumpToPostEvent,
     pendingPostsUpdateEvent,
     processPostRefreshEvent,
@@ -53,26 +54,31 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
         localPost,
         localRecents,
         pending,
+        collapsed,
+        updateCollapsed,
     } = useThreadPaneCard(post);
     const { author, body, count, mod, rootid } = localPost || {};
 
     useEffect(() => {
+        collapsedPostEvent.addHandler(updateCollapsed);
         pendingPostsUpdateEvent.addHandler(updatePending);
         processPostRefreshEvent.addHandler(refreshedThread);
         userFilterUpdateEvent.addHandler(userFilterUpdate);
         hpnpJumpToPostEvent.addHandler(handleJumpToPost);
         return () => {
+            collapsedPostEvent.removeHandler(updateCollapsed);
             pendingPostsUpdateEvent.removeHandler(updatePending);
             processPostRefreshEvent.removeHandler(refreshedThread);
             userFilterUpdateEvent.removeHandler(userFilterUpdate);
             hpnpJumpToPostEvent.removeHandler(handleJumpToPost);
         };
-    }, [updatePending, refreshedThread, userFilterUpdate, handleJumpToPost]);
+    }, [updatePending, refreshedThread, userFilterUpdate, updateCollapsed, handleJumpToPost]);
 
     return localPost?.rootid ? (
         <div
             className={classNames("cs_thread_pane_card", `cs_thread_pane_card_${mod}`, {
                 cs_thread_pane_card_refresh_pending: pending,
+                collapsed: collapsed,
             })}
             id={`item_${rootid.toString()}`}
             onClick={handleCardClick}
@@ -85,7 +91,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
                 </div>
             </div>
             <div className="cs_thread_pane_root_body" dangerouslySetInnerHTML={{ __html: body }} />
-            <ThreadPaneReplies recents={localRecents} />
+            {!collapsed && <ThreadPaneReplies recents={localRecents} />}
         </div>
     ) : null;
 };

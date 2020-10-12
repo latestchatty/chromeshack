@@ -1,5 +1,5 @@
-import { arrHas, elemMatches } from "../../core/common";
-import type { ParsedPost, ParsedReply, Recents } from "./index.d";
+import { arrHas, elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
+import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
     if (!rootElem) return;
@@ -19,6 +19,21 @@ export const flashCard = (cardElem: HTMLElement) => {
     setTimeout(() => {
         _cardClasses?.add("cs_dim_animation");
     }, 0);
+};
+
+export const jumpToPost = (args: JumpToPostArgs) => {
+    const { postid, rootid, options } = args || {};
+    const { cardFlash, postFlash, scrollParent, scrollPost, collapsed } = options || {};
+    const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
+    const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
+    const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
+    const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
+    if (divRoot && scrollPost && elementFitsViewport(divRoot)) scrollToElement(divRoot, true);
+    else if (scrollPost && liElem) scrollToElement(liElem);
+    else if (scrollParent && card) scrollParentToChild(cardList, card);
+    if (collapsed !== undefined && collapsed && divRoot) divRoot.classList.remove("capped");
+    if (cardFlash && card) flashCard(card);
+    if (postFlash && divRoot) flashPost(divRoot, liElem);
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>

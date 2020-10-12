@@ -57,6 +57,9 @@ div.cs_thread_pane_card {
     user-select: none;
     border: 1px solid #222;
 }
+div.cs_thread_pane_card.collapsed {
+    opacity: 0.33 !important;
+}
 
 div.cs_thread_pane_card .jt_spoiler {
     cursor: pointer;

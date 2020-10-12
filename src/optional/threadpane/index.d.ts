@@ -21,3 +21,15 @@ export interface ParsedPost {
     recents: Recents;
     rootid: number;
 }
+
+export interface JumpToPostArgs {
+    postid?: number;
+    rootid?: number;
+    options?: {
+        cardFlash?: boolean;
+        postFlash?: boolean;
+        scrollParent?: boolean;
+        scrollPost?: boolean;
+        collapsed?: boolean;
+    };
+}
