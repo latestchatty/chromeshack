@@ -29,7 +29,7 @@ export const jumpToPost = (args: JumpToPostArgs) => {
     const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
     const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
     if (divRoot && scrollPost && elementFitsViewport(divRoot)) scrollToElement(divRoot, true);
-    else if (scrollPost && liElem) scrollToElement(liElem);
+    else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot);
     else if (scrollParent && card) scrollParentToChild(cardList, card);
     if (collapsed !== undefined && collapsed && divRoot) divRoot.classList.remove("capped");
     if (cardFlash && card) flashCard(card);
