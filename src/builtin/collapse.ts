@@ -1,5 +1,5 @@
-import { CS_Instance } from "../content";
-import { elemMatches, locatePostRefs, objContains } from "../core/common";
+import { PostEventArgs } from "../core";
+import { elemMatches, locatePostRefs } from "../core/common";
 import { processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 
@@ -13,26 +13,26 @@ export const Collapse = {
         const collapse = elemMatches(this_node, "a.closepost");
         const uncollapse = elemMatches(this_node, "a.showpost");
         const { rootid } = locatePostRefs(collapse) || locatePostRefs(uncollapse) || {};
-        if (collapse && rootid) {
-            if (CS_Instance.debugEvents) console.log("ran collapse handler:", rootid, collapse);
-            Collapse.close(e, rootid);
-        } else if (uncollapse && rootid) {
-            if (CS_Instance.debugEvents) console.log("ran uncollapse handler:", rootid, uncollapse);
-            Collapse.show(e, rootid);
-        }
+        if (collapse && rootid) Collapse.close(e, rootid);
+        else if (uncollapse && rootid) Collapse.show(e, rootid);
     },
 
-    toggle(post: HTMLElement, id: string, is_root_post: boolean) {
+    async findCollapsed(id: string) {
+        const collapsed = (await getSetting("collapsed_threads")) as string[];
+        const foundIdx = collapsed?.findIndex((c) => c === id);
+        return { idx: foundIdx, collapsed };
+    },
+
+    toggle({ post, root, rootid, is_root }: PostEventArgs) {
         // only process for root posts
-        if (post && is_root_post) {
-            const rootContainer = post.closest("div.root") as HTMLElement;
+        if (post && is_root) {
+            const rootContainer = root.closest("div.root") as HTMLElement;
             const close = post.querySelector("a.closepost");
             const show = post.querySelector("a.showpost");
             document.addEventListener("click", Collapse.collapseHandler);
             // check if thread should be collapsed
-            getSetting("collapsed_threads").then((collapsed) => {
-                const contained = objContains(id, collapsed as string[]);
-                if (contained) {
+            Collapse.findCollapsed(rootid.toString()).then(({ idx }) => {
+                if (idx > -1) {
                     rootContainer?.classList?.add("collapsed");
                     close.setAttribute("class", "closepost hidden");
                     show.setAttribute("class", "showpost");
@@ -41,11 +41,12 @@ export const Collapse = {
         }
     },
 
-    collapseThread(id: string) {
+    collapseThread(id: number) {
         const MAX_LENGTH = 100;
-        getSetting("collapsed_threads", []).then((collapsed: string[]) => {
-            if (collapsed.indexOf(id) < 0) {
-                collapsed.unshift(id);
+        const _id = id.toString();
+        Collapse.findCollapsed(_id).then(({ idx, collapsed }) => {
+            if (idx === -1) {
+                collapsed.unshift(_id);
                 // remove a bunch if it gets too big
                 if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
                 setSetting("collapsed_threads", collapsed);
@@ -53,33 +54,30 @@ export const Collapse = {
         });
     },
 
-    unCollapseThread(id: string) {
-        getSetting("collapsed_threads", []).then((collapsed: string[]) => {
-            const index = collapsed.indexOf(id);
-            if (index >= 0) {
-                collapsed.splice(index, 1);
+    unCollapseThread(id: number) {
+        Collapse.findCollapsed(id.toString()).then(({ idx, collapsed }) => {
+            if (idx > -1) {
+                collapsed.splice(idx, 1);
                 setSetting("collapsed_threads", collapsed);
             }
         });
     },
 
-    close(e: MouseEvent, id: string) {
+    close(e: MouseEvent, id: number) {
         Collapse.collapseThread(id);
     },
 
-    show(e: MouseEvent, id: string) {
+    show(e: MouseEvent, id: number) {
         Collapse.unCollapseThread(id);
         const this_node = e.target as HTMLElement;
         if (
-            this_node.parentNode.querySelector(".closepost:not(.hidden)") &&
+            this_node?.parentNode?.querySelector(".closepost:not(.hidden)") &&
             elemMatches(this_node, ".showpost.hidden")
         ) {
             // feed the refresh-thread event handler when uncollapsing
-            const { post, postid, root, rootid } = locatePostRefs(this_node);
-            if (postid || rootid) {
-                if (CS_Instance.debugEvents) console.log("refreshing root post after uncollapse:", post, root);
-                processRefreshIntentEvent.raise(post, root, postid, rootid);
-            }
+            const args = locatePostRefs(this_node);
+            const { postid, rootid } = args || {};
+            if (postid || rootid) processRefreshIntentEvent.raise(args);
         }
     },
 };
