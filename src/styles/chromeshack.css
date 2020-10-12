@@ -207,18 +207,15 @@ span.user > img.chatty-user-icons:nth-child(1) {
 
 /* emoji tagline on the postbox form */
 #postform fieldset div.emoji-tagline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-div.emoji-tagline span {
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    margin: 0 auto 0.5em !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: center;
     font-size: 12px;
 }
-div.emoji-tagline > span > span {
+div.emoji-tagline > span {
     font-weight: bold;
 }
 div#postbox fieldset {

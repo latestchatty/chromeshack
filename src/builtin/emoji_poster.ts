@@ -52,7 +52,7 @@ export const EmojiPoster = {
             const _emojiTaglineElem = document.createElement("div");
             _emojiTaglineElem.setAttribute("class", "emoji-tagline");
             safeInnerHTML(
-                "<span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.</span>",
+                "Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.",
                 _emojiTaglineElem,
             );
             _postFormParent?.appendChild(_emojiTaglineElem);
