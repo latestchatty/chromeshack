@@ -13,7 +13,6 @@ import { TabMessenger } from "./core/notifications";
 import { ChromeShack } from "./core/observer";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
-import { DinoGegtik } from "./optional/dinogegtik";
 import { HighlightPendingPosts } from "./optional/highlightpending";
 import { HighlightUsers } from "./optional/highlight_users";
 import { MediaEmbedder } from "./optional/media-embedder";
@@ -21,7 +20,6 @@ import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
 import { NwsIncognito } from "./optional/nws_incognito";
 import { PostPreview } from "./optional/post_preview";
 import { PostStyling } from "./optional/post_style";
-import { SparklyComic } from "./optional/sparkly_comic";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
@@ -54,8 +52,6 @@ try {
         NwsIncognito.install(),
         PostPreview.install(),
         PostStyling.install(),
-        DinoGegtik.install(),
-        SparklyComic.install(),
         Switchers.install(),
         ThreadPane.install(),
         MediaEmbedder.install(),

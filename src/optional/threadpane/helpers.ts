@@ -1,4 +1,4 @@
-import { arrHas, elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
+import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
@@ -107,23 +107,21 @@ export const clonePostBody = (postElem: HTMLElement) => {
     const clone = postElem?.cloneNode(true) as HTMLElement;
     // clean up the postbody before processing
     const elements = [...clone?.querySelectorAll("a, div.medialink, .jt_spoiler")];
-    if (arrHas(elements))
-        elements.map((ml) => {
-            const _linkSpan = (ml.querySelector("a > span") as HTMLSpanElement)?.innerText;
-            const _linkHref = (ml as HTMLAnchorElement)?.href;
-            const _spoiler = elemMatches(ml as HTMLElement, "span.jt_spoiler");
-            if (_linkSpan || _linkHref) {
-                // convert links to unclickable styled representations
-                const linkText = _linkSpan || _linkHref;
-                const replacement = document.createElement("span");
-                replacement.setAttribute("class", "cs_thread_pane_link");
-                replacement.innerHTML = linkText;
-                ml?.replaceWith(replacement);
-            } else if (_spoiler)
-                // make spoiler text in cards unclickable
-                ml?.removeAttribute("onclick");
-        });
-
+    for (const element of elements || []) {
+        const _linkSpan = (element.querySelector("a > span") as HTMLSpanElement)?.innerText;
+        const _linkHref = (element as HTMLAnchorElement)?.href;
+        const _spoiler = elemMatches(element as HTMLElement, "span.jt_spoiler");
+        if (_linkSpan || _linkHref) {
+            // convert links to unclickable styled representations
+            const linkText = _linkSpan || _linkHref;
+            const replacement = document.createElement("span");
+            replacement.setAttribute("class", "cs_thread_pane_link");
+            replacement.innerHTML = linkText;
+            element?.replaceWith(replacement);
+        } else if (_spoiler)
+            // make spoiler text in cards unclickable
+            element?.removeAttribute("onclick");
+    }
     const _mediamanager = clone?.querySelector("#react-media-manager");
     if (_mediamanager) _mediamanager.parentNode.removeChild(_mediamanager);
     return trimBodyHTML(clone);

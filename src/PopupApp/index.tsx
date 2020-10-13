@@ -121,16 +121,6 @@ const PopupApp = () => {
                         ]}
                     />
                     <Option
-                        id="dinogegtik"
-                        label="Dino gegtik"
-                        descriptions={["Replace boring gegtik posts with a comic strip."]}
-                    />
-                    <Option
-                        id="sparkly_comic"
-                        label="Sparkly comic"
-                        descriptions={["Replace sparkly posts with a comic strip."]}
-                    />
-                    <Option
                         id="switchers"
                         label="Shame switchers"
                         descriptions={["Show the original username of shackers who changed names."]}
