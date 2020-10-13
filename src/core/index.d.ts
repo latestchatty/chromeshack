@@ -13,6 +13,7 @@ export interface PostEventArgs {
 }
 
 export interface RefreshMutation {
-    postid: number;
-    rootid: number;
+    postid?: number;
+    rootid?: number;
+    parentid?: number;
 }

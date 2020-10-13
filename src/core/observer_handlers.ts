@@ -10,15 +10,8 @@ import {
     processReplyEvent,
     processTagDataLoadedEvent,
 } from "./events";
-import type { PostEventArgs } from "./index.d";
-
-export const handleReplyAdded = (parentId: number) => {
-    if (parentId > 0) {
-        const post = document.querySelector(`li#item_${parentId}.sel`) as HTMLElement;
-        const root = post?.closest(".root > ul > li.sel") as HTMLElement;
-        if (post && root) processReplyEvent.raise({ post, root });
-    }
-};
+import type { PostEventArgs, RefreshMutation } from "./index.d";
+import { ChromeShack } from "./observer";
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const collectTagData = (post: HTMLElement) => {
@@ -70,15 +63,27 @@ export const handleTagsEvent = (args: PostEventArgs) => {
         });
 };
 
+export const handlePostRefresh = (args: PostEventArgs) => processPostRefreshEvent.raise(args);
+
+export const handleRootAdded = (args: RefreshMutation) => {
+    const { postid, rootid, parentid } = args || {};
+    const root = document.querySelector(`li#item_${rootid}`);
+    const post = document.querySelector(`li#item_${postid || parentid}`);
+    const reply = parentid && post?.querySelector("li.sel.last");
+    const raisedArgs = { post: reply || post, postid: parentid || postid, root, rootid } as PostEventArgs;
+    if (reply && root) processReplyEvent.raise(raisedArgs);
+    else if (post && root) {
+        processRefreshIntentEvent.raise(raisedArgs);
+        handleTagsEvent(raisedArgs).then(handlePostRefresh).catch(handlePostRefresh);
+    }
+};
+
 export const handleRefreshClick = (e: MouseEvent) => {
     const _this = e?.target as HTMLElement;
     const refreshBtn = elemMatches(_this, ".fullpost .refresh > a");
     if (refreshBtn) {
-        const refs = locatePostRefs(refreshBtn);
-        // wait on the tags to load before deciding if post has loaded
-        processRefreshIntentEvent.raise(refs);
-        const refreshIntentHandler = (args: any) => processPostRefreshEvent.raise(args);
-        handleTagsEvent(refs).then(refreshIntentHandler).catch(refreshIntentHandler);
+        const { postid, rootid } = locatePostRefs(refreshBtn);
+        ChromeShack.refreshing.unshift({ postid, rootid });
     }
 };
 
