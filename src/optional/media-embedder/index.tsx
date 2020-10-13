@@ -80,29 +80,28 @@ export const MediaEmbedder = {
         processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
     },
 
-    processPost({ post }: PostEventArgs) {
-        (async () => {
-            // don't do processing if we don't need to
-            const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
-            const isNWS = post?.querySelector(".fullpost.fpmod_nws");
-            const NWS_enabled = await enabledContains(["nws_incognito"]);
-            if ((isNWS && NWS_enabled) || !is_enabled) return;
+    async processPost(args: PostEventArgs) {
+        const { post } = args || {};
+        // don't do processing if we don't need to
+        const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
+        const isNWS = post?.querySelector(".fullpost.fpmod_nws");
+        const NWS_enabled = await enabledContains(["nws_incognito"]);
+        if ((isNWS && NWS_enabled) || !is_enabled) return;
 
-            // render inside a hidden container in each fullpost
-            const postbody = post?.querySelector(".sel > .fullpost > .postbody");
-            const links = [...postbody?.querySelectorAll("a")] as HTMLAnchorElement[];
-            const embedded = [...postbody?.querySelectorAll("div.medialink")] as HTMLElement[];
+        // render inside a hidden container in each fullpost
+        const postbody = post?.querySelector(".sel > .fullpost > .postbody");
+        const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
+        const embedded = postbody && ([...postbody.querySelectorAll("div.medialink")] as HTMLElement[]);
 
-            if (arrHas(links) && arrEmpty(embedded)) {
-                if (!postbody?.querySelector("#react-media-manager")) {
-                    const container = document.createElement("div");
-                    container.setAttribute("id", "react-media-manager");
-                    //container.setAttribute("class", "hidden");
-                    postbody.appendChild(container);
-                }
-                const mount = postbody?.querySelector("#react-media-manager");
-                if (mount) render(<MediaEmbedderWrapper links={links} item={post} />, mount);
+        if (arrHas(links) && arrEmpty(embedded)) {
+            if (!postbody?.querySelector("#react-media-manager")) {
+                const container = document.createElement("div");
+                container.setAttribute("id", "react-media-manager");
+                //container.setAttribute("class", "hidden");
+                postbody.appendChild(container);
             }
-        })();
+            const mount = postbody?.querySelector("#react-media-manager");
+            if (mount) render(<MediaEmbedderWrapper links={links} item={post} />, mount);
+        }
     },
 };

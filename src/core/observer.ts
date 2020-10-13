@@ -1,8 +1,10 @@
 import { elemMatches, locatePostRefs } from "./common";
+import { processReplyEvent } from "./events";
 import type { RefreshMutation } from "./index.d";
 import { setUsername } from "./notifications";
 import {
     handleRefreshClick,
+    handleReplyAdded,
     handleRootAdded,
     processFullPosts,
     processObserverInstalled,
@@ -28,7 +30,9 @@ export const ChromeShack = {
                     const mutated = mutation.target as HTMLElement;
                     // flag indicated the user has triggered a fullpost reply
                     if (elemMatches(lastMutatedSibling, ".fullpost") && elemMatches(lastRemoved, ".inlinereply")) {
-                        const parent = mutated?.closest && (mutated.closest("li[id^='item_'].sel.last") as HTMLElement);
+                        const parent =
+                            elemMatches(mutated, "li[id^='item_']") ||
+                            (mutated?.closest && (mutated.closest("li[id^='item_'].sel.last") as HTMLElement));
                         const parentid = parseInt(parent?.id?.substr(5));
                         const root = parent?.closest && (parent.closest("div.root > ul > li") as HTMLElement);
                         const rootid = parseInt(root?.id?.substr(5));
@@ -67,6 +71,7 @@ export const ChromeShack = {
 
         processObserverInstalled();
         document.addEventListener("click", handleRefreshClick);
+        processReplyEvent.addHandler(handleReplyAdded);
 
         processFullPosts();
     },
