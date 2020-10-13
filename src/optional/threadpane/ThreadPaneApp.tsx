@@ -1,7 +1,7 @@
 import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
-import { arrHas, classNames } from "../../core/common";
+import { arrHas, classNames, scrollParentToChild } from "../../core/common";
 import {
     collapsedPostEvent,
     hpnpJumpToPostEvent,
@@ -96,6 +96,20 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
     ) : null;
 };
 
+const ThreadPaneJumpToTop = () => {
+    const handleJumpToTop = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+        const _this = e.target as HTMLElement;
+        const csPane = _this?.closest && (_this?.closest("div#cs_thread_pane") as HTMLElement);
+        const firstCard = _this?.parentNode?.firstElementChild as HTMLElement;
+        if (csPane && firstCard) scrollParentToChild(csPane, firstCard);
+    };
+    return (
+        <div className="cs_thread_pane_jump_to_top" onClick={handleJumpToTop}>
+            Jump to top
+        </div>
+    );
+};
+
 const ThreadPaneApp = (props: { threadsElem: HTMLElement }) => {
     const { threadsElem } = props || {};
     const [parsed, setParsed] = useState([] as ParsedPost[]);
@@ -110,6 +124,7 @@ const ThreadPaneApp = (props: { threadsElem: HTMLElement }) => {
             {parsed.map((p, i) => (
                 <ThreadPaneCard key={i} post={p} />
             ))}
+            {parsed?.length > 0 && <ThreadPaneJumpToTop />}
         </div>
     ) : null;
 };

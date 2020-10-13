@@ -241,6 +241,33 @@ div.cs_thread_pane_reply_author {
     height: 15px;
 }
 
+div.cs_thread_pane_jump_to_top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    padding: 6px;
+    background-color: rgb(34, 34, 34);
+    color: rgb(221, 221, 221);
+    border: 1px solid rgba(68, 68, 68);
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 14px;
+    outline: none;
+    width: 91%;
+    cursor: pointer;
+    opacity: 0.66;
+    transition: 0.15s;
+    transition-timing-function: linear;
+}
+div.cs_thread_pane_jump_to_top:hover {
+    opacity: 1;
+}
+div.cs_thread_pane_jump_to_top:active {
+    color: rgb(68, 68, 68);
+    opacity: 1;
+}
+
 /* fix for Lola background offset */
 body.cs_thread_pane_enable .takeover-skin.active img {
     left: -759px !important;
