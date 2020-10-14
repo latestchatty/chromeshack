@@ -18,6 +18,12 @@ const LOLList = (props: { username: string; isLoggedInUser: boolean }) => {
 
     return (
         <>
+            {isLoggedInUser && (
+                <>
+                    <LOLListItem href={`https://www.shacknews.com/settings`} text="Settings" />
+                    <div className="dropdown__separator" />
+                </>
+            )}
             <LOLListItem
                 href={`https://www.shacknews.com/user/${username}/posts`}
                 text={isLoggedInUser ? "Your posts" : `${username}'s Posts`}
