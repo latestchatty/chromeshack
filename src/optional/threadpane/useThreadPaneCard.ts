@@ -24,7 +24,11 @@ const useThreadPaneCard = (post: ParsedPost) => {
         const _mostRecent = localRecents?.mostRecentRef;
         const _nearestLi = (_mostRecent?.parentNode as HTMLElement)?.closest("li");
         const postid = parseInt(_nearestLi?.id?.substr(5));
-        jumpToPost({ postid, rootid, options: { cardFlash: true, postFlash: true, scrollPost: true, collapsed } });
+        jumpToPost({
+            postid,
+            rootid,
+            options: { cardFlash: true, postFlash: true, scrollPost: true, uncap: true, collapsed },
+        });
     }, [localRecents, collapsed, rootid]);
     const handleJumpToPost = useCallback(
         (threadid: number) => {

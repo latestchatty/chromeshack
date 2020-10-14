@@ -23,15 +23,15 @@ export const flashCard = (cardElem: HTMLElement) => {
 
 export const jumpToPost = (args: JumpToPostArgs) => {
     const { postid, rootid, options } = args || {};
-    const { cardFlash, postFlash, scrollParent, scrollPost, collapsed } = options || {};
+    const { cardFlash, postFlash, scrollParent, scrollPost, uncap, collapsed } = options || {};
     const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
     const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
     const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
     const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
-    if (divRoot && scrollPost && elementFitsViewport(divRoot)) scrollToElement(divRoot, true);
+    if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
+    if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, true);
     else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot);
     else if (scrollParent && card) scrollParentToChild(cardList, card);
-    if (collapsed !== undefined && collapsed && divRoot) divRoot.classList.remove("capped");
     if (cardFlash && card) flashCard(card);
     if (postFlash && divRoot) flashPost(divRoot, liElem);
 };

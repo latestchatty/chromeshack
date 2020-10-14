@@ -31,5 +31,6 @@ export interface JumpToPostArgs {
         scrollParent?: boolean;
         scrollPost?: boolean;
         collapsed?: boolean;
+        uncap?: boolean;
     };
 }
