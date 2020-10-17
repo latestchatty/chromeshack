@@ -245,7 +245,7 @@ div.cs_thread_pane_jump_to_top {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px auto;
+    margin: 10px !important;
     padding: 6px;
     background-color: rgb(34, 34, 34);
     color: rgb(221, 221, 221);

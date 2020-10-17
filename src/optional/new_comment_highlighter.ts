@@ -47,12 +47,11 @@ export const NewCommentHighlighter = {
 
     displayNewCommentCount(count: number) {
         if (count > 0) {
-            const commentDisplay = document.getElementById("chatty_settings");
-            const commentsCount =
-                (<HTMLElement>commentDisplay.childNodes[4]).innerText != null &&
-                (<HTMLElement>commentDisplay.childNodes[4]).innerText.split(" ")[0];
-            const newComments = `${commentsCount} Comments (${count} New)`;
-            if (commentsCount) commentDisplay.childNodes[4].textContent = newComments;
+            let commentDisplay = document.getElementById("chatty_settings");
+            commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+            const commentsCount = commentDisplay?.innerText?.split(" ")[0];
+            const newComments = commentsCount && `${commentsCount} Comments (${count} New)`;
+            if (newComments) commentDisplay.textContent = newComments;
         }
     },
 
