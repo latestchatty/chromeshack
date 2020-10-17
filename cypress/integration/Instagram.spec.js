@@ -1,6 +1,13 @@
 /// <reference types="Cypress" />
 
 context("Instagram", () => {
+    before(() => {
+        cy.window().then((win) => {
+            win.localStorage["transient-opts"] = JSON.stringify({ overwrite: true });
+            win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["testing_mode"] });
+        });
+    });
+
     it("opens with navigable image carousel", () => {
         cy.visit("https://www.shacknews.com/chatty?id=39558333#item_39558333");
 

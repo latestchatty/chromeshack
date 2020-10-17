@@ -1,6 +1,14 @@
 /// <reference types="Cypress" />
 
 context("Twitter", () => {
+    beforeEach(() => {
+        cy.window().then((win) => {
+            // enable "Show Twitter threads when opening Twitter links" option
+            win.localStorage["transient-opts"] = JSON.stringify({ defaults: true });
+            win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["testing_mode"] });
+        });
+    });
+
     it("opens with single image tweet", () => {
         cy.visit("https://www.shacknews.com/chatty?id=33418538#item_33418538");
 
@@ -39,7 +47,6 @@ context("Twitter", () => {
         cy.get(".twitter__text__content>span").contains(`Coincidence? I don't think so.`);
         cy.get(".twitter__text__content a").and((link) => {
             expect(link[0].href).eq("https://twitter.com/hashtag/StarWars?src=hash");
-            expect(link[1].href).eq("http://t.co/U5jOLy57SM");
         });
         cy.get("div.media .embla")
             .scrollIntoView()
@@ -57,9 +64,10 @@ context("Twitter", () => {
         cy.visit("https://www.shacknews.com/chatty?id=33360185#item_33360185");
 
         cy.get("div.medialink").click();
-        cy.get("a.twitter-embed-link").and((link) => {
-            expect(link[0].href).contains("https://t.co/SHT6qSK52S");
-        });
+        cy.get(".twitter__text__content").should(
+            "contain",
+            "Been working real hard on my game everything is alive now & running real fast almost video time am on the last task!",
+        );
         cy.get(".twitter__quote__text__content>span").and((span) =>
             expect(span[0].innerText).contains(
                 "I am proud/pumped to say I am on my last task & then I begin cutting the first ",
@@ -71,14 +79,12 @@ context("Twitter", () => {
     });
 
     it("opens a tweet thread with a single image", () => {
-        cy.visit("https://www.shacknews.com/chatty?id=33437805#item_33437805");
-
         cy.window().then((win) => {
             // enable "Show Twitter threads when opening Twitter links" option
-            win.localStorage["transient-opts"] = JSON.stringify({ overwrite: true });
             win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["sl_show_tweet_threads"] });
         });
 
+        cy.visit("https://www.shacknews.com/chatty?id=33437805#item_33437805");
         cy.get("div.medialink").scrollIntoView().click();
         cy.get(".twitter__container").and((elems) => {
             expect(elems.length).eq(3);
