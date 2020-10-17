@@ -63,8 +63,16 @@ const PopupApp = () => {
         >
             <div id="stylesTab">
                 <OptionGroup label="[lol] Tags">
-                    <Option id="hide_tagging_buttons" label="Hide tagging buttons" />
-                    <Option id="hide_tag_counts" label="Hide tag counts" />
+                    <Option
+                        id="hide_tagging_buttons"
+                        label="Hide tagging buttons"
+                        descriptions={["Hides all interactive LOL buttons."]}
+                    />
+                    <Option
+                        id="hide_tag_counts"
+                        label="Hide tag counts"
+                        descriptions={["Hides interactive LOL buttons of oneline replies."]}
+                    />
                 </OptionGroup>
 
                 <OptionGroup label="User Flair">
