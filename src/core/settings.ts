@@ -560,11 +560,7 @@ const mergeTransients = async (transientData: Settings, transientOpts?: Transien
             exclude &&
             _inValIsArr &&
             _setIsArr &&
-            _inValIsArr.reduce((opts, s) => {
-                const filtered = opts.filter((o) => o !== s);
-                if (filtered) return filtered;
-                return opts;
-            }, _setIsArr);
+            _inValIsArr.reduce((opts, s) => opts.filter((o) => o !== s), _setIsArr);
         if (filteredArr) return { ...acc, [k]: filteredArr };
         else if (!foundList && !foundVal && !overwrite && _inValIsArr)
             return { ...acc, [k]: [..._setIsArr, ..._inValIsArr] };
