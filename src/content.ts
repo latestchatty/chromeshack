@@ -11,6 +11,7 @@ import { PostLengthCounter } from "./builtin/post_length_counter";
 import { UserPopup } from "./builtin/userpopup";
 import { TabMessenger } from "./core/notifications";
 import { ChromeShack } from "./core/observer";
+import { mergeTransientSettings } from "./core/settings";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
 import { HighlightPendingPosts } from "./optional/highlightpending";
@@ -41,32 +42,34 @@ export const HU_Instance = HighlightUsers;
 TabMessenger.connect();
 
 try {
-    Promise.all([
-        // optional modules that rely on toggles
-        ChattyNews.install(),
-        TwitchAutoplay.install(),
-        CustomUserFilters.install(),
-        HighlightPendingPosts.install(),
-        HU_Instance.install(),
-        NewCommentHighlighter.install(),
-        NwsIncognito.install(),
-        PostPreview.install(),
-        PostStyling.install(),
-        Switchers.install(),
-        ThreadPane.install(),
-        MediaEmbedder.install(),
-    ]).then(() => {
-        Collapse.install();
-        CommentTags.install();
-        EmojiPoster.install();
-        ImageUploader.install();
-        LocalTimeStamp.install();
-        ModBanners.install();
-        PostLengthCounter.install();
-        UserPopup.install();
-        // always make sure the ChromeShack event observer is last
-        CS_Instance.install();
-    });
+    mergeTransientSettings().then(() =>
+        Promise.all([
+            // optional modules that rely on toggles
+            ChattyNews.install(),
+            TwitchAutoplay.install(),
+            CustomUserFilters.install(),
+            HighlightPendingPosts.install(),
+            HU_Instance.install(),
+            NewCommentHighlighter.install(),
+            NwsIncognito.install(),
+            PostPreview.install(),
+            PostStyling.install(),
+            Switchers.install(),
+            ThreadPane.install(),
+            MediaEmbedder.install(),
+        ]).then(() => {
+            Collapse.install();
+            CommentTags.install();
+            EmojiPoster.install();
+            ImageUploader.install();
+            LocalTimeStamp.install();
+            ModBanners.install();
+            PostLengthCounter.install();
+            UserPopup.install();
+            // always make sure the ChromeShack event observer is last
+            CS_Instance.install();
+        }),
+    );
 } catch (e) {
     console.error(e);
 }

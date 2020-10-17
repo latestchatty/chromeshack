@@ -19,6 +19,11 @@ export interface Settings {
     nEventId?: number;
     nUsername?: string;
 }
+interface TransientOpts {
+    defaults?: boolean;
+    overwrite?: boolean;
+    exclude?: boolean;
+}
 
 export const DefaultSettings: Settings = {
     enabled_scripts: [
@@ -217,56 +222,15 @@ export const DefaultSettings: Settings = {
 
 /// GETTERS
 
-export const getSettings = async () => {
+export const getSettings = async (defaults?: Settings) => {
     try {
         let settings = (await browser.storage.local.get()) as Settings;
-        const transients = localStorage["transient-data"];
-        const transOpts = localStorage["transient-opts"];
-        const transientData = transients && JSON.parse(transients);
-        const transientOpts = transOpts && JSON.parse(transOpts);
-
-        // build a settings object from stringified JSON passed into localStorage
-        let withTransient: Settings = {};
-        if (transientData) {
-            localStorage.clear();
-            console.log("detected transient settings:", transients, transOpts);
-            withTransient = Object.entries(transientData).reduce((acc, [k, v]) => {
-                // combine incoming data with existing subkey
-                const _arr = Array.isArray(settings[k]) && (settings[k] as string[]);
-                const _obj = !_arr && objHas(settings[k]) && (settings[k] as Record<string, any>);
-
-                const _defArr = Array.isArray(DefaultSettings[k]) && (DefaultSettings[k] as string[]);
-                const _defObj = !_defArr && (DefaultSettings[k] as Record<string, any>);
-                const foundVal = JSON.stringify(_arr).indexOf(JSON.stringify(v)) > -1;
-
-                const _reducedNoDefaults = _arr
-                    ? { ...acc, [k]: [..._arr, ...(v as string[])] }
-                    : { ...acc, [k]: { ..._obj, ...(v as Record<string, any>) } };
-                const _reducedDefaults = _defArr
-                    ? { ...acc, [k]: [..._defArr, ...(v as string[])] }
-                    : { ...acc, [k]: { ..._defObj, ...(v as Record<string, any>) } };
-
-                if (!foundVal && !transientOpts?.overwrite) return _reducedNoDefaults;
-                else if (!foundVal && transientOpts?.overwrite) return _reducedDefaults;
-                else return acc;
-            }, {} as Settings);
-            if (objHas(withTransient)) {
-                // overwrite settings with transient data passed into localStorage
-                settings = transientOpts?.overwrite
-                    ? { ...DefaultSettings, ...withTransient }
-                    : { ...settings, ...withTransient };
-                await browser.storage.local.set(settings);
-            }
-        }
-
-        if (objEmpty(settings)) {
-            // overwrite settings store with defaults if unpopulated
-            const resetState = objHas(withTransient)
-                ? { ...DefaultSettings, ...withTransient }
-                : { ...DefaultSettings };
-            await browser.storage.local.set(resetState);
-            const freshSettings = browser.storage.local.get();
-            settings = freshSettings;
+        if (objEmpty(settings) && !defaults) {
+            await browser.storage.local.set({ ...DefaultSettings, ...settings });
+            settings = (await browser.storage.local.get()) as Settings;
+        } else if (defaults) {
+            await browser.storage.local.set(defaults);
+            settings = defaults;
         }
         return settings;
     } catch (e) {
@@ -379,9 +343,9 @@ export const removeEnabledSuboption = async (key: string) => {
 
 export const removeSetting = (key: string) => browser.storage.local.remove(key);
 
-export const resetSettings = async () => {
+export const resetSettings = async (defaults?: Settings) => {
     await browser.storage.local.clear();
-    return await getSettings();
+    return await getSettings(defaults);
 };
 
 export const removeHighlightGroup = async (groupName: string) => {
@@ -574,4 +538,54 @@ export const migrateSettings = async () => {
         await removeEnabledSuboption("show_rls_notes");
     }
     await removeEnabledSuboption("imported");
+};
+
+const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
+    const { defaults, overwrite, exclude } = transientOpts || {};
+    const settings = await getSettings();
+    let output = {} as Settings;
+    if (defaults) output = { ...DefaultSettings };
+    else output = { ...settings };
+    if (objHas(transientData) || objHas(transientOpts))
+        console.log("mergeTransients called:", transientData, transientOpts);
+    return Object.keys(transientData)?.reduce((acc, k) => {
+        const _inVal = transientData[k];
+        const _setVal = acc[k];
+        const _inValIsArr = Array.isArray(_inVal) && (_inVal as string[]);
+        const _setIsArr = Array.isArray(_setVal) && (_setVal as string[]);
+        const foundList = !_inValIsArr && _setIsArr && _setIsArr.find((x) => x === _inVal);
+        const foundVal = _setVal === _inVal;
+        // 'exclude' filters the given strings out of an option list
+        const filteredArr =
+            exclude &&
+            _inValIsArr &&
+            _setIsArr &&
+            _inValIsArr.reduce((opts, s) => {
+                const filtered = opts.filter((o) => o !== s);
+                if (filtered) return filtered;
+                return opts;
+            }, _setIsArr);
+        if (filteredArr) return { ...acc, [k]: filteredArr };
+        else if (!foundList && !foundVal && !overwrite && _inValIsArr)
+            return { ...acc, [k]: [..._setIsArr, ..._inValIsArr] };
+        else if (!foundList && !foundVal) return { ...acc, [k]: _inVal };
+        return acc;
+    }, output);
+};
+export const mergeTransientSettings = async () => {
+    // process any testing related settings passed in by cypress
+    const localTransientOpts = localStorage["transient-opts"];
+    const localTransientData = localStorage["transient-data"];
+    try {
+        const transientOpts = localTransientOpts && JSON.parse(localTransientOpts);
+        const transientData = localTransientData && JSON.parse(localTransientData);
+        if (transientData) {
+            const merged = await mergeTransients(transientData, transientOpts);
+            const newSettings = await resetSettings(merged);
+            console.log("mergeTransientSettings merged:", newSettings);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    localStorage.clear();
 };

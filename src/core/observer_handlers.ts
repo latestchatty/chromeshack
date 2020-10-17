@@ -1,5 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, elemMatches, locatePostRefs } from "./common";
+import { disableTwitch } from "./common/dom";
 import {
     fullPostsCompletedEvent,
     processEmptyTagsLoadedEvent,
@@ -12,6 +13,7 @@ import {
 } from "./events";
 import type { PostEventArgs, RefreshMutation } from "./index.d";
 import { ChromeShack } from "./observer";
+import { getEnabled, getEnabledSuboption } from "./settings";
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const collectTagData = (post: HTMLElement) => {
@@ -63,31 +65,30 @@ export const handleTagsEvent = (args: PostEventArgs) => {
         });
 };
 
-export const handlePostRefresh = (args: PostEventArgs, mutation?: RefreshMutation) => {
+export const handlePostRefresh = async (args: PostEventArgs, mutation?: RefreshMutation) => {
     const { post, root, postid, rootid } = args || {};
     const postOL = post?.querySelector(".oneline_body") as HTMLElement;
     const replyOL = root?.querySelector(`li#item_${mutation.postid} .oneline_body`) as HTMLElement;
     processPostRefreshEvent.raise(args, mutation);
     // reopen the previously open post (if applicable)
-    if (postid !== rootid && postOL) postOL.click();
-    else if (postid !== rootid && replyOL) replyOL.click();
+    const disableTags = await getEnabled("hide_tagging_buttons");
+    if (!disableTags && postid !== rootid && postOL) postOL.click();
+    else if (!disableTags && postid !== rootid && replyOL) replyOL.click();
     // clean up after ourselves
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
 };
 
-export const handleRootAdded = (mutation: RefreshMutation) => {
+export const handleRootAdded = async (mutation: RefreshMutation) => {
     const { postid, rootid, parentid } = mutation || {};
     const root = document.querySelector(`li#item_${rootid}`);
     const post = document.querySelector(`li#item_${postid || parentid}`);
     const reply = parentid && post?.querySelector("li.sel.last");
     const raisedArgs = { post: reply || post, postid: parentid || postid, root, rootid } as PostEventArgs;
-    if (reply && root) processReplyEvent.raise(raisedArgs, mutation);
-    else if (post && root) {
-        processRefreshIntentEvent.raise(raisedArgs);
+    if (reply && root && !(await getEnabled("hide_tagging_buttons"))) processReplyEvent.raise(raisedArgs, mutation);
+    else if (post && root)
         handleTagsEvent(raisedArgs)
             .then((neArgs) => handlePostRefresh(neArgs, mutation))
             .catch((eArgs) => handlePostRefresh(eArgs, mutation));
-    }
 };
 
 export const handleReplyAdded = (args: PostEventArgs) => {
@@ -102,7 +103,9 @@ export const handleRefreshClick = (e: MouseEvent) => {
     const _this = e?.target as HTMLElement;
     const refreshBtn = elemMatches(_this, "div.refresh > a");
     if (refreshBtn) {
-        const { root, postid, rootid, is_root } = locatePostRefs(refreshBtn);
+        const raisedArgs = locatePostRefs(refreshBtn);
+        const { root, postid, rootid, is_root } = raisedArgs || {};
+        processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
         const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
         if (foundIdx === -1) ChromeShack.refreshing.unshift({ postid, rootid });
@@ -119,6 +122,8 @@ export const processObserverInstalled = async () => {
     await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
     await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
+    // disable article Twitch player if we're running Cypress tests for a speed boost
+    if (await getEnabledSuboption("testing_mode")) disableTwitch();
 };
 
 export const processPost = (args: PostEventArgs) => {
