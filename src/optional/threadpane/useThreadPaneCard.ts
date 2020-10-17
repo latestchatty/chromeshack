@@ -75,7 +75,9 @@ const useThreadPaneCard = (post: ParsedPost) => {
                 const cufEnabled = await enabledContains(["custom_user_filters"]);
                 const removeFullposts = cufEnabled && (await getEnabledSuboption("cuf_hide_fullposts"));
                 const filterToLower = filteredUser.toLowerCase();
-                if (removeFullposts && localPost?.author?.toLowerCase() === filterToLower) setLocalPost(null);
+                const userMatches = localPost?.author?.toLowerCase() === filterToLower;
+                if (removeFullposts && userMatches) setLocalPost(null);
+                else if (!removeFullposts && userMatches) setLocalRecents(null);
                 else if (cufEnabled) {
                     const { recentTree } = localRecents || {};
                     const filteredRecents = [] as ParsedReply[];

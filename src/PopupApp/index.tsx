@@ -189,7 +189,7 @@ const PopupApp = () => {
                 >
                     <Suboption
                         id="custom_user_filters_settings"
-                        label="Hide root posts authored by matched users."
+                        label="Hide matching threads in threaded mode"
                         optionid="cuf_hide_fullposts"
                         indented={false}
                     ></Suboption>
