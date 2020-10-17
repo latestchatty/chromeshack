@@ -20,9 +20,10 @@ export interface Settings {
     nUsername?: string;
 }
 interface TransientOpts {
+    append?: boolean;
     defaults?: boolean;
-    overwrite?: boolean;
     exclude?: boolean;
+    overwrite?: boolean;
 }
 
 export const DefaultSettings: Settings = {
@@ -541,7 +542,7 @@ export const migrateSettings = async () => {
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
-    const { defaults, overwrite, exclude } = transientOpts || {};
+    const { append, exclude, defaults, overwrite } = transientOpts || {};
     const settings = await getSettings();
     let output = {} as Settings;
     if (defaults) output = { ...DefaultSettings };
@@ -555,13 +556,17 @@ const mergeTransients = async (transientData: Settings, transientOpts?: Transien
         const _setIsArr = Array.isArray(_setVal) && (_setVal as string[]);
         const foundList = !_inValIsArr && _setIsArr && _setIsArr.find((x) => x === _inVal);
         const foundVal = _setVal === _inVal;
+        // 'append' simply appends a value to an existing list (probably HighlightGroups)
+        const appendedArr =
+            append && _inValIsArr && _setIsArr && _inValIsArr.reduce((arr, x) => [...arr, ...x], _setIsArr);
         // 'exclude' filters the given strings out of an option list
         const filteredArr =
             exclude &&
             _inValIsArr &&
             _setIsArr &&
             _inValIsArr.reduce((opts, s) => opts.filter((o) => o !== s), _setIsArr);
-        if (filteredArr) return { ...acc, [k]: filteredArr };
+        if (appendedArr) return { ...acc, [k]: appendedArr };
+        else if (filteredArr) return { ...acc, [k]: filteredArr };
         else if (!foundList && !foundVal && !overwrite && _inValIsArr)
             return { ...acc, [k]: [..._setIsArr, ..._inValIsArr] };
         else if (!foundList && !foundVal) return { ...acc, [k]: _inVal };
