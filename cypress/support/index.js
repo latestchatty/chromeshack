@@ -18,3 +18,10 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+beforeEach(() => {
+    cy.window().then((win) => {
+        win.localStorage["transient-opts"] = JSON.stringify({ defaults: true });
+        win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["testing_mode"] });
+    });
+});

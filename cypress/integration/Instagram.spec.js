@@ -1,16 +1,9 @@
 /// <reference types="Cypress" />
 
 context("Instagram", () => {
-    before(() => {
-        cy.window().then((win) => {
-            win.localStorage["transient-opts"] = JSON.stringify({ overwrite: true });
-            win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["testing_mode"] });
-        });
-    });
-
-    it("opens with navigable image carousel", () => {
+    it("is interactive with media", () => {
+        cy.log("opens with navigable image carousel");
         cy.visit("https://www.shacknews.com/chatty?id=39558333#item_39558333");
-
         cy.get("div.root>ul>li li.sel div.medialink")
             .first()
             .should("be.visible")
@@ -30,21 +23,16 @@ context("Instagram", () => {
         cy.get(".is-selected img")
             .should("be.visible")
             .and((img) => expect(img[0].naturalWidth).to.be.greaterThan(0));
-    });
 
-    it("opens with single image", () => {
+        cy.log("opens with single image");
         cy.visit("https://www.shacknews.com/chatty?id=39693379#item_39693379");
-
         cy.get("div.medialink").click().should("have.class", "toggled");
         cy.get("div.media div.instagram__embed img")
             .should("be.visible")
             .and((img) => expect(img[0].naturalWidth).to.be.greaterThan(0));
-    });
 
-    it("opens with single video", () => {
-        cy.viewport(854, 1080);
+        cy.log("opens with single video");
         cy.visit("https://www.shacknews.com/chatty?id=39927836#item_39927836");
-
         cy.get("div.root>ul>li li.sel div.medialink").click().should("have.class", "toggled");
         cy.get("div.media div.instagram__embed video").and((video) => {
             expect(video[0].paused).eq(false);
