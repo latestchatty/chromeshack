@@ -17,8 +17,13 @@ const cookiePromise = axios
         const cookies = JSON.stringify(res.headers["set-cookie"]);
         const _rgx = /(_shack_li_)=(.+?); /gim.exec(cookies);
         const data = _rgx && _rgx[2];
-        fs.writeFileSync(outputPath, data);
-        console.log("cookie written:", outputPath);
-        return data;
+        if (data) {
+            console.log("got cookie:", data);
+            fs.writeFileSync(outputPath, data);
+            console.log("cookie written:", outputPath);
+            return data;
+        } else throw Error("No cookie data received from server!");
     })
-    .catch((e) => console.log(e));
+    .catch((e) => {
+        if (e) throw e;
+    });
