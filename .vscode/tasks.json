@@ -17,14 +17,14 @@
             "type": "npm",
             "script": "build:prod",
             "group": "build",
-            "problemMatcher": ["$ts-checker5-eslint-webpack", "$ts-checker5-webpack"]
+            "problemMatcher": ["$ts-webpack"]
         },
         {
             "type": "npm",
             "script": "build:dev",
             "group": "build",
             "isBackground": true,
-            "problemMatcher": ["$ts-checker5-eslint-webpack-watch", "$ts-checker5-webpack-watch"]
+            "problemMatcher": ["$ts-webpack-watch"]
         },
         {
             "type": "npm",
