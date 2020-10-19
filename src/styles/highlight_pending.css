@@ -48,6 +48,9 @@ header.pinned #hpnp__app__container {
     font-weight: 600;
     font-family: var(--hpnp__font-family);
 }
+#hpnp__container #statustext:not(.threaded) {
+    padding: 0 6px 0 4px !important;
+}
 #hpnp__container #prev__btn,
 #hpnp__container #next__btn {
     display: flex;

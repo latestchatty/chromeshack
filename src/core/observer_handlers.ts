@@ -74,7 +74,6 @@ export const handlePostRefresh = async (args: PostEventArgs, mutation?: RefreshM
     const disableTags = await getEnabled("hide_tagging_buttons");
     if (!disableTags && postid !== rootid && postOL) postOL.click();
     else if (!disableTags && postid !== rootid && replyOL) replyOL.click();
-    // clean up after ourselves
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
 };
 

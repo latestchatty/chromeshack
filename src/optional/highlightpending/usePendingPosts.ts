@@ -13,10 +13,11 @@ import type { PendingPost } from "./";
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
 const isPending = (elem: HTMLElement) => elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
 
-const usePendingPosts = () => {
+const usePendingPosts = (threaded: boolean) => {
     const [pendings, setPendings] = useState([] as PendingPost[]);
     const [pendingText, setPendingText] = useState("");
     const [pendingIdx, setPendingIdx] = useState(0);
+    const [count, setCount] = useState(0);
     const indicator = "★ ";
 
     const handlePrevClick = useCallback(() => {
@@ -50,6 +51,7 @@ const usePendingPosts = () => {
             const newIdx = filtered.length - 1 > 0 ? filtered.length - 1 : 0;
             const newPendings = arrHas(filtered) ? [...filtered] : [];
             setPendings(newPendings);
+            setCount(newPendings.length);
             // avoid going OOB if the stack shrinks
             setPendingIdx((i) => (i > newIdx ? newIdx : i));
             pendingPostsUpdateEvent.raise(newPendings);
@@ -70,18 +72,22 @@ const usePendingPosts = () => {
                 return acc;
             }, [] as PendingPost[]);
             const reducedPendings = reducedPosts.reduce((acc, p) => {
-                if (!acc.find((x) => x.threadId === p.threadId)) acc.push(p);
+                const found = acc.find((x) => x.threadId === p.threadId);
+                if (!found) acc.push(p);
+                // adjust our pending count contextually
+                if (!threaded) setCount((p) => p + 1);
+                else setCount(acc.length);
                 return acc;
             }, pendings);
             setPendings([...reducedPendings]);
             pendingPostsUpdateEvent.raise(reducedPendings);
         },
-        [pendings],
+        [threaded, pendings],
     );
 
     useEffect(() => {
         // update the window title and HPNP status text when our pending count changes
-        const newText = pendings.length > 0 ? `${indicator}${pendings.length}` : "";
+        const newText = count > 0 ? `${indicator}${count}` : "";
         setPendingText(newText);
         if (pendings.length > 0 && !document.title.startsWith(indicator))
             document.title = `${indicator}${document.title}`;
@@ -91,7 +97,7 @@ const usePendingPosts = () => {
             const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
             if (!isCollapsed(refreshBtn) && !isPending(refreshBtn)) refreshBtn?.classList?.add("refresh_pending");
         }
-    }, [pendings]);
+    }, [count, pendings]);
     useEffect(() => {
         processNotifyEvent.addHandler(fetchPendings);
         processPostRefreshEvent.addHandler(updateRefreshed);
