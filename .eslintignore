@@ -1,1 +1,2 @@
 cypress/*
+libs/cypress-browser-extension-plugin/**/*.js

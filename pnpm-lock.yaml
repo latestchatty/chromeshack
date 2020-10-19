@@ -26,12 +26,10 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 4.4.0_8b852abb84508d6384219cd1d141c6a3
   '@typescript-eslint/parser': 4.4.0_eslint@7.11.0+typescript@4.0.3
   archiver: 5.0.2
-  browserify: 17.0.0
-  browserify-versionify: 1.0.6
   copy-webpack-plugin: 6.2.1_webpack@4.44.2
   css-loader: 4.3.0_webpack@4.44.2
   cypress: 5.4.0
-  cypress-browser-extension-plugin: 'link:libs/cypress-browser-extension-plugin'
+  cypress-browser-extension-plugin: github.com/WombatFromHell/cypress-browser-extension-plugin/eb3a72f01a0bc55fbf0bfd086582af92bfb54c23
   eslint: 7.11.0
   eslint-config-airbnb: 18.2.0_74bcc3ac45f6a99aa08aa67ef2092323
   eslint-config-prettier: 6.13.0_eslint@7.11.0
@@ -43,22 +41,18 @@ devDependencies:
   eslint-plugin-react: 7.21.4_eslint@7.11.0
   eslint-plugin-react-hooks: 4.1.2_eslint@7.11.0
   filemanager-webpack-plugin: 2.0.5
-  fs-extra: 9.0.1
   license-checker-webpack-plugin: 0.1.5_webpack@4.44.2
   mini-css-extract-plugin: 1.0.0_webpack@4.44.2
   mochawesome: 6.1.1
   mochawesome-merge: 4.2.0
   mochawesome-report-generator: 5.1.0
-  nanoid: 3.1.12
   prettier: 2.1.2
   prettier-plugin-organize-imports: 1.1.1_prettier@2.1.2+typescript@4.0.3
   react-devtools: 4.8.2
-  serialize-error: 7.0.1
   terser: 5.3.5
   terser-webpack-plugin: 4.2.3_webpack@4.44.2
   ts-loader: 8.0.5_typescript@4.0.3
   typescript: 4.0.3
-  unzip-crx: 0.2.0
   web-ext: 5.2.0
   webpack: 4.44.2_webpack-cli@4.0.0+webpack@4.44.2
   webpack-cli: 4.0.0_d010c7d075ca2792cf19e64f11e8ac64
@@ -2164,7 +2158,6 @@ packages:
     dev: true
     engines:
       node: '>= 8'
-    optional: true
     resolution:
       integrity: sha512-mM8522psRCqzV+6LhomX5wgp25YVibjh8Wj23I5RPkPppSVSjyKD2A2mBJmWGa+KN7f2D6LNh9jkBCeyLktzjg==
   /aproba/1.2.0:
@@ -2569,7 +2562,6 @@ packages:
     dev: true
     engines:
       node: '>=8'
-    optional: true
     resolution:
       integrity: sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==
   /binaryextensions/2.3.0:
@@ -3165,7 +3157,6 @@ packages:
     dev: true
     engines:
       node: '>= 8.10.0'
-    optional: true
     optionalDependencies:
       fsevents: 2.1.3
     resolution:
@@ -6368,7 +6359,6 @@ packages:
     dev: true
     engines:
       node: '>=8'
-    optional: true
     resolution:
       integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==
   /is-buffer/1.1.6:
@@ -9276,7 +9266,6 @@ packages:
     dev: true
     engines:
       node: '>=8.10.0'
-    optional: true
     resolution:
       integrity: sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==
   /recast/0.18.10:
@@ -11929,6 +11918,21 @@ packages:
       node: '>= 10'
     resolution:
       integrity: sha512-TGxB2g+1ur6MHkvM644DuZr8Uzyz0k0OYWtS3YlpfWBEmK4woaC2t3+pozEL3dBfIPmpgmClR5B2QRcMgGt22g==
+  github.com/WombatFromHell/cypress-browser-extension-plugin/eb3a72f01a0bc55fbf0bfd086582af92bfb54c23:
+    dependencies:
+      browserify: 17.0.0
+      browserify-versionify: 1.0.6
+      chokidar: 3.4.3
+      fs-extra: 9.0.1
+      nanoid: 3.1.12
+      serialize-error: 7.0.1
+      unzip-crx: 0.2.0
+    dev: true
+    name: cypress-browser-extension-plugin
+    resolution:
+      registry: 'https://registry.npmjs.org/'
+      tarball: 'https://codeload.github.com/WombatFromHell/cypress-browser-extension-plugin/tar.gz/eb3a72f01a0bc55fbf0bfd086582af92bfb54c23'
+    version: 0.1.1
 specifiers:
   '@babel/cli': ^7.12.1
   '@babel/core': ^7.12.3
@@ -11948,12 +11952,10 @@ specifiers:
   '@typescript-eslint/eslint-plugin': 4.4.0
   '@typescript-eslint/parser': 4.4.0
   archiver: ^5.0.2
-  browserify: ^17.0.0
-  browserify-versionify: ^1.0.6
   copy-webpack-plugin: ^6.2.1
   css-loader: ^4.3.0
   cypress: ^5.4.0
-  cypress-browser-extension-plugin: 'link:libs/cypress-browser-extension-plugin'
+  cypress-browser-extension-plugin: 'github:WombatFromHell/cypress-browser-extension-plugin#eb3a72f01a0bc55fbf0bfd086582af92bfb54c23'
   dompurify: ^2.1.1
   embla-carousel: ^4.0.5
   eslint: ^7.11.0
@@ -11967,27 +11969,23 @@ specifiers:
   eslint-plugin-react: ^7.21.4
   eslint-plugin-react-hooks: ^4.1.2
   filemanager-webpack-plugin: ^2.0.5
-  fs-extra: ^9.0.1
   jquery: ^3.5.1
   license-checker-webpack-plugin: ^0.1.5
   mini-css-extract-plugin: ^1.0.0
   mochawesome: ^6.1.1
   mochawesome-merge: ^4.2.0
   mochawesome-report-generator: ^5.1.0
-  nanoid: ^3.1.12
   prettier: ^2.1.2
   prettier-plugin-organize-imports: ^1.1.1
   react: ^16.14.0
   react-devtools: ^4.8.2
   react-dom: ^16.14.0
-  serialize-error: ^7.0.1
   terser: ^5.3.5
   terser-webpack-plugin: ^4.2.3
   text-field-edit: ^3.1.0
   ts-debounce: ^2.0.1
   ts-loader: ^8.0.5
   typescript: ^4.0.3
-  unzip-crx: ^0.2.0
   web-ext: ^5.2.0
   webextension-polyfill-ts: ^0.20.0
   webpack: ^4.44.2
