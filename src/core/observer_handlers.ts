@@ -91,15 +91,16 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
             .catch((eArgs) => handlePostRefresh(eArgs, mutation));
 };
 
-export const handleReplyAdded = (args: PostEventArgs) => {
+export const handleReplyAdded = async (args: PostEventArgs) => {
     const { post } = args || {};
     console.log("handleReplyAdded:", args);
     const postRefreshBtn = post?.querySelector("div.refresh > a") as HTMLElement;
+    const disableTags = await getEnabled("hide_tagging_buttons");
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
-    if (postRefreshBtn) postRefreshBtn.click();
+    if (!disableTags && postRefreshBtn) postRefreshBtn.click();
 };
 
-export const handleRefreshClick = (e: MouseEvent) => {
+export const handleRefreshClick = async (e: MouseEvent) => {
     const _this = e?.target as HTMLElement;
     const refreshBtn = elemMatches(_this, "div.refresh > a");
     if (refreshBtn) {
@@ -108,9 +109,10 @@ export const handleRefreshClick = (e: MouseEvent) => {
         processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
         const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
+        const disableTags = await getEnabled("hide_tagging_buttons");
         if (foundIdx === -1) ChromeShack.refreshing.unshift({ postid, rootid });
         // avoid unnecessary tag refreshes by refreshing the root only
-        if (!is_root) {
+        if (!disableTags && !is_root) {
             e.preventDefault();
             rootRefreshBtn.click();
         }
