@@ -55,8 +55,8 @@ export const compileAuthorCSS = (args: {
     const existing = acc ? acc[author] : undefined;
     const hgsHaveUser = groups?.filter((hg) => {
         return (
-            (isOP && hg.built_in && hg.name === "Original Poster") ||
-            (arrHas(hg.users) && !!hg.users.find((x) => x.toLowerCase() === author.toLowerCase()))
+            (isOP && hg.enabled && hg.name === "Original Poster") ||
+            (hg.enabled && arrHas(hg.users) && !!hg.users.find((x) => x.toLowerCase() === author.toLowerCase()))
         );
     });
     const compiledCSSFromHGs = cssStrToProps(

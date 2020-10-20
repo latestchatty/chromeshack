@@ -46,7 +46,7 @@ const PopupApp = () => {
                     console.error(e);
                 }
             })();
-        }, 250);
+        }, 100);
         return () => clearTimeout(handler);
     }, [state]);
     useEffect(() => {
