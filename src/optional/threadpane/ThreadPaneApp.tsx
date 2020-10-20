@@ -2,13 +2,6 @@ import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
-import {
-    collapsedPostEvent,
-    hpnpJumpToPostEvent,
-    pendingPostsUpdateEvent,
-    processPostRefreshEvent,
-    userFilterUpdateEvent,
-} from "../../core/events";
 import { parsePosts } from "./helpers";
 import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
@@ -45,34 +38,15 @@ const ThreadPaneReplies = (props: { recents: Recents }) => {
 const ThreadPaneCard = (props: { post: ParsedPost }) => {
     const { post } = props || {};
     const {
+        collapsed,
         handleClickThreadShortcut,
         handleCardClick,
-        handleJumpToPost,
-        updatePending,
-        refreshedThread,
-        userFilterUpdate,
+        cssProps,
         localPost,
         localRecents,
         pending,
-        collapsed,
-        updateCollapsed,
     } = useThreadPaneCard(post);
     const { author, body, count, mod, rootid } = localPost || {};
-
-    useEffect(() => {
-        collapsedPostEvent.addHandler(updateCollapsed);
-        pendingPostsUpdateEvent.addHandler(updatePending);
-        processPostRefreshEvent.addHandler(refreshedThread);
-        userFilterUpdateEvent.addHandler(userFilterUpdate);
-        hpnpJumpToPostEvent.addHandler(handleJumpToPost);
-        return () => {
-            collapsedPostEvent.removeHandler(updateCollapsed);
-            pendingPostsUpdateEvent.removeHandler(updatePending);
-            processPostRefreshEvent.removeHandler(refreshedThread);
-            userFilterUpdateEvent.removeHandler(userFilterUpdate);
-            hpnpJumpToPostEvent.removeHandler(handleJumpToPost);
-        };
-    }, [updatePending, refreshedThread, userFilterUpdate, updateCollapsed, handleJumpToPost]);
 
     return localPost?.rootid ? (
         <div
@@ -84,7 +58,9 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
             onClick={handleCardClick}
         >
             <div className="cs_thread_pane_card_header">
-                <div className="cs_thread_pane_root_author">{author}</div>
+                <div className="cs_thread_pane_root_author" style={cssProps}>
+                    {author}
+                </div>
                 <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
                 <div className="cs_thread_pane_shortcut" title="Jump to thread" onClick={handleClickThreadShortcut}>
                     <StepForwardIcon />

@@ -1,11 +1,11 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect, useState } from "react";
-import { arrHas, superTrim } from "../core/common";
+import { arrHas, superTrim, cssStrToProps } from "../core/common";
 import type { HighlightGroup as HighlightGroupType } from "../core/index.d";
 import { highlightGroupsEqual } from "../core/settings";
 import { addHighlightGroup, delHighlightGroup } from "./actions";
 import { FilterBox } from "./FilterBox";
-import { cssStrToProps, randomHsl, trimName } from "./helpers";
+import { randomHsl, trimName } from "./helpers";
 import type { PopupState } from "./index.d";
 import { usePopupStore } from "./popupStore";
 

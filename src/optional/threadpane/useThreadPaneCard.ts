@@ -1,22 +1,36 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PostEventArgs } from "../../core";
-import { enabledContains, getEnabledSuboption } from "../../core/settings";
+import { enabledContains, getEnabledSuboption, getSetting } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
 import { getRecents, jumpToPost } from "./helpers";
 import type { ParsedPost, ParsedReply } from "./index.d";
+import type { HighlightGroup } from "../../core/index.d";
+import {
+    collapsedPostEvent,
+    hpnpJumpToPostEvent,
+    pendingPostsUpdateEvent,
+    processPostRefreshEvent,
+    userFilterUpdateEvent,
+} from "../../core/events";
+import { cssStrToProps } from "../../core/common";
 
 const useThreadPaneCard = (post: ParsedPost) => {
-    const [pending, setPending] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
     const [localPost, setLocalPost] = useState(post);
     const { recents, rootid } = localPost || {};
+
+    const [pending, setPending] = useState(false);
+    const [collapsed, setCollapsed] = useState(false);
     const [localRecents, setLocalRecents] = useState(recents);
+    const [cssProps, setCSSProps] = useState({});
 
     const handleClickThreadShortcut = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e?.preventDefault();
             e?.stopPropagation();
-            jumpToPost({ rootid, options: { cardFlash: true, postFlash: true, scrollPost: true, collapsed } });
+            jumpToPost({
+                rootid,
+                options: { cardFlash: true, postFlash: true, scrollPost: true, toFit: true, collapsed },
+            });
         },
         [rootid, collapsed],
     );
@@ -69,6 +83,22 @@ const useThreadPaneCard = (post: ParsedPost) => {
         [rootid],
     );
 
+    const highlightFilterUpdate = useCallback(() => {
+        (async () => {
+            const highlight_enabled = await enabledContains(["highlight_users"]);
+            if (highlight_enabled) {
+                const highlightGroups = (await getSetting("highlight_groups")) as HighlightGroup[];
+                const localAuthorLower = localPost.author.toLowerCase();
+                const foundHGs = highlightGroups?.filter(
+                    (hg) => !!hg.users?.find((u) => u.toLowerCase() === localAuthorLower),
+                );
+                const css = foundHGs?.map((fhg) => fhg.css);
+                const compiled = css.join(";").replace(/;+|;\s*/gm, ";");
+                if (compiled) setCSSProps(cssStrToProps(compiled));
+            }
+        })();
+    }, [localPost]);
+
     const userFilterUpdate = useCallback(
         (filteredUser: string) => {
             (async () => {
@@ -92,18 +122,36 @@ const useThreadPaneCard = (post: ParsedPost) => {
         },
         [localRecents, localPost],
     );
+
+    useEffect(() => {
+        highlightFilterUpdate();
+        collapsedPostEvent.addHandler(updateCollapsed);
+        pendingPostsUpdateEvent.addHandler(updatePending);
+        processPostRefreshEvent.addHandler(refreshedThread);
+        userFilterUpdateEvent.addHandler(userFilterUpdate);
+        hpnpJumpToPostEvent.addHandler(handleJumpToPost);
+        return () => {
+            collapsedPostEvent.removeHandler(updateCollapsed);
+            pendingPostsUpdateEvent.removeHandler(updatePending);
+            processPostRefreshEvent.removeHandler(refreshedThread);
+            userFilterUpdateEvent.removeHandler(userFilterUpdate);
+            hpnpJumpToPostEvent.removeHandler(handleJumpToPost);
+        };
+    }, [updatePending, refreshedThread, userFilterUpdate, updateCollapsed, handleJumpToPost, highlightFilterUpdate]);
+
     return {
         collapsed,
         handleClickThreadShortcut,
         handleCardClick,
         handleJumpToPost,
+        cssProps,
         updatePending,
         refreshedThread,
-        userFilterUpdate,
         localPost,
         localRecents,
         pending,
         updateCollapsed,
+        userFilterUpdate,
     };
 };
 export { useThreadPaneCard };

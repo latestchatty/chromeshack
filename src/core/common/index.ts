@@ -41,6 +41,7 @@ import {
     scrollToElement,
     stripHtml,
     superTrim,
+    cssStrToProps,
 } from "./dom";
 import type { FetchArgs, ParseType, ShackRSSItem } from "./fetch";
 import {
@@ -78,6 +79,7 @@ export {
     locatePostRefs,
     decodeHTML,
     encodeHTML,
+    cssStrToProps,
 };
 export { PreviewReplacements, PostRefs };
 export {

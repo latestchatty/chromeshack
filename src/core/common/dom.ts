@@ -24,6 +24,25 @@ export const superTrim = (input: string) => {
     return input.replace(/^[\h\r\n]+|[\h\r\n]+$/gm, "");
 };
 
+export const cssStrToProps = (css: string): Record<any, string> => {
+    if (!css || typeof css !== "string") return {};
+    let styleProps = {};
+    const rules = css.split(";");
+    if (rules)
+        rules.map((r, _, arr) => {
+            let [key, val] = r?.split(":");
+            key = key && (key.trim() as string);
+            val = val && (val.trim() as string);
+            // if we already have this key then replace it
+            const keyIdx = arr.findIndex((i) => i === key);
+            if (keyIdx > -1) arr.splice(keyIdx);
+            const _key = key?.replace(/-[a-z]/g, (m) => m[1].toUpperCase()) || key;
+            const _val = val?.replace(/ !important/g, "") || val;
+            if (_key && _val) styleProps = { ...styleProps, [_key]: _val };
+        });
+    return styleProps;
+};
+
 export const insertStyle = (css: string, containerName: string) => {
     const style = document.querySelector(`style#${containerName}`) || document.createElement("style");
     if (!style.id) {
@@ -138,7 +157,7 @@ export function scrollToElement(
     const { offset, smooth, toFit } = opts || {};
     if (elem && elem instanceof $) elem = (elem as JQuery<HTMLElement>)[0] as HTMLElement;
     else if (!elem) return false;
-    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height + 6;
+    const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
     const _offset = offset === undefined ? headerHeight : offset;
     // position visibly by default - use offset if 'toFit'
     const visibleY = toFit ? _offset : -($(window).height() / 4);

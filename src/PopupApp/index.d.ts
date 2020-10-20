@@ -1,5 +1,5 @@
 import type { ReducerState } from "../core/createStore";
-import type { HighlightGroup } from "../core/settings";
+import type { HighlightGroup } from "../core/index.d";
 
 export interface PopupState extends ReducerState {
     options: string[];
