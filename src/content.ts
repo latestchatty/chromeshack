@@ -19,7 +19,7 @@ import { HighlightUsers } from "./optional/highlight_users";
 import { MediaEmbedder } from "./optional/media-embedder";
 import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
 import { NwsIncognito } from "./optional/nws_incognito";
-import { PostPreview } from "./optional/post_preview";
+import { PostPreview } from "./optional/postpreview";
 import { PostStyling } from "./optional/post_style";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/threadpane";
@@ -33,6 +33,7 @@ import "./styles/image_uploader.css";
 import "./styles/media.css";
 import "./styles/threadpane.css";
 import "./styles/userpopup.css";
+import "./styles/post_preview.css";
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;

@@ -1,0 +1,31 @@
+/* post preview */
+div#post__preview__app {
+    display: inline-block !important;
+}
+
+div#postbox {
+    /* avoid the textareas moving around */
+    padding: 0.2rem;
+    margin: auto auto;
+}
+#previewArea {
+    display: block;
+    border: 1px solid #aeae9b;
+    background: #222;
+    height: 200px;
+    padding: 0.5rem;
+    margin: 0 auto;
+    overflow-y: auto;
+}
+#previewArea.hidden {
+    display: none !important;
+}
+
+#previewButton.toggled {
+    background-color: rgb(200, 200, 200) !important;
+    color: rgb(85, 85, 85) !important;
+}
+#previewButton:focus {
+    outline: none !important;
+    color: rgb(85, 85, 85) !important;
+}

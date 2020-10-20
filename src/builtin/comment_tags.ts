@@ -98,7 +98,8 @@ export const CommentTags = {
         if (name == "code") {
             whiteSpaceBefore = /^\s\s*/.test(input);
             whiteSpaceBefore = /\s\s*$/.test(input);
-            input = input.replace(/^\s\s*/, "").replace(/\s\s*$/, "");
+            // trim only excess ending whitespace
+            input = input.replace(/\s\s*$/, "");
         }
         // break up curly braces that confuse the shack
         else input = input.replace(/^{/, "\n{").replace(/}$/, "}\n");

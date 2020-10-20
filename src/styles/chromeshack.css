@@ -1,21 +1,3 @@
-/* post preview */
-div#postbox {
-    /* avoid the textareas moving around */
-    padding: 0.2rem;
-    margin: auto auto;
-}
-#previewArea {
-    display: block;
-    border: 1px solid #aeae9b;
-    background: #222;
-    height: 200px;
-    padding: 0.5rem;
-    margin: 0 auto;
-    overflow-y: auto;
-}
-#previewArea.hidden {
-    display: none !important;
-}
 /* workaround for busted jt_code tag */
 pre.jt_code {
     display: block !important;
@@ -27,6 +9,9 @@ pre.jt_code {
     margin: 5px 0 5px 10px !important;
     white-space: pre-wrap !important;
     word-wrap: break-word !important;
+}
+.jt_code br {
+    display: block !important;
 }
 
 /* moderator tags */
@@ -89,30 +74,6 @@ button:focus {
     color: #000000 !important;
 }
 
-div.pinnedPosts {
-    border: 1px #3f5190 solid;
-    margin-top: 20px;
-    /*-webkit-border-radius: 10px;*/
-    padding-right: 6px;
-}
-
-div.pinnedLoading {
-    padding-left: 10px;
-    padding-top: 20px;
-    margin-top: 20px;
-    display: table-cell;
-    vertical-align: middle;
-}
-
-span.pinnedLoading {
-    vertical-align: middle;
-}
-
-img.pinnedLoading {
-    vertical-align: middle;
-    margin-left: 5px;
-}
-
 a.chromeshack_options_link {
     position: absolute;
     top: 6px;
@@ -132,16 +93,6 @@ span.postbox_rules_divider {
 
 p.rules {
     font-size: 12px !important;
-}
-
-button#previewButton {
-    background-color: #a5a59c;
-    border-color: #b5b5ac;
-}
-
-button#previewButton:hover {
-    background-color: #e9e9de;
-    border-color: #ffffff;
 }
 
 div.post_length_counter_text {
