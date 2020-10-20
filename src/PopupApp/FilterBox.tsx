@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { arrHas, classNames } from "../core/common";
-import { HighlightGroup } from "../core/settings";
+import type { HighlightGroup } from "../core/index.d";
 import { addFilter, delFilters } from "./actions";
 import type { FilterTypes } from "./index.d";
 import { usePopupStore } from "./popupStore";

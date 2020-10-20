@@ -26,7 +26,7 @@ const initialState: UploaderState = {
 const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
     switch (action.type) {
         case "TOGGLE_UPLOADER":
-            return { ...state, visible: !state.visible };
+            return { ...state, visible: action.payload || !state.visible };
         case "CHANGE_TAB":
             return { ...state, selectedTab: action.payload };
         case "LOAD_FILES": {

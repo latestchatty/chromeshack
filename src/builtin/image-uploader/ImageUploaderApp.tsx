@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { handleChattypicsUpload } from "../../core/api/chattypics";
 import { handleGfycatUpload } from "../../core/api/gfycat";
 import { handleImgurUpload } from "../../core/api/imgur";
@@ -24,14 +24,16 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
             dispatch({ type: "CHANGE_TAB", payload: tabName });
             dispatch({ type: normalizedTabName });
             // save our selected tab between sessions
-            setSetting("selected_tab", tabName);
+            setSetting("selected_upload_tab", tabName);
         },
         [dispatch],
     );
 
     const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
-        dispatch({ type: "TOGGLE_UPLOADER" });
+        const visibility = !state.visible;
+        dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
+        setSetting("image_uploader_toggled", visibility);
     };
     const onClickTab = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
@@ -70,10 +72,19 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
     }, [state.response, dispatch, props.parentRef]);
     useEffect(() => {
         // restore our saved hoster tab
-        getSetting("selected_tab").then((tab: string) => {
+        getSetting("selected_upload_tab").then((tab: string) => {
             if (tab) doSelectTab(tab);
         });
     }, [doSelectTab]);
+
+    // track whether the uploader container is visible on start
+    useLayoutEffect(() => {
+        (async () => {
+            const is_toggled = await getSetting("image_uploader_toggled", true);
+            dispatch({ type: "TOGGLE_UPLOADER", payload: is_toggled });
+        })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     /// tabs are defined by id and label
     const tabs = [

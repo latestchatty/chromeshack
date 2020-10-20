@@ -1,6 +1,7 @@
 import { insertStyle } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
-import { enabledContains, getSetting, HighlightGroup } from "../core/settings";
+import { enabledContains, getSetting } from "../core/settings";
+import type { HighlightGroup } from "../core/index.d";
 
 export interface ResolvedUser {
     id: string;

@@ -1,12 +1,12 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, fetchSafe } from "./common";
 import { processNotifyEvent } from "./events";
-import { getEnabled, getSetting, setSetting } from "./settings";
+import { enabledContains, getEnabled, getSetting, setSetting } from "./settings";
 
-export const getEventId = async () => (await getSetting("nEventId")) as Promise<number>;
-export const setEventId = async (eventId: number) => await setSetting("nEventId", eventId);
-export const getUsername = async () => (await getSetting("nUsername")) as Promise<string>;
-export const setUsername = async (username: string) => await setSetting("nUsername", username);
+export const getEventId = async () => (await getSetting("last_eventid")) as number;
+export const setEventId = async (eventId: number) => await setSetting("last_eventid", eventId);
+export const getUsername = async () => (await getSetting("username")) as string;
+export const setUsername = async (username: string) => await setSetting("username", username);
 
 export type EventType = "lolCountsUpdate" | "newPost";
 export type PostCategory = "ontopic" | "nws" | "stupid" | "political" | "tangent" | "informative";
@@ -112,7 +112,7 @@ const handleEventSignal = (msg: NotifyMsg) => TabMessenger?.send(msg);
 const handleNotification = async (response: NotifyResponse) => {
     const events = response.events;
     handleEventSignal({ name: "notifyEvent", data: response });
-    const notify_enabled = await getEnabled("enable_notifications");
+    const notify_enabled = await enabledContains(["enable_notifications"]);
     for (const event of events || [])
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);

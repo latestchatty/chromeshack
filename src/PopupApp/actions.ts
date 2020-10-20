@@ -1,5 +1,5 @@
-import type { Settings } from "../core/settings";
-import { getSettings, HighlightGroup, setSettings } from "../core/settings";
+import type { Settings, HighlightGroup } from "../core/index.d";
+import { getSettings, setSettings } from "../core/settings";
 import { getRandomInt, randomHsl } from "./helpers";
 import type { FilterTypes, OptionsTypes, PopupAction, PopupState } from "./index.d";
 
@@ -28,7 +28,7 @@ export const setSettingsState = async (localState: PopupState) => {
         user_filters: filters,
         highlight_groups: highlightgroups,
         notifications,
-    };
+    } as Settings;
     await setSettings(newState);
     return newState;
 };

@@ -6,7 +6,7 @@ export interface UploadFailurePayload {
     msg: string;
 }
 export type UploaderAction =
-    | { type: "TOGGLE_UPLOADER" }
+    | { type: "TOGGLE_UPLOADER"; payload?: boolean }
     | { type: "CHANGE_TAB"; payload: string }
     | { type: "LOAD_FILES"; payload: File[] | FileList }
     | { type: "LOAD_URL"; payload: string }

@@ -106,7 +106,7 @@ export const generatePreview = (postText: string) => {
         },
         code: {
             from: ["\\/{{", "}}\\/"],
-            to: ['<pre class="codeblock">', "</span>"],
+            to: ['<pre class="jt_code">', "</pre>"],
         },
     };
 
@@ -131,11 +131,14 @@ export const generatePreview = (postText: string) => {
     return convertUrlToLink(postText);
 };
 
-export function scrollToElement(elem: JQuery<HTMLElement> | HTMLElement, toFitBool?: boolean) {
+export function scrollToElement(elem: JQuery<HTMLElement> | HTMLElement, opts?: { toFit?: boolean; offset?: number }) {
     // don't use an arrow function here (for injection purposes)
+    const { toFit, offset } = opts || {};
     if (elem && elem instanceof $) elem = (elem as JQuery<HTMLElement>)[0] as HTMLElement;
     else if (!elem) return false;
-    if (toFitBool) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
+    if (toFit) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
+    else if (offset) $("html, body").animate({ scrollTop: $(elem).offset().top + offset }, 0);
+    // offset the element 1/3 down from the top of the page
     else
         $("html, body").animate(
             {

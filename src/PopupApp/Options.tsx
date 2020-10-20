@@ -3,8 +3,9 @@ import { arrHas, classNames } from "../core/common";
 import { toggleOption } from "./actions";
 import type { OptionsTypes, PopupState } from "./index.d";
 import { usePopupStore } from "./popupStore";
+import type { EnabledOptions, EnabledSuboptions } from "../core/index.d";
 
-const useOption = (opts: { key: string; val: string; type: OptionsTypes }) => {
+const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions; type: OptionsTypes }) => {
     const { key, val, type } = opts || {};
     const { useStoreState, useStoreDispatch } = usePopupStore;
     const state = useStoreState() as PopupState;
@@ -49,7 +50,7 @@ const OptionButton = (props: {
 
 const Suboption = (props: {
     label: string;
-    optionid: string;
+    optionid: EnabledSuboptions;
     id?: string;
     classes?: string;
     indented?: boolean;
@@ -78,7 +79,7 @@ const Suboption = (props: {
 };
 
 const Option = (props: {
-    id: string;
+    id: EnabledOptions | EnabledSuboptions;
     label: string;
     classes?: string;
     indented?: boolean;
@@ -107,7 +108,7 @@ const Option = (props: {
 
 const OptionGroup = (props: {
     label: string;
-    id?: string;
+    id?: EnabledOptions | EnabledSuboptions;
     classes?: string;
     indented?: boolean;
     infolabel?: string;
