@@ -23,6 +23,7 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
     const [input, setInput] = useState("");
     const postboxRef = useRef(postboxElem);
     const paneMountRef = useRef(paneMountElem);
+    const fullpostRef = useRef(null);
 
     const debouncedInputRef = useRef(
         debounce((e: KeyboardEvent | HTMLElement) => {
@@ -50,11 +51,12 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
 
     useEffect(() => {
         (async () => {
+            const replyBox = postboxRef.current.closest("div.inlinereply") as HTMLElement;
             const inputArea = postboxRef.current.querySelector("#frm_body") as HTMLInputElement;
-            if (toggled && inputArea) {
+            if (toggled && inputArea && replyBox) {
                 inputArea.focus();
-                // make sure the preview pane is visible
-                scrollToElement(inputArea, { offset: -302 });
+                // try to make sure the whole reply box is visible
+                scrollToElement(replyBox, { toFit: true });
             }
             await setSetting("post_preview_toggled", toggled);
         })();
@@ -62,9 +64,20 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
     useEffect(() => {
         if (!postboxRef.current) return;
         const inputArea = postboxRef.current.querySelector("#frm_body") as HTMLInputElement;
+        const closeFormBtn = inputArea?.closest(".postbox")?.querySelector("div.closeform>a") as HTMLElement;
+
+        fullpostRef.current = postboxRef.current.closest("li.sel") as HTMLElement;
+        const jumpToNearestFullpost = () => {
+            if (toggled) scrollToElement(fullpostRef.current, { toFit: true });
+        };
+
         inputArea.addEventListener("input", handleInput);
-        return () => inputArea.removeEventListener("input", handleInput);
-    }, [postboxRef, handleInput]);
+        closeFormBtn.addEventListener("click", jumpToNearestFullpost);
+        return () => {
+            inputArea.removeEventListener("input", handleInput);
+            closeFormBtn.removeEventListener("click", jumpToNearestFullpost);
+        };
+    }, [postboxRef, handleInput, toggled]);
     useLayoutEffect(() => {
         if (!postboxRef.current) return;
         (async () => {
