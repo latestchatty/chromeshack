@@ -1,5 +1,14 @@
-import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
-import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
+import type { HighlightGroup } from "../../core/index.d";
+import {
+    arrHas,
+    cssStrToProps,
+    elementFitsViewport,
+    elemMatches,
+    objHas,
+    scrollParentToChild,
+    scrollToElement,
+} from "../../core/common";
+import type { AuthorCSSDict, JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
     if (!rootElem) return;
@@ -34,6 +43,29 @@ export const jumpToPost = (args: JumpToPostArgs) => {
     else if (scrollParent && card) scrollParentToChild(cardList, card);
     if (cardFlash && card) flashCard(card);
     if (postFlash && divRoot) flashPost(divRoot, liElem);
+};
+
+export const compileAuthorCSS = (args: {
+    author: string;
+    groups: HighlightGroup[];
+    acc?: Record<string, any>;
+    isOP?: boolean;
+}) => {
+    const { author, groups, acc, isOP } = args || {};
+    const existing = acc ? acc[author] : undefined;
+    const hgsHaveUser = groups?.filter((hg) => {
+        return (
+            (isOP && hg.built_in && hg.name === "Original Poster") ||
+            (arrHas(hg.users) && !!hg.users.find((x) => x.toLowerCase() === author.toLowerCase()))
+        );
+    });
+    const compiledCSSFromHGs = cssStrToProps(
+        hgsHaveUser
+            ?.map((y) => y.css)
+            .join(";")
+            .replace(/;+|;\s*/gm, ";"),
+    );
+    return arrHas(hgsHaveUser) ? { [author]: { ...existing, ...compiledCSSFromHGs } } : undefined;
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>

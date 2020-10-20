@@ -35,3 +35,12 @@ export interface JumpToPostArgs {
         uncap?: boolean;
     };
 }
+
+export type CSSDict = Record<string, string>;
+export interface AuthorCSSDict {
+    [x: string]:
+        | CSSDict
+        | {
+              [x: string]: CSSDict;
+          };
+}

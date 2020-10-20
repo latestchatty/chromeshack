@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { PostEventArgs } from "../../core";
 import { enabledContains, getEnabledSuboption, getSetting } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
-import { getRecents, jumpToPost } from "./helpers";
-import type { ParsedPost, ParsedReply } from "./index.d";
+import { compileAuthorCSS, getRecents, jumpToPost } from "./helpers";
+import type { ParsedPost, ParsedReply, AuthorCSSDict } from "./index.d";
 import type { HighlightGroup } from "../../core/index.d";
 import {
     collapsedPostEvent,
@@ -12,7 +12,7 @@ import {
     processPostRefreshEvent,
     userFilterUpdateEvent,
 } from "../../core/events";
-import { cssStrToProps } from "../../core/common";
+import { objHas } from "../../core/common";
 
 const useThreadPaneCard = (post: ParsedPost) => {
     const [localPost, setLocalPost] = useState(post);
@@ -21,7 +21,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
     const [pending, setPending] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [localRecents, setLocalRecents] = useState(recents);
-    const [cssProps, setCSSProps] = useState({});
+    const [cssProps, setCSSProps] = useState<AuthorCSSDict>({});
 
     const handleClickThreadShortcut = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -86,18 +86,19 @@ const useThreadPaneCard = (post: ParsedPost) => {
     const highlightFilterUpdate = useCallback(() => {
         (async () => {
             const highlight_enabled = await enabledContains(["highlight_users"]);
-            if (highlight_enabled) {
-                const highlightGroups = (await getSetting("highlight_groups")) as HighlightGroup[];
-                const localAuthorLower = localPost.author.toLowerCase();
-                const foundHGs = highlightGroups?.filter(
-                    (hg) => !!hg.users?.find((u) => u.toLowerCase() === localAuthorLower),
-                );
-                const css = foundHGs?.map((fhg) => fhg.css);
-                const compiled = css.join(";").replace(/;+|;\s*/gm, ";");
-                if (compiled) setCSSProps(cssStrToProps(compiled));
-            }
+            const highlightGroups = highlight_enabled && ((await getSetting("highlight_groups")) as HighlightGroup[]);
+            const replyStyles = localRecents.recentTree
+                ?.map((rt) => rt.author)
+                ?.reduce((acc, ra) => {
+                    const isOP = ra.toLowerCase() === localPost.author.toLowerCase();
+                    const result = compileAuthorCSS({ author: ra, groups: highlightGroups, acc, isOP });
+                    return { ...acc, ...result };
+                }, {});
+            const authorStyle = compileAuthorCSS({ author: localPost.author, groups: highlightGroups });
+            const finalStyles = { ...authorStyle, replies: replyStyles };
+            if (objHas(finalStyles)) setCSSProps(finalStyles);
         })();
-    }, [localPost]);
+    }, [localPost, localRecents.recentTree]);
 
     const userFilterUpdate = useCallback(
         (filteredUser: string) => {

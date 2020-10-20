@@ -29,13 +29,10 @@ export const cssStrToProps = (css: string): Record<any, string> => {
     let styleProps = {};
     const rules = css.split(";");
     if (rules)
-        rules.map((r, _, arr) => {
+        rules.map((r, _) => {
             let [key, val] = r?.split(":");
             key = key && (key.trim() as string);
             val = val && (val.trim() as string);
-            // if we already have this key then replace it
-            const keyIdx = arr.findIndex((i) => i === key);
-            if (keyIdx > -1) arr.splice(keyIdx);
             const _key = key?.replace(/-[a-z]/g, (m) => m[1].toUpperCase()) || key;
             const _val = val?.replace(/ !important/g, "") || val;
             if (_key && _val) styleProps = { ...styleProps, [_key]: _val };
