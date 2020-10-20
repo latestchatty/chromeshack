@@ -27,10 +27,11 @@ export interface JumpToPostArgs {
     rootid?: number;
     options?: {
         cardFlash?: boolean;
+        collapsed?: boolean;
         postFlash?: boolean;
         scrollParent?: boolean;
         scrollPost?: boolean;
-        collapsed?: boolean;
+        toFit?: boolean;
         uncap?: boolean;
     };
 }

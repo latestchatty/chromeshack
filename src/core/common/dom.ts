@@ -131,33 +131,32 @@ export const generatePreview = (postText: string) => {
     return convertUrlToLink(postText);
 };
 
-export function scrollToElement(elem: JQuery<HTMLElement> | HTMLElement, opts?: { toFit?: boolean; offset?: number }) {
-    // don't use an arrow function here (for injection purposes)
-    const { toFit, offset } = opts || {};
+export function scrollToElement(
+    elem: JQuery<HTMLElement> | HTMLElement,
+    opts?: { offset?: number; smooth?: boolean; toFit?: boolean },
+) {
+    const { offset, smooth, toFit } = opts || {};
     if (elem && elem instanceof $) elem = (elem as JQuery<HTMLElement>)[0] as HTMLElement;
     else if (!elem) return false;
-    if (toFit) $("html, body").animate({ scrollTop: $(elem).offset().top - 54 }, 0);
-    else if (offset) $("html, body").animate({ scrollTop: $(elem).offset().top + offset }, 0);
-    // offset the element 1/3 down from the top of the page
-    else
-        $("html, body").animate(
-            {
-                scrollTop: $(elem).offset().top - $(window).height() / 4,
-            },
-            0,
-        );
+    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height + 6;
+    const _offset = offset === undefined ? headerHeight : offset;
+    // position visibly by default - use offset if 'toFit'
+    const visibleY = toFit ? _offset : -($(window).height() / 4);
+    const scrollY = (elem as HTMLElement).getBoundingClientRect().top + window.pageYOffset + visibleY;
+    window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
 }
 
-export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement) => {
+export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement, offset?: number) => {
     // https://stackoverflow.com/a/45411081
     const parentRect = parent.getBoundingClientRect();
     const parentViewableArea = {
         height: parent.clientHeight,
         width: parent.clientWidth,
     };
+    const _offset = offset || -10;
     const childRect = child.getBoundingClientRect();
     const isViewable = childRect.top >= parentRect.top && childRect.top <= parentRect.top + parentViewableArea.height;
-    if (!isViewable) parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top;
+    if (!isViewable) parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top + _offset;
 };
 
 export function elementIsVisible(elem: JQuery<HTMLElement> | HTMLElement, partialBool?: boolean) {
@@ -174,9 +173,10 @@ export function elementIsVisible(elem: JQuery<HTMLElement> | HTMLElement, partia
 export function elementFitsViewport(elem: JQuery<HTMLElement> | HTMLElement) {
     if (elem && elem instanceof $) elem = (elem as JQuery<HTMLElement>)[0] as HTMLElement;
     else if (!elem) return false;
+    const headerHeight = document.querySelector("header")?.getBoundingClientRect().height + 6;
     const elemHeight = (elem as HTMLElement).getBoundingClientRect().height;
     const visibleHeight = window.innerHeight;
-    return elemHeight < visibleHeight;
+    return elemHeight < visibleHeight - headerHeight;
 }
 
 export const removeChildren = (elem: HTMLElement) => {
