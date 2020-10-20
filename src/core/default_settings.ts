@@ -21,6 +21,9 @@ const DefaultSettings: Settings = {
 
     notifications: [],
 
+    post_preview_toggled: false,
+    image_uploader_toggled: true,
+
     highlight_groups: [
         {
             name: "Original Poster",

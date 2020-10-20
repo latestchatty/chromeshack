@@ -1,10 +1,19 @@
 {
     "baseUrl": "https://www.shacknews.com/",
     "permissionUrl": "https://www.shacknews.com/",
-    "blockHosts": ["www.google-analytics.com","www.googletagmanager.com","stats.g.doubleclick.net","quantcount.com","countess.twitch.tv","s.amazon-adsystem.com","secure.quantserve.com", "imrworldwide.com"],
+    "blockHosts": [
+        "www.google-analytics.com",
+        "www.googletagmanager.com",
+        "stats.g.doubleclick.net",
+        "quantcount.com",
+        "countess.twitch.tv",
+        "s.amazon-adsystem.com",
+        "secure.quantserve.com",
+        "imrworldwide.com"
+    ],
     "numTestsKeptInMemory": 0,
-    "viewportHeight": 768,
-    "viewportWidth": 900,
+    "viewportHeight": 960,
+    "viewportWidth": 1000,
     "defaultCommandTimeout": 12000,
     "video": false,
     "reporter": "mochawesome",

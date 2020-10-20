@@ -41,7 +41,7 @@ context("DOM interactions", () => {
         cy.log("testing shame-switchers");
         cy.window().then((win) => {
             win.localStorage["transient-data"] = JSON.stringify({
-                enabled_scripts: ["switchers", "chatty_news", "post_preview"],
+                enabled_scripts: ["switchers", "chatty_news"],
             });
         });
         cy.visit("https://www.shacknews.com/chatty?id=40049133#item_40049133");
@@ -52,13 +52,6 @@ context("DOM interactions", () => {
             expect(items.length).to.be.greaterThan(0);
             expect(items.find("a").attr("title")).length.to.be.greaterThan(0);
         });
-
-        cy.log("testing post preview and length counter");
-        cy.get("li li.sel div.reply > a").click();
-        cy.get("#previewButton").click();
-        cy.get("#frm_body").type("This is a test of the post preview feature.");
-        cy.get("#previewArea").should("be.visible").and("have.text", "This is a test of the post preview feature.");
-        cy.get(".post_length_counter_text").should("have.text", "Characters remaining in post preview: 62");
 
         cy.log("testing custom-user-filter on replies in single-thread mode");
         cy.window().then((win) => {
@@ -98,5 +91,63 @@ context("DOM interactions", () => {
         // check for 'color' 'cyan'
         cy.log("testing for added user highlights");
         cy.get(".oneline_user:contains(Yo5hiki)").eq(0).should("have.css", "color", "rgb(0, 255, 255)");
+    });
+
+    it("post-preview app and tag interaction", () => {
+        cy.window().then((win) => {
+            win.localStorage["transient-data"] = JSON.stringify({ enabled_scripts: ["post_preview"] });
+        });
+        cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
+        cy.visit("https://www.shacknews.com/chatty?id=40053122#item_40053122");
+
+        cy.log("test post-preview enablement persistence");
+        cy.get("li div.reply > a").click();
+        cy.get("#previewButton").click();
+        cy.get("#frm_body").as("inputArea");
+        cy.get("#previewArea").as("previewArea");
+        cy.get("@previewArea").should("be.visible");
+        cy.reload();
+        cy.get("li div.reply > a").click();
+        cy.get("@previewArea").should("be.visible");
+
+        cy.log("test post-length counter");
+        cy.get("@inputArea").type("This is a test of the post preview feature.");
+        cy.get("@previewArea").should("be.visible").and("have.text", "This is a test of the post preview feature.");
+        cy.get(".post_length_counter_text").should("have.text", "Characters remaining in post preview: 62");
+
+        cy.log("test codeblock formatted output");
+        cy.get("@inputArea").clear();
+        cy.get("@inputArea")
+            .type(
+                `&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&&&%####%%&&&&&&&&&&&&&&&&&&&
+&&&&&&&&&&&&&&&%(////(((((((((////(%&&&&&&&&&&&&
+&&&&&&&&&&&%(//(%&&&&&&&&&&&&&&&&%#(//(%&&&&&&&&
+&&&&&&&&&#//#&&&&%/.    .*%&&&&&&&&&&%///%&&&&&&
+&&&&&&&%//#&&(,              ,(&&&&&&&&%(/(&&&&&
+&&&&&&%%%/                        *%&&&&&#//#&&&
+&&&%(,                                ,(%&#//%&&
+&&&&#((%&&&.     (&&&&&&&&#.     &&&&&&&&&&//(&&
+&&&&(/(%&&&,     /&&&&&&&&(     .&&&&&&&&&&%//%&
+&&&&(/(%&&&*     /&&&&&&&&/     *&&&&&&&&&&#//%&
+&&&&(//#&&&(     *&,.#&&&&/     (&&&&&&&&&&//(&&
+&&&&%//(%&&#     *&&&&&&&&*     (&&&&&&&&&#//%&&
+&&&&&%///%&%.    ,&&&&&&&&*     #&&&&&&&&(//#&&&
+&&&&&&%(//(%*,,,,*&&&&&&&&/,,,,*%&&&&&&#//(&&&&&
+&&&&&&&&%(//(%&&&&&&&&&&&&&&&&&&&&&&&#//(%&&&&&&
+&&&&&&&&&&&#///(#%&&&&&&&&&&&&&&%#(///#%&&&&&&&&
+&&&&&&&&&&&&&&%(//////((((((//////(%&&&&&&&&&&&&
+&&&&&&&&&&&&&&&&&&&&%%######%%&&&&&&&&&&&&&&&&&&`,
+                { delay: 0 },
+            )
+            .type("{selectall}");
+
+        const tagHTML =
+            "&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%####%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(////(((((((((////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;&amp;%/.    .*%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%///%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//#&amp;&amp;(,              ,(&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(/(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%%%/                        *%&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;<br>&amp;&amp;&amp;%(,                                ,(%&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;#((%&amp;&amp;&amp;.     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#.     &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;,     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(     .&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//%&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;*     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;<br>&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;(     *&amp;,.#&amp;&amp;&amp;&amp;/     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;%//(%&amp;&amp;#     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;%///%&amp;%.    ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%(//(%*,,,,*&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/,,,,*%&amp;&amp;&amp;&amp;&amp;&amp;#//(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//(%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#///(#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(///#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//////((((((//////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%######%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;";
+        cy.get("#shacktags_legend_table tr:nth-child(8) > td:nth-child(4) > a").click();
+        cy.get("@previewArea")
+            .find(".jt_code")
+            .then((codeblock) => expect(codeblock[0].innerHTML).to.eq(tagHTML));
+        cy.get("div.inlinereply").scrollIntoView({ offset: { top: -56 } });
     });
 });
