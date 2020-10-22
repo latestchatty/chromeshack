@@ -22,7 +22,6 @@ import {
     afterElem,
     appendLinksToField,
     convertUrlToLink,
-    cssStrToProps,
     decodeHTML,
     elementFitsViewport,
     elementIsVisible,
@@ -79,7 +78,6 @@ export {
     locatePostRefs,
     decodeHTML,
     encodeHTML,
-    cssStrToProps,
 };
 export { PreviewReplacements, PostRefs };
 export {

@@ -1,4 +1,4 @@
-import { superTrim } from "../core/common";
+import { insertStyle, superTrim } from "../core/common";
 import { DefaultSettings } from "../core/default_settings";
 import type { HighlightGroup, Settings } from "../core/index.d";
 import {
@@ -24,6 +24,16 @@ export const trimName = (name: string) =>
         .trim()
         .replace(/[\W\s]+/g, "")
         .toLowerCase();
+
+export const insertGroupCSS = (groups: HighlightGroup[]) => {
+    let css = "";
+    for (const group of groups || []) {
+        const _name = trimName(group.name);
+        if (group.css.length > 0) css += `#${_name}_splotch { ${group.css} }`;
+    }
+
+    if (css) insertStyle(css, "highlight-group__styles");
+};
 
 export const objConditionalFilter = (disallowed: string[], obj: Record<string, any>) => {
     return Object.keys(obj)

@@ -1,11 +1,11 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect, useState } from "react";
-import { arrHas, cssStrToProps, superTrim } from "../core/common";
+import { arrHas, superTrim } from "../core/common";
 import type { HighlightGroup as HighlightGroupType } from "../core/index.d";
 import { highlightGroupsEqual } from "../core/settings";
 import { addHighlightGroup, delHighlightGroup } from "./actions";
 import { FilterBox } from "./FilterBox";
-import { randomHsl, trimName } from "./helpers";
+import { insertGroupCSS, randomHsl, trimName } from "./helpers";
 import type { PopupState } from "./index.d";
 import { usePopupStore } from "./popupStore";
 
@@ -22,7 +22,6 @@ const HighlightGroup = (props: { name: string }) => {
     const [nameInput, setNameInput] = useState(localGroup.name);
     const [styleInput, setStyleInput] = useState(localGroup.css);
     const [isChecked, setIsChecked] = useState(localGroup.enabled);
-    const [styleOutput, setStyleOutput] = useState(cssStrToProps(styleInput) as React.CSSProperties);
 
     const setInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const _this =
@@ -32,9 +31,7 @@ const HighlightGroup = (props: { name: string }) => {
         if (fieldKey === "name") setNameInput(fieldVal as string);
         if (fieldKey === "css") {
             const _fieldVal = fieldVal as string;
-            const cssProps = cssStrToProps(_fieldVal);
             setStyleInput(_fieldVal);
-            setStyleOutput(cssProps);
         }
         if (fieldKey === "enabled") setIsChecked(fieldVal as boolean);
     };
@@ -51,11 +48,7 @@ const HighlightGroup = (props: { name: string }) => {
             } else return "";
         });
         const newStyle = superTrim(`${style} color: ${randomHsl()} !important;`);
-        const cssProps = cssStrToProps(newStyle);
-        if (newStyle) {
-            setStyleInput(newStyle);
-            setStyleOutput(cssProps);
-        }
+        if (newStyle) setStyleInput(newStyle);
     };
 
     useEffect(() => {
@@ -71,6 +64,9 @@ const HighlightGroup = (props: { name: string }) => {
         }, 500);
         return () => clearTimeout(handler);
     }, [localGroup, name, dispatch]);
+    useEffect(() => {
+        insertGroupCSS(state.highlightgroups);
+    }, [state.highlightgroups]);
 
     return (
         <div id="highlight_group">
@@ -106,7 +102,7 @@ const HighlightGroup = (props: { name: string }) => {
                     onChange={setInput}
                 />
                 <div className="test_css" title="Click to try a new style" onClick={handleSplotchClick}>
-                    <span id={`${trimName(nameInput)}_splotch`} style={styleOutput} title="Click to try a new color">
+                    <span id={`${trimName(nameInput)}_splotch`} title="Click to try a new color">
                         Aa
                     </span>
                 </div>

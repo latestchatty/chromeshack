@@ -24,22 +24,6 @@ export const superTrim = (input: string) => {
     return input.replace(/^[\h\r\n]+|[\h\r\n]+$/gm, "");
 };
 
-export const cssStrToProps = (css: string): Record<any, string> => {
-    if (!css || typeof css !== "string") return {};
-    let styleProps = {};
-    const rules = css.split(";");
-    if (rules)
-        rules.map((r, _) => {
-            let [key, val] = r?.split(":");
-            key = key && (key.trim() as string);
-            val = val && (val.trim() as string);
-            const _key = key?.replace(/-[a-z]/g, (m) => m[1].toUpperCase()) || key;
-            const _val = val?.replace(/ !important/g, "") || val;
-            if (_key && _val) styleProps = { ...styleProps, [_key]: _val };
-        });
-    return styleProps;
-};
-
 export const insertStyle = (css: string, containerName: string) => {
     const style = document.querySelector(`style#${containerName}`) || document.createElement("style");
     if (!style.id) {
