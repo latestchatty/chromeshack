@@ -1,14 +1,5 @@
-import type { HighlightGroup } from "../../core/index.d";
-import {
-    arrHas,
-    cssStrToProps,
-    elementFitsViewport,
-    elemMatches,
-    objHas,
-    scrollParentToChild,
-    scrollToElement,
-} from "../../core/common";
-import type { AuthorCSSDict, JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
+import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
+import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
     if (!rootElem) return;
@@ -45,29 +36,6 @@ export const jumpToPost = (args: JumpToPostArgs) => {
     if (postFlash && divRoot) flashPost(divRoot, liElem);
 };
 
-export const compileAuthorCSS = (args: {
-    author: string;
-    groups: HighlightGroup[];
-    acc?: Record<string, any>;
-    isOP?: boolean;
-}) => {
-    const { author, groups, acc, isOP } = args || {};
-    const existing = acc ? acc[author] : undefined;
-    const hgsHaveUser = groups?.filter((hg) => {
-        return (
-            (isOP && hg.enabled && hg.name === "Original Poster") ||
-            (hg.enabled && arrHas(hg.users) && !!hg.users.find((x) => x.toLowerCase() === author.toLowerCase()))
-        );
-    });
-    const compiledCSSFromHGs = cssStrToProps(
-        hgsHaveUser
-            ?.map((y) => y.css)
-            .join(";")
-            .replace(/;+|;\s*/gm, ";"),
-    );
-    return arrHas(hgsHaveUser) ? { [author]: { ...existing, ...compiledCSSFromHGs } } : undefined;
-};
-
 const trimBodyHTML = (elem: HTMLElement) =>
     elem?.innerHTML
         ?.replace(/[\r\n]/gm, "") // strip newlines, we only need the <br>s
@@ -85,25 +53,29 @@ const getAuthor = (postElem: HTMLElement) => {
         elemMatches(postElem, ".oneline") ||
         elemMatches(postElem, "li");
     const username = _elem?.querySelector("span.user a, span.oneline_user");
-    return (username as HTMLElement)?.innerText?.split(" - ")[0] || "";
+    return (username as HTMLElement)?.textContent?.split(" - ")[0] || "";
 };
 
 const parseReply = (postElem: HTMLElement) => {
     const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
     const postid = parseInt(post?.id.substr(5));
     const oneline = post?.querySelector(".oneline") as HTMLElement;
+    const authorid = parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1]);
     const mod = getMod(oneline);
     const author = getAuthor(oneline);
-    const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.innerText;
+    const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
     // detect if a post's parent is the rootpost
     const _li = document.querySelector(`li#item_${postid}`);
     const _parentLi = (<Element>_li?.parentNode)?.closest("li") as HTMLElement;
     const isRoot = elemMatches(_parentLi, "div.root > ul > li");
+    const op = !!_li.querySelector(".fullpost.op");
     return postid
         ? ({
               author,
+              authorid,
               body,
               mod,
+              op,
               postid,
               parentRef: _parentLi && !isRoot ? _parentLi : null,
           } as ParsedReply)
@@ -135,12 +107,12 @@ export const getRecents = (divRootElem: HTMLElement) => {
 
 export const clonePostBody = (postElem: HTMLElement) => {
     // post body is empty (probably nuked)
-    if (postElem?.innerText.length === 0) return null;
+    if (postElem?.textContent.length === 0) return null;
     const clone = postElem?.cloneNode(true) as HTMLElement;
     // clean up the postbody before processing
     const elements = [...clone?.querySelectorAll("a, div.medialink, .jt_spoiler")];
     for (const element of elements || []) {
-        const _linkSpan = (element.querySelector("a > span") as HTMLSpanElement)?.innerText;
+        const _linkSpan = (element.querySelector("a > span") as HTMLSpanElement)?.textContent;
         const _linkHref = (element as HTMLAnchorElement)?.href;
         const _spoiler = elemMatches(element as HTMLElement, "span.jt_spoiler");
         if (_linkSpan || _linkHref) {
@@ -159,7 +131,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
     return trimBodyHTML(clone);
 };
 
-const parseRoot = (rootElem: HTMLElement) => {
+const parseRoot = async (rootElem: HTMLElement) => {
     const root = elemMatches(rootElem, "div.root");
     const rootid = root && parseInt(root?.id?.substr(5));
     if (rootid < 1 || rootid > 50000000) {
@@ -167,26 +139,39 @@ const parseRoot = (rootElem: HTMLElement) => {
         return null;
     }
     const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
+    const fullpost = rootLi?.querySelector(".fullpost") as HTMLElement;
+    const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1]);
     const author = getAuthor(rootLi);
     const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
     if (!author || !body) {
         console.error(`Encountered what looks like a nuked post:`, rootid, root);
         return null;
     }
-    const mod = getMod(rootLi?.querySelector(".fullpost"));
+    const mod = getMod(fullpost);
     const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
     const recents = getRecents(root);
-    return { author, body, count, mod, recents, rootid } as ParsedPost;
+
+    return {
+        author,
+        authorid,
+        body,
+        count,
+        mod,
+        recents,
+        rootid,
+    } as ParsedPost;
 };
 
-export const parsePosts = (divThreadsElem: HTMLElement) => {
+export const parsePosts = async (divThreadsElem: HTMLElement) => {
     try {
         const roots = [...divThreadsElem?.querySelectorAll("div.root")] as HTMLElement[];
-        return roots?.reduce((acc, r) => {
-            const parsed = parseRoot(r);
-            if (parsed) acc.push(parsed);
-            return acc;
-        }, [] as ParsedPost[]);
+        const result = await roots?.reduce(async (acc, r) => {
+            const _acc = await acc;
+            const parsed = await parseRoot(r);
+            if (parsed) _acc.push(parsed);
+            return _acc;
+        }, Promise.resolve([] as ParsedPost[]));
+        return result;
     } catch (e) {
         console.error(e);
     }

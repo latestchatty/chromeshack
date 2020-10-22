@@ -1,8 +1,10 @@
 // [mod]: "informative" | "nws" | "offtopic" | "political" | "stupid"
 export interface ParsedReply {
     author: string;
+    authorid: number;
     body: string;
     mod: string;
+    op?: boolean;
     postid: number;
     parentRef?: HTMLElement;
 }
@@ -13,11 +15,8 @@ export interface Recents {
     rootid: number;
 }
 
-export interface ParsedPost {
-    author: string;
-    body: string;
+export interface ParsedPost extends ParsedReply {
     count: number;
-    mod: string;
     recents: Recents;
     rootid: number;
 }
@@ -34,13 +33,4 @@ export interface JumpToPostArgs {
         toFit?: boolean;
         uncap?: boolean;
     };
-}
-
-export type CSSDict = Record<string, string>;
-export interface AuthorCSSDict {
-    [x: string]:
-        | CSSDict
-        | {
-              [x: string]: CSSDict;
-          };
 }

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { arrHas, classNames } from "../core/common";
+import type { EnabledOptions, EnabledSuboptions } from "../core/index.d";
 import { toggleOption } from "./actions";
 import type { OptionsTypes, PopupState } from "./index.d";
 import { usePopupStore } from "./popupStore";
-import type { EnabledOptions, EnabledSuboptions } from "../core/index.d";
 
 const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions; type: OptionsTypes }) => {
     const { key, val, type } = opts || {};

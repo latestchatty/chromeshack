@@ -17,7 +17,7 @@ export const ChromeShack = {
 
     install() {
         // set our current logged-in username once upon refreshing the Chatty
-        const loggedInUsername = document.getElementById("user_posts")?.innerText || "";
+        const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
         if (loggedInUsername) setUsername(loggedInUsername);
 
         // use MutationObserver instead of Mutation Events for a massive performance boost

@@ -1,9 +1,8 @@
 import { useEmblaCarousel } from "embla-carousel/react";
 import React, { useCallback, useEffect, useState } from "react";
+import "../../styles/embla.css";
 import { arrHas } from "../common";
 import { NextButton, PrevButton } from "./CarouselButtons";
-
-require("../../styles/embla.css");
 
 const EmblaSlide = (props: { children: React.ReactNode }) => {
     const { children } = props || {};

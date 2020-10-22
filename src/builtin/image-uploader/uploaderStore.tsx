@@ -66,6 +66,8 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
             const formats = `${imageFormats}`;
             return {
                 ...state,
+                uploadDisabled: !state.urlData,
+                cancelDisabled: !state.urlData,
                 urlDisabled: true,
                 multifile: true,
                 formats,

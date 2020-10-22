@@ -10,13 +10,13 @@ export const UserPopup = {
         const userLink = !elemMatches(_this, "div.getPost span.user > a") ? elemMatches(_this, "span.user > a") : null;
         const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
         const accountName = accountLink
-            ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.innerText
+            ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.textContent
             : "";
         accountLink?.setAttribute("id", "userDropdownTrigger");
 
         if (userLink || accountLink) {
             e.preventDefault();
-            const _username = userLink?.innerText || accountName;
+            const _username = userLink?.textContent || accountName;
             const _elem = userLink || accountLink;
             const containerRef = _elem?.querySelector(".userDropdown") as HTMLUListElement;
             const loggedInUsername = await getUsername();

@@ -41,7 +41,7 @@ export const LocalTimeStamp = {
     },
 
     adjustPostTime({ post }: PostEventArgs) {
-        const dateStr = post?.innerText;
+        const dateStr = post?.textContent;
         const fixedTime = dateStr && LocalTimeStamp.fixTime(dateStr);
         const is_corrected = post?.classList?.contains("timestamp_corrected");
         if (fixedTime && !is_corrected) {

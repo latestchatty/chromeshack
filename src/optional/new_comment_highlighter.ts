@@ -49,7 +49,7 @@ export const NewCommentHighlighter = {
         if (count > 0) {
             let commentDisplay = document.getElementById("chatty_settings");
             commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
-            const commentsCount = commentDisplay?.innerText?.split(" ")[0];
+            const commentsCount = commentDisplay?.textContent?.split(" ")[0];
             const newComments = commentsCount && `${commentsCount} Comments (${count} New)`;
             if (newComments) commentDisplay.textContent = newComments;
         }

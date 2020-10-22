@@ -1,18 +1,21 @@
-import { insertStyle } from "../core/common";
+import { insertStyle, objHas } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
-import { enabledContains, getSetting } from "../core/settings";
 import type { HighlightGroup } from "../core/index.d";
+import { enabledContains, getSetting } from "../core/settings";
 
 export interface ResolvedUser {
-    id: string;
-    name: string;
+    id: number;
     mod?: boolean;
+    op?: boolean;
+    postid?: number;
+    username: string;
+}
+export interface ResolvedUsers {
+    [x: string]: ResolvedUser[];
 }
 
 export const HighlightUsers = {
-    userRegex: /(?:<div class=\\?"oneline.+?olauthor_(\d+))[\s\S]+?class=\\?"oneline_user.+?>(.+?)<\/span(?:.+?alt=\\?"(moderator)?\\?")?/gi,
-
-    cache: [] as ResolvedUser[],
+    cache: {} as ResolvedUsers,
 
     async install() {
         const is_enabled = await enabledContains(["highlight_users"]);
@@ -23,43 +26,72 @@ export const HighlightUsers = {
         }
     },
 
-    resolveUsers(refresh?: boolean): ResolvedUser[] {
-        // memoize this resolution method for speed
-        if (!refresh && HighlightUsers.cache.length > 0) return HighlightUsers.cache;
-        const uniques = [] as ResolvedUser[];
-        const threadRoot = document.querySelector("div.threads") as HTMLElement;
-        const rootHTML = threadRoot?.innerHTML;
-        // match#1 = olid, match#2 = fpid, match#3 = username, match#4 = mod-flag
-        const matches = rootHTML ? [...rootHTML?.matchAll(HighlightUsers.userRegex)] : [];
-        for (const i of matches) {
-            const id = i[1];
-            // don't scrape the Shame Switchers name extension
-            const name = i[2] && i[2].split(" - ")[0];
-            const mod = !!i[3];
-            // only include unique ids (can be the same username)
-            if (!uniques.find((v) => v.id === id)) uniques.push({ id, name, mod } as ResolvedUser);
+    resolveUsers() {
+        if (objHas(HighlightUsers.cache)) return HighlightUsers.cache;
+        const compiled = {} as ResolvedUsers;
+        const posts = [...document.querySelectorAll("li[id^='item_'")];
+        for (const post of posts || []) {
+            const postid = parseInt(post?.id?.substr(5));
+            const postdiv = post.querySelector(".fullpost, .oneline");
+            const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
+            const id =
+                parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
+                parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
+            const username =
+                post.querySelector("span.oneline_user")?.textContent ||
+                post.querySelector("span.user")?.textContent ||
+                post.querySelector("span.user>a")?.textContent;
+            const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
+            const record = { id, mod: !!mod, op: !!op, postid, username };
+            if (!compiled[username]) compiled[username] = [record];
+            else compiled[username].push(record);
         }
-        HighlightUsers.cache = uniques;
+        HighlightUsers.cache = compiled;
         return HighlightUsers.cache;
     },
 
-    gatherCSS(users: ResolvedUser[], groups: HighlightGroup[]) {
+    resolveUser(username: string) {
+        // renew the cache if this gets called before HU has a chance to run
+        if (!objHas(HighlightUsers.cache)) HighlightUsers.resolveUsers();
+        return HighlightUsers.cache[`${username}`];
+    },
+
+    gatherCSS(users: ResolvedUsers, groups: HighlightGroup[]) {
         let css = "";
-        for (const group of groups || [])
+        for (const group of groups || []) {
+            const usernames = Object.keys(users);
             if (group.enabled)
-                if (group.name === "Original Poster") css += `div.oneline.op span.oneline_user { ${group.css} }`;
+                if (group.name === "Original Poster")
+                    css += `div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} } `;
                 else if (group.name === "Mods")
-                    for (const { id, mod } of users) {
-                        if (mod)
-                            css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
-                    }
+                    usernames?.forEach((uk) => {
+                        const { id, mod } = users[uk]?.[0];
+                        if (mod) {
+                            const rules = [
+                                `div.fpauthor_${id} span.author span.user>a`,
+                                `div.olauthor_${id} span.oneline_user`,
+                                `.authorid_${id}, .replyid_${id}`,
+                            ].join(", ");
+                            css += `${rules} { ${group.css} } `;
+                        }
+                    });
                 else
-                    for (const { id, name } of users)
-                        if (group.users && group.users.includes(name) && group.css.length > 0)
-                            css += `div.fpauthor_${id} span.author span.user>a, div.olauthor_${id} span.oneline_user { ${group.css} }`;
+                    usernames?.forEach((uk) => {
+                        const { id } = users[uk]?.[0];
+                        const foundUser = group.users?.find((u) => u.toLowerCase() === uk.toLowerCase());
+                        if (foundUser && group.css.length > 0) {
+                            const rules = [
+                                `div.fpauthor_${id} span.author span.user>a`,
+                                `div.olauthor_${id} span.oneline_user`,
+                                `.authorid_${id}, .replyid_${id}`,
+                            ].join(", ");
+                            css += `${rules} { ${group.css} } `;
+                        }
+                    });
+        }
 
         // don't highlight current user as mod/employee/dev
-        css += " span.this_user { color: rgb(0, 191, 243) !important; }";
+        css += "span.this_user { color: rgb(0, 191, 243) !important; }";
         insertStyle(css, "highlighted-users");
     },
 

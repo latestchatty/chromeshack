@@ -1,15 +1,15 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, objContains, objEmpty, objHas, superTrim } from "./common";
+import { DefaultSettings } from "./default_settings";
 import type {
-    Settings,
-    SettingKey,
-    HighlightGroup,
-    MigratedSettings,
-    TransientOpts,
     EnabledOptions,
     EnabledSuboptions,
+    HighlightGroup,
+    MigratedSettings,
+    SettingKey,
+    Settings,
+    TransientOpts,
 } from "./index.d";
-import { DefaultSettings } from "./default_settings";
 
 /// GETTERS
 

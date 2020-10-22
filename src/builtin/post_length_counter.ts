@@ -30,7 +30,7 @@ export const PostLengthCounter = {
         const astralCount = encodedText && EmojiPoster.countAstrals(encodedText).astralsCount;
         const charCount = astralCount ? textCount + astralCount : textCount;
         if (counter)
-            counter.innerText =
+            counter.textContent =
                 charCount > PostLengthCounter.MAX_POST_BYTES
                     ? "The post preview will be truncated."
                     : `Characters remaining in post preview: ${PostLengthCounter.MAX_POST_BYTES - charCount}`;

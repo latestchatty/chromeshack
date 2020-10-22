@@ -1,4 +1,5 @@
 import { superTrim } from "../core/common";
+import { DefaultSettings } from "../core/default_settings";
 import type { HighlightGroup, Settings } from "../core/index.d";
 import {
     getSettings,
@@ -8,7 +9,6 @@ import {
     setEnabledSuboption,
     setSettings,
 } from "../core/settings";
-import { DefaultSettings } from "../core/default_settings";
 
 export const getRandomNum = (min: number, max: number, precision?: number) =>
     parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));

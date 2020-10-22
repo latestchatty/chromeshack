@@ -36,21 +36,22 @@ export const Switchers = {
 
     cacheSwitchers() {
         // resolve and cache all offenders on the page once on load
-        const users = HU_Instance.resolveUsers();
-        for (const user of users || [])
-            for (const offender of Switchers.offenders) {
-                const matchedOld = offender.old.toLowerCase() === user.name.toLowerCase();
-                const matchedNew = offender.new.toLowerCase() === user.name.toLowerCase();
-                if (matchedOld || matchedNew)
-                    Switchers.resolved = [
-                        ...Switchers.resolved,
-                        {
-                            id: user.id,
-                            name: user.name,
-                            matched: matchedNew ? offender.old : offender.new,
-                        } as SwitcherMatch,
-                    ];
-            }
+        const resolvedUsers = HU_Instance.resolveUsers();
+        for (const offender of Switchers.offenders) {
+            const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
+            if (!user) continue;
+            const matchedOld = offender.old.toLowerCase() === user.username.toLowerCase();
+            const matchedNew = offender.new.toLowerCase() === user.username.toLowerCase();
+            if (matchedOld || matchedNew)
+                Switchers.resolved = [
+                    ...Switchers.resolved,
+                    {
+                        id: user.id,
+                        username: user.username,
+                        matched: matchedNew ? offender.old : offender.new,
+                    } as SwitcherMatch,
+                ];
+        }
     },
 
     loadSwitchers({ post }: PostEventArgs) {
@@ -58,7 +59,7 @@ export const Switchers = {
             const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
             const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
             const offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (const post of offenderPosts) Switchers.rewritePost(post, offender.name, offender.matched);
+            for (const post of offenderPosts) Switchers.rewritePost(post, offender.username, offender.matched);
         }
     },
 

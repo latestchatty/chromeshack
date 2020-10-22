@@ -2,6 +2,7 @@
 const path = require("path");
 const FileManagerPlugin = require("filemanager-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 const { paths } = require("./webpack.globals");
 
@@ -34,6 +35,9 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 loader: "ts-loader",
+                options: {
+                    transpileOnly: true,
+                },
             },
         ],
     },
@@ -54,6 +58,12 @@ module.exports = {
                     ],
                 },
             ],
+        }),
+        new ForkTsCheckerWebpackPlugin({
+            formatter: "basic",
+            eslint: {
+                files: "./src/**/*.{ts,tsx}",
+            },
         }),
     ],
 };

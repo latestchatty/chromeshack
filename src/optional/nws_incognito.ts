@@ -22,7 +22,7 @@ export const NwsIncognito = {
         for (const link of nwsLinks || []) {
             // avoid reapplying
             const _link = link as HTMLElement;
-            if (_link?.innerText?.indexOf(" (Incognito)") > -1) return;
+            if (_link?.textContent?.indexOf(" (Incognito)") > -1) return;
 
             //Clone the link to get rid of any handlers that were put on it before (like the inline image loader)
             //Of course, that relies on it being done before this.  So... yeah.
@@ -47,7 +47,7 @@ export const NwsIncognito = {
             // remove expando buttons for Incognito mode
             const expando = _link?.querySelector("div.expando");
             if (expando) _link?.removeChild(expando);
-            cloned.innerText = `${_link?.innerText} (Incognito)`;
+            cloned.textContent = `${_link?.textContent} (Incognito)`;
 
             link?.parentNode?.replaceChild(cloned, _link);
         }

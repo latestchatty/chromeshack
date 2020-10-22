@@ -31,9 +31,9 @@ import "./styles/embed_socials.css";
 import "./styles/highlight_pending.css";
 import "./styles/image_uploader.css";
 import "./styles/media.css";
+import "./styles/post_preview.css";
 import "./styles/threadpane.css";
 import "./styles/userpopup.css";
-import "./styles/post_preview.css";
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;

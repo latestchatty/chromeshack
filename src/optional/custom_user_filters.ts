@@ -1,28 +1,20 @@
 import { HU_Instance } from "../content";
 import { processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
 import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
-import { ResolvedUser } from "./highlight_users";
+import type { ResolvedUser } from "./highlight_users";
 
 export const CustomUserFilters = {
-    parsedUsers: [] as ResolvedUser[],
-
     rootPostCount: 0,
 
     async install() {
         const is_enabled = await enabledContains(["custom_user_filters"]);
         if (is_enabled) {
             processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
-            CustomUserFilters.applyFilter();
+            await CustomUserFilters.applyFilter();
         }
     },
 
-    resolveUser(username: string) {
-        // cache parsed page users locally (using HighlightUsers' resolver)
-        if (CustomUserFilters.parsedUsers.length === 0) CustomUserFilters.parsedUsers = HU_Instance.resolveUsers();
-        return CustomUserFilters.parsedUsers.filter((v) => v.name === username);
-    },
-
-    async removeOLsFromUserId(id: string, user: string) {
+    async removeOLsForAuthorId({ id }: ResolvedUser) {
         let postElems: Element[];
         const isChatty = document.getElementById("newcommentbutton");
         const hideFPs = await getEnabledSuboption("cuf_hide_fullposts");
@@ -49,15 +41,19 @@ export const CustomUserFilters = {
                 // only remove root if we're in thread mode
                 root?.parentNode?.removeChild(root);
         }
-        userFilterUpdateEvent.raise(user);
     },
 
     async applyFilter() {
         const filteredUsers = (await getSetting("user_filters")) as string[];
         if (!filteredUsers || filteredUsers.length === 0) return;
         CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
-        for (const filteredUser of filteredUsers)
-            for (const userMatch of CustomUserFilters.resolveUser(filteredUser) || [])
-                await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id, userMatch.name);
+        // await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id, userMatch.name);
+        for (const filteredUser of filteredUsers) {
+            const resolved = HU_Instance.resolveUser(filteredUser);
+            for (const record of resolved || []) {
+                userFilterUpdateEvent.raise(record);
+                await CustomUserFilters.removeOLsForAuthorId(record);
+            }
+        }
     },
 };

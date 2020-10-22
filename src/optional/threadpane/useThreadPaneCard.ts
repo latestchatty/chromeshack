@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { PostEventArgs } from "../../core";
-import { enabledContains, getEnabledSuboption, getSetting } from "../../core/settings";
-import type { PendingPost } from "../highlightpending";
-import { compileAuthorCSS, getRecents, jumpToPost } from "./helpers";
-import type { ParsedPost, ParsedReply, AuthorCSSDict } from "./index.d";
-import type { HighlightGroup } from "../../core/index.d";
 import {
     collapsedPostEvent,
     hpnpJumpToPostEvent,
@@ -12,7 +7,11 @@ import {
     processPostRefreshEvent,
     userFilterUpdateEvent,
 } from "../../core/events";
-import { objHas } from "../../core/common";
+import { enabledContains, getEnabledSuboption } from "../../core/settings";
+import type { PendingPost } from "../highlightpending";
+import { ResolvedUser } from "../highlight_users";
+import { getRecents, jumpToPost } from "./helpers";
+import type { ParsedPost, ParsedReply } from "./index.d";
 
 const useThreadPaneCard = (post: ParsedPost) => {
     const [localPost, setLocalPost] = useState(post);
@@ -21,7 +20,6 @@ const useThreadPaneCard = (post: ParsedPost) => {
     const [pending, setPending] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
     const [localRecents, setLocalRecents] = useState(recents);
-    const [cssProps, setCSSProps] = useState<AuthorCSSDict>({});
 
     const handleClickThreadShortcut = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -72,7 +70,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const refreshedThread = useCallback(
-        ({ rootid: threadid }: PostEventArgs) => {
+        (...args) => {
+            const { rootid: threadid } = args as PostEventArgs;
             if (threadid === rootid) {
                 setPending(false);
                 const threadRoot = document.querySelector(`div.root#root_${rootid}`);
@@ -83,25 +82,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
         [rootid],
     );
 
-    const highlightFilterUpdate = useCallback(() => {
-        (async () => {
-            const highlight_enabled = await enabledContains(["highlight_users"]);
-            const highlightGroups = highlight_enabled && ((await getSetting("highlight_groups")) as HighlightGroup[]);
-            const replyStyles = localRecents.recentTree
-                ?.map((rt) => rt.author)
-                ?.reduce((acc, ra) => {
-                    const isOP = ra.toLowerCase() === localPost.author.toLowerCase();
-                    const result = compileAuthorCSS({ author: ra, groups: highlightGroups, acc, isOP });
-                    return { ...acc, ...result };
-                }, {});
-            const authorStyle = compileAuthorCSS({ author: localPost.author, groups: highlightGroups });
-            const finalStyles = { ...authorStyle, replies: replyStyles };
-            if (objHas(finalStyles)) setCSSProps(finalStyles);
-        })();
-    }, [localPost, localRecents.recentTree]);
-
     const userFilterUpdate = useCallback(
-        (filteredUser: string) => {
+        ({ username: filteredUser }: ResolvedUser) => {
             (async () => {
                 const cufEnabled = await enabledContains(["custom_user_filters"]);
                 const removeFullposts = cufEnabled && (await getEnabledSuboption("cuf_hide_fullposts"));
@@ -125,7 +107,6 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     useEffect(() => {
-        highlightFilterUpdate();
         collapsedPostEvent.addHandler(updateCollapsed);
         pendingPostsUpdateEvent.addHandler(updatePending);
         processPostRefreshEvent.addHandler(refreshedThread);
@@ -138,21 +119,15 @@ const useThreadPaneCard = (post: ParsedPost) => {
             userFilterUpdateEvent.removeHandler(userFilterUpdate);
             hpnpJumpToPostEvent.removeHandler(handleJumpToPost);
         };
-    }, [updatePending, refreshedThread, userFilterUpdate, updateCollapsed, handleJumpToPost, highlightFilterUpdate]);
+    }, [updatePending, refreshedThread, userFilterUpdate, updateCollapsed, handleJumpToPost]);
 
     return {
         collapsed,
         handleClickThreadShortcut,
         handleCardClick,
-        handleJumpToPost,
-        cssProps,
-        updatePending,
-        refreshedThread,
         localPost,
         localRecents,
         pending,
-        updateCollapsed,
-        userFilterUpdate,
     };
 };
 export { useThreadPaneCard };

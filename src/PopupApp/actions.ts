@@ -1,4 +1,4 @@
-import type { Settings, HighlightGroup } from "../core/index.d";
+import type { HighlightGroup, Settings } from "../core/index.d";
 import { getSettings, setSettings } from "../core/settings";
 import { getRandomInt, randomHsl } from "./helpers";
 import type { FilterTypes, OptionsTypes, PopupAction, PopupState } from "./index.d";

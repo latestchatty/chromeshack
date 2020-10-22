@@ -5,8 +5,7 @@ import React from "react";
 import { render } from "react-dom";
 import { PopupApp } from "./PopupApp";
 import { usePopupStore } from "./PopupApp/popupStore";
-
-require("./styles/popup.css");
+import "./styles/popup.css";
 
 const { Provider } = usePopupStore;
 

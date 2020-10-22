@@ -22,6 +22,7 @@ import {
     afterElem,
     appendLinksToField,
     convertUrlToLink,
+    cssStrToProps,
     decodeHTML,
     elementFitsViewport,
     elementIsVisible,
@@ -41,7 +42,6 @@ import {
     scrollToElement,
     stripHtml,
     superTrim,
-    cssStrToProps,
 } from "./dom";
 import type { FetchArgs, ParseType, ShackRSSItem } from "./fetch";
 import {
