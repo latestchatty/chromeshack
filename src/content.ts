@@ -24,6 +24,7 @@ import { PostStyling } from "./optional/post_style";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
+import { singleThreadFix } from "./patches/singleThreadFix";
 import "./styles/chatty-news.css";
 import "./styles/chromeshack.css";
 import "./styles/comic_scripts.css";
@@ -41,6 +42,8 @@ export const HU_Instance = HighlightUsers;
 
 // open a message channel for WinChatty events
 TabMessenger.connect();
+// try to fix incorrect positioning in single-thread mode
+singleThreadFix();
 
 try {
     mergeTransientSettings().then(() =>
