@@ -66,9 +66,9 @@ const parseReply = (postElem: HTMLElement) => {
     const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
     // detect if a post's parent is the rootpost
     const _li = document.querySelector(`li#item_${postid}`);
-    const _parentLi = (<Element>_li?.parentNode)?.closest("li") as HTMLElement;
+    const _parentLi = (_li?.parentNode as Element)?.closest("li") as HTMLElement;
     const isRoot = elemMatches(_parentLi, "div.root > ul > li");
-    const op = !!_li.querySelector(".fullpost.op");
+    const op = !!elemMatches(oneline, ".op");
     return postid
         ? ({
               author,

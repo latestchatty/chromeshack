@@ -70,8 +70,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const refreshedThread = useCallback(
-        (...args) => {
-            const { rootid: threadid } = args as PostEventArgs;
+        (args: PostEventArgs) => {
+            const { rootid: threadid } = args || {};
             if (threadid === rootid) {
                 setPending(false);
                 const threadRoot = document.querySelector(`div.root#root_${rootid}`);
