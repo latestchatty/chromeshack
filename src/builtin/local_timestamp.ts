@@ -1,14 +1,20 @@
-import { arrHas } from "../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/index.d";
 
 export const LocalTimeStamp = {
-    hasLoaded: false,
+    date: new Date(),
+    dateOpts: {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        timeZoneName: "short",
+    },
 
     install() {
         processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
         processPostEvent.addHandler(LocalTimeStamp.adjustTime);
-        LocalTimeStamp.batchAdjustTime();
     },
 
     fixTime(rawDateStr: string) {
@@ -17,16 +23,9 @@ export const LocalTimeStamp = {
         // NOTE: The Chatty page can report wrong timestamps due to a backend server bug
         try {
             const fixAMPM = rawDateStr.replace(/(am\s|pm\s)/, (m1) => ` ${m1.toUpperCase()}`);
-            const toDT = new Date(fixAMPM);
+            LocalTimeStamp.date.setTime(Date.parse(fixAMPM));
             // use native JS to format a date string
-            const toStr = toDT.toLocaleDateString("en", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-                timeZoneName: "short",
-            });
+            const toStr = LocalTimeStamp.date.toLocaleDateString("en", LocalTimeStamp.dateOpts);
             return toStr ? toStr : rawDateStr;
         } catch (e) {
             console.error(e);
@@ -50,22 +49,11 @@ export const LocalTimeStamp = {
         }
     },
 
-    batchAdjustTime() {
-        const postDates = document.getElementsByClassName("postdate");
-        for (const date of postDates || []) LocalTimeStamp.adjustPostTime({ post: <HTMLElement>date });
-        LocalTimeStamp.hasLoaded = true;
-    },
-
     adjustTime({ post, root }: PostEventArgs) {
         // change dates per given root
-        let dates = [] as HTMLElement[];
-
-        if (post) dates = [...post.getElementsByClassName("postdate")] as HTMLElement[];
-        else if (root) dates = [...root.getElementsByClassName("postdate")] as HTMLElement[];
-
-        if ((arrHas(dates) && LocalTimeStamp.hasLoaded) || post) {
-            for (const postdate of dates || []) LocalTimeStamp.adjustPostTime({ post: <HTMLElement>postdate });
-            LocalTimeStamp.hasLoaded = false;
-        }
+        const postDate = post?.querySelector(".postdate") as HTMLElement;
+        const rootDate = root?.querySelector(".postdate") as HTMLElement;
+        if (postDate) LocalTimeStamp.adjustPostTime({ post: postDate });
+        if (rootDate) LocalTimeStamp.adjustPostTime({ post: postDate });
     },
 };
