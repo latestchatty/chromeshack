@@ -48,7 +48,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
         pending,
         refreshed,
     } = useThreadPaneCard(post);
-    const { author, authorid, body, count, mod, rootid } = localPost || {};
+    const { author, authorid, body, contained, count, mod, rootid } = localPost || {};
 
     return localPost?.rootid ? (
         <div
@@ -62,6 +62,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
             <div className="cs_thread_pane_card_header">
                 <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
                 <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
+                {contained && <div className="cs_thread_contains_user" title="You replied to this thread" />}
                 <div className="cs_thread_pane_reload" onClick={handleClickReload}>
                     <RefreshIcon classes={classNames("refresh__icon", { loading: refreshed })} />
                 </div>

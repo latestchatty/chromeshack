@@ -16,6 +16,7 @@ export interface Recents {
 }
 
 export interface ParsedPost extends ParsedReply {
+    contained: boolean;
     count: number;
     recents: Recents;
     rootid: number;

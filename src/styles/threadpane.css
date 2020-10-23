@@ -126,6 +126,15 @@ div.cs_thread_pane_post_count {
     height: 12px;
     width: 12px;
 }
+.cs_thread_contains_user {
+    display: inline-block;
+    height: 12px;
+    width: 12px;
+    background-color: rgb(65, 170, 170);
+    border-radius: 50%;
+    opacity: 0.66;
+    margin: 0 0.15em 0 0;
+}
 
 div.cs_thread_pane_root_body {
     font-family: sans-serif;
