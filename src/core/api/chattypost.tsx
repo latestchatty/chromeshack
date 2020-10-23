@@ -16,8 +16,7 @@ const fetchChattyPost = async (postid: string) => {
         const removedBanner = fullpost?.getAttribute("class").replace(/\bfpmod_.*?\s\b/i, "");
         if (removedBanner) fullpost.setAttribute("class", removedBanner);
 
-        const isChatty = document.getElementById("newcommentbutton");
-        const userLine = isChatty && fullpost?.querySelector("span.user");
+        const userLine = fullpost?.querySelector("span.user");
         // workaround to avoid nuLOL tagline injection on the main Chatty
         if (userLine) userLine.setAttribute("class", "user_getPost");
 
