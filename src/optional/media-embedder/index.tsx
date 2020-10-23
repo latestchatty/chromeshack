@@ -2,75 +2,61 @@ import React, { useEffect, useState } from "react";
 import { render } from "react-dom";
 import { PostEventArgs } from "../../core";
 import { detectMediaLink } from "../../core/api";
-import { arrEmpty, arrHas, locatePostRefs } from "../../core/common";
+import { arrEmpty, arrHas, locatePostRefs, objHas } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
-import type { ResolvedResponse } from "./index.d";
 
-const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement }) => {
-    const { links, item } = props || {};
-    const [responses, setResponses] = useState([] as ResolvedResponse[]);
+const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement; openByDefault?: boolean }) => {
+    const { links, item, openByDefault } = props || {};
     const [children, setChildren] = useState(null as React.ReactNode[]);
-    const [openByDefault, setOpenByDefault] = useState(false);
-    useEffect(() => {
-        const mediaLinkReplacer = async () => {
-            if (!item) return;
-            // replace each link with its mounted version
-            const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
-            for (const link of taggedLinks || []) {
-                const _this = link as HTMLAnchorElement;
-                const postid = _this.dataset.postid;
-                const idx = _this.dataset.idx;
-                const matched = item.querySelector(`div#expando_${postid}-${idx}`);
-                if (matched) link.replaceWith(matched);
-            }
-        };
-        if (children) mediaLinkReplacer();
-    }, [item, children]);
-    useEffect(() => {
-        if (!responses) return;
 
-        const _children = [] as JSX.Element[];
-        for (const response of responses) {
-            const { postid, idx, response: _response } = response || {};
-            _children.push(
-                <Expando key={idx} postid={postid} idx={idx} response={_response} options={{ openByDefault }} />,
-            );
-        }
-        // return our rendered Expando links
-        if (arrHas(_children)) setChildren(_children);
-    }, [responses, openByDefault]);
-    useEffect(() => {
-        if (!links) return;
-        const detectLinks = async () => {
-            // tag all matching links and save their resolved responses
-            const detectedLinks = arrHas(links)
-                ? await links.reduce(async (acc, l, i) => {
-                      // avoid clobbering NWS links
-                      const _detected = await detectMediaLink(l.href);
-                      const { postid } = locatePostRefs(l);
-                      const _acc = await acc;
-                      if (_detected) {
-                          // tag the detected link in the DOM so we can replace it later
-                          l.setAttribute("id", `tagged_${postid}-${i}`);
-                          l.setAttribute("data-postid", `${postid}`);
-                          l.setAttribute("data-idx", `${i}`);
-                          _acc.push({ postid, idx: i, response: _detected });
-                      }
-                      return _acc;
-                  }, Promise.resolve([] as ResolvedResponse[]))
-                : null;
-            if (detectedLinks) setResponses(detectedLinks);
-        };
-        detectLinks();
-    }, [links]);
     useEffect(() => {
         (async () => {
-            const _openByDefault = await enabledContains(["auto_open_embeds"]);
-            if (_openByDefault) setOpenByDefault(_openByDefault);
+            if (arrHas(children) && item) {
+                // replace each tagged link with its mounted version
+                const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
+                for (const link of taggedLinks || []) {
+                    const _this = link as HTMLAnchorElement;
+                    const postid = _this.dataset.postid;
+                    const idx = _this.dataset.idx;
+                    const matched = item.querySelector(`div#expando_${postid}-${idx}`);
+                    if (matched) link.replaceWith(matched);
+                }
+            }
         })();
-    }, []);
+    }, [item, children]);
+    useEffect(() => {
+        (async () => {
+            // tag all matching links and save their resolved responses
+            if (!arrHas(links)) return;
+            const detectedLinks = arrHas(links)
+                ? await links.reduce(async (acc, l, idx) => {
+                      const detected = await detectMediaLink(l.href);
+                      if (!detected) return await acc;
+                      const { postid } = locatePostRefs(l);
+                      const _acc = await acc;
+                      if (objHas(detected)) {
+                          // tag the detected link in the DOM so we can replace it later
+                          l.setAttribute("id", `tagged_${postid}-${idx}`);
+                          l.setAttribute("data-postid", `${postid}`);
+                          l.setAttribute("data-idx", `${idx}`);
+                          _acc.push(
+                              <Expando
+                                  key={idx}
+                                  postid={postid}
+                                  idx={idx}
+                                  response={detected}
+                                  options={{ openByDefault }}
+                              />,
+                          );
+                      }
+                      return _acc;
+                  }, Promise.resolve([] as JSX.Element[]))
+                : null;
+            setChildren(detectedLinks);
+        })();
+    }, [links, openByDefault]);
     return <>{children}</>;
 };
 
@@ -92,16 +78,16 @@ export const MediaEmbedder = {
         const postbody = post?.querySelector(".sel > .fullpost > .postbody");
         const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
         const embedded = postbody && ([...postbody.querySelectorAll("div.medialink")] as HTMLElement[]);
+        const openByDefault = await enabledContains(["auto_open_embeds"]);
 
         if (arrHas(links) && arrEmpty(embedded)) {
             if (!postbody?.querySelector("#react-media-manager")) {
                 const container = document.createElement("div");
                 container.setAttribute("id", "react-media-manager");
-                //container.setAttribute("class", "hidden");
                 postbody.appendChild(container);
             }
             const mount = postbody?.querySelector("#react-media-manager");
-            if (mount) render(<MediaEmbedderWrapper links={links} item={post} />, mount);
+            if (mount) render(<MediaEmbedderWrapper links={links} item={post} openByDefault={openByDefault} />, mount);
         }
     },
 };

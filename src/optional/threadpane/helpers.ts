@@ -93,8 +93,10 @@ export const getRecents = (divRootElem: HTMLElement) => {
     // find the most recent posts in a thread - newest to oldest
     let lastRecentRef: HTMLElement;
     // find the most recent post in ascending age
-    for (let i = 0; i < 10 && !lastRecentRef; i++)
-        if (!lastRecentRef) lastRecentRef = divRootElem.querySelector(`div.oneline${i}`) as HTMLElement;
+    for (let i = 0; i < 10 && !lastRecentRef; i++) {
+        const recent = divRootElem.querySelector(`div.oneline${i}`) as HTMLElement;
+        if (recent) lastRecentRef = recent;
+    }
     const recentRootId = lastRecentRef && parseInt(lastRecentRef.closest("div.root")?.id?.substr(5));
     const mostRecentRef = lastRecentRef;
     // walk up the reply tree to a distance limit of 4 parents

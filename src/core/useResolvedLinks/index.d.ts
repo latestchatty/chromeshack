@@ -1,5 +1,5 @@
-import { ResolvedResponse } from "../../optional/media-embedder";
-import { ParsedResponse } from "../api";
+import type { ParsedResponse } from "../../core/api";
+import type { ResolvedResponse } from "../../optional/media-embedder/index.d";
 
 interface FlexVideoOptionsProps {
     loop?: boolean;

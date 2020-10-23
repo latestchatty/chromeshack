@@ -29,8 +29,8 @@ export interface ParsedResponse {
     args?: string[];
     cb?: (...args: string[]) => any;
     component?: JSX.Element;
-    postid?: string;
-    idx?: string;
+    postid?: number;
+    idx?: number;
 }
 
 /*
@@ -39,7 +39,7 @@ export interface ParsedResponse {
  * 2) { href: string, args: string[], type: ..., cb: Function }
  *      ^ (e.g.: cb(...args) => string)
  */
-export const detectMediaLink = async (href: string) => {
+export const detectMediaLink = async (href: string): Promise<ParsedResponse> => {
     const mediaEnabled = await enabledContains(["media_loader"]);
     const socialsEnabled = await enabledContains(["social_loader"]);
     const chattypostEnabled = await enabledContains(["getpost"]);
