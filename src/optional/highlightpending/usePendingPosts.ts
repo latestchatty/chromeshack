@@ -8,6 +8,7 @@ import {
     processPostRefreshEvent,
 } from "../../core/events";
 import { NotifyEvent, NotifyResponse } from "../../core/notifications";
+import { getSetting } from "../../core/settings";
 import type { PendingPost } from "./";
 
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
@@ -64,11 +65,14 @@ const usePendingPosts = (threaded: boolean) => {
                 ? [...resp.events.filter((x: NotifyEvent) => x.eventType === "newPost")]
                 : [];
             // build new pendings on top of old ones as long as they're unique threads
+            const loggedUser = (await getSetting("username")) as string;
             const reducedPosts = newPosts.reduce((acc, p) => {
                 const postId = p.eventData?.postId;
                 const threadId = p.eventData?.post?.threadId;
                 const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
-                if (thread) acc.push({ postId, threadId, thread });
+                const isAuthorMe = p.eventData.post.author.toLowerCase() === loggedUser.toLowerCase();
+                // don't grab new posts that contain our logged-in user as the author
+                if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
                 return acc;
             }, [] as PendingPost[]);
             const reducedPendings = reducedPosts.reduce((acc, p) => {
