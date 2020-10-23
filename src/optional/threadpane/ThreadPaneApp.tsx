@@ -1,4 +1,4 @@
-import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
+import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
@@ -8,6 +8,7 @@ import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
 
 const StepForwardIcon = () => <FontAwesomeIcon icon={faAngleDoubleRight} />;
+const CommentDotsIcon = () => <FontAwesomeIcon icon={faCommentDots} />;
 
 const ThreadPaneReply = (props: { recent: ParsedReply; mostRecent?: boolean }) => {
     const { recent, mostRecent } = props || {};
@@ -61,8 +62,12 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
         >
             <div className="cs_thread_pane_card_header">
                 <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
+                {contained && (
+                    <div className="cs_thread_contains_user" title="You replied to this thread">
+                        <CommentDotsIcon />
+                    </div>
+                )}
                 <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
-                {contained && <div className="cs_thread_contains_user" title="You replied to this thread" />}
                 <div className="cs_thread_pane_reload" onClick={handleClickReload}>
                     <RefreshIcon classes={classNames("refresh__icon", { loading: refreshed })} />
                 </div>

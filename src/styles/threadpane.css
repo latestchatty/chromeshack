@@ -122,18 +122,17 @@ div.cs_thread_pane_post_count {
     color: rgba(221, 221, 221, 0.75);
 }
 .cs_thread_pane_shortcut svg,
-.cs_thread_pane_reload svg {
+.cs_thread_pane_reload svg,
+.cs_thread_contains_user svg {
     height: 12px;
     width: 12px;
 }
 .cs_thread_contains_user {
+    position: relative;
     display: inline-block;
-    height: 12px;
-    width: 12px;
-    background-color: rgb(65, 170, 170);
-    border-radius: 50%;
-    opacity: 0.66;
-    margin: 0 0.15em 0 0;
+    margin: 0 0 0 0.25em;
+    color: rgb(65, 170, 170);
+    top: -1px;
 }
 
 div.cs_thread_pane_root_body {
