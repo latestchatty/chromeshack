@@ -19,8 +19,17 @@ const useThreadPaneCard = (post: ParsedPost) => {
 
     const [pending, setPending] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
+    const [refreshed, setRefreshed] = useState(false);
     const [localRecents, setLocalRecents] = useState(recents);
 
+    const handleClickReload = useCallback(() => {
+        const reloadBtn = document.querySelector(`.root#root_${rootid}>ul>li .refresh>a`) as HTMLElement;
+        if (reloadBtn) {
+            reloadBtn.click();
+            setRefreshed(true);
+            setTimeout(() => setRefreshed(false), 333);
+        }
+    }, [rootid]);
     const handleClickThreadShortcut = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e?.preventDefault();
@@ -123,11 +132,13 @@ const useThreadPaneCard = (post: ParsedPost) => {
 
     return {
         collapsed,
+        handleClickReload,
         handleClickThreadShortcut,
         handleCardClick,
         localPost,
         localRecents,
         pending,
+        refreshed,
     };
 };
 export { useThreadPaneCard };

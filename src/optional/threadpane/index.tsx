@@ -7,9 +7,9 @@ const ThreadPane = {
     async install() {
         const enabled = await enabledContains(["thread_pane"]);
         const container = document.querySelector("div.cs_thread_pane");
-        //const chatty = document.getElementById("newcommentbutton");
+        const chatty = document.getElementById("newcommentbutton");
         // only enable thread pane on the main Chatty
-        if (enabled && !container) {
+        if (chatty && enabled && !container) {
             // apply css to make room for threadpane div
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
             const root = document.getElementById("page");

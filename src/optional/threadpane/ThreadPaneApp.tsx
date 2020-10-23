@@ -2,6 +2,7 @@ import { faAngleDoubleRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
+import { RefreshIcon } from "../media-embedder/Expando";
 import { parsePosts } from "./helpers";
 import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
@@ -39,11 +40,13 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
     const { post } = props || {};
     const {
         collapsed,
+        handleClickReload,
         handleClickThreadShortcut,
         handleCardClick,
         localPost,
         localRecents,
         pending,
+        refreshed,
     } = useThreadPaneCard(post);
     const { author, authorid, body, count, mod, rootid } = localPost || {};
 
@@ -59,6 +62,9 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
             <div className="cs_thread_pane_card_header">
                 <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
                 <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
+                <div className="cs_thread_pane_reload" onClick={handleClickReload}>
+                    <RefreshIcon classes={classNames("refresh__icon", { loading: refreshed })} />
+                </div>
                 <div className="cs_thread_pane_shortcut" title="Jump to thread" onClick={handleClickThreadShortcut}>
                     <StepForwardIcon />
                 </div>

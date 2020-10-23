@@ -106,16 +106,23 @@ div.cs_thread_pane_post_count {
     font-size: 11px;
     color: #555;
 }
-.cs_thread_pane_shortcut {
+.cs_thread_pane_shortcut,
+.cs_thread_pane_reload {
     display: flex;
     align-items: center;
+    margin: 0 0.15em;
     color: rgba(110, 110, 110, 0.66);
     transition: all 0.2s;
 }
-.cs_thread_pane_shortcut:hover {
+.cs_thread_pane_card_header :last-child {
+    margin-right: 0;
+}
+.cs_thread_pane_shortcut:hover,
+.cs_thread_pane_reload:hover {
     color: rgba(221, 221, 221, 0.75);
 }
-.cs_thread_pane_shortcut svg {
+.cs_thread_pane_shortcut svg,
+.cs_thread_pane_reload svg {
     height: 12px;
     width: 12px;
 }

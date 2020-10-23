@@ -8,7 +8,9 @@ import type { ExpandoProps } from "./index.d";
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;
 const ExternalLink = () => <FontAwesomeIcon className="external__icon" icon={faExternalLinkAlt} />;
-const RefreshIcon = ({ classes }: { classes: string }) => <FontAwesomeIcon className={classes} icon={faRedoAlt} />;
+export const RefreshIcon = ({ classes }: { classes: string }) => (
+    <FontAwesomeIcon className={classes} icon={faRedoAlt} />
+);
 
 const RenderExpando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
