@@ -13,23 +13,8 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
 
     useEffect(() => {
         (async () => {
-            if (arrHas(children) && item) {
-                // replace each tagged link with its mounted version
-                const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
-                for (const link of taggedLinks || []) {
-                    const _this = link as HTMLAnchorElement;
-                    const postid = _this.dataset.postid;
-                    const idx = _this.dataset.idx;
-                    const matched = item.querySelector(`div#expando_${postid}-${idx}`);
-                    if (matched) link.replaceWith(matched);
-                }
-            }
-        })();
-    }, [item, children]);
-    useEffect(() => {
-        (async () => {
-            // tag all matching links and save their resolved responses
             if (!arrHas(links)) return;
+            // tag all matching links and mount Expando's for each one
             const detectedLinks = arrHas(links)
                 ? await links.reduce(async (acc, l, idx) => {
                       const detected = await detectMediaLink(l.href);
@@ -54,9 +39,21 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
                       return _acc;
                   }, Promise.resolve([] as JSX.Element[]))
                 : null;
-            setChildren(detectedLinks);
+
+            if (arrHas(detectedLinks)) {
+                setChildren(detectedLinks);
+                // replace each tagged link with its mounted version
+                const taggedLinks = item.querySelectorAll(`a[id^='tagged_']`);
+                for (const link of taggedLinks || []) {
+                    const _this = link as HTMLAnchorElement;
+                    const postid = _this.dataset.postid;
+                    const idx = _this.dataset.idx;
+                    const matched = item.querySelector(`div#expando_${postid}-${idx}`);
+                    if (matched) link.replaceWith(matched);
+                }
+            }
         })();
-    }, [links, openByDefault]);
+    }, [links, openByDefault, item]);
     return <>{children}</>;
 };
 
