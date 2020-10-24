@@ -1,5 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-import { arrHas, objContains, objEmpty, objHas, superTrim } from "./common";
+import { arrHas, objEmpty, objHas, superTrim } from "./common";
 import { DefaultSettings } from "./default_settings";
 import type {
     EnabledOptions,
@@ -29,17 +29,12 @@ export const getSettings = async (defaults?: Settings) => {
     }
 };
 
-export const settingsContains = async (key: SettingKey) => {
-    const settings = (await getSettings()) as Settings;
-    return objContains(key, settings);
-};
-
 export const setSetting = async (key: SettingKey, val: any) => await browser.storage.local.set({ [key]: val });
 
 export const getSetting = async (key: SettingKey, defaultVal?: any) => {
     const settings = (await getSettings()) as Settings;
     // overwrite key with default (if provided)
-    if (!settingsContains(key)) setSetting(key, defaultVal);
+    if (!Object.keys(settings).includes(key)) setSetting(key, defaultVal);
     return settings[key] === undefined || settings[key] === null ? defaultVal || null : settings[key];
 };
 

@@ -58,14 +58,14 @@ export const HighlightUsers = {
 
     gatherCSS(users: ResolvedUsers, groups: HighlightGroup[]) {
         let css = "";
-        for (const group of groups || []) {
-            const usernames = Object.keys(users);
-            if (group.enabled)
-                if (group.name === "Original Poster")
-                    css += `div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} } `;
-                else if (group.name === "Mods")
-                    usernames?.forEach((uk) => {
-                        const { id, mod } = users[uk]?.[0];
+        const usernames = Object.keys(users);
+        for (const user of usernames || [])
+            for (const group of groups || [])
+                if (group.enabled)
+                    if (group.name === "Original Poster")
+                        css += `div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} } `;
+                    else if (group.name === "Mods") {
+                        const { id, mod } = users[user]?.[0];
                         if (mod) {
                             const rules = [
                                 `div.fpauthor_${id} span.author span.user>a`,
@@ -74,11 +74,9 @@ export const HighlightUsers = {
                             ].join(", ");
                             css += `${rules} { ${group.css} } `;
                         }
-                    });
-                else
-                    usernames?.forEach((uk) => {
-                        const { id } = users[uk]?.[0];
-                        const foundUser = group.users?.find((u) => u.toLowerCase() === uk.toLowerCase());
+                    } else {
+                        const { id } = users[user]?.[0];
+                        const foundUser = group.users?.find((u) => u.toLowerCase() === user.toLowerCase());
                         if (foundUser && group.css.length > 0) {
                             const rules = [
                                 `div.fpauthor_${id} span.author span.user>a`,
@@ -87,8 +85,7 @@ export const HighlightUsers = {
                             ].join(", ");
                             css += `${rules} { ${group.css} } `;
                         }
-                    });
-        }
+                    }
 
         // don't highlight current user as mod/employee/dev
         css += "span.this_user { color: rgb(0, 191, 243) !important; }";

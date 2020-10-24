@@ -3,21 +3,6 @@ export const arrEmpty = (arr: any[]) => arr && Array.isArray(arr) && arr.length 
 export const objHas = (obj: Record<string, any>) => obj && typeof obj === "object" && Object.keys(obj).length > 0;
 export const objEmpty = (obj: Record<string, any>) => obj && typeof obj === "object" && Object.keys(obj).length === 0;
 
-export const objContains = (needle: any, haystack: any) => {
-    /// tests for object equality in a nested object
-    if (!haystack || arrEmpty(haystack as string[]) || objEmpty(haystack as Record<string, any>)) return null;
-    if (needle === haystack) return needle as string;
-    else if (arrHas(haystack as string[])) return (haystack as string[]).find((x) => x === needle) || null;
-    for (const k of Object.keys(haystack as Record<string, any>) || []) {
-        const value = haystack[k];
-        if (arrHas(value) || typeof value === "object") {
-            const result = objContains(needle, value) as string;
-            if (result) return result;
-        } else if (value === needle) return value;
-    }
-    return null;
-};
-
 export const objContainsProperty = (key: string, obj: Record<string, any>) =>
     obj && Object.prototype.hasOwnProperty.call(obj, key);
 
