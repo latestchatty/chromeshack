@@ -42,9 +42,12 @@ const trimBodyHTML = (elem: HTMLElement) =>
         ?.replace(/[\r\n]/gm, "") // strip newlines, we only need the <br>s
         .replace(/\<br\>/gm, " "); // strip <br>s
 
-const threadContainsUser = (rootEl: HTMLElement, user: string) => {
+export const threadContainsLoggedUser = async (rootEl: HTMLElement) => {
+    const loggedUser = (await getSetting("username")) as string;
+    if (!loggedUser) return false;
     const oneliners = [...rootEl?.querySelectorAll(".oneline_user")];
-    for (const oneline of oneliners || []) if (oneline.textContent.toLowerCase() === user.toLowerCase()) return true;
+    for (const oneline of oneliners || [])
+        if (oneline.textContent.toLowerCase() === loggedUser.toLowerCase()) return true;
     return false;
 };
 
@@ -141,7 +144,6 @@ export const clonePostBody = (postElem: HTMLElement) => {
 };
 
 const parseRoot = async (rootElem: HTMLElement) => {
-    const loggedUser = (await getSetting("username")) as string;
     const root = elemMatches(rootElem, "div.root");
     const rootid = root && parseInt(root?.id?.substr(5));
     if (rootid < 1 || rootid > 50000000) {
@@ -160,7 +162,7 @@ const parseRoot = async (rootElem: HTMLElement) => {
     const mod = getMod(fullpost);
     const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
     const recents = getRecents(root);
-    const contained = threadContainsUser(rootElem, loggedUser);
+    const contained = await threadContainsLoggedUser(rootElem);
 
     return {
         author,

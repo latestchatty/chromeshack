@@ -10,7 +10,7 @@ import {
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
 import { ResolvedUser } from "../highlight_users";
-import { getRecents, jumpToPost } from "./helpers";
+import { getRecents, jumpToPost, threadContainsLoggedUser } from "./helpers";
 import type { ParsedPost, ParsedReply } from "./index.d";
 
 const useThreadPaneCard = (post: ParsedPost) => {
@@ -83,12 +83,16 @@ const useThreadPaneCard = (post: ParsedPost) => {
             const { rootid: threadid } = args || {};
             if (threadid === rootid) {
                 setPending(false);
-                const threadRoot = document.querySelector(`div.root#root_${rootid}`);
+                const threadRoot = document.querySelector(`div.root#root_${rootid}`) as HTMLElement;
                 const newRecents = threadRoot && getRecents(threadRoot as HTMLElement);
                 if (newRecents) setLocalRecents(newRecents);
+                threadContainsLoggedUser(threadRoot).then((contained) => {
+                    // update our "user replied" state for this thread
+                    if (contained) setLocalPost({ ...localPost, contained });
+                });
             }
         },
-        [rootid],
+        [rootid, localPost],
     );
 
     const userFilterUpdate = useCallback(

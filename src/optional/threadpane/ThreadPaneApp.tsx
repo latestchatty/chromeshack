@@ -68,7 +68,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
                     </div>
                 )}
                 <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
-                <div className="cs_thread_pane_reload" onClick={handleClickReload}>
+                <div className="cs_thread_pane_reload" title="Refresh this thread" onClick={handleClickReload}>
                     <RefreshIcon classes={classNames("refresh__icon", { loading: refreshed })} />
                 </div>
                 <div className="cs_thread_pane_shortcut" title="Jump to thread" onClick={handleClickThreadShortcut}>
