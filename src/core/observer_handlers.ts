@@ -12,6 +12,7 @@ import {
     processTagDataLoadedEvent,
 } from "./events";
 import type { PostEventArgs, RefreshMutation } from "./index.d";
+import { setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption } from "./settings";
 
@@ -118,6 +119,11 @@ export const handleRefreshClick = async (e: MouseEvent) => {
     }
 };
 
+export const processContentScriptLoaded = async () => {
+    // set our current logged-in username once upon refreshing the Chatty
+    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
+    if (loggedInUsername) await setUsername(loggedInUsername);
+};
 export const processObserverInstalled = async () => {
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
     await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);

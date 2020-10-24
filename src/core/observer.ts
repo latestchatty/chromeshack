@@ -1,7 +1,6 @@
 import { elemMatches, locatePostRefs } from "./common";
 import { processReplyEvent } from "./events";
 import type { RefreshMutation } from "./index.d";
-import { setUsername } from "./notifications";
 import {
     handleRefreshClick,
     handleReplyAdded,
@@ -16,10 +15,6 @@ export const ChromeShack = {
     refreshing: [] as RefreshMutation[],
 
     install() {
-        // set our current logged-in username once upon refreshing the Chatty
-        const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
-        if (loggedInUsername) setUsername(loggedInUsername);
-
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = (mutationsList: MutationRecord[]) => {
             try {

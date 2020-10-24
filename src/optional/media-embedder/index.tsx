@@ -58,18 +58,20 @@ const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLEle
 };
 
 export const MediaEmbedder = {
-    install() {
-        processPostEvent.addHandler(MediaEmbedder.processPost);
-        processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
+    async install() {
+        const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
+        if (is_enabled) {
+            processPostEvent.addHandler(MediaEmbedder.processPost);
+            processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
+        }
     },
 
     async processPost(args: PostEventArgs) {
         const { post } = args || {};
         // don't do processing if we don't need to
-        const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
         const isNWS = post?.querySelector(".fullpost.fpmod_nws");
         const NWS_enabled = await enabledContains(["nws_incognito"]);
-        if ((isNWS && NWS_enabled) || !is_enabled) return;
+        if (isNWS && NWS_enabled) return;
 
         // render inside a hidden container in each fullpost
         const postbody = post?.querySelector(".sel > .fullpost > .postbody");

@@ -1,5 +1,5 @@
 import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
-import { getSetting } from "../../core/settings";
+import { getUsername } from "../../core/notifications";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
@@ -43,8 +43,9 @@ const trimBodyHTML = (elem: HTMLElement) =>
         .replace(/\<br\>/gm, " "); // strip <br>s
 
 export const threadContainsLoggedUser = async (rootEl: HTMLElement) => {
-    const loggedUser = (await getSetting("username")) as string;
+    const loggedUser = await getUsername();
     if (!loggedUser) return false;
+
     const oneliners = [...rootEl?.querySelectorAll(".oneline_user")];
     for (const oneline of oneliners || [])
         if (oneline.textContent.toLowerCase() === loggedUser.toLowerCase()) return true;

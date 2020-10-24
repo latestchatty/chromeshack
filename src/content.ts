@@ -11,6 +11,7 @@ import { PostLengthCounter } from "./builtin/post_length_counter";
 import { UserPopup } from "./builtin/userpopup";
 import { TabMessenger } from "./core/notifications";
 import { ChromeShack } from "./core/observer";
+import { processContentScriptLoaded } from "./core/observer_handlers";
 import { mergeTransientSettings } from "./core/settings";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
@@ -40,40 +41,41 @@ import "./styles/userpopup.css";
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 
-// open a message channel for WinChatty events
-TabMessenger.connect();
-// try to fix incorrect positioning in single-thread mode
-singleThreadFix();
-
 try {
-    mergeTransientSettings().then(() =>
-        Promise.all([
-            // optional modules that rely on toggles
-            ChattyNews.install(),
-            TwitchAutoplay.install(),
-            CustomUserFilters.install(),
-            HighlightPendingPosts.install(),
-            HU_Instance.install(),
-            NewCommentHighlighter.install(),
-            NwsIncognito.install(),
-            PostPreview.install(),
-            PostStyling.install(),
-            Switchers.install(),
-            ThreadPane.install(),
-            MediaEmbedder.install(),
-        ]).then(() => {
-            Collapse.install();
-            CommentTags.install();
-            EmojiPoster.install();
-            ImageUploader.install();
-            LocalTimeStamp.install();
-            ModBanners.install();
-            PostLengthCounter.install();
-            UserPopup.install();
-            // always make sure the ChromeShack event observer is last
-            CS_Instance.install();
-        }),
-    );
+    (async () => {
+        // open a message channel for WinChatty events
+        TabMessenger.connect();
+        // try to fix incorrect positioning in single-thread mode
+        singleThreadFix();
+
+        // async events/supports
+        await mergeTransientSettings();
+        await processContentScriptLoaded().then(() => ThreadPane.install());
+        // optional modules that rely on toggles
+        await ChattyNews.install();
+        await CustomUserFilters.install();
+        await HighlightPendingPosts.install();
+        await HU_Instance.install();
+        await MediaEmbedder.install();
+        await NewCommentHighlighter.install();
+        await NwsIncognito.install();
+        await PostPreview.install();
+        await PostStyling.install();
+        await Switchers.install();
+        await TwitchAutoplay.install();
+
+        // sync events/supports
+        Collapse.install();
+        CommentTags.install();
+        EmojiPoster.install();
+        ImageUploader.install();
+        LocalTimeStamp.install();
+        ModBanners.install();
+        PostLengthCounter.install();
+        UserPopup.install();
+        // always make sure the ChromeShack event observer is last
+        CS_Instance.install();
+    })();
 } catch (e) {
     console.error(e);
 }

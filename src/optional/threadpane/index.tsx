@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { enabledContains } from "../../core/settings";
+import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { ThreadPaneApp } from "./ThreadPaneApp";
 
 const ThreadPane = {
@@ -8,8 +8,9 @@ const ThreadPane = {
         const enabled = await enabledContains(["thread_pane"]);
         const container = document.querySelector("div.cs_thread_pane");
         const chatty = document.getElementById("newcommentbutton");
+        const testing = await getEnabledSuboption("testing_mode");
         // only enable thread pane on the main Chatty
-        if (chatty && enabled && !container) {
+        if (((chatty && enabled) || testing) && !container) {
             // apply css to make room for threadpane div
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
             const root = document.getElementById("page");
