@@ -1,29 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common";
-import { UploaderAction, UploaderState } from "./index.d";
+import type { ImageUploaderComponentProps } from "./index.d";
 
-interface ImageUploaderComponentProps {
-    id?: string;
-    childId?: string;
-    label?: string;
-    visible?: boolean;
-    selected?: boolean;
-    clickHandler?: any;
-    children?: React.ReactNode | React.ReactNode[];
-    fcRef?: React.Ref<HTMLInputElement>;
-    multifile?: boolean;
-    fileData?: File[];
-    formats?: string;
-    disabled?: boolean;
-    dispatch?: React.Dispatch<UploaderAction>;
-    state?: UploaderState | string;
-    status?: string;
-    error?: any;
-    isPending?: boolean;
-    animationEnd?: any;
-}
-export const ToggleChildren = (props: ImageUploaderComponentProps) => {
+const ToggleChildren = (props: ImageUploaderComponentProps) => {
     const { id, childId, label, visible, clickHandler, children } = props || {};
     const childClasses = classNames({ hidden: !visible });
     return (
@@ -38,7 +18,7 @@ export const ToggleChildren = (props: ImageUploaderComponentProps) => {
     );
 };
 
-export const Tab = (props: ImageUploaderComponentProps) => {
+const Tab = (props: ImageUploaderComponentProps) => {
     const { id, label, selected, clickHandler } = props || {};
     const classes = classNames("tab", { active: selected }, { inactive: !selected });
     return (
@@ -48,7 +28,7 @@ export const Tab = (props: ImageUploaderComponentProps) => {
     );
 };
 
-export const DropArea = (props: ImageUploaderComponentProps) => {
+const DropArea = (props: ImageUploaderComponentProps) => {
     const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
     const override = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
@@ -69,7 +49,7 @@ export const DropArea = (props: ImageUploaderComponentProps) => {
         const chooser = thisArea?.querySelector("#fileChooser") as HTMLElement;
         if (!disabled && chooser) chooser.click();
     };
-    const classes = classNames({ disabled }, { active: fileData.length > 0 });
+    const classes = classNames({ disabled, active: fileData.length > 0 });
     return (
         <div
             id="dropArea"
@@ -95,16 +75,14 @@ export const DropArea = (props: ImageUploaderComponentProps) => {
     );
 };
 
-export const UrlInput = (props: ImageUploaderComponentProps) => {
+const UrlInput = (props: ImageUploaderComponentProps) => {
     const { state, disabled, dispatch } = props || {};
     const [url, setUrl] = useState("");
-    const useDebouncedUrl = useRef(debounce((val) => dispatch({ type: "LOAD_URL", payload: val }), 1500));
+    const useDebouncedUrl = useRef(debounce((val) => dispatch({ type: "LOAD_URL", payload: val }), 500));
     const onInput = (e: React.ChangeEvent) => {
-        e.persist();
-        const this_node = e?.target as HTMLInputElement;
-        const val = this_node?.value;
+        const _this = e?.target as HTMLInputElement;
+        const val = _this?.value;
         setUrl(val);
-        // debounce the dispatcher
         useDebouncedUrl.current(val);
     };
     const classes = classNames({ hidden: disabled });
@@ -128,7 +106,7 @@ export const UrlInput = (props: ImageUploaderComponentProps) => {
     );
 };
 
-export const Button = (props: ImageUploaderComponentProps) => {
+const Button = (props: ImageUploaderComponentProps) => {
     const { id, disabled, clickHandler, label } = props || {};
     return (
         <button id={id} disabled={disabled} onClick={clickHandler}>
@@ -137,7 +115,7 @@ export const Button = (props: ImageUploaderComponentProps) => {
     );
 };
 
-export const StatusLine = (props: ImageUploaderComponentProps) => {
+const StatusLine = (props: ImageUploaderComponentProps) => {
     const { status, error, isPending, animationEnd } = props || {};
     const statusClasses = classNames({
         fadeout: !isPending,
@@ -155,3 +133,5 @@ export const StatusLine = (props: ImageUploaderComponentProps) => {
         </div>
     );
 };
+
+export { StatusLine, Button, UrlInput, DropArea, Tab, ToggleChildren };

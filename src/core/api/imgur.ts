@@ -190,6 +190,7 @@ const handleImgurAlbumUpload = async (links: string[], hashes: string[], dispatc
 
 export const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     try {
+        if (!data) return;
         const uploaded = await doImgurUpload(data, dispatch);
         const links = uploaded && uploaded.map((i) => i.link);
         const hashes = uploaded && uploaded.map((i) => i.deletehash);

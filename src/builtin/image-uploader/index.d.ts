@@ -1,4 +1,15 @@
 import type { ReducerState } from "../../core/createStore";
+import type {
+    LOAD_FILES_ACTION,
+    LOAD_TAB_ACTION,
+    LOAD_URL_ACTION,
+    TOGGLE_UPLOADER_ACTION,
+    UPDATE_STATUS_ACTION,
+    UPLOAD_CANCEL_ACTION,
+    UPLOAD_FAILURE_ACTION,
+    UPLOAD_PENDING_ACTION,
+    UPLOAD_SUCCESS_ACTION,
+} from "./actions.d";
 
 export type UploadSuccessPayload = string[];
 export interface UploadFailurePayload {
@@ -6,18 +17,15 @@ export interface UploadFailurePayload {
     msg: string;
 }
 export type UploaderAction =
-    | { type: "TOGGLE_UPLOADER"; payload?: boolean }
-    | { type: "CHANGE_TAB"; payload: string }
-    | { type: "LOAD_FILES"; payload: File[] | FileList }
-    | { type: "LOAD_URL"; payload: string }
-    | { type: "IMGURTAB_LOAD" }
-    | { type: "GFYCATTAB_LOAD" }
-    | { type: "CHATTYPICSTAB_LOAD" }
-    | { type: "UPLOAD_PENDING" }
-    | { type: "UPLOAD_CANCEL" }
-    | { type: "UPLOAD_SUCCESS"; payload: UploadSuccessPayload }
-    | { type: "UPLOAD_FAILURE"; payload: UploadFailurePayload }
-    | { type: "UPDATE_STATUS"; payload: string };
+    | LOAD_FILES_ACTION
+    | LOAD_TAB_ACTION
+    | LOAD_URL_ACTION
+    | TOGGLE_UPLOADER_ACTION
+    | UPDATE_STATUS_ACTION
+    | UPLOAD_CANCEL_ACTION
+    | UPLOAD_FAILURE_ACTION
+    | UPLOAD_PENDING_ACTION
+    | UPLOAD_SUCCESS_ACTION;
 
 export interface UploaderState extends ReducerState {
     visible: boolean;
@@ -37,4 +45,25 @@ export interface UploaderState extends ReducerState {
         code: number;
         msg: string;
     };
+}
+
+export interface ImageUploaderComponentProps {
+    id?: string;
+    childId?: string;
+    label?: string;
+    visible?: boolean;
+    selected?: boolean;
+    clickHandler?: any;
+    children?: React.ReactNode | React.ReactNode[];
+    fcRef?: React.Ref<HTMLInputElement>;
+    multifile?: boolean;
+    fileData?: File[];
+    formats?: string;
+    disabled?: boolean;
+    dispatch?: React.Dispatch<UploaderAction>;
+    state?: UploaderState | string;
+    status?: string;
+    error?: any;
+    isPending?: boolean;
+    animationEnd?: any;
 }

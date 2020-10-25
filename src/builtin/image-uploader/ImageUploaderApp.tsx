@@ -1,90 +1,26 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { handleChattypicsUpload } from "../../core/api/chattypics";
-import { handleGfycatUpload } from "../../core/api/gfycat";
-import { handleImgurUpload } from "../../core/api/imgur";
-import { appendLinksToField, arrHas } from "../../core/common";
-import { getSetting, setSetting } from "../../core/settings";
+import React, { useRef } from "react";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
-import type { UploaderState } from "./index.d";
+import type { UploaderAction, UploaderState } from "./index.d";
 import { useUploaderStore } from "./uploaderStore";
+import { useImageUploader } from "./useImageUploader";
 
 export type UploadData = string[] | File[];
-interface ImageUploaderAppProps {
-    parentRef: HTMLElement;
-}
-const ImageUploaderApp = (props: ImageUploaderAppProps) => {
+const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
+    const { postboxEl } = props || {};
+    const parentRef = useRef(postboxEl);
+
     const { useStoreState: useUploaderState, useStoreDispatch: useUploaderDispatch } = useUploaderStore;
     const state = useUploaderState() as UploaderState;
-    const dispatch = useUploaderDispatch();
-    const fileChooserRef = useRef(null);
+    const dispatch = useUploaderDispatch() as React.Dispatch<UploaderAction>;
 
-    const doSelectTab = useCallback(
-        (tabName: string) => {
-            const normalizedTabName = `${tabName.toUpperCase()}_LOAD`;
-            dispatch({ type: "CHANGE_TAB", payload: tabName });
-            dispatch({ type: normalizedTabName });
-            // save our selected tab between sessions
-            setSetting("selected_upload_tab", tabName);
-        },
-        [dispatch],
-    );
-
-    const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.preventDefault();
-        const visibility = !state.visible;
-        dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
-        setSetting("image_uploader_toggled", visibility);
-    };
-    const onClickTab = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.preventDefault();
-        const this_node = e.target as HTMLDivElement;
-        const thisTab = this_node?.id;
-        if (thisTab !== state.selectedTab) doSelectTab(thisTab);
-    };
-    const onClickUploadBtn = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.preventDefault();
-        if (!(e?.target as HTMLButtonElement).disabled) {
-            const { fileData, urlData, selectedTab, urlDisabled, filesDisabled } = state;
-            const data = !urlDisabled ? [urlData] : !filesDisabled ? fileData : [];
-            if (selectedTab === "imgurTab") handleImgurUpload(data, dispatch);
-            else if (selectedTab === "gfycatTab") handleGfycatUpload(data, dispatch);
-            else if (selectedTab === "chattypicsTab") handleChattypicsUpload(data as File[], dispatch);
-        }
-    };
-    const onClickCancelBtn = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        e.preventDefault();
-        const thisTab = state.selectedTab;
-        dispatch({ type: "UPLOAD_CANCEL" });
-        dispatch({ type: `${thisTab.toUpperCase()}_LOAD` });
-        fileChooserRef.current.value = null;
-    };
-    /// hide the statusline once the transition animation ends
-    const onStatusAnimEnd = () => dispatch({ type: "UPDATE_STATUS", payload: "" });
-
-    useEffect(() => {
-        /// update the reply box with links when data is returned from the server
-        const thisElem = props.parentRef;
-        const replyField = thisElem?.querySelector("#frm_body") as HTMLInputElement;
-        if (arrHas(state?.response) && replyField) {
-            appendLinksToField(replyField, state.response);
-            dispatch({ type: "UPLOAD_CANCEL" }); // reset UI
-        }
-    }, [state.response, dispatch, props.parentRef]);
-    useEffect(() => {
-        // restore our saved hoster tab
-        getSetting("selected_upload_tab").then((tab: string) => {
-            if (tab) doSelectTab(tab);
-        });
-    }, [doSelectTab]);
-
-    // track whether the uploader container is visible on start
-    useLayoutEffect(() => {
-        (async () => {
-            const is_toggled = await getSetting("image_uploader_toggled", true);
-            dispatch({ type: "TOGGLE_UPLOADER", payload: is_toggled });
-        })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    const {
+        fileChooserRef,
+        onClickCancelBtn,
+        onClickTab,
+        onClickToggle,
+        onClickUploadBtn,
+        onStatusAnimEnd,
+    } = useImageUploader(parentRef.current, state, dispatch);
 
     /// tabs are defined by id and label
     const tabs = [
@@ -108,7 +44,7 @@ const ImageUploaderApp = (props: ImageUploaderAppProps) => {
                             key={tab.id}
                             id={tab.id}
                             label={tab.label}
-                            selected={state.selectedTab === tab.id}
+                            selected={state.selectedTab.toUpperCase() === tab.id.toUpperCase()}
                             clickHandler={onClickTab}
                         />
                     );

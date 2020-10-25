@@ -29,7 +29,7 @@ export const ImageUploader = {
 
         return render(
             <UploaderProvider>
-                <ImageUploaderApp parentRef={postbox} />
+                <ImageUploaderApp postboxEl={postbox} />
             </UploaderProvider>,
             renderContainer,
         );

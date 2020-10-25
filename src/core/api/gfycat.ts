@@ -139,6 +139,7 @@ const handleGfycatUploadFailure = (payload: UploadFailurePayload, dispatch: Disp
 export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     /// FSM: dropKey (mediaUrl optional) -> upload (if applicable) -> status => resolve
     try {
+        if (!data) return;
         dispatch({ type: "UPLOAD_PENDING" });
 
         // if our data is a media URL it will be handed off to Gfycat here

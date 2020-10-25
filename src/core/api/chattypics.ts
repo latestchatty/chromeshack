@@ -48,6 +48,7 @@ const handleChattypicsFailure = (payload: UploadFailurePayload, dispatch: Dispat
 
 export const handleChattypicsUpload = async (data: UploadData, dispatch: Dispatch<UploaderAction>) => {
     try {
+        if (!data) return;
         const links: string[] = await doChattypicsUpload(data, dispatch);
         if (!arrEmpty(links)) handleChattypicsSuccess(links, dispatch);
         else handleChattypicsFailure({ code: 400, msg: "Server returned no media links!" }, dispatch);
