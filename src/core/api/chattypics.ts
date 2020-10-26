@@ -12,7 +12,7 @@ const parseLink = (href: string) => {
     );
     const src = isChattyPics ? `https://chattypics.com/files/${isChattyPics[1]}` : null;
     const type = isVideo(src) ? { type: "video" } : isImage(src) ? { type: "image" } : null;
-    return type ? ({ ...type, src } as ParsedResponse) : null;
+    return type ? ({ ...type, href, src } as ParsedResponse) : null;
 };
 
 export const isChattypics = (href: string) => parseLink(href);

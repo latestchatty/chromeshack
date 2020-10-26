@@ -10,7 +10,7 @@ const parseLink = (href: string) => {
             ? `${isTwimg[1]}${isTwimg[4]}`
             : null;
     const type = isVideo(src) ? { type: "video" } : isImage(src) ? { type: "image" } : null;
-    return type ? ({ ...type, src } as ParsedResponse) : null;
+    return type ? ({ ...type, href, src } as ParsedResponse) : null;
 };
 
 export const isTwimg = (href: string) => parseLink(href);

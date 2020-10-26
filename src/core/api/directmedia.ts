@@ -6,7 +6,7 @@ const parseLink = (href: string) => {
         href,
     );
     const type = mediaMatch && isImage(mediaMatch[1]) ? "image" : mediaMatch && isVideo(mediaMatch[1]) ? "video" : null;
-    return mediaMatch ? ({ src: href, type } as ParsedResponse) : null;
+    return mediaMatch ? ({ href, src: mediaMatch[0], type } as ParsedResponse) : null;
 };
 
 export const isDirectMedia = (href: string) => parseLink(href);

@@ -28,17 +28,15 @@ const parseLink = (href: string) => {
     const offset = isYoutube ? isYoutube[1] || isYoutube[4] : isYoutubeShort ? isYoutubeShort[2] : "";
     const startAt = offset ? decodeOffset(offset) : "";
 
-    const h = { type: "iframe" };
+    const h = { type: "iframe", href };
     if (video)
         return {
             ...h,
-            href,
             src: `https://www.youtube.com/embed/${video}?autoplay=1${playlist}${startAt}`,
         } as ParsedResponse;
     else if (!video && playlist)
         return {
             ...h,
-            href,
             src: `https://www.youtube.com/embed/videoseries?autoplay=1${playlist}`,
         } as ParsedResponse;
     else return null;
