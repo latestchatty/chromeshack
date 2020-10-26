@@ -21,8 +21,8 @@ const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUser
                 root.parentNode.removeChild(root);
             }
         };
-        document.removeEventListener("click", popupClickHandler);
         document.addEventListener("click", popupClickHandler);
+        return () => document.removeEventListener("click", popupClickHandler);
     }, []);
 
     return (

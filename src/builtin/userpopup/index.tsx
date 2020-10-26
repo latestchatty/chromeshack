@@ -6,6 +6,9 @@ import { UserPopupApp } from "./UserPopupApp";
 
 export const UserPopup = {
     async clickHandler(e: MouseEvent) {
+        const mini_mode = window.matchMedia("(max-width: 1024px)");
+        if (mini_mode.matches) return;
+
         const _this = e?.target as HTMLElement;
         const userLink = !elemMatches(_this, "div.getPost span.user > a") ? elemMatches(_this, "span.user > a") : null;
         const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
