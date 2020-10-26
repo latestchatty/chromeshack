@@ -44,11 +44,8 @@ const RenderExpando = (props: ExpandoProps) => {
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e.preventDefault();
             const _this = e?.target as HTMLElement;
-            const _mediaParent = elemMatches(_this.offsetParent as HTMLElement, "div.media");
-            // find the nearest expando parent
-            const _expando =
-                elemMatches(_this.nextElementSibling as HTMLElement, "div.expando") ||
-                (_this.closest("div.expando") as HTMLElement);
+            const _mediaParent = type === "image" && elemMatches(_this, "img");
+            const _expando = !_this?.closest("div.media") && _this?.closest("div.medialink");
             // only clickTogglesVisible on media when an image or expando link
             if ((_mediaParent && type === "image") || _expando) setToggled(!toggled);
         },
@@ -79,16 +76,10 @@ const RenderExpando = (props: ExpandoProps) => {
     }, [toggled, loadChildren]);
 
     return (
-        <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx}>
-            <a
-                href={src || href}
-                title={toggled ? "Hide embedded media" : "Show embedded media"}
-                onClick={handleToggleClick}
-            >
+        <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx} onClick={handleToggleClick}>
+            <a href={src || href} title={toggled ? "Hide embedded media" : "Show embedded media"}>
                 <span>{href || src}</span>
-                <div className="expando" onClick={handleToggleClick}>
-                    {toggled ? <CompressIcon /> : <ExpandIcon />}
-                </div>
+                <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>
             </a>
             {isValidElement(children) && (
                 <a className="reloadbtn" title="Reload embed" onClick={handleRefreshClick}>

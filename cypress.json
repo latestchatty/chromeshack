@@ -11,10 +11,9 @@
         "secure.quantserve.com",
         "imrworldwide.com"
     ],
-    "numTestsKeptInMemory": 0,
     "viewportHeight": 960,
     "viewportWidth": 1000,
-    "defaultCommandTimeout": 12000,
+    "defaultCommandTimeout": 15000,
     "video": false,
     "reporter": "mochawesome",
     "reporterOptions": {

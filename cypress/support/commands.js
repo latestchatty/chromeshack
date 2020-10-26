@@ -13,3 +13,13 @@ Cypress.Commands.add("isInViewport", { prevSubject: true }, (subject) => {
 
     return subject;
 });
+
+Cypress.Commands.add("loadExtensionDefaults", (opts, data) =>
+    cy.window().then((win) => {
+        const _opts = Object.assign({}, { defaults: true }, opts);
+        const _data = Object.assign({}, { enabled_suboptions: ["testing_mode"] }, data);
+        console.log("loadExtensionDefaults:", _opts, _data);
+        win.localStorage["transient-opts"] = JSON.stringify(_opts);
+        win.localStorage["transient-data"] = JSON.stringify(_data);
+    }),
+);

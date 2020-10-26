@@ -1,15 +1,14 @@
 /// <reference types="Cypress" />
 
 describe("Two Pane Layout", () => {
-    context("thread interactivity", () => {
-        before(() => {
-            cy.window().then((win) => {
-                win.localStorage["transient-data"] = JSON.stringify({ enabled_scripts: ["thread_pane"] });
-            });
-            cy.visit("https://www.shacknews.com/chatty");
-        });
+    before(() => {
+        cy.loadExtensionDefaults({}, { enabled_scripts: ["thread_pane"] });
+    });
 
+    context("thread interactivity", () => {
         it("has valid cards", () => {
+            cy.visit("https://www.shacknews.com/chatty");
+
             cy.get(".cs_thread_pane_card").as("cards");
             cy.get("@cards")
                 .eq(0)
@@ -35,10 +34,9 @@ describe("Two Pane Layout", () => {
 
         it("reply icon is shown for logged user", () => {
             cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
-
-            const postid = "40040022";
             cy.visit("https://www.shacknews.com/chatty?id=40040022#item_40040022");
 
+            const postid = "40040022";
             cy.get(`div#item_${postid} div.cs_thread_contains_user`).should("be.visible");
         });
     });

@@ -10,7 +10,7 @@ const ThreadPane = {
         const chatty = document.getElementById("newcommentbutton");
         const testing = await getEnabledSuboption("testing_mode");
         // only enable thread pane on the main Chatty
-        if (((chatty && enabled) || testing) && !container) {
+        if ((testing || chatty) && enabled && !container) {
             // apply css to make room for threadpane div
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
             const root = document.getElementById("page");

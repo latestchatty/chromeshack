@@ -49,8 +49,8 @@ try {
         singleThreadFix();
 
         // async events/supports
+        await processContentScriptLoaded();
         await mergeTransientSettings();
-        await processContentScriptLoaded().then(() => ThreadPane.install());
         // optional modules that rely on toggles
         await ChattyNews.install();
         await CustomUserFilters.install();
@@ -62,6 +62,7 @@ try {
         await PostPreview.install();
         await PostStyling.install();
         await Switchers.install();
+        await ThreadPane.install();
         await TwitchAutoplay.install();
 
         // sync events/supports
