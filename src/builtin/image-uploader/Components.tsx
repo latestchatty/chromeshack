@@ -1,7 +1,13 @@
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common";
 import type { ImageUploaderComponentProps } from "./index.d";
+
+const ExclamationCircleIcon = ({ className, title }: { className: string; title: string }) => (
+    <FontAwesomeIcon className={className} title={title} icon={faExclamationCircle} />
+);
 
 const ToggleChildren = (props: ImageUploaderComponentProps) => {
     const { id, childId, label, visible, clickHandler, children } = props || {};
@@ -30,6 +36,7 @@ const Tab = (props: ImageUploaderComponentProps) => {
 
 const DropArea = (props: ImageUploaderComponentProps) => {
     const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
+    const showWarning = fileData.length > 1 && !multifile;
     const override = (e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -49,11 +56,10 @@ const DropArea = (props: ImageUploaderComponentProps) => {
         const chooser = thisArea?.querySelector("#fileChooser") as HTMLElement;
         if (!disabled && chooser) chooser.click();
     };
-    const classes = classNames({ disabled, active: fileData.length > 0 });
     return (
         <div
             id="dropArea"
-            className={classes}
+            className={classNames({ disabled, active: fileData.length > 0 })}
             onDrop={onDropHandler}
             onDragOver={override}
             onDragEnter={override}
@@ -71,6 +77,10 @@ const DropArea = (props: ImageUploaderComponentProps) => {
             <span onClick={onClickLabelHandler}>
                 {getFileCount(fileData) || `Drop or select ${multifile ? "files" : "file"} here...`}
             </span>
+            <ExclamationCircleIcon
+                title="Warning: single file host - only first file will be sent!"
+                className={classNames("drop__area--icon", { hidden: !showWarning })}
+            />
         </div>
     );
 };

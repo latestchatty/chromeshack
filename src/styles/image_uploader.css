@@ -2,11 +2,11 @@
     --chatty-bg: rgba(20, 20, 20, 1);
     --chatty-la: rgba(65, 170, 170, 1);
 
+    --postbox-abg: rgba(100, 100, 100, 0.75);
     --postbox-bg: rgba(34, 34, 34, 1);
-    --postbox-fg: rgba(255, 255, 255, 0.15);
-    --postbox-abg: rgba(68, 68, 68, 0.5);
-    --postbox-afg: rgba(255, 255, 255, 0.75);
-    --postbox-afgh: white;
+    --postbox-afg: rgba(255, 255, 255, 0.66);
+    --postbox-fg: rgba(255, 255, 255, 0.33);
+    --postbox-afgh: var(--postbox-afg);
 
     --postbox-brd: rgba(68, 68, 68, 0.65);
     --postbox-abrd: rgba(68, 68, 68, 1);
@@ -178,6 +178,13 @@ span#toggleLabel:hover {
 #dropArea:not(.disabled) > span:hover {
     color: var(--postbox-afgh);
     cursor: pointer;
+}
+#dropArea.disabled svg.drop__area--icon {
+    height: 18px;
+    width: 18px;
+    color: var(--postbox-afgh);
+    margin-left: 0.5em;
+    opacity: 0.75;
 }
 
 input[type="url"]#urlinput {

@@ -40,6 +40,7 @@
         "css-loader": "^4.3.0",
         "cypress": "^5.4.0",
         "cypress-browser-extension-plugin": "github:WombatFromHell/cypress-browser-extension-plugin#eb3a72f01a0bc55fbf0bfd086582af92bfb54c23",
+        "cypress-file-upload": "^4.1.1",
         "eslint": "^7.11.0",
         "eslint-config-airbnb": "^18.2.0",
         "eslint-config-prettier": "^6.13.0",

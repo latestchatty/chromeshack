@@ -160,7 +160,9 @@ export const handleGfycatUpload = async (data: UploadData, dispatch: Dispatch<Up
                     );
             } else return handleGfycatUploadFailure(urlUpload, dispatch);
         } else if (isFileArr(data as File[])) {
-            await doGfycatUpload(data, key);
+            // Gfycat only supports a single file
+            const firstFileOnly = [data[0]] as File[];
+            await doGfycatUpload(firstFileOnly, key);
             // our status resolver handles the success/failure dispatch
             const encodedGfy = await doGfycatStatus(key); // wait for the encode
             if (typeof encodedGfy === "string") {

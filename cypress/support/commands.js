@@ -1,5 +1,6 @@
 /// <reference types="Cypress" />
 
+import "cypress-file-upload";
 const addExtensionCommands = require("cypress-browser-extension-plugin/commands");
 addExtensionCommands(Cypress);
 
