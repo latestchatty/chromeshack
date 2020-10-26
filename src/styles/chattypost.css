@@ -1,0 +1,58 @@
+:root {
+    --cp-text-color: #ddd;
+    --cp-bg-color: #1d1d1d;
+    --cp-border-color: #2f8484;
+}
+
+/* Chattypost Embedder */
+.chattypost__container {
+    display: flex;
+    flex-direction: column;
+    width: 97%;
+    padding: 3px 0 6px 0;
+    margin-bottom: 3px;
+    position: relative;
+    border: 1px var(--cp-border-color) solid;
+    background-color: var(--cp-bg-color);
+}
+
+.chattypost__hdr {
+    display: flex;
+    align-items: center;
+}
+.chattypost__hdr .postnumber > a {
+    position: relative;
+    top: -2px;
+}
+.chattypost__hdr span.username {
+    display: flex;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-weight: bold;
+    color: #f3e7b5;
+    font-family: sans-serif;
+}
+.chattypost__hdr span.username > a {
+    text-decoration: none !important;
+}
+.chattypost__hdr .shackmsg {
+    margin: 0 0.25em 0 0.75em;
+}
+
+.chattypost__hdr .icon__container {
+    display: flex !important;
+}
+span.jt_code .chattypost__hdr .icon__container,
+span.jt_sample .chattypost__hdr .icon__container {
+    position: relative;
+    top: -2px;
+}
+
+.chattypost__container div.postbody {
+    margin: 0.25em 0.25em 1em 1.5em;
+    padding: 0 0 1em 0;
+}

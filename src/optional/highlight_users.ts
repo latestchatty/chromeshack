@@ -69,6 +69,7 @@ export const HighlightUsers = {
                         if (mod) {
                             const rules = [
                                 `div.fpauthor_${id} span.author span.user>a`,
+                                `div.chattypost__hdr.fpauthor_${id} span.username>a`,
                                 `div.olauthor_${id} span.oneline_user`,
                                 `.authorid_${id}, .replyid_${id}`,
                             ].join(", ");
@@ -80,6 +81,7 @@ export const HighlightUsers = {
                         if (foundUser && group.css.length > 0) {
                             const rules = [
                                 `div.fpauthor_${id} span.author span.user>a`,
+                                `div.chattypost__hdr.fpauthor_${id} span.username>a`,
                                 `div.olauthor_${id} span.oneline_user`,
                                 `.authorid_${id}, .replyid_${id}`,
                             ].join(", ");
