@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { resolveChildren } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
@@ -12,7 +12,7 @@ export const RefreshIcon = ({ classes }: { classes: string }) => (
     <FontAwesomeIcon className={classes} icon={faRedoAlt} />
 );
 
-const RenderExpando = (props: ExpandoProps) => {
+const Expando = (props: ExpandoProps) => {
     const { response, idx, postid, options } = props || {};
     const { href, src, type: _type } = response || {};
     const { openByDefault } = options || {};
@@ -95,7 +95,5 @@ const RenderExpando = (props: ExpandoProps) => {
         </div>
     );
 };
-
-const Expando = (props: ExpandoProps) => useMemo(() => <RenderExpando {...props} />, [props]);
 
 export { Expando };

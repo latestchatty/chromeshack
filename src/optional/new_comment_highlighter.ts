@@ -3,6 +3,8 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 export const NewCommentHighlighter = {
+    date: new Date(),
+
     async install() {
         const is_enabled = await enabledContains(["new_comment_highlighter"]);
         if (is_enabled) {
@@ -11,11 +13,12 @@ export const NewCommentHighlighter = {
         }
     },
 
-    async highlight() {
+    async highlight(args: { post: HTMLElement }) {
+        const { post } = args || {};
         // only highlight if less than 2 hours have passed
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
             const last_id = (await getSetting("new_comment_highlighter_last_id")) as number;
-            const new_last_id = NewCommentHighlighter.findLastID();
+            const new_last_id = NewCommentHighlighter.findLastID(post);
             if (last_id && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id);
             // update with our current oldest id for the next check cycle
             if (!last_id || new_last_id >= last_id) await setSetting("new_comment_highlighter_last_id", new_last_id);
@@ -25,7 +28,7 @@ export const NewCommentHighlighter = {
     },
 
     async checkTime(delayInMs: number, refresh?: boolean) {
-        const curTime = new Date().getTime();
+        const curTime = NewCommentHighlighter.date.getTime();
         const lastHighlightTime = (await getSetting("last_highlight_time")) as number;
         const diffTime = lastHighlightTime && Math.abs(curTime - lastHighlightTime);
         if (refresh || !lastHighlightTime || (diffTime && diffTime > delayInMs)) {
@@ -62,11 +65,11 @@ export const NewCommentHighlighter = {
         );
     },
 
-    findLastID() {
+    findLastID(post: HTMLElement) {
         // 'oneline0' is applied to highlight the most recent post in each thread
         // we only want the first one, since the top post will contain the most recent
         // reply.
-        const post = document.querySelector("div.oneline0");
-        return post ? parseInt((<HTMLElement>post.parentNode)?.id?.substr(5)) : null;
+        const mostRecent = (post || document).querySelector("div.oneline0");
+        return mostRecent ? parseInt((<HTMLElement>mostRecent.parentNode)?.id?.substr(5)) : null;
     },
 };
