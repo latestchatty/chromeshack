@@ -28,16 +28,24 @@ If you're interested in contributing a new content script or feature suggestion:
         -   `fullPostsCompletedEvent` is fired once when all the rootposts on the Chatty are loaded initially
         -   `processPostBoxEvent` is fired when the user opens the Reply panel of a fullpost
         -   `processRefreshIntentEvent` is fired when the user clicks the refresh icon of a fullpost
-        -   `processPostRefreshEvent` is fired when tag data is initially loaded on a loaded fullpost
-        -   `processTagDataLoadedEvent` is fired after all tag data has populated on a loaded fullpost
+        -   `processPostRefreshEvent` is fired after a post has been refreshed on a fullpost
+        -   `processEmptyTagsLoadedEvent` is fired when empty LOL tags are injected into a fullpost
+        -   `processTagDataLoadedEvent` is fired when populated LOL tags are injected into a fullpost
         -   `processReplyEvent` is fired after submitting a reply to a loaded fullpost
         -   `processNotifyEvent` is fired when the WinChatty notifications system gets a new event message
-    -   The WinChatty notifications' `processNotifyEvent` exposes the latest event message retrieved from the server (see `highlight_pending_new_posts.ts` for an example)
--   Content scripts have to be registered in `content.ts`:
-    -   If the script's install handler uses an async function the function call should be put in the `Promise.all(...)` array
-    -   If the script's install handler uses a synchronous function the function call should be put **_before_** the `CS_Instance.install()` line
+    -   The WinChatty notifications' `processNotifyEvent` exposes the latest event message retrieved from the server (see: [WinChatty API](http://winchatty.com/v2/readme)).
+-   Content scripts have to be registered in `content.ts`. Make sure to put event-dependent handlers **_before_** the `CS_Instance.install()` line.
 
-## Release procedure
+# Running Cypress integration tests
+
+The Cypress E2E integration test suite requires a login cookie fixture in order to run successfully. To setup the local testing environment do the following:
+-   If you haven't already, make sure to do: `npm install`
+-   Verify that Cypress and Chrome are installed and can run: `npx cypress verify`
+-   Create the login cookie fixture: `CYPRESSUSR=<test user name> CYPRESSPW=<test user password> npx node ./utils/testlogin.js`
+-   Run the Mocha test suite on a sufficiently powerful (Cypress requires sufficient memory/CPU) : `npm run mocha`
+-   Look in `mochawesome-report/` for a prettified report in HTML format that aggregates the test suite results.
+
+# Release procedure
 
 -   Update the version in `packages.json` and `release_notes.html` (`manifest.json` is updated from `packages.json` automatically).
 -   Use `npm run build:pack` to generate deployables in the `artifact/` folder when uploading to AMO or the Chrome addon store.

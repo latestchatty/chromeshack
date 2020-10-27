@@ -10,7 +10,9 @@
         "sourceMap": true,
         "incremental": true,
         "declaration": false,
-        "jsx": "react"
+        "noEmit": true,
+        "jsx": "react",
+        "types": ["node"]
     },
     "include": ["./src/**/*.ts", "./src/**/*.tsx"],
     "exclude": ["node_modules"]
