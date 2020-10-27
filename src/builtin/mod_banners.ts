@@ -1,6 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { processPostEvent } from "../core/events";
-import type { PostEventArgs } from "../core/index.d";
+import type { PostEventArgs } from "../core/events.d";
 
 export const ModBanners = {
     isEnabled: false,

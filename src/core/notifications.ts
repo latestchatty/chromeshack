@@ -1,57 +1,13 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, fetchSafe } from "./common";
 import { processNotifyEvent } from "./events";
+import type { NewestEventResponse, NotifyEvent, NotifyMsg, NotifyResponse } from "./notifications.d";
 import { enabledContains, getEnabled, getSetting, setSetting } from "./settings";
 
 export const getEventId = async () => (await getSetting("last_eventid")) as number;
 export const setEventId = async (eventId: number) => await setSetting("last_eventid", eventId);
 export const getUsername = async () => (await getSetting("username")) as string;
 export const setUsername = async (username: string) => await setSetting("username", username);
-
-export type EventType = "lolCountsUpdate" | "newPost";
-export type PostCategory = "ontopic" | "nws" | "stupid" | "political" | "tangent" | "informative";
-export type LOLTags = "lol" | "inf" | "unf" | "tag" | "wtf" | "wow" | "aww";
-export interface LOLTagUpdate {
-    count: number;
-    postId?: number;
-    tag: LOLTags;
-}
-export interface NotifyEvent {
-    eventData: {
-        parentAuthor?: string;
-        post?: {
-            author?: string;
-            body?: string;
-            category?: PostCategory;
-            date?: string;
-            id?: number;
-            lols?: LOLTagUpdate[] | [];
-            parentId?: number;
-            threadId?: number;
-        };
-        postId?: number;
-        updates?: LOLTagUpdate[] | [];
-    };
-    eventDate: string;
-    eventId: string;
-    eventType: EventType;
-}
-export interface NotifyResponse {
-    events: NotifyEvent[] | [];
-    lastEventId: number;
-    tooManyEvents: boolean;
-    error?: boolean;
-    code?: string;
-    message?: string;
-}
-
-interface NotifyMsg {
-    name: string;
-    data: NotifyResponse;
-}
-interface NewestEventResponse {
-    eventId: number;
-}
 
 export const TabMessenger = {
     send(msg: NotifyMsg) {

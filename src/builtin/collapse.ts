@@ -1,4 +1,3 @@
-import { PostEventArgs } from "../core";
 import { elemMatches, locatePostRefs } from "../core/common";
 import {
     collapsedPostEvent,
@@ -6,6 +5,7 @@ import {
     processPostEvent,
     processRefreshIntentEvent,
 } from "../core/events";
+import { PostEventArgs } from "../core/events.d";
 import { getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
@@ -57,7 +57,7 @@ export const Collapse = {
                 // check if thread should be collapsed
                 Collapse.findCollapsed(rootid.toString()).then(({ idx }) => {
                     if (idx > -1) {
-                        collapsedPostEvent.raise(rootid, true);
+                        collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
                         rootContainer?.classList?.add("collapsed");
                         close.setAttribute("class", "closepost hidden");
                         show.setAttribute("class", "showpost");
@@ -76,7 +76,7 @@ export const Collapse = {
                 // remove a bunch if it gets too big
                 if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
                 setSetting("collapsed_threads", collapsed);
-                collapsedPostEvent.raise(id, true);
+                collapsedPostEvent.raise({ threadid: id, is_collapsed: true });
             }
         });
     },
@@ -86,7 +86,7 @@ export const Collapse = {
             if (idx > -1) {
                 collapsed.splice(idx, 1);
                 setSetting("collapsed_threads", collapsed);
-                collapsedPostEvent.raise(id, false);
+                collapsedPostEvent.raise({ threadid: id, is_collapsed: false });
             }
         });
     },

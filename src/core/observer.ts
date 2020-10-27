@@ -1,6 +1,6 @@
 import { elemMatches, locatePostRefs } from "./common";
 import { processReplyEvent } from "./events";
-import type { RefreshMutation } from "./index.d";
+import type { RefreshMutation } from "./events.d";
 import {
     handleRefreshClick,
     handleReplyAdded,

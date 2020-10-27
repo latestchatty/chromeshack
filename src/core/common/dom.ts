@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
-import type { PostEventArgs } from "../../core/index.d";
+import type { PostEventArgs } from "../../core/events.d";
 import { arrHas } from "./";
 import type { PurifyConfig } from "./fetch";
 

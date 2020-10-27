@@ -1,6 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
-import type { PostEventArgs } from "../core";
 import { processPostEvent } from "../core/events";
+import type { PostEventArgs } from "../core/events.d";
 import { enabledContains } from "../core/settings";
 
 //

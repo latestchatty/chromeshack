@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { PostEventArgs } from "../../core";
 import {
     collapsedPostEvent,
     hpnpJumpToPostEvent,
@@ -7,6 +6,7 @@ import {
     processPostRefreshEvent,
     userFilterUpdateEvent,
 } from "../../core/events";
+import { CollapsedPostEventArgs, JumpToPostEventArgs, PendingPostEventArgs, PostEventArgs } from "../../core/events.d";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
 import { ResolvedUser } from "../highlight_users";
@@ -52,7 +52,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
         });
     }, [localRecents, collapsed, rootid]);
     const handleJumpToPost = useCallback(
-        (threadid: number) => {
+        (args: JumpToPostEventArgs) => {
+            const { threadid } = args || {};
             jumpToPost({
                 rootid: threadid,
                 options: { cardFlash: true, postFlash: true, scrollParent: true, collapsed },
@@ -62,17 +63,19 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const updateCollapsed = useCallback(
-        (threadid: number, is_collapsed: boolean) => {
+        (args: CollapsedPostEventArgs) => {
+            const { threadid, is_collapsed } = args || {};
             if (threadid === rootid && is_collapsed) setCollapsed(true);
             else if (threadid === rootid && !is_collapsed) setCollapsed(false);
         },
         [rootid],
     );
     const updatePending = useCallback(
-        (pendings: PendingPost[]) => {
+        (args: PendingPostEventArgs) => {
+            const { pendings } = args || {};
             // highlight this post if HPP flags the thread
             if (pending) return;
-            const foundIdx = pendings.findIndex((p: PendingPost) => p.threadId === rootid);
+            const foundIdx = pendings?.findIndex((p: PendingPost) => p.threadId === rootid);
             if (foundIdx > -1) setPending(true);
         },
         [pending, rootid],
@@ -96,7 +99,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const userFilterUpdate = useCallback(
-        ({ username: filteredUser }: ResolvedUser) => {
+        (args: ResolvedUser) => {
+            const { username: filteredUser } = args || {};
             (async () => {
                 const cufEnabled = await enabledContains(["custom_user_filters"]);
                 const removeFullposts = cufEnabled && (await getEnabledSuboption("cuf_hide_fullposts"));

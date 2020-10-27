@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "react-dom";
 import { processPostBoxEvent } from "../../core/events";
+import type { PostboxEventArgs } from "../../core/events.d";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
 
@@ -9,7 +10,8 @@ export const ImageUploader = {
         processPostBoxEvent.addHandler(ImageUploader.installForm);
     },
 
-    installForm(postbox: HTMLElement) {
+    installForm(args: PostboxEventArgs) {
+        const { postbox } = args || {};
         const { Provider: UploaderProvider } = useUploaderStore;
         const postForm = postbox?.querySelector("#postform");
 

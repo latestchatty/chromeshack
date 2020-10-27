@@ -2,6 +2,7 @@
 import jQuery from "jquery";
 import { safeInnerHTML } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
+import type { PostboxEventArgs } from "../core/events.d";
 
 const $ = jQuery;
 
@@ -14,9 +15,10 @@ export const EmojiPoster = {
         processPostBoxEvent.addHandler(EmojiPoster.apply);
     },
 
-    apply(postbox: HTMLElement) {
+    apply(args: PostboxEventArgs) {
+        const { postbox } = args || {};
         // install only once per postbox
-        const _postBtn = postbox.querySelector("button#frm_submit") as HTMLButtonElement;
+        const _postBtn = postbox?.querySelector("button#frm_submit") as HTMLButtonElement;
         if (!_postBtn?.hasAttribute("cloned")) {
             // remove all events on the 'Post' button so we can intercept submission
             const _clonedPostBtn = _postBtn.cloneNode(true) as HTMLElement;

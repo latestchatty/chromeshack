@@ -3,6 +3,7 @@ import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
 import { classNames, elemMatches, generatePreview, scrollToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
+import { PostboxEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: string }) => {
@@ -102,7 +103,8 @@ const PostPreview = {
         if (is_enabled) processPostBoxEvent.addHandler(PostPreview.apply);
     },
 
-    apply(postbox: HTMLElement) {
+    apply(args: PostboxEventArgs) {
+        const { postbox } = args || {};
         const positionElem = postbox?.querySelector("div.csubmit");
         const container = postbox.querySelector("#post__preview__app");
         const altPositionElem = postbox?.querySelector("#frm_body");

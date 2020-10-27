@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { PostEventArgs } from "../../core";
 import { arrHas, scrollToElement } from "../../core/common";
 import {
     hpnpJumpToPostEvent,
@@ -7,7 +6,8 @@ import {
     processNotifyEvent,
     processPostRefreshEvent,
 } from "../../core/events";
-import { NotifyEvent, NotifyResponse } from "../../core/notifications";
+import { PostEventArgs } from "../../core/events.d";
+import type { NotifyEvent, NotifyResponse } from "../../core/notifications.d";
 import { getSetting } from "../../core/settings";
 import type { PendingPost } from "./";
 
@@ -29,7 +29,7 @@ const usePendingPosts = (threaded: boolean) => {
         setPendingIdx(newIdx);
         if (thread) {
             scrollToElement(thread);
-            hpnpJumpToPostEvent.raise(threadid);
+            hpnpJumpToPostEvent.raise({ threadid });
         }
     }, [pendings, pendingIdx]);
     const handleNextClick = useCallback(() => {
@@ -40,7 +40,7 @@ const usePendingPosts = (threaded: boolean) => {
         setPendingIdx(newIdx);
         if (thread) {
             scrollToElement(thread);
-            hpnpJumpToPostEvent.raise(threadid);
+            hpnpJumpToPostEvent.raise({ threadid });
         }
     }, [pendings, pendingIdx]);
 
@@ -55,7 +55,7 @@ const usePendingPosts = (threaded: boolean) => {
             setCount(newPendings.length);
             // avoid going OOB if the stack shrinks
             setPendingIdx((i) => (i > newIdx ? newIdx : i));
-            pendingPostsUpdateEvent.raise(newPendings);
+            pendingPostsUpdateEvent.raise({ pendings: newPendings });
         },
         [pendings],
     );
@@ -84,7 +84,7 @@ const usePendingPosts = (threaded: boolean) => {
                 return acc;
             }, pendings);
             setPendings([...reducedPendings]);
-            pendingPostsUpdateEvent.raise(reducedPendings);
+            pendingPostsUpdateEvent.raise({ pendings: reducedPendings });
         },
         [threaded, pendings],
     );

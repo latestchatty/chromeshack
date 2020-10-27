@@ -1,5 +1,5 @@
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
-import type { PostEventArgs } from "../core/index.d";
+import type { PostEventArgs } from "../core/events.d";
 
 export const LocalTimeStamp = {
     date: new Date(),

@@ -1,12 +1,14 @@
 import { EmojiPoster } from "../builtin/emoji_poster";
 import { processPostBoxEvent } from "../core/events";
+import type { PostboxEventArgs } from "../core/events.d";
 
 export const PostLengthCounter = {
     MAX_POST_BYTES: 105,
     updateTimer: null as ReturnType<typeof setTimeout>,
 
     install() {
-        processPostBoxEvent.addHandler((postbox: HTMLElement) => {
+        processPostBoxEvent.addHandler((args: PostboxEventArgs) => {
+            const { postbox } = args || {};
             const position = postbox?.querySelector("div.csubmit");
             if (postbox?.querySelector(".post_length_counter_text") || !position) return;
             const child = document.createElement("div");

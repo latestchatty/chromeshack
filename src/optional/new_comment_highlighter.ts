@@ -1,4 +1,5 @@
 import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
+import type { FullpostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
@@ -13,7 +14,7 @@ export const NewCommentHighlighter = {
         }
     },
 
-    async highlight(args: { post: HTMLElement }) {
+    async highlight(args: FullpostEventArgs) {
         const { post } = args || {};
         // only highlight if less than 2 hours have passed
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {

@@ -11,7 +11,7 @@ import {
     processReplyEvent,
     processTagDataLoadedEvent,
 } from "./events";
-import type { PostEventArgs, RefreshMutation } from "./index.d";
+import type { PostEventArgs, RefreshMutation } from "./events.d";
 import { setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption } from "./settings";
@@ -148,5 +148,5 @@ export const processFullPosts = () => {
     fullPostsCompletedEvent.raise();
 };
 export const processPostBox = (postbox: HTMLElement) => {
-    if (postbox) processPostBoxEvent.raise(postbox);
+    if (postbox) processPostBoxEvent.raise({ postbox });
 };

@@ -1,25 +1,5 @@
 import type { ShackRSSItem } from "../core/common";
 
-export interface ReplyMatchArgs {
-    mutation: HTMLElement;
-    lastSibling: HTMLElement;
-    lastRemoved: HTMLElement;
-}
-
-export interface PostEventArgs {
-    post?: HTMLElement;
-    root?: HTMLElement;
-    postid?: number;
-    rootid?: number;
-    is_root?: boolean;
-}
-
-export interface RefreshMutation {
-    postid?: number;
-    rootid?: number;
-    parentid?: number;
-}
-
 export interface HighlightGroup {
     name?: string;
     enabled?: boolean;
@@ -32,6 +12,7 @@ export type EnabledOptions =
     | "auto_open_embeds"
     | "chatty_news"
     | "custom_user_filters"
+    | "drafts"
     | "enable_notifications"
     | "getpost"
     | "hide_tagging_buttons"
@@ -69,6 +50,7 @@ export type SettingKey =
     | "new_comment_highlighter_last_id"
     | "notifications"
     | "post_preview_toggled"
+    | "saved_drafts"
     | "selected_upload_tab"
     | "user_filters"
     | "username"
@@ -87,6 +69,7 @@ export interface SettingsDict {
     new_comment_highlighter_last_id: number;
     notifications: string[];
     post_preview_toggled: boolean;
+    saved_drafts: Record<number, string>;
     selected_upload_tab: string;
     user_filters: string[];
     username: string;
