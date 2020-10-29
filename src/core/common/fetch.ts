@@ -168,10 +168,9 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
     // fetchOpts gets destructured in 'xhrRequest()'
     // parseType gets destructured into override bools:
     //   chattyPics: for parsing the post-upload HTML from Chattypics
-    //   instagram: for embedded instagram graphQL parsing
     //   chattyRSS: to force parsing RSS to a sanitized JSON object
-    //   html: to force parsing as HTML fragment
-    // NOTE: HTML type gets sanitized to a document fragment
+    //   instagram: for embedded instagram graphQL parsing
+    //   json: to force sanitizing the response text as a JSON object
     return new Promise((resolve, reject) =>
         fetch(url, fetchOpts)
             .then(async (res) => {

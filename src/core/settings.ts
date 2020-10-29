@@ -133,15 +133,6 @@ export const resetSettings = async (defaults?: Settings) => {
     return await getSettings(defaults);
 };
 
-export const removeHighlightGroup = async (groupName: string) => {
-    // for removing a highlight group while preserving record order
-    const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-    const selected = groups.filter((x) => x.name !== groupName) || null;
-    for (const group of selected || []) await setHighlightGroup(groupName, group);
-    // return the sliced records from the settings store
-    return (await getSetting("highlight_groups")) as HighlightGroup[];
-};
-
 export const removeHighlightUser = async (groupName: string, username: string) => {
     const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
     const filtered = groups.filter((x) => x.name === groupName);

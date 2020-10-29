@@ -46,14 +46,6 @@ export interface ResolvedMediaProps {
     options?: MediaOptions;
 }
 
-export interface ResolvedLinkProps {
-    link?: string;
-    links?: string[];
-    response?: ParsedResponse;
-    responses?: ParsedResponse[];
-    options?: MediaOptions;
-}
-
 export interface HTMLVideoElementWithAudio extends HTMLVideoElement {
     mozHasAudio?: boolean;
     webkitAudioDecodedByteCount?: number;

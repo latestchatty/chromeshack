@@ -1,4 +1,3 @@
-/* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect, useState } from "react";
 import { arrHas, superTrim } from "../core/common";
 import type { HighlightGroup as HighlightGroupType } from "../core/index.d";
@@ -63,6 +62,7 @@ const HighlightGroup = (props: { name: string }) => {
                 dispatch({ type: "UPDATE_HIGHLIGHTGROUP", payload: { prevGroup: name, newGroup: localGroup } });
         }, 500);
         return () => clearTimeout(handler);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [localGroup, name, dispatch]);
     useEffect(() => {
         insertGroupCSS(state.highlightgroups);

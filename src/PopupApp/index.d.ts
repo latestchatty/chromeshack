@@ -24,7 +24,3 @@ export type PopupAction =
               newGroup: HighlightGroup;
           };
       };
-
-export interface HighlightGroupProps extends HighlightGroup {
-    groups: HighlightGroup[];
-}

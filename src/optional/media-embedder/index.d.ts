@@ -10,10 +10,3 @@ export interface ResolvedResponse {
 export interface ExpandoProps extends ResolvedResponse {
     options?: MediaOptions;
 }
-
-export interface FCWithMediaProps extends JSX.Element {
-    props: {
-        src?: string;
-        slides?: JSX.Element[];
-    };
-}

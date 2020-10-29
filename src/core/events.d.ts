@@ -1,10 +1,5 @@
 import { PendingPost } from "../optional/highlightpending";
 
-export interface ReplyMatchArgs {
-    mutation: HTMLElement;
-    lastSibling: HTMLElement;
-    lastRemoved: HTMLElement;
-}
 export interface PostboxEventArgs {
     postbox: HTMLElement;
 }
