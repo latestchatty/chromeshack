@@ -17,6 +17,13 @@ module.exports = {
         popup: "./src/popup.tsx",
     },
 
+    optimization: {
+        splitChunks: {
+            automaticNameDelimiter: "-",
+            chunks: "all",
+        },
+    },
+
     output: {
         path: paths.dist,
         filename: "[name].js",

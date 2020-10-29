@@ -44,7 +44,7 @@ module.exports = merge(common, {
         }),
         new LicenseCheckerWebpackPlugin({
             outputFilename: "ThirdPartyLicenses.txt",
-            allow: "(Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT OR MPL-2.0 OR Zlib OR CC-BY-4.0)",
+            allow: "(Apache-2.0 OR BSD-2-Clause OR BSD-3-Clause OR MIT OR MPL-2.0 OR Zlib OR CC-BY-4.0 OR WTFPL)",
         }),
     ],
 });

@@ -12,13 +12,19 @@
         "default_popup": "popup.html"
     },
     "background": {
-        "scripts": ["background.js"],
+        "scripts": ["vendors-background-content-popup.js", "background-content-popup.js", "background.js"],
         "persistent": true
     },
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "content_scripts": [
         {
-            "js": ["content.js"],
+            "js": [
+                "vendors-background-content-popup.js",
+                "vendors-content-popup.js",
+                "vendors-content.js",
+                "background-content-popup.js",
+                "content.js"
+            ],
             "matches": [
                 "https://shacknews.com/chatty*",
                 "https://www.shacknews.com/chatty*",
@@ -52,13 +58,6 @@
         "images/political.png",
         "images/stupid.png",
         "images/interesting.png",
-        "images/sparkly1.jpg",
-        "images/sparkly2.jpg",
-        "images/sparkly3.jpg",
-        "images/sparkly4.jpg",
-        "images/sparkly5.jpg",
-        "images/sparkly6.jpg",
-        "images/dinogegtik.png",
         "images/shack.png",
         "release_notes.html",
         "popup.html",
