@@ -93,7 +93,6 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
 
 export const handleReplyAdded = async (args: PostEventArgs) => {
     const { post } = args || {};
-    console.log("handleReplyAdded:", args);
     const postRefreshBtn = post?.querySelector("div.refresh > a") as HTMLElement;
     const disableTags = await getEnabled("hide_tagging_buttons");
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];

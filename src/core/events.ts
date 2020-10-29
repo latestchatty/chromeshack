@@ -3,7 +3,6 @@
 import type { ResolvedUser } from "../optional/highlight_users";
 import type {
     CollapsedPostEventArgs,
-    FullpostEventArgs,
     JumpToPostEventArgs,
     PendingPostEventArgs,
     PostboxEventArgs,
@@ -36,7 +35,7 @@ class LiteEvent<T> implements LiteEventInterface<T> {
     }
 }
 
-export const fullPostsCompletedEvent = new LiteEvent<FullpostEventArgs>();
+export const fullPostsCompletedEvent = new LiteEvent<void>();
 export const processPostEvent = new LiteEvent<PostEventArgs>();
 export const processPostBoxEvent = new LiteEvent<PostboxEventArgs>();
 export const processReplyEvent = new LiteEvent<PostEventArgs>();

@@ -5,9 +5,6 @@ export interface ReplyMatchArgs {
     lastSibling: HTMLElement;
     lastRemoved: HTMLElement;
 }
-export interface FullpostEventArgs {
-    post?: HTMLElement;
-}
 export interface PostboxEventArgs {
     postbox: HTMLElement;
 }
