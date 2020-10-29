@@ -14,13 +14,6 @@ export const isJSON = (text: string) => {
     }
 };
 
-export const isHTML = (text: string) => {
-    // https://stackoverflow.com/a/15458968
-    if (!text || (text && isJSON(text))) return false;
-    const doc = new DOMParser().parseFromString(text, "text/html");
-    return Array.from(doc.body.childNodes).some((node) => node.nodeType === 1);
-};
-
 export const classNames = (...args: any[]) => {
     /// pass a string or object to assemble classes based on truthiness
     /// e.g.: classNames("a", { very: true, convenient: true, function: false });

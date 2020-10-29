@@ -1,3 +1,4 @@
+import { replace } from "text-field-edit";
 import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
@@ -133,7 +134,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
             const linkText = _linkSpan || _linkHref;
             const replacement = document.createElement("span");
             replacement.setAttribute("class", "cs_thread_pane_link");
-            replacement.innerHTML = linkText;
+            replacement.textContent = linkText;
             element?.replaceWith(replacement);
         } else if (_spoiler)
             // make spoiler text in cards unclickable

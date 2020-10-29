@@ -1,3 +1,6 @@
+import type { FetchArgs, ParseType, ShackRSSItem } from "./index.d";
+export type { FetchArgs, ParseType, ShackRSSItem };
+
 import {
     arrEmpty,
     arrHas,
@@ -5,7 +8,6 @@ import {
     getFileCount,
     getLinkType,
     isFileArr,
-    isHTML,
     isIframe,
     isImage,
     isJSON,
@@ -16,7 +18,6 @@ import {
     objHas,
     packValidTypes,
 } from "./common";
-import type { PostRefs, PreviewReplacements } from "./dom";
 import {
     afterElem,
     appendLinksToField,
@@ -34,14 +35,12 @@ import {
     locatePostRefs,
     matchFileFormat,
     removeChildren,
-    safeInnerHTML,
-    sanitizeToFragment,
     scrollParentToChild,
     scrollToElement,
     stripHtml,
     superTrim,
+    parseToFragment,
 } from "./dom";
-import type { FetchArgs, ParseType, ShackRSSItem } from "./fetch";
 import {
     fetchBackground,
     fetchSafe,
@@ -66,8 +65,6 @@ export {
     elementIsVisible,
     elementFitsViewport,
     removeChildren,
-    sanitizeToFragment,
-    safeInnerHTML,
     FormDataToJSON,
     JSONToFormData,
     appendLinksToField,
@@ -77,8 +74,8 @@ export {
     locatePostRefs,
     decodeHTML,
     encodeHTML,
+    parseToFragment,
 };
-export { PreviewReplacements, PostRefs };
 export {
     xhrRequestLegacy,
     fetchSafeLegacy,
@@ -90,14 +87,12 @@ export {
     parseFetchResponse,
     waitToResolve,
 };
-export { ParseType, FetchArgs, ShackRSSItem };
 export {
     arrHas,
     arrEmpty,
     objHas,
     objContainsProperty,
     objEmpty,
-    isHTML,
     isJSON,
     classNames,
     isVideo,

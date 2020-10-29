@@ -1,18 +1,10 @@
-import DOMPurify from "dompurify";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
 import type { PostEventArgs } from "../../core/events.d";
 import { arrHas } from "./";
-import type { PurifyConfig } from "./fetch";
+import type { PreviewReplacements } from "./index.d";
 
 const $ = jQuery;
-
-export interface PreviewReplacements {
-    [propName: string]: {
-        from: string[];
-        to: string[];
-    };
-}
 
 export const stripHtml = (html: string) => {
     // respect carriage returns
@@ -184,24 +176,6 @@ export const removeChildren = (elem: HTMLElement) => {
     while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 };
 
-export const sanitizeToFragment = (html: string, purifyConfig?: PurifyConfig) => {
-    const config = {
-        RETURN_DOM_FRAGMENT: true,
-        RETURN_DOM_IMPORT: true,
-        ...purifyConfig,
-    };
-    return DOMPurify.sanitize(html, config) as DocumentFragment;
-};
-
-export const safeInnerHTML = (text: string, targetNode: HTMLElement) => {
-    const sanitizedContent = sanitizeToFragment(text);
-    const targetRange = document.createRange();
-    targetRange.selectNodeContents(targetNode);
-    targetRange.deleteContents();
-    // replace innerHTML assign with sanitized insert
-    targetRange.insertNode(sanitizedContent);
-};
-
 export const FormDataToJSON = async (fd: FormData) => {
     const FileToObject = async (fileData: File) => {
         const reader = new FileReader();
@@ -297,13 +271,6 @@ export const elemMatches = (elem: HTMLElement, selector: string) => {
 };
 
 /// takes an Element of a post and returns post/root information
-export interface PostRefs {
-    post: HTMLElement;
-    postid: string;
-    root: HTMLElement;
-    rootid: string;
-    is_root: boolean;
-}
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
     const _parent = postElem.parentNode as HTMLElement;
@@ -338,4 +305,11 @@ export const disableTwitch = () => {
         twitch.parentNode.removeChild(twitch);
         _p?.parentNode?.removeChild(_p);
     }
+};
+
+export const parseToFragment = (html: string) => {
+    // NOTE: make sure to use DOMPurify.sanitize() on any external HTML
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    return template.content;
 };

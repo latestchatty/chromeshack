@@ -1,4 +1,4 @@
-import { fetchSafe, safeInnerHTML, ShackRSSItem } from "../core/common";
+import { fetchSafe, parseToFragment, ShackRSSItem } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const ChattyNews = {
@@ -14,13 +14,14 @@ export const ChattyNews = {
         return false;
     },
 
-    async populateNewsBox(container: HTMLDivElement) {
+    async populateNewsBox(container: DocumentFragment) {
         let rss = (await getSetting("chatty_news_lastfetchdata")) as ShackRSSItem[];
         const cachedRSS = (await getSetting("chatty_news_lastfetchdata")) as ShackRSSItem[];
         if (!cachedRSS || (await ChattyNews.checkTime(1000 * 60 * 15))) {
             // cache each successful fetch for 15 minutes
             rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
+                // REVIEWER NOTE: this is sanitized through DOMPurify in fetch.ts:75
                 parseType: { chattyRSS: true },
             });
             await setSetting("chatty_news_lastfetchdata", rss);
@@ -28,20 +29,20 @@ export const ChattyNews = {
 
         const newsBox = container?.querySelector("#recent-articles") as HTMLElement;
         for (const item of rss || []) {
-            const newsItem = document.createElement("li");
-            safeInnerHTML(
-                /*html*/ `
-                <a
-                    href="${item.link}"
-                    title="${item.content}"
-                    class="truncated"
-                >
-                    <span>${item.title}</span>
-                </a>
-            `,
-                newsItem,
-            );
-            newsBox?.appendChild(newsItem);
+            const newsItemFragment = parseToFragment(/*html*/ `
+                <li>
+                    <a
+                        class="truncated"
+                        rel="noopener"
+                        target="_blank"
+                        href="${item.link}"
+                        title="${item.content}"
+                    >
+                        <span>${item.title}</span>
+                    </a>
+                </li>
+            `);
+            newsBox?.append(newsItemFragment);
         }
         return container;
     },
@@ -65,17 +66,16 @@ export const ChattyNews = {
 
             alignmentBox?.appendChild(subAlignmentBox);
 
-            let newsBox = document.createElement("div");
-            newsBox?.classList?.add("chatty-news");
-            safeInnerHTML(
-                /*html*/ `
+            const newsBoxFragment = parseToFragment(/*html*/ `
+                <div class="chatty-news">
                     <h2>Recent Articles</h2>
                     <hr class="chatty-news-sep" />
                     <div><ul id="recent-articles"></ul></div>
-                `,
-                newsBox,
-            );
-            newsBox = await ChattyNews.populateNewsBox(newsBox);
+                </div>
+            `);
+            // populate the newly created newsBox from the Chatty RSS server's articles
+            const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
+
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
             // double check this is the full chatty page

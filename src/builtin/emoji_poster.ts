@@ -1,6 +1,6 @@
 /*eslint no-control-regex: 0*/
 import jQuery from "jquery";
-import { safeInnerHTML } from "../core/common";
+import { parseToFragment } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import type { PostboxEventArgs } from "../core/events.d";
 
@@ -51,13 +51,13 @@ export const EmojiPoster = {
 
             // educate the user on how to open the OS' Emoji Picker
             const _postFormParent = postbox?.querySelector("#postform fieldset") as HTMLElement;
-            const _emojiTaglineElem = document.createElement("div");
-            _emojiTaglineElem.setAttribute("class", "emoji-tagline");
-            safeInnerHTML(
-                "Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.",
-                _emojiTaglineElem,
-            );
-            _postFormParent?.appendChild(_emojiTaglineElem);
+            // parse our nodes into a document fragment
+            const _emojiTaglineFragment = parseToFragment(/*html*/ `
+                <div class="emoji-tagline">
+                    Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
+                </div>
+            `);
+            _postFormParent?.appendChild(_emojiTaglineFragment);
         }
     },
 
