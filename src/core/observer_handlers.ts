@@ -1,6 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, elemMatches, locatePostRefs } from "./common";
-import { disableTwitch } from "./common/dom";
+import { disableTwitch, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
     processEmptyTagsLoadedEvent,
@@ -71,10 +71,14 @@ export const handlePostRefresh = async (args: PostEventArgs, mutation?: RefreshM
     const postOL = post?.querySelector(".oneline_body") as HTMLElement;
     const replyOL = root?.querySelector(`li#item_${mutation.postid} .oneline_body`) as HTMLElement;
     processPostRefreshEvent.raise(args, mutation);
-    // reopen the previously open post (if applicable)
     const disableTags = await getEnabled("hide_tagging_buttons");
-    if (!disableTags && postid !== rootid && postOL) postOL.click();
-    else if (!disableTags && postid !== rootid && replyOL) replyOL.click();
+    const _elem = postOL || replyOL;
+    // reopen the previously open post (if applicable)
+    if (!disableTags && postid !== rootid && _elem) {
+        console.log("engaging nuLOL post refresh fix:", _elem);
+        scrollToElement(_elem);
+        _elem.click();
+    }
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
 };
 
@@ -92,11 +96,17 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
 };
 
 export const handleReplyAdded = async (args: PostEventArgs) => {
-    const { post } = args || {};
+    const { post, root } = args || {};
     const postRefreshBtn = post?.querySelector("div.refresh > a") as HTMLElement;
     const disableTags = await getEnabled("hide_tagging_buttons");
+    const shouldRefresh = window.chrome || (!window.chrome && root?.querySelectorAll(".lol-tags")?.length < 50);
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
-    if (!disableTags && postRefreshBtn) postRefreshBtn.click();
+    // avoid refreshing a thread after replying if this would cause a performance problem
+    if (!disableTags && postRefreshBtn && shouldRefresh) {
+        console.log("engaging nuLOL post reply fix:", post);
+        postRefreshBtn.click();
+    } else if (!disableTags && postRefreshBtn && !shouldRefresh)
+        console.log("too many lol-tags for FF - skipping nuLOL post reply fix");
 };
 
 export const handleRefreshClick = async (e: MouseEvent) => {
@@ -108,13 +118,17 @@ export const handleRefreshClick = async (e: MouseEvent) => {
         processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
         const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
+        // nuLOL tags become exponentially slower on Firefox when more taglines are in a thread
+        // so we set a ceiling of 50 tag-containing posts before we disabled the nuLOL refresh fix
+        const shouldRefresh = window.chrome || (!window.chrome && root?.querySelectorAll(".lol-tags")?.length < 50);
         const disableTags = await getEnabled("hide_tagging_buttons");
-        if (foundIdx === -1) ChromeShack.refreshing.unshift({ postid, rootid });
+        if (foundIdx === -1 && shouldRefresh) ChromeShack.refreshing.unshift({ postid, rootid });
         // avoid unnecessary tag refreshes by refreshing the root only
-        if (!disableTags && !is_root) {
+        if (!disableTags && !is_root && shouldRefresh) {
             e.preventDefault();
             rootRefreshBtn.click();
-        }
+        } else if (!disableTags && !is_root && !shouldRefresh)
+            console.log("too many lol-tags for FF - skipping nuLOL refresh fix");
     }
 };
 
