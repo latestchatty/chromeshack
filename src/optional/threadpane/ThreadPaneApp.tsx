@@ -13,11 +13,11 @@ const CommentDotsIcon = () => <FontAwesomeIcon icon={faCommentDots} />;
 
 const ThreadPaneReply = (props: { recent: ParsedReply; mostRecent?: boolean }) => {
     const { recent, mostRecent } = props || {};
-    const { authorid, author, body, op } = recent || {};
+    const { authorid, author, body, mod, op } = recent || {};
 
     return (
         <div className={classNames("cs_thread_pane_reply", { reply_most_recent: mostRecent })}>
-            <div className="cs_thread_pane_reply_arrow">↪</div>
+            <div className={classNames("cs_thread_pane_reply_arrow", `${mod}`)}>↪</div>
             <div className="cs_thread_pane_reply_preview">{body}</div>
             <div className="cs_thread_pane_reply_divider">:</div>
             <div className={classNames(`cs_thread_pane_reply_author replyid_${authorid}`, { op })}>{author}</div>

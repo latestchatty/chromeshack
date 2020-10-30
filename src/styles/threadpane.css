@@ -227,6 +227,15 @@ div.cs_thread_pane_reply_arrow {
     vertical-align: top;
     color: #666;
 }
+div.cs_thread_pane_reply_arrow.nws {
+    color: #f02e01;
+}
+div.cs_thread_pane_reply_arrow.informative {
+    color: #00bff3;
+}
+div.cs_thread_pane_reply_arrow.political {
+    color: #f8a500;
+}
 
 div.cs_thread_pane_reply_preview {
     display: inline-block;
