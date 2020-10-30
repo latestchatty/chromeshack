@@ -6,6 +6,7 @@ import { RefreshIcon } from "../media-embedder/Expando";
 import { parsePosts } from "./helpers";
 import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
+import parse from "html-react-parser";
 
 const StepForwardIcon = () => <FontAwesomeIcon icon={faAngleDoubleRight} />;
 const CommentDotsIcon = () => <FontAwesomeIcon icon={faCommentDots} />;
@@ -75,7 +76,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
                     <StepForwardIcon />
                 </div>
             </div>
-            <div className="cs_thread_pane_root_body" dangerouslySetInnerHTML={{ __html: body }} />
+            <div className="cs_thread_pane_root_body">{parse(body)}</div>
             {!collapsed && <ThreadPaneReplies recents={localRecents} />}
         </div>
     ) : null;

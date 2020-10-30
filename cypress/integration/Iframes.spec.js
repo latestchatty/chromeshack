@@ -3,6 +3,7 @@
 describe("Iframes", () => {
     context("open with various hosters", () => {
         beforeEach(() => {
+            cy.loadExtensionDefaults();
             cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
         });
 

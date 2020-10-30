@@ -16,16 +16,6 @@ export const superTrim = (input: string) => {
     return input.replace(/^[\h\r\n]+|[\h\r\n]+$/gm, "");
 };
 
-export const insertStyle = (css: string, containerName: string) => {
-    const style = document.querySelector(`style#${containerName}`) || document.createElement("style");
-    if (!style.id) {
-        style.setAttribute("type", "text/css");
-        style.setAttribute("id", containerName);
-        style.appendChild(document.createTextNode(css));
-        document.getElementsByTagName("head")[0].appendChild(style);
-    } else if (style.id) style.innerHTML = css;
-};
-
 export const getCookieValue = (name: string, defaultValue: string) => {
     let ret = defaultValue || "";
     const cookies = document.cookie.split(";");
@@ -94,7 +84,7 @@ export const generatePreview = (postText: string) => {
         underline: { from: ["_\\[", "\\]_"], to: ["<u>", "</u>"] },
         spoiler: {
             from: ["o\\[", "\\]o"],
-            to: ['<span class="jt_spoiler" onclick="return doSpoiler(event);">', "</span>"],
+            to: ['<span class="jt_spoiler">', "</span>"],
         },
         code: {
             from: ["\\/{{", "}}\\/"],
@@ -284,20 +274,6 @@ export const locatePostRefs = (postElem: HTMLElement) => {
     return { post, postid, root, rootid, is_root } as PostEventArgs;
 };
 
-export const decodeHTML = (text: string) => {
-    // warning! make sure to sanitize before decoding!
-    const ta = document.createElement("p");
-    if (text) ta.innerHTML = text;
-    return ta.textContent || text;
-};
-
-export const encodeHTML = (text: string) => {
-    // warning! make sure to sanitize before encoding!
-    const ta = document.createElement("p");
-    if (text) ta.textContent = text;
-    return ta.innerHTML || text;
-};
-
 export const disableTwitch = () => {
     const twitch = document.querySelector(".featured-article-content iframe");
     const _p = twitch?.closest("p");
@@ -307,9 +283,24 @@ export const disableTwitch = () => {
     }
 };
 
-export const parseToFragment = (html: string) => {
-    // NOTE: make sure to use DOMPurify.sanitize() on any external HTML
-    const template = document.createElement("template");
-    template.innerHTML = html;
-    return template.content;
+export const parseToElement = (html: string) => {
+    // NOTE: DOMParser is picky about its HTML-text input
+    const noTrailingSpaces = html.replace(/^\s*|\s*$/, "");
+    const parsed = new DOMParser().parseFromString(noTrailingSpaces, "text/html");
+    return parsed.querySelector("style") || parsed.body.firstElementChild || null;
+};
+
+export const decodeHTML = (text: string) => {
+    // decode unicode entities from text by reading off an element
+    const p = parseToElement(/*html*/ `<p>${text}</p>`);
+    return p.textContent || "";
+};
+
+export const insertStyle = (css: string, containerName: string) => {
+    const _style = parseToElement(/*html*/ `
+        <style id="${containerName}">${css}</style>
+    `);
+    const existing = document.querySelector(`style#${containerName}`);
+    if (existing) existing.parentElement.removeChild(existing);
+    document.querySelector("head")?.append(_style);
 };

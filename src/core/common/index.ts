@@ -26,7 +26,6 @@ import {
     elementFitsViewport,
     elementIsVisible,
     elemMatches,
-    encodeHTML,
     FormDataToJSON,
     generatePreview,
     getCookieValue,
@@ -39,7 +38,7 @@ import {
     scrollToElement,
     stripHtml,
     superTrim,
-    parseToFragment,
+    parseToElement,
 } from "./dom";
 import {
     fetchBackground,
@@ -73,8 +72,7 @@ export {
     elemMatches,
     locatePostRefs,
     decodeHTML,
-    encodeHTML,
-    parseToFragment,
+    parseToElement,
 };
 export {
     xhrRequestLegacy,

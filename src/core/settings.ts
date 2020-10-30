@@ -351,8 +351,7 @@ const mergeTransients = async (transientData: Settings, transientOpts?: Transien
         const foundList = !_inValIsArr && _setIsArr && _setIsArr.find((x) => x === _inVal);
         const foundVal = _setVal === _inVal;
         // 'append' simply appends a value to an existing list (probably HighlightGroups)
-        const appendedArr =
-            append && _inValIsArr && _setIsArr && _inValIsArr.reduce((arr, x) => [...arr, ...x], _setIsArr);
+        const appendedArr = append && _inValIsArr && _setIsArr && [..._setIsArr, ..._inValIsArr];
         // 'exclude' filters the given strings out of an option list
         const filteredArr =
             exclude &&

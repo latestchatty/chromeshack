@@ -57,11 +57,10 @@ describe("Twitter", () => {
             );
         });
         it("quoted tweet with single image", () => {
-            cy.window().then((win) => {
-                // enable "Show Twitter threads when opening Twitter links" option
-                win.localStorage["transient-data"] = JSON.stringify({ enabled_suboptions: ["sl_show_tweet_threads"] });
-            });
+            // enable "Show Twitter threads when opening Twitter links" option
+            cy.loadExtensionDefaults(null, { enabled_suboptions: ["sl_show_tweet_threads"] });
             cy.visit("https://www.shacknews.com/chatty?id=33437805#item_33437805");
+
             cy.get("div.medialink").scrollIntoView().click();
             cy.get(".twitter__container").and((elems) => {
                 expect(elems.length).eq(3);

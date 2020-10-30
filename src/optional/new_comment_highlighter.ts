@@ -20,7 +20,7 @@ export const NewCommentHighlighter = {
         if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
             const last_id = (await getSetting("new_comment_highlighter_last_id")) as number;
             const new_last_id = NewCommentHighlighter.findLastID(root);
-            if (last_id && new_last_id > last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
+            if (last_id && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
             // update with our current oldest id for the next check cycle
             if (!last_id || new_last_id !== last_id) await setSetting("new_comment_highlighter_last_id", new_last_id);
         }

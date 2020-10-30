@@ -4,6 +4,7 @@ import type { ParsedResponse } from ".";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import "../../styles/chattypost.css";
 import { elemMatches, fetchSafe, objHas } from "../common";
+import parse from "html-react-parser";
 
 interface ParsedChattyPost {
     postid: number;
@@ -108,12 +109,16 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
                 {icons?.map((icon, i) => {
                     // REVIEWER NOTE: we only use outerHTML from *sanitized* HTML in fetchChattyPost() above
                     return (
-                        <div className="icon__container" key={i} dangerouslySetInnerHTML={{ __html: icon.outerHTML }} />
+                        <div className="icon__container" key={i}>
+                            {parse(icon.outerHTML)}
+                        </div>
                     );
                 })}
             </div>
             {/* REVIEWER NOTE: we only use *sanitized* HTML from fetchChattyPost() above */}
-            <div className="postbody" dangerouslySetInnerHTML={{ __html: postbody }} onClick={handleClick}></div>
+            <div className="postbody" onClick={handleClick}>
+                {parse(postbody)}
+            </div>
             <div className="postdate">{postdate}</div>
         </div>
     ) : null;

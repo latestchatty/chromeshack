@@ -3,10 +3,8 @@
 describe("Image Uploader", () => {
     context("UI interactions", () => {
         beforeEach(() => {
-            cy.window().then((win) => {
-                // start with a blank default tab selection
-                win.localStorage["transient-data"] = JSON.stringify({ selected_upload_tab: "" });
-            });
+            // start with a blank default tab selection
+            cy.loadExtensionDefaults(null, { selected_upload_tab: "" });
             cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
         });
 

@@ -1,6 +1,6 @@
 /*eslint no-control-regex: 0*/
 import jQuery from "jquery";
-import { parseToFragment } from "../core/common";
+import { parseToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import type { PostboxEventArgs } from "../core/events.d";
 
@@ -52,7 +52,7 @@ export const EmojiPoster = {
             // educate the user on how to open the OS' Emoji Picker
             const _postFormParent = postbox?.querySelector("#postform fieldset") as HTMLElement;
             // parse our nodes into a document fragment
-            const _emojiTaglineFragment = parseToFragment(/*html*/ `
+            const _emojiTaglineFragment = parseToElement(/*html*/ `
                 <div class="emoji-tagline">
                     Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
                 </div>

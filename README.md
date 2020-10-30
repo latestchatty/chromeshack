@@ -18,7 +18,7 @@ NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
 
 -   Deployment packages can be generated with `npm run build:pack`. This results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
 
--   All E2E tests can be run with `npm run mocha`, which produces a report found in `mochawesome-report/`.
+-   The full E2E test suite can be run with `npm run mocha` which produces a report found in `mochawesome-report/` (_look in `CONTRIBUTING.md` for critical information_).
 
 -   The Cypress GUI can be opened with `npm run cypress` to run individual tests or to debug a test spec.
 
@@ -34,3 +34,5 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
 -   [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
 -   [text-field-edit](https://github.com/fregante/text-field-edit)
+-   [lz-string](https://github.com/pieroxy/lz-string)
+-   [html-react-parser](https://github.com/remarkablemark/html-react-parser)

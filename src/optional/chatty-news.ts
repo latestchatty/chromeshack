@@ -1,4 +1,4 @@
-import { fetchSafe, parseToFragment, ShackRSSItem } from "../core/common";
+import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const ChattyNews = {
@@ -14,10 +14,9 @@ export const ChattyNews = {
         return false;
     },
 
-    async populateNewsBox(container: DocumentFragment) {
+    async populateNewsBox(container: Element) {
         let rss = (await getSetting("chatty_news_lastfetchdata")) as ShackRSSItem[];
-        const cachedRSS = (await getSetting("chatty_news_lastfetchdata")) as ShackRSSItem[];
-        if (!cachedRSS || (await ChattyNews.checkTime(1000 * 60 * 15))) {
+        if (!arrHas(rss) || (await ChattyNews.checkTime(1000 * 60 * 15))) {
             // cache each successful fetch for 15 minutes
             rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
@@ -29,7 +28,7 @@ export const ChattyNews = {
 
         const newsBox = container?.querySelector("#recent-articles") as HTMLElement;
         for (const item of rss || []) {
-            const newsItemFragment = parseToFragment(/*html*/ `
+            const newsItemFragment = parseToElement(/*html*/ `
                 <li>
                     <a
                         class="truncated"
@@ -66,7 +65,7 @@ export const ChattyNews = {
 
             alignmentBox?.appendChild(subAlignmentBox);
 
-            const newsBoxFragment = parseToFragment(/*html*/ `
+            const newsBoxFragment = parseToElement(/*html*/ `
                 <div class="chatty-news">
                     <h2>Recent Articles</h2>
                     <hr class="chatty-news-sep" />

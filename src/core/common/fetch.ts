@@ -69,7 +69,7 @@ const parseShackRSS = (rssText: string) => {
             const title = i.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/im);
             const link = i.match(/<link>(.+?)<\/link>/im);
             const date = i.match(/<pubDate>(.+?)<\/pubDate>/im);
-            const content = i.match(/<description><!\[CDATA\[(.+?)\]\]><\/description>/im);
+            const content = i.match(/<description><!\[CDATA\[(.+)[\s\S]*?\]\]><\/description>/im);
             const medialink = i.match(/<media:thumbnail url="(.+?)".*\/>/);
             const parsed: ShackRSSItem = {
                 title: title ? DOMPurify.sanitize(title[1]) : "",
