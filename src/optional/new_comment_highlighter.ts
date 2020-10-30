@@ -1,9 +1,13 @@
 import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
+import { elemMatches } from "../core/common";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
+
 export const NewCommentHighlighter = {
+    // 2 hour timeout
+    timeout: 1000 * 60 * 60 * 2,
     date: new Date(),
 
     async install() {
@@ -16,23 +20,32 @@ export const NewCommentHighlighter = {
 
     async highlight(args?: PostEventArgs) {
         const { root } = args || {};
-        // only highlight if less than 2 hours have passed
-        if (!(await NewCommentHighlighter.checkTime(1000 * 60 * 60 * 2))) {
-            const last_id = (await getSetting("new_comment_highlighter_last_id")) as number;
-            const new_last_id = NewCommentHighlighter.findLastID(root);
-            if (last_id && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
-            // update with our current oldest id for the next check cycle
-            if (!last_id || new_last_id !== last_id) await setSetting("new_comment_highlighter_last_id", new_last_id);
+        const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
+        const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
+        const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
+        if (new_last_id && new_last_id >= last_id) {
+            NewCommentHighlighter.highlightPostsAfter(last_id, root);
+            await NewCommentHighlighter.updateLastId(new_last_id);
         }
-        // reset our check time to avoid highlighting the whole page
-        else await NewCommentHighlighter.checkTime(null, true);
+        // reset our check time on each cycle to avoid highlighting the whole page
+        await NewCommentHighlighter.resetCheckTime();
     },
 
-    async checkTime(delayInMs: number, refresh?: boolean) {
+    async resetCheckTime() {
         const curTime = NewCommentHighlighter.date.getTime();
-        const lastHighlightTime = (await getSetting("last_highlight_time")) as number;
-        const diffTime = lastHighlightTime && Math.abs(curTime - lastHighlightTime);
-        if (refresh || !lastHighlightTime || (diffTime && diffTime > delayInMs)) {
+        await setSetting("last_highlight_time", curTime);
+    },
+
+    async updateLastId(newid: number) {
+        const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
+        if (newid !== last_id) await setSetting("new_comment_highlighter_last_id", newid);
+    },
+
+    async checkTime(delayInMs: number) {
+        const curTime = NewCommentHighlighter.date.getTime();
+        const lastHighlightTime = (await getSetting("last_highlight_time", curTime)) as number;
+        const diffTime = Math.abs(curTime - lastHighlightTime);
+        if (diffTime > delayInMs) {
             await setSetting("last_highlight_time", curTime);
             return true;
         } else return false;
@@ -45,24 +58,25 @@ export const NewCommentHighlighter = {
             if (preview && !preview.classList.contains("newcommenthighlighter"))
                 preview.classList.add("newcommenthighlighter");
         }
-        NewCommentHighlighter.displayNewCommentCount(new_posts?.length);
-    },
-
-    displayNewCommentCount(count: number) {
-        if (count > 0) {
+        if (new_posts?.length > 0) {
+            // update our "Comments ..." blurb at the top of the thread list
             let commentDisplay = document.getElementById("chatty_settings");
-            commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+            if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
             const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-            const newComments = commentsCount && `${commentsCount} Comments (${count} New)`;
+            const newComments = commentsCount && `${commentsCount} Comments (${new_posts.length} New)`;
             if (newComments) commentDisplay.textContent = newComments;
         }
     },
 
     getPostsAfter(last_id: number, root?: HTMLElement) {
         // grab all the posts with post ids after the last post id we've seen
-        return [...(root || document).querySelectorAll(".root > ul > li li[id^='item_']")].filter(
-            (x) => parseInt(x?.id?.substr(5)) >= last_id,
-        );
+        return [...(root || document).querySelectorAll("li[id^='item_']")].filter((li) => {
+            const root = elemMatches(li?.parentElement?.parentElement, "div.root");
+            const is_root_newer = parseInt(root?.id?.substr(5)) >= last_id;
+            const postid = parseInt(li?.id?.substr(5));
+            // only include new replies and not new threads
+            return !is_root_newer && postid >= last_id;
+        });
     },
 
     findLastID(root: HTMLElement) {

@@ -107,7 +107,6 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
                     <img src="/images/envelope.gif" alt="shackmsg this person" />
                 </a>
                 {icons?.map((icon, i) => {
-                    // REVIEWER NOTE: we only use outerHTML from *sanitized* HTML in fetchChattyPost() above
                     return (
                         <div className="icon__container" key={i}>
                             {parse(icon.outerHTML)}
@@ -115,7 +114,6 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
                     );
                 })}
             </div>
-            {/* REVIEWER NOTE: we only use *sanitized* HTML from fetchChattyPost() above */}
             <div className="postbody" onClick={handleClick}>
                 {parse(postbody)}
             </div>
