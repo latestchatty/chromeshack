@@ -28,7 +28,7 @@ const usePendingPosts = (threaded: boolean) => {
         const thread = pendings[newIdx]?.thread;
         setPendingIdx(newIdx);
         if (thread) {
-            scrollToElement(thread);
+            scrollToElement(thread, { toFit: true });
             hpnpJumpToPostEvent.raise({ threadid });
         }
     }, [pendings, pendingIdx]);
@@ -39,7 +39,7 @@ const usePendingPosts = (threaded: boolean) => {
         const thread = pendings[newIdx]?.thread;
         setPendingIdx(newIdx);
         if (thread) {
-            scrollToElement(thread);
+            scrollToElement(thread, { toFit: true });
             hpnpJumpToPostEvent.raise({ threadid });
         }
     }, [pendings, pendingIdx]);
