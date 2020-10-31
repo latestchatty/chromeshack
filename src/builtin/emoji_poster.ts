@@ -1,7 +1,7 @@
 /*eslint no-control-regex: 0*/
 import jQuery from "jquery";
 import { parseToElement } from "../core/common";
-import { processPostBoxEvent } from "../core/events";
+import { submitFormEvent, processPostBoxEvent } from "../core/events";
 import type { PostboxEventArgs } from "../core/events.d";
 
 const $ = jQuery;
@@ -26,28 +26,22 @@ export const EmojiPoster = {
             _clonedPostBtn?.setAttribute("cloned", "");
             _postBtn?.parentNode?.replaceChild(_clonedPostBtn, _postBtn);
 
-            // monkeypatch the submit and click events
-            ["click", "submit"].forEach((evt) => {
-                document.addEventListener(
-                    evt,
-                    (e: MouseEvent | Event) => {
-                        const this_elem = e.target as HTMLElement;
-                        const isSubmit = this_elem?.matches("#frm_submit");
-                        if (isSubmit) {
-                            // block any remaining attached listeners
-                            e.preventDefault();
-                            e.stopImmediatePropagation();
-                            //console.log("EmojiPoster redirected submit event");
-                            const _postBox = document.getElementById("frm_body") as HTMLInputElement;
-                            if (_postBox?.value.length > 0) {
-                                _postBox.value = EmojiPoster.handleEncoding(_postBox?.value);
-                                EmojiPoster.handleSubmit(_postBox?.value);
-                            }
-                        }
-                    },
-                    true,
-                );
-            });
+            const handleSubmit = (e: MouseEvent | Event) => {
+                const this_elem = e.target as HTMLElement;
+                const isSubmit = this_elem?.matches("#frm_submit");
+                const _postBox = document.getElementById("frm_body") as HTMLInputElement;
+                if (isSubmit && _postBox && _postBox?.value.length > 0) {
+                    // block any remaining attached listeners
+                    e.preventDefault();
+                    e.stopPropagation();
+                    submitFormEvent.raise(e);
+                    _postBox.value = EmojiPoster.handleEncoding(_postBox.value);
+                    const result = EmojiPoster.handleSubmit(_postBox.value);
+                    if (!result) document.removeEventListener("click", handleSubmit);
+                }
+            };
+            document.removeEventListener("click", handleSubmit);
+            document.addEventListener("click", handleSubmit);
 
             // educate the user on how to open the OS' Emoji Picker
             const _postFormParent = postbox?.querySelector("#postform fieldset") as HTMLElement;

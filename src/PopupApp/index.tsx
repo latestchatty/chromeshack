@@ -218,6 +218,7 @@ const PopupApp = () => {
                             "Allow previewing a post, with full Shacktag formatting, before submitting the post.",
                         ]}
                     />
+                    <Option id="drafts" label="Drafts" descriptions={["Automatically saves/loads unposted replies."]} />
                     <Option
                         id="chatty_news"
                         label="Chatty News"

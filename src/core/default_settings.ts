@@ -21,6 +21,8 @@ const DefaultSettings: Settings = {
 
     notifications: [],
 
+    saved_drafts: [],
+
     post_preview_toggled: false,
     image_uploader_toggled: true,
 

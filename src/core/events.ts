@@ -49,3 +49,4 @@ export const collapsedPostEvent = new LiteEvent<CollapsedPostEventArgs>();
 export const pendingPostsUpdateEvent = new LiteEvent<PendingPostEventArgs>();
 export const userFilterUpdateEvent = new LiteEvent<ResolvedUser>();
 export const hpnpJumpToPostEvent = new LiteEvent<JumpToPostEventArgs>();
+export const submitFormEvent = new LiteEvent<Event>();

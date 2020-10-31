@@ -15,6 +15,7 @@ import { processContentScriptLoaded } from "./core/observer_handlers";
 import { mergeTransientSettings } from "./core/settings";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
+import { Drafts } from "./optional/drafts";
 import { HighlightPendingPosts } from "./optional/highlightpending";
 import { HighlightUsers } from "./optional/highlight_users";
 import { MediaEmbedder } from "./optional/media-embedder";
@@ -37,6 +38,12 @@ import "./styles/post_preview.css";
 import "./styles/threadpane.css";
 import "./styles/userpopup.css";
 
+declare global {
+    interface Window {
+        chrome: any;
+    }
+}
+
 // save some important refs for later
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
@@ -54,6 +61,7 @@ try {
         // optional modules that rely on toggles
         await ChattyNews.install();
         await CustomUserFilters.install();
+        await Drafts.install();
         await HighlightPendingPosts.install();
         await HU_Instance.install();
         await MediaEmbedder.install();
