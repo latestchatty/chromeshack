@@ -1,5 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
-import { elementIsVisible, scrollToElement } from "../core/common";
+import { elementIsVisible, scrollToElement, elementFitsViewport } from "../core/common";
 
 export const chatViewFix = async () => {
     try {
@@ -10,6 +10,20 @@ export const chatViewFix = async () => {
                 code: /*javascript*/ `
 // monkeypatch for Chatty's broken scroll-to-post functionality
 if (!document.getElementById("chatviewfix-wjs")) {
+    function scrollToItem(b) {
+        if (!elementIsVisible(b) && elementFitsViewport(b)) scrollToElement(b);
+        else if (!elementIsVisible(b) && !elementFitsViewport(b)) scrollToElement(b, { toFit: true });
+    }
+    function show_item_fullpost(f, h, b) {
+        remove_old_fullpost(f, h, parent.document);
+        const k = parent.document.getElementById("root_" + f);
+        const e = parent.document.getElementById("item_" + h);
+        push_front_element(e, b);
+        scrollToItem(e);
+        e.className = add_to_className(e.className, "sel");
+        const c = find_element(e, "DIV", "oneline");
+        c.className = add_to_className(c.className, "hidden");
+    }
     function clickItem(b, f) {
         const d = window.frames.dom_iframe;
         const e = d.document.getElementById("item_" + f);
@@ -31,22 +45,9 @@ if (!document.getElementById("chatviewfix-wjs")) {
             return false;
         }
     }
-    function show_item_fullpost(f, h, b) {
-        remove_old_fullpost(f, h, parent.document);
-        const k = parent.document.getElementById("root_" + f);
-        const e = parent.document.getElementById("item_" + h);
-        push_front_element(e, b);
-        scrollToItem(e);
-        e.className = add_to_className(e.className, "sel");
-        const c = find_element(e, "DIV", "oneline");
-        c.className = add_to_className(c.className, "hidden");
-    }
-    function scrollToItem(b) {
-        if (!elementIsVisible(b)) scrollToElement(b);
-    }
     const chatViewFixElem = document.createElement("script");
     chatViewFixElem.id = "chatviewfix-wjs";
-    chatViewFixElem.textContent = \`\${clickItem.toString()}\${show_item_fullpost.toString()}${scrollToElement.toString()}${elementIsVisible.toString()}\${scrollToItem.toString()}\`;
+    chatViewFixElem.textContent = \`${elementFitsViewport.toString()}${scrollToElement.toString()}${elementIsVisible.toString()}\${clickItem.toString()}\${show_item_fullpost.toString()}\${scrollToItem.toString()}\`;
     const bodyRef = document.getElementsByTagName("body")[0];
     bodyRef.appendChild(chatViewFixElem);
     undefined;
