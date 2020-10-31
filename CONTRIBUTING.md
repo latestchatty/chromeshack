@@ -41,7 +41,7 @@ If you're interested in contributing a new content script or feature suggestion:
 The Cypress E2E integration test suite requires a login cookie fixture in order to run successfully. To setup the local testing environment do the following:
 -   If you haven't already, make sure to do: `npm install`
 -   Verify that Cypress and Chrome are installed and can run: `npx cypress verify`
--   Create the login cookie fixture: `CYPRESSUSR=<test user name> CYPRESSPW=<test user password> npx node ./utils/testlogin.js`
+-   Create the login cookie fixture: `CYPRESSUSR=<test user name> CYPRESSPW=<test user password> node ./utils/testlogin.js`
 -   Run the Mocha test suite on a sufficiently powerful (Cypress requires sufficient memory/CPU) : `npm run mocha`
 -   Look in `mochawesome-report/` for a prettified report in HTML format that aggregates the test suite results.
 
