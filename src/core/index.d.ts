@@ -75,7 +75,8 @@ export interface SettingsDict {
     username: string;
     version: number;
 }
-export type MigratedSettings = Record<string, { old: string; new: string | null }[] | null>;
+type MigrateVal = { old: string; new: SettingKey | EnabledOptions | EnabledSuboptions };
+export type MigratedSettings = Record<string, MigrateVal[] | null>;
 export type Settings = Partial<SettingsDict>;
 
 export interface TransientOpts {

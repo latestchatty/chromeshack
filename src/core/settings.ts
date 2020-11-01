@@ -320,19 +320,24 @@ export const migrateSettings = async () => {
     // pull the latest version data after the migration
     current_version = getManifestVersion();
     last_version = (await getSettingsVersion()) || current_version;
-    if (last_version !== current_version) {
+    const imported = await getEnabledSuboption("imported");
+    const show_notes = await getEnabledSuboption("show_rls_notes");
+    if (imported || last_version !== current_version) {
+        // reset time tracked variables when migrating from imported data
+        await setSetting("new_comment_highlighter_last_id", -1);
+        await setSetting("last_collapse_time", -1);
+        await setSetting("chatty_news_lastfetchtime", -1);
         await setEnabledSuboption("show_rls_notes");
         await updateSettingsVersion();
     } else await updateSettingsVersion();
-
-    // only show release notes automatically once after the version is updated
-    const show_notes = await getEnabledSuboption("show_rls_notes");
-    const imported = await getEnabledSuboption("imported");
+    // only show release notes once after the version is updated
     if (show_notes && !imported) {
         await browser.tabs.create({ url: "release_notes.html" });
         await removeEnabledSuboption("show_rls_notes");
     }
     await removeEnabledSuboption("imported");
+
+    console.log("migrateSettings post-migration:", await getSettings());
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
