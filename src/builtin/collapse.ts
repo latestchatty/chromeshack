@@ -38,9 +38,9 @@ export const Collapse = {
         const maxTime = 1000 * 60 * 60 * 18; // 18hr limit
         // try to grab a cached timestamp rather than updating every post
         const curTime = Collapse.localTime ? Collapse.localTime : new Date().getTime();
-        const lastCollapseTime = (await getSetting("last_collapse_time")) as number;
+        const lastCollapseTime = (await getSetting("last_collapse_time", -1)) as number;
         const diffTime = Math.abs(curTime - lastCollapseTime);
-        if (!lastCollapseTime || diffTime > maxTime) {
+        if (lastCollapseTime > -1 && diffTime > maxTime) {
             await setSetting("last_collapse_time", curTime);
             await setSetting("collapsed_threads", []);
         }

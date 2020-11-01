@@ -23,11 +23,8 @@ export const NewCommentHighlighter = {
         const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
         const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
         const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
-        if (new_last_id && new_last_id >= last_id) {
-            NewCommentHighlighter.highlightPostsAfter(last_id, root);
-            await NewCommentHighlighter.updateLastId(new_last_id);
-        }
-        // reset our check time on each cycle to avoid highlighting the whole page
+        if (last_id > -1 && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
+        await NewCommentHighlighter.updateLastId(new_last_id);
         await NewCommentHighlighter.resetCheckTime();
     },
 

@@ -2,21 +2,24 @@ import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common"
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const ChattyNews = {
+    timeout: 1000 * 60 * 15,
+    date: new Date(),
+
     async checkTime(delayInMs: number) {
-        const curTime = new Date().getTime();
-        const lastFetchTime = (await getSetting("chatty_news_lastfetchtime")) as number;
+        const curTime = ChattyNews.date.getTime();
+        const lastFetchTime = (await getSetting("chatty_news_lastfetchtime", -1)) as number;
         const diffTime = Math.abs(curTime - lastFetchTime);
-        if (!lastFetchTime || diffTime > delayInMs) {
+        if (lastFetchTime > -1 || diffTime > delayInMs) {
             // update if necessary or start fresh
             await setSetting("chatty_news_lastfetchtime", curTime);
             return true;
-        }
-        return false;
+        } else return false;
     },
 
     async populateNewsBox(container: Element) {
         let rss = (await getSetting("chatty_news_lastfetchdata")) as ShackRSSItem[];
-        if (!arrHas(rss) || (await ChattyNews.checkTime(1000 * 60 * 15))) {
+        const overTimeout = await ChattyNews.checkTime(ChattyNews.timeout);
+        if (overTimeout || !arrHas(rss)) {
             // cache each successful fetch for 15 minutes
             rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
