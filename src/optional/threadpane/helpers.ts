@@ -144,7 +144,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
     return trimBodyHTML(clone);
 };
 
-const parseRoot = async (rootElem: HTMLElement) => {
+export const parseRoot = async (rootElem: HTMLElement) => {
     const root = elemMatches(rootElem, "div.root");
     const rootid = root && parseInt(root?.id?.substr(5));
     if (rootid < 1 || rootid > 50000000) {

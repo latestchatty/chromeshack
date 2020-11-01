@@ -10,7 +10,7 @@ import { CollapsedPostEventArgs, JumpToPostEventArgs, PendingPostEventArgs, Post
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import type { PendingPost } from "../highlightpending";
 import { ResolvedUser } from "../highlight_users";
-import { getRecents, jumpToPost, threadContainsLoggedUser } from "./helpers";
+import { jumpToPost, parseRoot } from "./helpers";
 import type { ParsedPost, ParsedReply } from "./index.d";
 
 const useThreadPaneCard = (post: ParsedPost) => {
@@ -82,20 +82,17 @@ const useThreadPaneCard = (post: ParsedPost) => {
     );
 
     const refreshedThread = useCallback(
-        (args: PostEventArgs) => {
+        async (args: PostEventArgs) => {
             const { rootid: threadid } = args || {};
             if (threadid === rootid) {
                 setPending(false);
                 const threadRoot = document.querySelector(`div.root#root_${rootid}`) as HTMLElement;
-                const newRecents = threadRoot && getRecents(threadRoot as HTMLElement);
-                if (newRecents) setLocalRecents(newRecents);
-                threadContainsLoggedUser(threadRoot).then((contained) => {
-                    // update our "user replied" state for this thread
-                    if (contained) setLocalPost({ ...localPost, contained });
-                });
+                const parsed = threadRoot && (await parseRoot(threadRoot));
+                if (parsed) setLocalPost(parsed);
+                if (parsed?.recents) setLocalRecents(parsed?.recents);
             }
         },
-        [rootid, localPost],
+        [rootid],
     );
 
     const userFilterUpdate = useCallback(
