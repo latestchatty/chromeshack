@@ -1,3 +1,5 @@
+import lzString from "lz-string";
+
 export const arrHas = (arr: any[]) => arr && Array.isArray(arr) && arr.length > 0;
 export const arrEmpty = (arr: any[]) => arr && Array.isArray(arr) && arr.length === 0;
 export const objHas = (obj: Record<string, any>) => obj && typeof obj === "object" && Object.keys(obj).length > 0;
@@ -73,3 +75,6 @@ export const packValidTypes = (types: string, fileList: File[] | FileList) => {
     // returns a File array with only matching file types in it
     return [...fileList].filter((f) => typeArr.includes(f.type));
 };
+
+export const compressString = (input: string) => lzString.compressToUTF16(input);
+export const decompressString = (input: string) => lzString.decompressFromUTF16(input);

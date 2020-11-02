@@ -21,7 +21,8 @@ const Drafts = {
             appContainer.setAttribute("id", "drafts__app");
             const nearestLi = postbox?.closest && postbox.closest("li[id^='item_']");
             const postid = parseInt(nearestLi?.id?.substr(5));
-            render(<DraftsApp postid={postid} replyBox={postbox} />, appContainer);
+            const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
+            render(<DraftsApp postid={postid} inputBox={inputBox} />, appContainer);
             positionElem.parentElement.insertBefore(appContainer, positionElem.nextElementSibling);
         }
     },

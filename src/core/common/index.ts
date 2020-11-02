@@ -17,6 +17,8 @@ import {
     objEmpty,
     objHas,
     packValidTypes,
+    compressString,
+    decompressString,
 } from "./common";
 import {
     afterElem,
@@ -101,4 +103,6 @@ export {
     isFileArr,
     getFileCount,
     packValidTypes,
+    compressString,
+    decompressString,
 };

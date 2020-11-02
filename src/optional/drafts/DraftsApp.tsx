@@ -1,7 +1,6 @@
-import lzString from "lz-string";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { arrHas, classNames, elemMatches, objHas } from "../../core/common";
+import { arrHas, classNames, elemMatches, compressString, decompressString } from "../../core/common";
 import { submitFormEvent } from "../../core/events";
 import { getSetting, getSettings, setSetting } from "../../core/settings";
 
@@ -11,10 +10,8 @@ export interface Draft {
     timestamp: number;
 }
 
-const compressString = (input: string) => lzString.compressToUTF16(input);
-const decompressString = (input: string) => lzString.decompressFromUTF16(input);
 const filterDraftsLRU = async (drafts: Draft[]) => {
-    if (!arrHas(drafts)) return;
+    if (!arrHas(drafts)) return [] as Draft[];
     const curTime = new Date().getTime();
     const maxSize = 5000000 * 0.75; // 75% of 5mb storage limit
     const maxAge = 1000 * 60 * 60 * 48; // 48hr timeout on saved drafts
@@ -31,109 +28,111 @@ const filterDraftsLRU = async (drafts: Draft[]) => {
         lruByNewest.pop();
         setWithDrafts = JSON.stringify({ ...settings, saved_drafts: lruByNewest });
     }
-    return lruByNewest;
+    return lruByNewest || ([] as Draft[]);
 };
 
-const DraftsApp = (props: { postid: number; replyBox: HTMLElement }) => {
-    const { postid, replyBox } = props || {};
-    const postidRef = useRef(postid);
-    const replyBoxRef = useRef(replyBox);
-    const inputBoxRef = useRef(null as HTMLInputElement);
-    const debouncedInput = useRef(null);
-
+const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
+    const { postid, inputBox } = props || {};
+    const [inputVal, setInputVal] = useState("");
     const [drafts, setDrafts] = useState([] as Draft[]);
     const [valid, setValid] = useState(false);
 
-    const handleInput = (e: KeyboardEvent) => {
-        const _this = e.target as HTMLInputElement;
-        const _val = _this?.value;
-        // debounce compression to save some CPU time
-        debouncedInput.current(_val);
-    };
-    const handleUpdate = useCallback(
-        (val: string) => {
+    const loadDraftsFromStore = useCallback(() => {
+        (async () => {
+            const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
+            // decompress once when loading from the store
+            const decompressed = _drafts.map((d) => {
+                const _decomp = decompressString(d.body);
+                if (_decomp) return { ...d, body: _decomp };
+            });
+            const foundRecord = decompressed.filter((d) => d.postid === postid)?.[0];
+            setDrafts(decompressed);
+            if (foundRecord?.body) {
+                setInputVal(foundRecord.body);
+                setValid(true);
+            }
+        })();
+    }, [postid]);
+    const saveDraftsToStore = useCallback(
+        (d: Draft[]) => {
             (async () => {
-                try {
-                    const _drafts = [...drafts];
-                    const foundIdx = _drafts.findIndex((d) => d.postid === postidRef.current);
-                    // remove the existing record if there's no input to update
-                    if (foundIdx > -1 && val.length === 0) {
-                        _drafts.splice(foundIdx);
-                        setDrafts(_drafts);
-                        await setSetting("saved_drafts", _drafts);
-                        return setValid(false);
-                    }
-                    const compressedBody = val.length > 0 ? compressString(val) : "";
-                    const record = {
-                        body: compressedBody,
-                        postid: postidRef.current,
-                        timestamp: new Date().getTime(),
-                    } as Draft;
-
-                    if (objHas(_drafts?.[foundIdx])) _drafts[foundIdx] = record;
-                    else _drafts.push(record);
-                    await setSetting("saved_drafts", _drafts);
-                    setDrafts(_drafts);
-                    setValid(compressedBody?.length > 0);
-                } catch (e) {
-                    console.error(e);
-                }
+                // save CPU time by only compressing when saving to the store
+                const _drafts =
+                    arrHas(d) &&
+                    d.map((_d) => {
+                        const _comp = compressString(_d.body);
+                        if (_comp) return { ..._d, body: _comp };
+                    });
+                // filter out old drafts when saving
+                const filtered = _drafts ? await filterDraftsLRU(_drafts) : [];
+                if (filtered) await setSetting("saved_drafts", filtered);
+                const foundRecord = filtered.filter((d) => d.postid === postid)?.[0];
+                setValid(!!foundRecord);
             })();
         },
-        [drafts],
+        [postid],
     );
+    const debouncedSave = useRef(debounce((d: Draft[]) => saveDraftsToStore(d), 750)).current;
+    const saveToDraft = useCallback(
+        (v: string) => {
+            const _drafts = [...drafts];
+            const foundIdx = _drafts.findIndex((d) => d.postid === postid);
+            const record =
+                v &&
+                ({
+                    body: v,
+                    postid,
+                    timestamp: new Date().getTime(),
+                } as Draft);
 
-    const setInputFromDrafts = useCallback(() => {
-        if (!arrHas(drafts)) return;
-        const foundRecord = drafts.find((d) => d.postid === postidRef.current);
-        const uncompressedBody = foundRecord?.body?.length > 0 && decompressString(foundRecord.body);
-        if (uncompressedBody?.length > 0) inputBoxRef.current.value = uncompressedBody;
-        setValid(uncompressedBody?.length > 0 || false);
-    }, [drafts]);
+            if (foundIdx > -1 && v.length === 0) _drafts.splice(foundIdx);
+            else if (foundIdx === -1 && record) _drafts.unshift(record);
+            else if (foundIdx > -1 && record) _drafts[foundIdx] = record;
 
-    useEffect(() => {
-        setInputFromDrafts();
-    }, [setInputFromDrafts]);
-    useEffect(() => {
-        // keep our debouncer up-to-date when drafts change
-        debouncedInput.current = debounce((val: string) => handleUpdate(val), 500);
-    }, [handleUpdate]);
-    useEffect(() => {
-        if (!replyBoxRef.current) return;
-        const handleSubmit = (e: Event) => {
+            setDrafts(_drafts);
+            debouncedSave(_drafts);
+        },
+        [drafts, postid, debouncedSave],
+    );
+    const handleSubmit = useCallback(
+        (e: Event) => {
             e.preventDefault();
             (async () => {
                 const _this = e.target as HTMLButtonElement;
                 if (elemMatches(_this, "#frm_submit")) {
                     const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
-                    const filtered = _drafts.filter((d) => d.postid !== postidRef.current);
-                    // remove this draft from the list upon submission
-                    await setSetting("saved_drafts", filtered);
-                    setDrafts(filtered);
+                    const filtered = _drafts.filter((d) => d.postid !== postid);
+                    saveDraftsToStore(filtered);
                     // avoid duplicate handlers when replybox closes
                     submitFormEvent.removeHandler(handleSubmit);
                 }
             })();
+        },
+        [postid, saveDraftsToStore],
+    );
+
+    useEffect(() => {
+        // handle the input box as a controller input
+        inputBox.value = inputVal;
+    }, [inputBox, inputVal]);
+    useEffect(() => {
+        const handleInput = (e: KeyboardEvent) => {
+            const _val = (e.target as HTMLInputElement).value;
+            setInputVal(_val);
+            saveToDraft(_val);
         };
 
-        const _input = replyBoxRef.current.querySelector("#frm_body") as HTMLInputElement;
-        inputBoxRef.current = _input;
-        _input.addEventListener("input", handleInput);
+        inputBox.addEventListener("input", handleInput);
         submitFormEvent.addHandler(handleSubmit);
 
-        (async () => {
-            const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
-            // filter old drafts once upon loading
-            const byLRU = await filterDraftsLRU(_drafts);
-            if (JSON.stringify(byLRU) !== JSON.stringify(_drafts)) await setSetting("saved_drafts", byLRU);
-            if (arrHas(byLRU)) setDrafts(byLRU);
-        })();
-
         return () => {
-            _input.removeEventListener("input", handleInput);
+            inputBox.removeEventListener("input", handleInput);
             submitFormEvent.removeHandler(handleSubmit);
         };
-    }, []);
+    }, [inputBox, handleSubmit, saveToDraft]);
+    useEffect(() => {
+        loadDraftsFromStore();
+    }, [loadDraftsFromStore]);
 
     return (
         <div
