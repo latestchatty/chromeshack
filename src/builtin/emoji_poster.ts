@@ -44,14 +44,14 @@ export const EmojiPoster = {
             document.addEventListener("click", handleSubmit);
 
             // educate the user on how to open the OS' Emoji Picker
-            const _postFormParent = postbox?.querySelector("#postform fieldset") as HTMLElement;
+            const _rulesParent = postbox?.querySelector("p.rules") as HTMLElement;
             // parse our nodes into a document fragment
             const _emojiTaglineFragment = parseToElement(/*html*/ `
                 <div class="emoji-tagline">
-                    Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
+                    <span class="tagline-sep">▪</span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
                 </div>
             `);
-            _postFormParent?.appendChild(_emojiTaglineFragment);
+            _rulesParent?.append(_emojiTaglineFragment);
         }
     },
 

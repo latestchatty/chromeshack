@@ -85,6 +85,12 @@ a.chromeshack_options_link.singlepost {
     left: 0 !important;
 }
 
+div#postbox fieldset {
+    /* workaround for responsiveness at small widths */
+    max-width: calc(100% - 1px) !important;
+    min-width: 0 !important;
+}
+
 span.postbox_rules_divider {
     padding-left: 8px;
     padding-right: 8px;
@@ -92,9 +98,34 @@ span.postbox_rules_divider {
 }
 
 p.rules {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 12px !important;
+    white-space: nowrap;
+}
+/* emoji tagline on the postbox form */
+p.rules > a {
+    display: inline-flex;
+    justify-content: right;
+}
+p.rules div.emoji-tagline {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    text-align: center;
+    font-size: 12px;
+}
+.emoji-tagline > span {
+    font-weight: bold;
+}
+.emoji-tagline > span.tagline-sep {
+    margin: 0 0.75em;
 }
 
+div.ctextarea {
+    margin-bottom: -10px !important;
+}
 div.post_length_counter_text {
     display: inline-flex;
     align-items: center;
@@ -157,25 +188,6 @@ span.lol-tags:not(.read-only-tags) {
 span.author > img.chatty-user-icons:nth-child(2),
 span.user > img.chatty-user-icons:nth-child(1) {
     margin-left: 0.33rem !important;
-}
-
-/* emoji tagline on the postbox form */
-#postform fieldset div.emoji-tagline {
-    margin: 0 auto 0.5em !important;
-    width: 100% !important;
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    text-align: center;
-    font-size: 12px;
-}
-div.emoji-tagline > span {
-    font-weight: bold;
-}
-div#postbox fieldset {
-    /* workaround for responsiveness at small widths */
-    max-width: calc(100% - 1px) !important;
-    min-width: 0 !important;
 }
 
 /* try to blend background color on wide screens */
