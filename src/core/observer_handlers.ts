@@ -17,6 +17,11 @@ import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption } from "./settings";
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
+    const removeUnusedTagline = (post: HTMLElement) => {
+        // avoid having a duplicate (unused) tagline
+        const taglines = [...post?.querySelectorAll("span.tag-counts")];
+        if (taglines.length > 1) taglines[0].parentElement.removeChild(taglines[0]);
+    };
     const collectTagData = (post: HTMLElement) => {
         const postTags = [
             ...post?.querySelectorAll(".fullpost > .postmeta .lol-tags > .tag-container"),
@@ -40,9 +45,11 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
             // check every timeStep for data being loaded up to a timeout
             const tagCheckResult = collectTagData(post);
             if (tagsTimer <= _timeout && arrHas(tagCheckResult)) {
+                removeUnusedTagline(post);
                 clearInterval(tagsInterval);
                 return resolve(tagCheckResult);
             } else if (tagsTimer > _timeout) {
+                removeUnusedTagline(post);
                 clearInterval(tagsInterval);
                 return reject(null);
             }
