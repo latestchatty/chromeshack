@@ -8,7 +8,6 @@ import { elemMatches } from "../core/common";
 export const NewCommentHighlighter = {
     // 2 hour timeout
     timeout: 1000 * 60 * 60 * 2,
-    date: new Date(),
 
     async install() {
         const is_enabled = await enabledContains(["new_comment_highlighter"]);
@@ -25,12 +24,7 @@ export const NewCommentHighlighter = {
         const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
         if (last_id > -1 && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
         await NewCommentHighlighter.updateLastId(new_last_id);
-        await NewCommentHighlighter.resetCheckTime();
-    },
-
-    async resetCheckTime() {
-        const curTime = NewCommentHighlighter.date.getTime();
-        await setSetting("last_highlight_time", curTime);
+        await NewCommentHighlighter.checkTime(null, true);
     },
 
     async updateLastId(newid: number) {
@@ -38,11 +32,11 @@ export const NewCommentHighlighter = {
         if (newid !== last_id) await setSetting("new_comment_highlighter_last_id", newid);
     },
 
-    async checkTime(delayInMs: number) {
-        const curTime = NewCommentHighlighter.date.getTime();
+    async checkTime(delayInMs: number, reset?: boolean) {
+        const curTime = Date.now();
         const lastHighlightTime = (await getSetting("last_highlight_time", curTime)) as number;
         const diffTime = Math.abs(curTime - lastHighlightTime);
-        if (diffTime > delayInMs) {
+        if (reset || diffTime > delayInMs) {
             await setSetting("last_highlight_time", curTime);
             return true;
         } else return false;

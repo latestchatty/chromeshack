@@ -1,22 +1,11 @@
 import { elemMatches, locatePostRefs } from "../core/common";
-import {
-    collapsedPostEvent,
-    fullPostsCompletedEvent,
-    processPostEvent,
-    processRefreshIntentEvent,
-} from "../core/events";
+import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
 import { getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
-    localTime: null as number,
-
     install() {
         processPostEvent.addHandler(Collapse.toggle);
-        fullPostsCompletedEvent.addHandler(() => {
-            // refresh our cached timestamp when done loading
-            Collapse.localTime = new Date().getTime();
-        });
     },
 
     collapseHandler(e: MouseEvent) {
@@ -36,8 +25,7 @@ export const Collapse = {
 
     async cullAfterCollapseTime() {
         const maxTime = 1000 * 60 * 60 * 18; // 18hr limit
-        // try to grab a cached timestamp rather than updating every post
-        const curTime = Collapse.localTime ? Collapse.localTime : new Date().getTime();
+        const curTime = Date.now();
         const lastCollapseTime = (await getSetting("last_collapse_time", -1)) as number;
         const diffTime = Math.abs(curTime - lastCollapseTime);
         if (lastCollapseTime > -1 && diffTime > maxTime) {

@@ -3,10 +3,9 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const ChattyNews = {
     timeout: 1000 * 60 * 15,
-    date: new Date(),
 
     async checkTime(delayInMs: number) {
-        const curTime = ChattyNews.date.getTime();
+        const curTime = Date.now();
         const lastFetchTime = (await getSetting("chatty_news_lastfetchtime", -1)) as number;
         const diffTime = Math.abs(curTime - lastFetchTime);
         if (lastFetchTime > -1 || diffTime > delayInMs) {

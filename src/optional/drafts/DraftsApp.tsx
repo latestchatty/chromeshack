@@ -12,7 +12,7 @@ export interface Draft {
 
 const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
-    const curTime = new Date().getTime();
+    const curTime = Date.now();
     const maxSize = 5000000 * 0.75; // 75% of 5mb storage limit
     const maxAge = 1000 * 60 * 60 * 48; // 48hr timeout on saved drafts
     const settings = await getSettings();
@@ -82,7 +82,7 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
                 ({
                     body: v,
                     postid,
-                    timestamp: new Date().getTime(),
+                    timestamp: Date.now(),
                 } as Draft);
 
             if (foundIdx > -1 && v.length === 0) _drafts.splice(foundIdx);
