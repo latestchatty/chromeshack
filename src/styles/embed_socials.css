@@ -80,6 +80,13 @@ a#twitter__quote_displayname:hover {
 .twitter__quote__content > .twitter__header {
     align-items: center;
 }
+.twitter__userline {
+    display: grid;
+    align-items: center;
+    grid-template:
+        "a a"
+        "b b";
+}
 .twitter__user__name {
     display: flex;
     flex-direction: column;
@@ -95,9 +102,6 @@ a#twitter__quote_displayname:hover {
     font-size: 14px;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-.twitter__quote__realname {
-    margin-left: 0.5em;
 }
 .user__profile__pic {
     width: 38px;
@@ -117,9 +121,9 @@ a#twitter__quote_displayname:hover {
 }
 
 #twitter__verified {
-    position: relative;
-    top: -2px;
-    left: 3px;
+    display: inline-flex;
+    align-self: center;
+    margin: 0 0.33em 0 0.25em;
 }
 .twitter__badge {
     display: flex;

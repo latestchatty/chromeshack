@@ -61,13 +61,11 @@ const Twitter = (props: { response: TweetParsed }) => {
                         <a href={response.profilePicUrl} className="profile__pic__link">
                             <img className="user__profile__pic" alt="" src={response.profilePic} />
                         </a>
-                        <div className="twitter__user__name">
-                            <div>
-                                <a href={response.profilePicUrl} id="twitter__displayname">
-                                    {response.displayName}
-                                </a>
-                                <TwitterVerifiedSVG active={!!response?.userVerified} />
-                            </div>
+                        <div className="twitter__userline">
+                            <a href={response.profilePicUrl} id="twitter__displayname">
+                                {response.displayName}
+                            </a>
+                            <TwitterVerifiedSVG active={!!response?.userVerified} />
                             <span className="twitter__realname">{`@${response.realName}`}</span>
                         </div>
                         <a href={response.tweetUrl} className="twitter__badge">
