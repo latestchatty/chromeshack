@@ -1,6 +1,3 @@
-// required to debug React components in development mode via standalone
-if (process.env.NODE_ENV === "development") require("react-devtools");
-
 import { Collapse } from "./builtin/collapse";
 import { CommentTags } from "./builtin/comment_tags";
 import { EmojiPoster } from "./builtin/emoji_poster";

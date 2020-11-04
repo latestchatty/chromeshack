@@ -38,7 +38,10 @@ input.color {
 }
 
 div.firefox__padding {
-    margin: -0.75em 2em 0.75em 0.5em;
+    margin: 0 0.75em 1.25em 0.5em;
+}
+div.firefox__padding.long {
+    margin: 0 1.85em 1.25em 0.5em !important;
 }
 div.chrome__padding {
     margin: -0.75em 0.75em 0.5em 0.5em;

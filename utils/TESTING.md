@@ -1,7 +1,5 @@
 This list of links is for testing complex script interactions in Chrome Shack with the Shacknews Chatty.
 
-NOTE: If you need to test mounted React components you can use `npx react-devtools` when building with `npm run build:dev`.
-
 WARNING! These links can contain NSFW links or adult content. You've been warned.
 
 -   Media-Embedder:

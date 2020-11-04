@@ -1,15 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { classNames } from "../core/common";
 import { getSetting, setSetting } from "../core/settings";
 
+declare global {
+    interface Window {
+        browser: any;
+    }
+}
+const isChromeBrowser = !window.browser ? true : false;
+
 const Tabs = (props: { children?: JSX.Element[] }) => {
     const { children } = props || {};
+    const bodyRef = useRef(null);
+    const classDefaults = useRef({
+        firefox__padding: !isChromeBrowser,
+        chrome__padding: isChromeBrowser,
+        long: false,
+    }).current;
+
     const [activeTabIdx, setActiveTabIdx] = useState(0);
+    const [classes, setClasses] = useState(classNames(classDefaults));
     const activeTab = children[activeTabIdx];
 
     const storeActiveTab = async (idx: number) => await setSetting("selected_popup_tab", idx);
     const getActiveTabFromStore = async () => await getSetting("selected_popup_tab", 0);
 
+    useEffect(() => {
+        if (!bodyRef.current) return;
+        const bodyHeight = (bodyRef.current as HTMLElement).offsetHeight;
+        if (bodyHeight > 499) setClasses(classNames({ ...classDefaults, long: true }));
+        else setClasses(classNames({ ...classDefaults, long: false }));
+    }, [activeTab, classDefaults]);
     useEffect(() => {
         (async () => {
             const _tabIdx = await getActiveTabFromStore();
@@ -18,7 +39,7 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
     }, []);
 
     return (
-        <>
+        <div className={classes}>
             <div className="tabs">
                 {children.map((c, i) => {
                     return (
@@ -44,8 +65,10 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
                     }}
                 ></div>
             </div>
-            <div className="tabs-body">{activeTab.props.children}</div>
-        </>
+            <div className="tabs-body" ref={bodyRef}>
+                {activeTab.props.children}
+            </div>
+        </div>
     );
 };
 
