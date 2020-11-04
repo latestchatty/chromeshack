@@ -22,8 +22,8 @@ const parseChattyPost = (sanitizedFragment: DocumentFragment) => {
     const authorid = parseInt(fullpost?.getAttribute("class")?.split("fpauthor_")[1]);
     const permalink = (sanitizedFragment.querySelector(".postnumber>a") as HTMLAnchorElement)?.href;
     const postid = parseInt(permalink?.split("item_")[1]);
-    const author = (sanitizedFragment.querySelector(".user>a") as HTMLAnchorElement)?.textContent;
-    const saneAuthor = author.replace(/\s/gm, "+");
+    const author = (sanitizedFragment.querySelector(".user>a, .user") as HTMLAnchorElement)?.textContent;
+    const saneAuthor = author?.replace(/\s/gm, "+");
     const icons = [...sanitizedFragment.querySelectorAll("span.author>img")] as HTMLImageElement[];
     const postbody = (sanitizedFragment.querySelector(".postbody") as HTMLDivElement)?.innerHTML;
     const postdate = (sanitizedFragment.querySelector(".postdate") as HTMLDivElement)?.textContent;
