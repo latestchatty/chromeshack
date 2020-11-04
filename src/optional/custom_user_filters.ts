@@ -7,11 +7,8 @@ export const CustomUserFilters = {
     rootPostCount: 0,
 
     async install() {
-        const is_enabled = await enabledContains(["custom_user_filters"]);
-        if (is_enabled) {
-            processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
-            await CustomUserFilters.applyFilter();
-        }
+        processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
+        await CustomUserFilters.applyFilter();
     },
 
     async removeOLsForAuthorId({ id }: ResolvedUser) {
@@ -44,15 +41,18 @@ export const CustomUserFilters = {
     },
 
     async applyFilter() {
-        const filteredUsers = (await getSetting("user_filters")) as string[];
-        if (!filteredUsers || filteredUsers.length === 0) return;
-        CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
-        // await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id, userMatch.name);
-        for (const filteredUser of filteredUsers) {
-            const resolved = HU_Instance.resolveUser(filteredUser);
-            for (const record of resolved || []) {
-                userFilterUpdateEvent.raise(record);
-                await CustomUserFilters.removeOLsForAuthorId(record);
+        const is_enabled = await enabledContains(["custom_user_filters"]);
+        if (is_enabled) {
+            const filteredUsers = (await getSetting("user_filters")) as string[];
+            if (!filteredUsers || filteredUsers.length === 0) return;
+            CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
+            // await CustomUserFilters.removeOLsFromUserId((userMatch as ResolvedUser).id, userMatch.name);
+            for (const filteredUser of filteredUsers) {
+                const resolved = HU_Instance.resolveUser(filteredUser);
+                for (const record of resolved || []) {
+                    userFilterUpdateEvent.raise(record);
+                    await CustomUserFilters.removeOLsForAuthorId(record);
+                }
             }
         }
     },

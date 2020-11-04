@@ -26,41 +26,43 @@ export const Switchers = {
 
     resolved: [] as SwitcherMatch[],
 
-    async install() {
+    install() {
+        Switchers.cacheSwitchers();
+        processPostEvent.addHandler(Switchers.loadSwitchers);
+    },
+
+    async cacheSwitchers() {
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
-            Switchers.cacheSwitchers();
-            processPostEvent.addHandler(Switchers.loadSwitchers);
+            // resolve and cache all offenders on the page once on load
+            const resolvedUsers = HU_Instance.resolveUsers();
+            for (const offender of Switchers.offenders) {
+                const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
+                if (!user) continue;
+                const matchedOld = offender.old.toLowerCase() === user.username.toLowerCase();
+                const matchedNew = offender.new.toLowerCase() === user.username.toLowerCase();
+                if (matchedOld || matchedNew)
+                    Switchers.resolved = [
+                        ...Switchers.resolved,
+                        {
+                            id: user.id,
+                            username: user.username,
+                            matched: matchedNew ? offender.old : offender.new,
+                        } as SwitcherMatch,
+                    ];
+            }
         }
     },
 
-    cacheSwitchers() {
-        // resolve and cache all offenders on the page once on load
-        const resolvedUsers = HU_Instance.resolveUsers();
-        for (const offender of Switchers.offenders) {
-            const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
-            if (!user) continue;
-            const matchedOld = offender.old.toLowerCase() === user.username.toLowerCase();
-            const matchedNew = offender.new.toLowerCase() === user.username.toLowerCase();
-            if (matchedOld || matchedNew)
-                Switchers.resolved = [
-                    ...Switchers.resolved,
-                    {
-                        id: user.id,
-                        username: user.username,
-                        matched: matchedNew ? offender.old : offender.new,
-                    } as SwitcherMatch,
-                ];
-        }
-    },
-
-    loadSwitchers({ post }: PostEventArgs) {
-        for (const offender of Switchers.resolved || []) {
-            const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
-            const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
-            const offenderPosts = [...offenderOLs, ...offenderFPs];
-            for (const post of offenderPosts) Switchers.rewritePost(post, offender.username, offender.matched);
-        }
+    async loadSwitchers({ post }: PostEventArgs) {
+        const is_enabled = await enabledContains(["switchers"]);
+        if (is_enabled)
+            for (const offender of Switchers.resolved || []) {
+                const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
+                const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
+                const offenderPosts = [...offenderOLs, ...offenderFPs];
+                for (const post of offenderPosts) Switchers.rewritePost(post, offender.username, offender.matched);
+            }
     },
 
     rewritePost(post: HTMLElement, name: string, oldName: string) {

@@ -9,22 +9,22 @@ export const NewCommentHighlighter = {
     // 2 hour timeout
     timeout: 1000 * 60 * 60 * 2,
 
-    async install() {
-        const is_enabled = await enabledContains(["new_comment_highlighter"]);
-        if (is_enabled) {
-            fullPostsCompletedEvent.addHandler(() => NewCommentHighlighter.highlight());
-            processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
-        }
+    install() {
+        fullPostsCompletedEvent.addHandler(() => NewCommentHighlighter.highlight());
+        processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
     },
 
     async highlight(args?: PostEventArgs) {
         const { root } = args || {};
-        const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-        const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
-        const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
-        if (last_id > -1 && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
-        await NewCommentHighlighter.updateLastId(new_last_id);
-        await NewCommentHighlighter.checkTime(null, true);
+        const is_enabled = await enabledContains(["new_comment_highlighter"]);
+        if (is_enabled) {
+            const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
+            const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
+            const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
+            if (last_id > -1 && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
+            await NewCommentHighlighter.updateLastId(new_last_id);
+            await NewCommentHighlighter.checkTime(null, true);
+        }
     },
 
     async updateLastId(newid: number) {

@@ -112,17 +112,17 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
 };
 
 const PostPreview = {
-    async install() {
-        const is_enabled = await enabledContains(["post_preview"]);
-        if (is_enabled) processPostBoxEvent.addHandler(PostPreview.apply);
+    install() {
+        processPostBoxEvent.addHandler(PostPreview.apply);
     },
 
-    apply(args: PostboxEventArgs) {
+    async apply(args: PostboxEventArgs) {
         const { postbox } = args || {};
+        const is_enabled = await enabledContains(["post_preview"]);
         const positionElem = postbox?.querySelector("div.csubmit");
         const container = postbox.querySelector("#post__preview__app");
         const altPositionElem = postbox?.querySelector("#frm_body");
-        if (!container && positionElem) {
+        if (is_enabled && !container && positionElem) {
             const paneContainer = document.createElement("div");
             paneContainer.setAttribute("id", "post__preview__pane");
             altPositionElem.parentNode.insertBefore(paneContainer, altPositionElem);

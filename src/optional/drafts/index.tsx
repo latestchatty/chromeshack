@@ -7,16 +7,16 @@ import { DraftsApp } from "./DraftsApp";
 import "../../styles/drafts.css";
 
 const Drafts = {
-    async install() {
-        const is_enabled = await enabledContains(["drafts"]);
-        if (is_enabled) processPostBoxEvent.addHandler(Drafts.apply);
+    install() {
+        processPostBoxEvent.addHandler(Drafts.apply);
     },
 
-    apply(args: PostboxEventArgs) {
+    async apply(args: PostboxEventArgs) {
         const { postbox } = args || {};
+        const is_enabled = await enabledContains(["drafts"]);
         const positionElem = postbox?.querySelector("div.ctextarea");
         const container = postbox.querySelector("#drafts__app");
-        if (!container && positionElem) {
+        if (is_enabled && !container && positionElem) {
             const appContainer = document.createElement("div");
             appContainer.setAttribute("id", "drafts__app");
             const nearestLi = postbox?.closest && postbox.closest("li[id^='item_']");

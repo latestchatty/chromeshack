@@ -18,12 +18,9 @@ export const HighlightUsers = {
     cache: {} as ResolvedUsers,
 
     async install() {
-        const is_enabled = await enabledContains(["highlight_users"]);
-        if (is_enabled) {
-            // refresh our styling state when refreshing a post
-            processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
-            await HighlightUsers.applyFilter();
-        }
+        // refresh our styling state when refreshing a post
+        processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
+        await HighlightUsers.applyFilter();
     },
 
     resolveUsers() {
@@ -95,9 +92,12 @@ export const HighlightUsers = {
     },
 
     async applyFilter() {
-        // we just need to run this once per page
-        const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-        const users = HighlightUsers.resolveUsers();
-        HighlightUsers.gatherCSS(users, groups);
+        const is_enabled = await enabledContains(["highlight_users"]);
+        if (is_enabled) {
+            // we just need to run this once per page
+            const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
+            const users = HighlightUsers.resolveUsers();
+            HighlightUsers.gatherCSS(users, groups);
+        }
     },
 };
