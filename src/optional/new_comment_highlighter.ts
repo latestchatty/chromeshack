@@ -29,7 +29,7 @@ export const NewCommentHighlighter = {
 
     async updateLastId(newid: number) {
         const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-        if (newid !== last_id) await setSetting("new_comment_highlighter_last_id", newid);
+        if (newid > last_id) await setSetting("new_comment_highlighter_last_id", newid);
     },
 
     async checkTime(delayInMs: number, reset?: boolean) {
