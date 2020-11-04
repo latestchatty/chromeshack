@@ -52,6 +52,7 @@ export type SettingKey =
     | "post_preview_toggled"
     | "saved_drafts"
     | "selected_upload_tab"
+    | "selected_popup_tab"
     | "user_filters"
     | "username"
     | "version";
@@ -71,6 +72,7 @@ export interface SettingsDict {
     post_preview_toggled: boolean;
     saved_drafts: Record<number, string>;
     selected_upload_tab: string;
+    selected_popup_tab: number;
     user_filters: string[];
     username: string;
     version: number;
