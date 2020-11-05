@@ -8,6 +8,7 @@ import { isDirectMedia } from "./directmedia";
 import { isDropbox } from "./dropbox";
 import { isGfycat } from "./gfycat";
 import { isGiphy } from "./giphy";
+import { isImgflip } from "./imgflip";
 /// resolvable media embeds
 import { isImgur } from "./imgur";
 /// native social embeds
@@ -50,8 +51,9 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
         const dropbox = isDropbox(href);
         const twimg = isTwimg(href);
         const giphy = isGiphy(href);
+        const imgflip = isImgflip(href);
         const directmedia = isDirectMedia(href);
-        const normalMedia = chattypics || dropbox || twimg || giphy || directmedia;
+        const normalMedia = chattypics || dropbox || twimg || giphy || imgflip || directmedia;
         if (objHas(normalMedia)) return normalMedia;
 
         const imgur = isImgur(href);
