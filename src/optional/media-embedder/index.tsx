@@ -6,6 +6,8 @@ import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { PostEventArgs } from "../../core/events.d";
 import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
+import "../../styles/embed_socials.css";
+import "../../styles/media.css";
 
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement; openByDefault?: boolean }) => {
     const { links, item, openByDefault } = props || {};

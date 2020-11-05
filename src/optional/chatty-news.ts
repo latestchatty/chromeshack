@@ -1,5 +1,7 @@
 import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common";
+import { fullPostsCompletedEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
+import "../styles/chatty-news.css";
 
 export const ChattyNews = {
     timeout: 1000 * 60 * 15,
@@ -48,7 +50,7 @@ export const ChattyNews = {
         return container;
     },
 
-    async install() {
+    async apply() {
         const is_enabled = await enabledContains(["chatty_news"]);
         if (is_enabled) {
             if (document.querySelector("div.chatty-news")) return;
@@ -86,5 +88,9 @@ export const ChattyNews = {
 
             articleBox?.classList?.add("chatty__news__enabled");
         }
+    },
+
+    async install() {
+        fullPostsCompletedEvent.addHandler(ChattyNews.apply);
     },
 };

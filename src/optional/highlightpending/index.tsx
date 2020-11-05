@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "react-dom";
 import { enabledContains } from "../../core/settings";
 import { HighlightPendingApp } from "./HighlightPendingApp";
+import "../../styles/highlight_pending.css";
 
 export interface PendingPost {
     postId: number;

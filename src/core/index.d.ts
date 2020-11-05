@@ -26,6 +26,7 @@ export type EnabledOptions =
     | "switchers"
     | "shrink_user_icons"
     | "social_loader"
+    | "templates"
     | "thread_pane"
     | "twitchauto"
     | "reduced_color_user_icons";
@@ -51,6 +52,7 @@ export type SettingKey =
     | "notifications"
     | "post_preview_toggled"
     | "saved_drafts"
+    | "saved_templates"
     | "selected_upload_tab"
     | "selected_popup_tab"
     | "user_filters"
@@ -71,6 +73,7 @@ export interface SettingsDict {
     notifications: string[];
     post_preview_toggled: boolean;
     saved_drafts: Record<number, string>;
+    saved_templates: string[];
     selected_upload_tab: string;
     selected_popup_tab: number;
     user_filters: string[];

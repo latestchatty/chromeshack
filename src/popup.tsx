@@ -4,9 +4,8 @@ import { PopupApp } from "./PopupApp";
 import { usePopupStore } from "./PopupApp/popupStore";
 import "./styles/popup.css";
 
-const { Provider } = usePopupStore;
-
-document.addEventListener("DOMContentLoaded", () => {
+(() => {
+    const { Provider } = usePopupStore;
     const rootNode = document.getElementById("content");
     render(
         <Provider>
@@ -14,4 +13,4 @@ document.addEventListener("DOMContentLoaded", () => {
         </Provider>,
         rootNode,
     );
-});
+})();

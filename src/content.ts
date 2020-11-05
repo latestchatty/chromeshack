@@ -22,18 +22,10 @@ import { PostPreview } from "./optional/postpreview";
 import { PostStyling } from "./optional/post_style";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/threadpane";
+//import { Templates } from "./optional/templates";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import { singleThreadFix } from "./patches/singleThreadFix";
-import "./styles/chatty-news.css";
 import "./styles/chromeshack.css";
-import "./styles/comic_scripts.css";
-import "./styles/embed_socials.css";
-import "./styles/highlight_pending.css";
-import "./styles/image_uploader.css";
-import "./styles/media.css";
-import "./styles/post_preview.css";
-import "./styles/threadpane.css";
-import "./styles/userpopup.css";
 
 declare global {
     interface Window {
@@ -55,22 +47,24 @@ try {
         // async events/supports
         await processContentScriptLoaded();
         await mergeTransientSettings();
-        // optional modules that rely on toggles
+        // optional async modules that rely on toggles
         await ChattyNews.install();
         await CustomUserFilters.install();
-        await Drafts.install();
         await HighlightPendingPosts.install();
         await HU_Instance.install();
         await MediaEmbedder.install();
-        await NewCommentHighlighter.install();
-        await NwsIncognito.install();
-        await PostPreview.install();
         await PostStyling.install();
-        await Switchers.install();
-        await ThreadPane.install();
         await TwitchAutoplay.install();
+        // other optional modules that rely on toggles
+        Drafts.install();
+        NewCommentHighlighter.install();
+        NwsIncognito.install();
+        PostPreview.install();
+        Switchers.install();
+        //Templates.install();
+        ThreadPane.install();
 
-        // sync events/supports
+        // non-optional modules
         Collapse.install();
         CommentTags.install();
         EmojiPoster.install();

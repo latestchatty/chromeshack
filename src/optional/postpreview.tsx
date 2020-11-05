@@ -6,6 +6,7 @@ import { processPostBoxEvent } from "../core/events";
 import { PostboxEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import parse, { DomElement, domToReact } from "html-react-parser";
+import "../styles/post_preview.css";
 
 const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: string }) => {
     const { target, toggled, input } = props || {};

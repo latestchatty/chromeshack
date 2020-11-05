@@ -1,5 +1,5 @@
 import { insertStyle, objHas } from "../core/common";
-import { processPostRefreshEvent } from "../core/events";
+import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -20,7 +20,7 @@ export const HighlightUsers = {
     async install() {
         // refresh our styling state when refreshing a post
         processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
-        await HighlightUsers.applyFilter();
+        fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
     },
 
     resolveUsers() {

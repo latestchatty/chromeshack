@@ -1,10 +1,16 @@
 import React from "react";
 import { render } from "react-dom";
+import { fullPostsCompletedEvent } from "../../core/events";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { ThreadPaneApp } from "./ThreadPaneApp";
+import "../../styles/threadpane.css";
 
 const ThreadPane = {
-    async install() {
+    install() {
+        fullPostsCompletedEvent.addHandler(ThreadPane.apply);
+    },
+
+    async apply() {
         const enabled = await enabledContains(["thread_pane"]);
         const container = document.querySelector("div.cs_thread_pane");
         const chatty = document.getElementById("newcommentbutton");

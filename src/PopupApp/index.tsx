@@ -56,7 +56,7 @@ const PopupApp = () => {
                         label="Embed media"
                         descriptions={[
                             "Replace media links with embedded media when clicked.",
-                            "Supported image links: Dropbox, Gfycat, Giphy, Imgur, Tenor, and more.",
+                            "Supported image links: Dropbox, Gfycat, Giphy, Imgflip, Imgur, Tenor, and more.",
                             "Supported video links: Youtube, Twitch, Streamable, and XboxDVR.",
                         ]}
                     />
@@ -199,6 +199,11 @@ const PopupApp = () => {
                         ]}
                     />
                     <Option id="drafts" label="Drafts" descriptions={["Automatically saves/loads unposted replies."]} />
+                    <Option
+                        id="templates"
+                        label="Templates"
+                        descriptions={["Allows for saving/loading unposted replies as templates."]}
+                    />
                     <Option
                         id="chatty_news"
                         label="Chatty News"

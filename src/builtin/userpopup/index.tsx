@@ -3,6 +3,7 @@ import { render } from "react-dom";
 import { elemMatches } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import { UserPopupApp } from "./UserPopupApp";
+import "../../styles/userpopup.css";
 
 export const UserPopup = {
     async clickHandler(e: MouseEvent) {
