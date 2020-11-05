@@ -9,6 +9,9 @@ declare global {
 }
 const isChromeBrowser = !window.browser ? true : false;
 
+const storeActiveTab = async (idx: number) => await setSetting("selected_popup_tab", idx);
+const getActiveTabFromStore = async () => await getSetting("selected_popup_tab", 0);
+
 const Tabs = (props: { children?: JSX.Element[] }) => {
     const { children } = props || {};
     const bodyRef = useRef(null);
@@ -20,20 +23,16 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
 
     const [activeTabIdx, setActiveTabIdx] = useState(0);
     const [classes, setClasses] = useState(classNames(classDefaults));
-    const activeTab = children[activeTabIdx];
-
-    const storeActiveTab = async (idx: number) => await setSetting("selected_popup_tab", idx);
-    const getActiveTabFromStore = async () => await getSetting("selected_popup_tab", 0);
 
     useEffect(() => {
         if (!bodyRef.current) return;
         const bodyHeight = (bodyRef.current as HTMLElement).offsetHeight;
         if (bodyHeight > 499) setClasses(classNames({ ...classDefaults, long: true }));
         else setClasses(classNames({ ...classDefaults, long: false }));
-    }, [activeTab, classDefaults]);
+    }, [classDefaults]);
     useEffect(() => {
         (async () => {
-            const _tabIdx = await getActiveTabFromStore();
+            const _tabIdx = ((await getActiveTabFromStore()) as number) || 0;
             setActiveTabIdx(_tabIdx);
         })();
     }, []);
@@ -66,7 +65,7 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
                 ></div>
             </div>
             <div className="tabs-body" ref={bodyRef}>
-                {activeTab.props.children}
+                {children?.[activeTabIdx]?.props?.children}
             </div>
         </div>
     );
