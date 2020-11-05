@@ -1,8 +1,10 @@
 /// <reference types="Cypress" />
 
 describe("DOM interactions", () => {
-    beforeEach(() => {
+    before(() => {
         cy.loadExtensionDefaults();
+    });
+    beforeEach(() => {
         cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
     });
 
@@ -54,18 +56,20 @@ describe("DOM interactions", () => {
             });
         });
 
-        it("CustomUserFilter on replies in single-thread mode", () => {
-            cy.loadExtensionDefaults(null, { user_filters: ["Milleh"] });
+        it("CustomUserFilter on author in single-thread mode", () => {
+            cy.loadExtensionDefaults(null, { user_filters: ["ForcedEvolutionaryVirus"] });
             cy.visit("https://www.shacknews.com/chatty?id=40049762#item_40049762");
 
-            cy.get(".oneline_user").each((ol) => expect(ol.text()).to.not.eq("Milleh"));
-        });
-        it("CustomUserFilter on thread in single-thread mode", () => {
-            cy.loadExtensionDefaults(null, { user_filters: ["mechanicalgrape"] });
-            cy.visit("https://www.shacknews.com/chatty?id=40041325#item_40041325");
-
-            cy.get("li .fullpost").should("exist").and("be.visible");
+            cy.wait(500).get("li .fullpost").should("exist").and("be.visible");
             cy.get("li .oneline_user").should("not.exist");
+        });
+        it("CustomUserFilter on replies in single-thread mode", () => {
+            cy.loadExtensionDefaults(null, { user_filters: ["Milleh"] });
+            cy.reload();
+
+            cy.wait(500)
+                .get(".oneline_user")
+                .each((ol) => expect(ol.text()).to.not.eq("Milleh"));
         });
 
         it("HighlightUser highlighting", () => {
