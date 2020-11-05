@@ -29,7 +29,7 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
         const bodyHeight = (bodyRef.current as HTMLElement).offsetHeight;
         if (bodyHeight > 499) setClasses(classNames({ ...classDefaults, long: true }));
         else setClasses(classNames({ ...classDefaults, long: false }));
-    }, [classDefaults]);
+    }, [activeTabIdx, classDefaults]);
     useEffect(() => {
         (async () => {
             const _tabIdx = ((await getActiveTabFromStore()) as number) || 0;
