@@ -15,6 +15,7 @@ import type { PostEventArgs, RefreshMutation } from "./events.d";
 import { setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption } from "./settings";
+import fastdom from "fastdom";
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const removeUnusedTagline = (post: HTMLElement) => {
@@ -158,14 +159,16 @@ export const processPost = (args: PostEventArgs) => {
     handleTagsEvent(args);
 };
 export const processFullPosts = () => {
-    const fullposts = document.getElementsByClassName("fullpost");
-    for (let i = fullposts.length - 1; i >= 0; i--) {
-        const node = fullposts[i] as HTMLElement;
-        const args = locatePostRefs(node);
-        const { post, root } = args || {};
-        if (root || post) processPost(args);
-    }
-    fullPostsCompletedEvent.raise();
+    fastdom.measure(() => {
+        const fullposts = document.getElementsByClassName("fullpost");
+        for (let i = fullposts.length - 1; i >= 0; i--) {
+            const node = fullposts[i] as HTMLElement;
+            const args = locatePostRefs(node);
+            const { post, root } = args || {};
+            if (root || post) processPost(args);
+        }
+        fullPostsCompletedEvent.raise();
+    });
 };
 export const processPostBox = (postbox: HTMLElement) => {
     if (postbox) processPostBoxEvent.raise({ postbox });

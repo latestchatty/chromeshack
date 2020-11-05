@@ -1,3 +1,4 @@
+import fastdom from "fastdom";
 import { elemMatches, locatePostRefs } from "../core/common";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
@@ -34,23 +35,23 @@ export const Collapse = {
         }
     },
 
-    toggle({ post, root, rootid, is_root }: PostEventArgs) {
+    async toggle({ post, root, rootid, is_root }: PostEventArgs) {
         // only process for root posts
         if (post && is_root) {
             const rootContainer = root.closest("div.root") as HTMLElement;
             const close = post.querySelector("a.closepost");
             const show = post.querySelector("a.showpost");
-            Collapse.cullAfterCollapseTime().then(() => {
-                document.addEventListener("click", Collapse.collapseHandler);
-                // check if thread should be collapsed
-                Collapse.findCollapsed(rootid.toString()).then(({ idx }) => {
-                    if (idx > -1) {
-                        collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
-                        rootContainer?.classList?.add("collapsed");
-                        close.setAttribute("class", "closepost hidden");
-                        show.setAttribute("class", "showpost");
-                    }
-                });
+            await Collapse.cullAfterCollapseTime();
+            document.addEventListener("click", Collapse.collapseHandler);
+            // check if thread should be collapsed
+            fastdom.mutate(async () => {
+                const { idx } = (await Collapse.findCollapsed(rootid.toString())) || {};
+                if (idx > -1) {
+                    collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
+                    rootContainer?.classList?.add("collapsed");
+                    close.setAttribute("class", "closepost hidden");
+                    show.setAttribute("class", "showpost");
+                }
             });
         }
     },

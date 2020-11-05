@@ -4,6 +4,7 @@ import { fullPostsCompletedEvent } from "../../core/events";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { ThreadPaneApp } from "./ThreadPaneApp";
 import "../../styles/threadpane.css";
+import fastdom from "fastdom";
 
 const ThreadPane = {
     install() {
@@ -16,16 +17,18 @@ const ThreadPane = {
         const chatty = document.getElementById("newcommentbutton");
         const testing = await getEnabledSuboption("testing_mode");
         // only enable thread pane on the main Chatty
-        if ((testing || chatty) && enabled && !container) {
-            // apply css to make room for threadpane div
-            document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
-            const root = document.getElementById("page");
-            const threads = document.querySelector("div.threads") as HTMLElement;
-            const appContainer = document.createElement("div");
-            appContainer.setAttribute("id", "cs_thread_pane");
-            render(<ThreadPaneApp threadsElem={threads} />, appContainer);
-            root.appendChild(appContainer);
-        }
+        fastdom.mutate(() => {
+            if ((testing || chatty) && enabled && !container) {
+                // apply css to make room for threadpane div
+                document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
+                const root = document.getElementById("page");
+                const threads = document.querySelector("div.threads") as HTMLElement;
+                const appContainer = document.createElement("div");
+                appContainer.setAttribute("id", "cs_thread_pane");
+                render(<ThreadPaneApp threadsElem={threads} />, appContainer);
+                root.appendChild(appContainer);
+            }
+        });
     },
 };
 

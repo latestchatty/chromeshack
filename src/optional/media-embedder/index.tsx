@@ -8,6 +8,7 @@ import { enabledContains } from "../../core/settings";
 import { Expando } from "./Expando";
 import "../../styles/embed_socials.css";
 import "../../styles/media.css";
+import fastdom from "fastdom";
 
 const MediaEmbedderWrapper = (props: { links: HTMLAnchorElement[]; item: HTMLElement; openByDefault?: boolean }) => {
     const { links, item, openByDefault } = props || {};
@@ -68,27 +69,28 @@ export const MediaEmbedder = {
         }
     },
 
-    async processPost(args: PostEventArgs) {
+    processPost(args: PostEventArgs) {
         const { post } = args || {};
-        // don't do processing if we don't need to
-        const isNWS = post?.querySelector(".fullpost.fpmod_nws");
-        const NWS_enabled = await enabledContains(["nws_incognito"]);
-        if (isNWS && NWS_enabled) return;
+        fastdom.measure(async () => {
+            // don't do processing if we don't need to
+            const isNWS = post?.querySelector(".fullpost.fpmod_nws");
+            const NWS_enabled = await enabledContains(["nws_incognito"]);
+            if (isNWS && NWS_enabled) return;
+            // render inside a hidden container in each fullpost
+            const postbody = post?.querySelector(".sel > .fullpost > .postbody");
+            const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
+            const embedded = postbody && ([...postbody.querySelectorAll("div.medialink")] as HTMLElement[]);
+            const openByDefault = await enabledContains(["auto_open_embeds"]);
+            let container = postbody?.querySelector("#react-media-manager");
 
-        // render inside a hidden container in each fullpost
-        const postbody = post?.querySelector(".sel > .fullpost > .postbody");
-        const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
-        const embedded = postbody && ([...postbody.querySelectorAll("div.medialink")] as HTMLElement[]);
-        const openByDefault = await enabledContains(["auto_open_embeds"]);
-
-        if (arrHas(links) && arrEmpty(embedded)) {
-            if (!postbody?.querySelector("#react-media-manager")) {
-                const container = document.createElement("div");
+            if (arrHas(links) && arrEmpty(embedded) && !container) {
+                container = document.createElement("div");
                 container.setAttribute("id", "react-media-manager");
-                postbody.appendChild(container);
+                fastdom.mutate(() => {
+                    render(<MediaEmbedderWrapper links={links} item={post} openByDefault={openByDefault} />, container);
+                    postbody.appendChild(container);
+                });
             }
-            const mount = postbody?.querySelector("#react-media-manager");
-            if (mount) render(<MediaEmbedderWrapper links={links} item={post} openByDefault={openByDefault} />, mount);
-        }
+        });
     },
 };

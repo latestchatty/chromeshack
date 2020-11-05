@@ -1,3 +1,4 @@
+import fastdom from "fastdom";
 import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
@@ -25,16 +26,20 @@ export const flashCard = (cardElem: HTMLElement) => {
 export const jumpToPost = (args: JumpToPostArgs) => {
     const { postid, rootid, options } = args || {};
     const { cardFlash, collapsed, postFlash, scrollParent, scrollPost, toFit, uncap } = options || {};
-    const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
-    const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
-    const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
-    const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
-    if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
-    if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
-    else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
-    else if (scrollParent && card) scrollParentToChild(cardList, card);
-    if (cardFlash && card) flashCard(card);
-    if (postFlash && divRoot) flashPost(divRoot, liElem);
+    fastdom.measure(() => {
+        const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
+        const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
+        const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
+        const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
+        fastdom.mutate(() => {
+            if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
+            if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
+            else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
+            else if (scrollParent && card) scrollParentToChild(cardList, card);
+            if (cardFlash && card) flashCard(card);
+            if (postFlash && divRoot) flashPost(divRoot, liElem);
+        });
+    });
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>

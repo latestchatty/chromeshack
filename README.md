@@ -36,3 +36,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [text-field-edit](https://github.com/fregante/text-field-edit)
 -   [lz-string](https://github.com/pieroxy/lz-string)
 -   [html-react-parser](https://github.com/remarkablemark/html-react-parser)
+-   [fastdom](https://github.com/wilsonpage/fastdom)

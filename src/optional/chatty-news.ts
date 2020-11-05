@@ -1,3 +1,4 @@
+import fastdom from "fastdom";
 import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common";
 import { fullPostsCompletedEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
@@ -51,43 +52,45 @@ export const ChattyNews = {
     },
 
     async apply() {
+        if (document.querySelector("div.chatty-news")) return;
         const is_enabled = await enabledContains(["chatty_news"]);
-        if (is_enabled) {
-            if (document.querySelector("div.chatty-news")) return;
-
+        if (is_enabled)
             // move all non-media elements into an alignment container for better responsiveness
-            const articleBox = document.querySelector(".article-content") as HTMLElement;
-            const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
-            const alignmentBox = document.createElement("div");
-            const subAlignmentBox = document.createElement("div");
-            alignmentBox.setAttribute("id", "chattynews__aligner");
-            subAlignmentBox.setAttribute("id", "links__aligner");
-            // leave our other text centered at the bottom of the article box
-            for (const [i, p] of articleChildren.entries() || [])
-                if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
-                else alignmentBox.appendChild(p);
+            fastdom.measure(() => {
+                const articleBox = document.querySelector(".article-content") as HTMLElement;
+                const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
+                const alignmentBox = document.createElement("div");
+                const subAlignmentBox = document.createElement("div");
+                alignmentBox.setAttribute("id", "chattynews__aligner");
+                subAlignmentBox.setAttribute("id", "links__aligner");
+                fastdom.mutate(async () => {
+                    // leave our other text centered at the bottom of the article box
+                    for (const [i, p] of articleChildren.entries() || [])
+                        if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
+                        else alignmentBox.appendChild(p);
 
-            alignmentBox?.appendChild(subAlignmentBox);
+                    alignmentBox?.appendChild(subAlignmentBox);
 
-            const newsBoxFragment = parseToElement(/*html*/ `
-                <div class="chatty-news">
-                    <h2>Recent Articles</h2>
-                    <hr class="chatty-news-sep" />
-                    <div><ul id="recent-articles"></ul></div>
-                </div>
-            `);
-            // populate the newly created newsBox from the Chatty RSS server's articles
-            const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
+                    const newsBoxFragment = parseToElement(/*html*/ `
+                        <div class="chatty-news">
+                            <h2>Recent Articles</h2>
+                            <hr class="chatty-news-sep" />
+                            <div><ul id="recent-articles"></ul></div>
+                        </div>
+                    `);
+                    // populate the newly created newsBox from the Chatty RSS server's articles
+                    const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
 
-            alignmentBox?.appendChild(newsBox);
-            articleBox?.appendChild(alignmentBox);
-            // double check this is the full chatty page
-            const is_chatty = document.querySelector(".pagenavigation");
-            if ((await enabledContains(["thread_pane"])) && is_chatty)
-                articleBox?.classList?.add("thread__pane__enabled");
+                    alignmentBox?.appendChild(newsBox);
+                    articleBox?.appendChild(alignmentBox);
+                    // double check this is the full chatty page
+                    const is_chatty = document.querySelector(".pagenavigation");
+                    if ((await enabledContains(["thread_pane"])) && is_chatty)
+                        articleBox?.classList?.add("thread__pane__enabled");
 
-            articleBox?.classList?.add("chatty__news__enabled");
-        }
+                    articleBox?.classList?.add("chatty__news__enabled");
+                });
+            });
     },
 
     async install() {

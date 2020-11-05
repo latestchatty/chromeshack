@@ -1,3 +1,4 @@
+import fastdom from "fastdom";
 import { insertStyle, objHas } from "../core/common";
 import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
@@ -93,11 +94,12 @@ export const HighlightUsers = {
 
     async applyFilter() {
         const is_enabled = await enabledContains(["highlight_users"]);
-        if (is_enabled) {
-            // we just need to run this once per page
-            const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-            const users = HighlightUsers.resolveUsers();
-            HighlightUsers.gatherCSS(users, groups);
-        }
+        if (is_enabled)
+            fastdom.mutate(async () => {
+                // we just need to run this once per page
+                const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
+                const users = HighlightUsers.resolveUsers();
+                HighlightUsers.gatherCSS(users, groups);
+            });
     },
 };

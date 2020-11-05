@@ -81,6 +81,7 @@
         "@fortawesome/react-fontawesome": "^0.1.12",
         "dompurify": "^2.2.2",
         "embla-carousel": "^4.0.6",
+        "fastdom": "^1.0.9",
         "jquery": "^3.5.1",
         "lz-string": "^1.4.4",
         "react": "^17.0.1",

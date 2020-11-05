@@ -2,6 +2,7 @@ import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import { elemMatches } from "../core/common";
+import fastdom from "fastdom";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
@@ -43,20 +44,24 @@ export const NewCommentHighlighter = {
     },
 
     highlightPostsAfter(last_id: number, root?: HTMLElement) {
-        const new_posts = NewCommentHighlighter.getPostsAfter(last_id, root);
-        for (const post of new_posts || []) {
-            const preview = post.querySelector(".oneline_body");
-            if (preview && !preview.classList.contains("newcommenthighlighter"))
-                preview.classList.add("newcommenthighlighter");
-        }
-        if (new_posts?.length > 0) {
-            // update our "Comments ..." blurb at the top of the thread list
-            let commentDisplay = document.getElementById("chatty_settings");
-            if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
-            const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-            const newComments = commentsCount && `${commentsCount} Comments (${new_posts.length} New)`;
-            if (newComments) commentDisplay.textContent = newComments;
-        }
+        fastdom.measure(() => {
+            const new_posts = NewCommentHighlighter.getPostsAfter(last_id, root);
+            fastdom.mutate(() => {
+                for (const post of new_posts || []) {
+                    const preview = post.querySelector(".oneline_body");
+                    if (preview && !preview.classList.contains("newcommenthighlighter"))
+                        preview.classList.add("newcommenthighlighter");
+                }
+                if (new_posts?.length > 0) {
+                    // update our "Comments ..." blurb at the top of the thread list
+                    let commentDisplay = document.getElementById("chatty_settings");
+                    if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+                    const commentsCount = commentDisplay?.textContent?.split(" ")[0];
+                    const newComments = commentsCount && `${commentsCount} Comments (${new_posts.length} New)`;
+                    if (newComments) commentDisplay.textContent = newComments;
+                }
+            });
+        });
     },
 
     getPostsAfter(last_id: number, root?: HTMLElement) {

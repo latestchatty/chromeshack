@@ -1,3 +1,4 @@
+import fastdom from "fastdom";
 import { HU_Instance } from "../content";
 import { processPostEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
@@ -56,13 +57,22 @@ export const Switchers = {
 
     async loadSwitchers({ post }: PostEventArgs) {
         const is_enabled = await enabledContains(["switchers"]);
-        if (is_enabled)
+        if (is_enabled) {
+            const offenderMutations = [] as Record<string, any>[];
             for (const offender of Switchers.resolved || []) {
                 const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
                 const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
-                const offenderPosts = [...offenderOLs, ...offenderFPs];
-                for (const post of offenderPosts) Switchers.rewritePost(post, offender.username, offender.matched);
+                offenderMutations.push({
+                    posts: [...offenderOLs, ...offenderFPs],
+                    username: offender.username,
+                    matched: offender.matched,
+                });
             }
+            fastdom.mutate(() => {
+                for (const { posts, username, matched } of offenderMutations)
+                    for (const post of posts) Switchers.rewritePost(post, username, matched);
+            });
+        }
     },
 
     rewritePost(post: HTMLElement, name: string, oldName: string) {

@@ -53,13 +53,13 @@ try {
         await HighlightPendingPosts.install();
         await HU_Instance.install();
         await MediaEmbedder.install();
-        await PostStyling.install();
         await TwitchAutoplay.install();
         // other optional modules that rely on toggles
         Drafts.install();
         NewCommentHighlighter.install();
         NwsIncognito.install();
         PostPreview.install();
+        PostStyling.install();
         Switchers.install();
         //Templates.install();
         ThreadPane.install();

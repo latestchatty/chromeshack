@@ -5,6 +5,7 @@ dependencies:
   '@fortawesome/react-fontawesome': 0.1.12_8ce9757f921aacb44ae3f15ea31db6bb
   dompurify: 2.2.2
   embla-carousel: 4.0.6
+  fastdom: 1.0.9
   jquery: 3.5.1
   lz-string: 1.4.4
   react: 17.0.1
@@ -4626,6 +4627,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-Utm6CdzT+6xsDk2m8S6uL8VHxNwI6Jub+e9NYTcAms28T84pTa25GJQV9j0CY0N1rM8hK4x6grpF2BQf+2qwVA==
+  /fastdom/1.0.9:
+    dependencies:
+      strictdom: 1.0.1
+    dev: false
+    resolution:
+      integrity: sha512-SSp4fbVzu8JkkG01NUX+0iOwe9M5PN3MGIQ84txLf4TkkJG4q30khkzumKgi4hUqO1+jX6wLHfnCPoZ6eSZ6Tg==
   /fastq/1.9.0:
     dependencies:
       reusify: 1.0.4
@@ -8955,6 +8962,10 @@ packages:
       node: '>= 10'
     resolution:
       integrity: sha512-h+7wLeFiYegOdgTfTxjRsrT7/Op7grnKEIHWgaO1RTHwcwk7xRreMr3S8XpDfDMesSxzgM2V4CxNCFAGo6ssnA==
+  /strictdom/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-GJ3pFkn3PUTVm4Qy76aO+dJllGA=
   /string-width/1.0.2:
     dependencies:
       code-point-at: 1.1.0
@@ -10407,6 +10418,7 @@ specifiers:
   eslint-plugin-prettier: ^3.1.4
   eslint-plugin-react: ^7.21.5
   eslint-plugin-react-hooks: ^4.2.0
+  fastdom: ^1.0.9
   filemanager-webpack-plugin: ^2.0.5
   fork-ts-checker-webpack-plugin: ^5.2.1
   fs-extra: ^9.0.1
