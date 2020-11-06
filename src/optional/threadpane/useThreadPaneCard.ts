@@ -18,7 +18,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
     const { recents, rootid } = localPost || {};
 
     const [pending, setPending] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(localPost.collapsed);
     const [refreshed, setRefreshed] = useState(false);
     const [localRecents, setLocalRecents] = useState(recents);
 

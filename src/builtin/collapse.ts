@@ -21,7 +21,7 @@ export const Collapse = {
     async findCollapsed(id: string) {
         const collapsed = (await getSetting("collapsed_threads")) as string[];
         const foundIdx = collapsed?.findIndex((c) => c === id);
-        return { idx: foundIdx, collapsed };
+        return foundIdx > -1 ? { idx: foundIdx, collapsed } : null;
     },
 
     async cullAfterCollapseTime() {

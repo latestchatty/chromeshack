@@ -20,6 +20,7 @@ export interface ParsedPost extends ParsedReply {
     count: number;
     recents: Recents;
     rootid: number;
+    collapsed: boolean;
 }
 
 export interface JumpToPostArgs {

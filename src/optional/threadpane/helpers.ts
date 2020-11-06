@@ -1,4 +1,5 @@
 import fastdom from "fastdom";
+import { Collapse } from "../../builtin/collapse";
 import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
@@ -169,6 +170,7 @@ export const parseRoot = async (rootElem: HTMLElement) => {
     const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
     const recents = getRecents(root);
     const contained = await threadContainsLoggedUser(rootElem);
+    const collapsed = !!(await Collapse.findCollapsed(rootid.toString()));
 
     return {
         author,
@@ -179,6 +181,7 @@ export const parseRoot = async (rootElem: HTMLElement) => {
         mod,
         recents,
         rootid,
+        collapsed,
     } as ParsedPost;
 };
 
