@@ -18,6 +18,17 @@ import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
 import fastdom from "fastdom";
 
+const checkReplyCeiling = (rootEl: HTMLElement) => {
+    // Both FF & Chrome get bogged down by nuLOL tags loading into extremely large threads
+    // ... so we set an arbitrary ceiling here based on performance of a moderate-spec machine
+    // ... which gets used for the nuLOL refresh/reply fixes that try to keep tag data up-to-date.
+    const replies = rootEl?.querySelectorAll("li .capcontainer li[id^='item_']");
+    const totalReplies = (!window.chrome && replies?.length < 250) || replies.length < 500;
+    const tags = rootEl?.querySelectorAll("li .capcontainer .lol-tags");
+    const totalTags = (!window.chrome && tags.length < 50) || tags.length < 75;
+    return totalTags || totalReplies;
+};
+
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const removeUnusedTagline = (post: HTMLElement) => {
         // avoid having a duplicate (unused) tagline
@@ -86,7 +97,6 @@ export const handlePostRefresh = async (args: PostEventArgs, mutation?: RefreshM
     const _elem = postOL || replyOL;
     // reopen the previously open post (if applicable)
     if (!disableTags && postid !== rootid && _elem) {
-        console.log("engaging nuLOL post refresh fix:", _elem);
         scrollToElement(_elem);
         _elem.click();
     }
@@ -110,14 +120,12 @@ export const handleReplyAdded = async (args: PostEventArgs) => {
     const { post, root } = args || {};
     const postRefreshBtn = post?.querySelector("div.refresh > a") as HTMLElement;
     const disableTags = await getEnabled("hide_tagging_buttons");
-    const shouldRefresh = window.chrome || (!window.chrome && root?.querySelectorAll(".lol-tags")?.length < 50);
+    const shouldRefresh = checkReplyCeiling(root);
     ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
     // avoid refreshing a thread after replying if this would cause a performance problem
-    if (!disableTags && postRefreshBtn && shouldRefresh) {
-        console.log("engaging nuLOL post reply fix:", post);
-        postRefreshBtn.click();
-    } else if (!disableTags && postRefreshBtn && !shouldRefresh)
-        console.log("too many lol-tags for FF - skipping nuLOL post reply fix");
+    if (!disableTags && postRefreshBtn && shouldRefresh) postRefreshBtn.click();
+    else if (!disableTags && postRefreshBtn && !shouldRefresh)
+        console.log("too many replies in this thread - skipping nuLOL post reply fix");
 };
 
 export const handleRefreshClick = async (e: MouseEvent) => {
@@ -129,9 +137,7 @@ export const handleRefreshClick = async (e: MouseEvent) => {
         processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
         const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
-        // nuLOL tags become exponentially slower on Firefox when more taglines are in a thread
-        // so we set a ceiling of 50 tag-containing posts before we disabled the nuLOL refresh fix
-        const shouldRefresh = window.chrome || (!window.chrome && root?.querySelectorAll(".lol-tags")?.length < 50);
+        const shouldRefresh = checkReplyCeiling(root);
         const disableTags = await getEnabled("hide_tagging_buttons");
         if (foundIdx === -1 && shouldRefresh) ChromeShack.refreshing.unshift({ postid, rootid });
         // avoid unnecessary tag refreshes by refreshing the root only
@@ -139,7 +145,8 @@ export const handleRefreshClick = async (e: MouseEvent) => {
             e.preventDefault();
             rootRefreshBtn.click();
         } else if (!disableTags && !is_root && !shouldRefresh)
-            console.log("too many lol-tags for FF - skipping nuLOL refresh fix");
+            // account for extremely large threads causing performance issues
+            console.log("too many replies in this thread - skipping nuLOL refresh fix");
     }
 };
 
