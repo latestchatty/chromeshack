@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { arrHas, classNames, elemMatches, compressString, decompressString } from "../../core/common";
-import { submitFormEvent } from "../../core/events";
-import { getSetting, getSettings, setSetting } from "../../core/settings";
+import { replyFieldEvent, submitFormEvent } from "../../core/events";
+import { getSetting, setSetting } from "../../core/settings";
 
 export interface Draft {
     body: string;
@@ -13,21 +13,11 @@ export interface Draft {
 const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
     const curTime = Date.now();
-    const maxSize = 5000000 * 0.75; // 75% of 5mb storage limit
-    const maxAge = 1000 * 60 * 60 * 48; // 48hr timeout on saved drafts
-    const settings = await getSettings();
+    const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts
     // filter any posts that are older than the cutoff and order by ascending age
     const lruByNewest = [...drafts]
         .filter((d) => Math.abs(curTime - d.timestamp) < maxAge)
         .sort((a, b) => b.timestamp - a.timestamp);
-    // check what the size of the settings store would be if we stored this
-    let setWithDrafts = JSON.stringify({ ...settings, saved_drafts: lruByNewest });
-    // set our watermark at 90% of our defined storage limit
-    while (setWithDrafts.length > maxSize * 0.9) {
-        // remove the oldest elements from the list until this fits
-        lruByNewest.pop();
-        setWithDrafts = JSON.stringify({ ...settings, saved_drafts: lruByNewest });
-    }
     return lruByNewest || ([] as Draft[]);
 };
 
@@ -114,19 +104,24 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
     useEffect(() => {
         // handle the input box as a controller input
         inputBox.value = inputVal;
+        replyFieldEvent.raise(inputBox);
     }, [inputBox, inputVal]);
     useEffect(() => {
-        const handleInput = (e: KeyboardEvent) => {
-            const _val = (e.target as HTMLInputElement).value;
+        const handleInput = (e: Event | HTMLInputElement) => {
+            const _this = ((e as Event)?.target as HTMLInputElement) || (e as HTMLInputElement);
+            const _val = _this?.value;
             setInputVal(_val);
             saveToDraft(_val);
         };
+        const handleExternalInput = (el: HTMLInputElement) => handleInput(el);
 
         inputBox.addEventListener("input", handleInput);
+        replyFieldEvent.addHandler(handleExternalInput);
         submitFormEvent.addHandler(handleSubmit);
 
         return () => {
             inputBox.removeEventListener("input", handleInput);
+            replyFieldEvent.removeHandler(handleExternalInput);
             submitFormEvent.removeHandler(handleSubmit);
         };
     }, [inputBox, handleSubmit, saveToDraft]);

@@ -1,0 +1,88 @@
+#templates__app {
+    position: relative;
+}
+#templates__app .templates__popup {
+    display: none;
+}
+#templates__app .templates__popup.visible {
+    position: absolute;
+    display: block !important;
+}
+
+.templates__popup {
+    width: 100% !important;
+    min-width: 250px;
+    top: -100%;
+    left: -50%;
+    background-color: rgba(20, 20, 20, 0.9);
+    border: 1px solid rgb(60, 60, 60);
+    box-shadow: rgba(20, 20, 20, 0.5) 9px 8px 9px;
+}
+.template__item {
+    display: flex;
+    align-items: center;
+    padding: 4px 2px 2px 4px;
+    height: 14px;
+    backdrop-filter: blur(3px);
+    cursor: pointer;
+    width: 97% !important;
+}
+.template__item:not(:last-child) {
+    border-bottom: 1px solid rgb(60, 60, 60);
+}
+.template__item > span {
+    display: inline;
+    text-align: left;
+    width: 100%;
+    opacity: 0.66;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.15s ease;
+}
+.template__item > span.disabled:hover {
+    cursor: default;
+}
+.template__item > span:hover:not(.disabled) {
+    opacity: 0.9 !important;
+}
+button.template__btn {
+    justify-self: flex-end;
+    background-color: transparent !important;
+    border: 0 !important;
+    width: 14px !important;
+    outline: none !important;
+    margin: 0;
+    padding: 0 !important;
+}
+.template__btn {
+    margin: 0 0.25em !important;
+    transition: opacity 0.15s ease;
+    opacity: 0.33;
+}
+.template__btn:hover:not(:disabled) {
+    opacity: 0.66 !important;
+}
+
+.templates__icon {
+    height: 12px;
+    width: 12px;
+}
+.templates__icon.save--icon {
+    color: green;
+}
+.templates__icon.del--icon {
+    color: red;
+}
+.templates__icon.add--icon {
+    color: grey;
+}
+
+#templates__btn.toggled {
+    background-color: rgb(200, 200, 200) !important;
+    color: rgb(85, 85, 85) !important;
+}
+#templates__btn:focus {
+    outline: none !important;
+    color: rgb(85, 85, 85) !important;
+}

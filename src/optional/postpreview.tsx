@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
 import { classNames, elemMatches, generatePreview, scrollToElement } from "../core/common";
-import { processPostBoxEvent } from "../core/events";
+import { processPostBoxEvent, replyFieldEvent } from "../core/events";
 import { PostboxEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import parse, { DomElement, domToReact } from "html-react-parser";
@@ -37,38 +37,38 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
     const { postboxElem, paneMountElem } = props || {};
     const [toggled, setToggled] = useState(false);
     const [input, setInput] = useState("");
-    const postboxRef = useRef(postboxElem);
-    const paneMountRef = useRef(paneMountElem);
+    const postboxRef = useRef(postboxElem).current;
+    const paneMountRef = useRef(paneMountElem).current;
     const fullpostRef = useRef(null);
 
     const debouncedInputRef = useRef(
-        debounce((e: KeyboardEvent | HTMLElement) => {
-            const _val = elemMatches(e as HTMLElement, "#frm_body")
+        debounce((e: KeyboardEvent | HTMLInputElement) => {
+            const _val = elemMatches(e as HTMLInputElement, "#frm_body")
                 ? (e as HTMLInputElement)?.value
                 : ((e as KeyboardEvent).target as HTMLInputElement)?.value;
             // generatePreview sanitizes input to conform to the shacktag schema
             const preview = _val ? generatePreview(_val) : "";
             if ((preview as string)?.length >= 0) setInput(preview);
         }, 250),
-    );
+    ).current;
 
     const handleInput = useCallback(
         (e: KeyboardEvent) => {
-            if (toggled) debouncedInputRef.current(e);
+            if (toggled) debouncedInputRef(e);
         },
-        [toggled],
+        [toggled, debouncedInputRef],
     );
     const handleToggleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        const inputArea = postboxRef.current.querySelector("#frm_body") as HTMLInputElement;
-        if (inputArea.value.length > 0) debouncedInputRef.current(inputArea);
+        const inputArea = postboxRef.querySelector("#frm_body") as HTMLInputElement;
+        if (inputArea.value.length > 0) debouncedInputRef(inputArea);
         setToggled((p) => !p);
     };
 
     useEffect(() => {
         (async () => {
-            const replyBox = postboxRef.current.closest("div.inlinereply") as HTMLElement;
-            const inputArea = postboxRef.current.querySelector("#frm_body") as HTMLInputElement;
+            const replyBox = postboxRef.closest("div.inlinereply") as HTMLElement;
+            const inputArea = postboxRef.querySelector("#frm_body") as HTMLInputElement;
             if (toggled && inputArea && replyBox) {
                 inputArea.focus();
                 // try to make sure the whole reply box is visible
@@ -76,26 +76,28 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
             }
             await setSetting("post_preview_toggled", toggled);
         })();
-    }, [toggled]);
+    }, [toggled, postboxRef]);
     useEffect(() => {
-        if (!postboxRef.current) return;
-        const inputArea = postboxRef.current.querySelector("#frm_body") as HTMLInputElement;
+        if (!postboxRef) return;
+        const inputArea = postboxRef.querySelector("#frm_body") as HTMLInputElement;
         const closeFormBtn = inputArea?.closest(".postbox")?.querySelector("div.closeform>a") as HTMLElement;
 
-        fullpostRef.current = postboxRef.current.closest("li.sel") as HTMLElement;
+        fullpostRef.current = postboxRef.closest("li.sel") as HTMLElement;
         const jumpToNearestFullpost = () => {
             if (toggled) scrollToElement(fullpostRef.current, { toFit: true });
         };
+        const handleExternalInput = (el: HTMLInputElement) => debouncedInputRef(el);
 
         inputArea.addEventListener("input", handleInput);
+        replyFieldEvent.addHandler(handleExternalInput);
         closeFormBtn.addEventListener("click", jumpToNearestFullpost);
         return () => {
             inputArea.removeEventListener("input", handleInput);
+            replyFieldEvent.removeHandler(handleExternalInput);
             closeFormBtn.removeEventListener("click", jumpToNearestFullpost);
         };
-    }, [postboxRef, handleInput, toggled]);
+    }, [postboxRef, handleInput, toggled, debouncedInputRef]);
     useLayoutEffect(() => {
-        if (!postboxRef.current) return;
         (async () => {
             const is_toggled = (await getSetting("post_preview_toggled", false)) as boolean;
             setToggled(is_toggled);
@@ -104,7 +106,7 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
 
     return (
         <>
-            <PostPreviewPane target={paneMountRef.current} toggled={toggled} input={input} />
+            <PostPreviewPane target={paneMountRef} toggled={toggled} input={input} />
             <button id="previewButton" className={classNames({ toggled })} onClick={handleToggleClick}>
                 Preview
             </button>

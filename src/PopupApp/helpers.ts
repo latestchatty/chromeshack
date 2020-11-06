@@ -86,14 +86,15 @@ export const exportSettings = async () => {
     const settings = await getSettings();
     // strip unnecessary cached keys
     const disallowed = [
-        "highlight_groups",
         "collapsed_threads",
         "chatty_news_lastfetchdata",
         "chatty_news_lastfetchtime",
+        "drafts",
+        "highlight_groups",
         "last_highlight_time",
         "new_comment_highlighter_last_id",
-        "nEventId",
-        "nUsername",
+        "last_eventid",
+        "username",
     ];
     const disallowedOptions = ["show_rls_notes", "imported"];
     // leave out users array from builtin groups to save space

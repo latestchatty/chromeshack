@@ -29,7 +29,18 @@ export const getSettings = async (defaults?: Settings) => {
     }
 };
 
-export const setSetting = async (key: SettingKey, val: any) => await browser.storage.local.set({ [key]: val });
+export const setSetting = async (key: SettingKey, val: any) => {
+    // Check each time we set a key that the val will fit within the storage limit
+    // ... if we don't do this then the settings store can become corrupted
+    // ... causing data loss of some kv-pairs.
+    const maxSize = 5000000; // the limit is 5MiB for browser.storage.local
+    const _settings = await getSettings();
+    const _newVal = { [key]: val };
+    const _withVal = { ..._settings, ..._newVal };
+    const _newSetLen = JSON.stringify(_withVal).length;
+    if (_newSetLen < maxSize) await browser.storage.local.set(_newVal);
+    else console.error("Unable to write value - would cause storage overflow:", _withVal, _newSetLen);
+};
 
 export const getSetting = async (key: SettingKey, defaultVal?: any) => {
     const settings = (await getSettings()) as Settings;

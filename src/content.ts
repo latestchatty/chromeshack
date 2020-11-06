@@ -20,7 +20,7 @@ import { PostPreview } from "./optional/postpreview";
 import { PostStyling } from "./optional/post_style";
 import { Switchers } from "./optional/switchers";
 import { ThreadPane } from "./optional/threadpane";
-//import { Templates } from "./optional/templates";
+import { Templates } from "./optional/templates";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import { singleThreadFix } from "./patches/singleThreadFix";
 import "./styles/chromeshack.css";
@@ -51,7 +51,7 @@ NwsIncognito.install();
 PostPreview.install();
 PostStyling.install();
 Switchers.install();
-//Templates.install();
+Templates.install();
 ThreadPane.install();
 TwitchAutoplay.install();
 
