@@ -94,5 +94,12 @@ describe("DOM interactions", () => {
             cy.log("testing for added user highlights");
             cy.get(".oneline_user:contains(Yo5hiki)").eq(0).should("have.css", "color", "rgb(0, 255, 255)");
         });
+
+        it("NewCommentHighlighter highlighting", () => {
+            cy.loadExtensionDefaults({ append: true }, { new_comment_highlighter_last_id: -1 });
+            cy.visit("https://www.shacknews.com/chatty?id=40106135#item_40106135");
+            cy.reload();
+            cy.get(".newcommenthighlighter").then((hls) => expect(hls.length).to.be.greaterThan(0));
+        });
     });
 });
