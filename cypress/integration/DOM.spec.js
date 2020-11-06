@@ -18,9 +18,7 @@ describe("DOM interactions", () => {
         it("user flairs disabled", () => {
             cy.loadExtensionDefaults(
                 { exclude: true },
-                {
-                    enabled_scripts: ["shrink_user_icons", "reduced_color_user_icons"],
-                },
+                { enabled_scripts: ["shrink_user_icons", "reduced_color_user_icons"] },
             );
             cy.reload();
 

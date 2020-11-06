@@ -1,4 +1,4 @@
-import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
+import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import { elemMatches } from "../core/common";
@@ -10,9 +10,9 @@ export const NewCommentHighlighter = {
     // 2 hour timeout
     timeout: 1000 * 60 * 60 * 2,
 
-    install() {
-        fullPostsCompletedEvent.addHandler(() => NewCommentHighlighter.highlight());
+    async install() {
         processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
+        observerInstalledEvent.addHandler(async () => await NewCommentHighlighter.highlight());
     },
 
     async highlight(args?: PostEventArgs) {

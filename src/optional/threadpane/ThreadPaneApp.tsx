@@ -1,9 +1,8 @@
 import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
 import { RefreshIcon } from "../media-embedder/Expando";
-import { parsePosts } from "./helpers";
 import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
 import parse from "html-react-parser";
@@ -96,16 +95,9 @@ const ThreadPaneJumpToTop = () => {
     );
 };
 
-const ThreadPaneApp = (props: { threadsElem: HTMLElement }) => {
-    const { threadsElem } = props || {};
-    const [parsed, setParsed] = useState([] as ParsedPost[]);
-
-    useEffect(() => {
-        (async () => {
-            const _parsed = await parsePosts(threadsElem);
-            if (arrHas(_parsed)) setParsed(_parsed);
-        })();
-    }, [threadsElem]);
+const ThreadPaneApp = (props: { parsedPosts: ParsedPost[] }) => {
+    const { parsedPosts } = props || {};
+    const [parsed] = useState(parsedPosts as ParsedPost[]);
 
     return arrHas(parsed) ? (
         <div id="cs_thread_pane_list">

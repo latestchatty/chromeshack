@@ -1,8 +1,13 @@
 import fastdom from "fastdom";
+import { observerInstalledEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 
 export const PostStyling = {
     install() {
+        observerInstalledEvent.addHandler(PostStyling.apply);
+    },
+
+    apply() {
         fastdom.mutate(async () => {
             if (await enabledContains(["hide_tagging_buttons"])) document.body.className += " hide_tagging_buttons";
 

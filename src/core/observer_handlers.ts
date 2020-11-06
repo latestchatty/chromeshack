@@ -3,6 +3,7 @@ import { arrHas, elemMatches, locatePostRefs } from "./common";
 import { disableTwitch, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
+    observerInstalledEvent,
     processEmptyTagsLoadedEvent,
     processPostBoxEvent,
     processPostEvent,
@@ -14,14 +15,16 @@ import {
 import type { PostEventArgs, RefreshMutation } from "./events.d";
 import { setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
-import { getEnabled, getEnabledSuboption } from "./settings";
+import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
 import fastdom from "fastdom";
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const removeUnusedTagline = (post: HTMLElement) => {
         // avoid having a duplicate (unused) tagline
-        const taglines = [...post?.querySelectorAll("span.tag-counts")];
-        if (taglines.length > 1) taglines[0].parentElement.removeChild(taglines[0]);
+        const rootTags = post?.querySelectorAll(".root>ul>li > .fullpost span.lol-tags");
+        const postTags = post?.querySelectorAll("li li.sel > .fullpost span.lol-tags");
+        if (rootTags.length > 1) rootTags[0].parentElement.removeChild(rootTags[0]);
+        if (postTags.length > 1) postTags[0].parentElement.removeChild(postTags[0]);
     };
     const collectTagData = (post: HTMLElement) => {
         const postTags = [
@@ -140,25 +143,31 @@ export const handleRefreshClick = async (e: MouseEvent) => {
     }
 };
 
-export const processContentScriptLoaded = async () => {
-    // set our current logged-in username once upon refreshing the Chatty
-    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
-    if (loggedInUsername) await setUsername(loggedInUsername);
-};
 export const processObserverInstalled = async () => {
+    await mergeTransientSettings();
+
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
     await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
     await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
     // disable article Twitch player if we're running Cypress tests for a speed boost
     if (await getEnabledSuboption("testing_mode")) disableTwitch();
+
+    document.addEventListener("click", handleRefreshClick);
+    processReplyEvent.addHandler(handleReplyAdded);
+
+    // set our current logged-in username once upon refreshing the Chatty
+    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
+    if (loggedInUsername) await setUsername(loggedInUsername);
 };
 
 export const processPost = (args: PostEventArgs) => {
     processPostEvent.raise(args);
     handleTagsEvent(args);
 };
-export const processFullPosts = () => {
+export const processFullPosts = async () => {
+    await processObserverInstalled();
+    observerInstalledEvent.raise();
     fastdom.measure(() => {
         const fullposts = document.getElementsByClassName("fullpost");
         for (let i = fullposts.length - 1; i >= 0; i--) {

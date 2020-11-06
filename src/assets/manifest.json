@@ -33,7 +33,7 @@
             ],
             "css": ["content.css"],
             "all_frames": false,
-            "run_at": "document_idle"
+            "run_at": "document_start"
         }
     ],
     "permissions": [

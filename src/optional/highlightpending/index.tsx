@@ -4,6 +4,7 @@ import { enabledContains } from "../../core/settings";
 import { HighlightPendingApp } from "./HighlightPendingApp";
 import "../../styles/highlight_pending.css";
 import fastdom from "fastdom";
+import { observerInstalledEvent } from "../../core/events";
 
 export interface PendingPost {
     postId: number;
@@ -12,7 +13,11 @@ export interface PendingPost {
 }
 
 const HighlightPendingPosts = {
-    async install() {
+    install() {
+        observerInstalledEvent.addHandler(HighlightPendingPosts.apply);
+    },
+
+    async apply() {
         const isEnabled = await enabledContains(["highlight_pending_new_posts"]);
         const selectedPage = document.querySelector("a.selected_page") as HTMLAnchorElement;
         const isFirstPage = selectedPage?.href?.match(/page=1$/i);

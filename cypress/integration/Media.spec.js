@@ -1,8 +1,10 @@
 /// <reference types="Cypress" />
 
 describe("Media Embedder", () => {
-    beforeEach(() => {
+    before(() => {
         cy.loadExtensionDefaults();
+    });
+    beforeEach(() => {
         cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
     });
 
@@ -54,8 +56,10 @@ describe("Media Embedder", () => {
 
         it("Direct-link images", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39953172#item_39953172");
-            cy.get("li div.medialink").eq(1).click();
-            cy.get("li div.media img").and((img) => expect(img[0].src).to.eq("https://i.imgur.com/jECE21g.jpg"));
+            cy.get(".root>ul>li div.medialink").eq(1).click();
+            cy.get(".root>ul>li div.media img").and((img) =>
+                expect(img[0].src).to.eq("https://i.imgur.com/jECE21g.jpg"),
+            );
             cy.get("li li.sel div.medialink").click();
             cy.get("li li.sel div.media img").and((img) => expect(img[0].src).to.eq("https://i.imgur.com/mrmXoMs.jpg"));
         });
@@ -148,8 +152,8 @@ describe("Media Embedder", () => {
         });
         it("NWS Incognito disabled with navigable Imgur gallery", () => {
             cy.loadExtensionDefaults({ exclude: true }, { enabled_scripts: ["nws_incognito"] });
-
             cy.reload();
+
             cy.get("li li.sel div.medialink").eq(0).click();
             cy.get("div.media .embla__slide").and((slide) => {
                 expect(slide.eq(0)).to.be.visible;

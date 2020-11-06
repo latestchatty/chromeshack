@@ -27,7 +27,14 @@ class LiteEvent<T> implements LiteEventInterface<T> {
     }
 
     raise(...args: T[]) {
-        this.handlers.slice(0).forEach((h) => h(...args));
+        (async () => {
+            for (let i = 0; i < this.handlers.length; i++) {
+                const handler = this.handlers[i] as (...args: any[]) => void;
+                const isAsync = handler.constructor.name === "AsyncFunction";
+                if (isAsync) await handler(...args);
+                else handler(...args);
+            }
+        })();
     }
 
     expose(): LiteEventInterface<T> {
@@ -35,6 +42,7 @@ class LiteEvent<T> implements LiteEventInterface<T> {
     }
 }
 
+export const observerInstalledEvent = new LiteEvent<void>();
 export const fullPostsCompletedEvent = new LiteEvent<void>();
 export const processPostEvent = new LiteEvent<PostEventArgs>();
 export const processPostBoxEvent = new LiteEvent<PostboxEventArgs>();

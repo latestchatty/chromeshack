@@ -1,6 +1,6 @@
 import fastdom from "fastdom";
 import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common";
-import { fullPostsCompletedEvent } from "../core/events";
+import { observerInstalledEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
@@ -93,7 +93,7 @@ export const ChattyNews = {
             });
     },
 
-    async install() {
-        fullPostsCompletedEvent.addHandler(ChattyNews.apply);
+    install() {
+        observerInstalledEvent.addHandler(ChattyNews.apply);
     },
 };

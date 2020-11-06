@@ -1,6 +1,6 @@
 import fastdom from "fastdom";
 import { HU_Instance } from "../content";
-import { processPostEvent } from "../core/events";
+import { observerInstalledEvent, processPostEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
 import { enabledContains } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
@@ -28,8 +28,8 @@ export const Switchers = {
     resolved: [] as SwitcherMatch[],
 
     install() {
-        Switchers.cacheSwitchers();
         processPostEvent.addHandler(Switchers.loadSwitchers);
+        observerInstalledEvent.addHandler(Switchers.cacheSwitchers);
     },
 
     async cacheSwitchers() {
@@ -55,7 +55,8 @@ export const Switchers = {
         }
     },
 
-    async loadSwitchers({ post }: PostEventArgs) {
+    async loadSwitchers(args: PostEventArgs) {
+        const { post } = args || {};
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
             const offenderMutations = [] as Record<string, any>[];

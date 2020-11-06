@@ -1,14 +1,15 @@
 import React from "react";
 import { render } from "react-dom";
-import { fullPostsCompletedEvent } from "../../core/events";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { ThreadPaneApp } from "./ThreadPaneApp";
+import { parsePosts } from "./helpers";
 import "../../styles/threadpane.css";
 import fastdom from "fastdom";
+import { observerInstalledEvent } from "../../core/events";
 
 const ThreadPane = {
     install() {
-        fullPostsCompletedEvent.addHandler(ThreadPane.apply);
+        observerInstalledEvent.addHandler(ThreadPane.apply);
     },
 
     async apply() {
@@ -17,18 +18,19 @@ const ThreadPane = {
         const chatty = document.getElementById("newcommentbutton");
         const testing = await getEnabledSuboption("testing_mode");
         // only enable thread pane on the main Chatty
-        fastdom.mutate(() => {
-            if ((testing || chatty) && enabled && !container) {
-                // apply css to make room for threadpane div
-                document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
-                const root = document.getElementById("page");
-                const threads = document.querySelector("div.threads") as HTMLElement;
-                const appContainer = document.createElement("div");
-                appContainer.setAttribute("id", "cs_thread_pane");
-                render(<ThreadPaneApp threadsElem={threads} />, appContainer);
+        if ((testing || chatty) && enabled && !container) {
+            // apply css to make room for threadpane div
+            document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
+            const root = document.getElementById("page");
+            const threads = document.querySelector("div.threads") as HTMLElement;
+            const parsed = await parsePosts(threads);
+            const appContainer = document.createElement("div");
+            appContainer.setAttribute("id", "cs_thread_pane");
+            fastdom.mutate(() => {
+                render(<ThreadPaneApp parsedPosts={parsed} />, appContainer);
                 root.appendChild(appContainer);
-            }
-        });
+            });
+        }
     },
 };
 

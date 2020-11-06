@@ -1,8 +1,13 @@
+import { observerInstalledEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 
 /// optionally disable auto-play on the Chatty's article Twitch player
 export const TwitchAutoplay = {
-    async install() {
+    install() {
+        observerInstalledEvent.addHandler(TwitchAutoplay.apply);
+    },
+
+    async apply() {
         // loads on startup
         const is_enabled = await enabledContains(["twitchauto"]);
         if (is_enabled) {

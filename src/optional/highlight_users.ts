@@ -1,6 +1,6 @@
 import fastdom from "fastdom";
 import { insertStyle, objHas } from "../core/common";
-import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
+import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -18,10 +18,10 @@ export interface ResolvedUsers {
 export const HighlightUsers = {
     cache: {} as ResolvedUsers,
 
-    async install() {
+    install() {
         // refresh our styling state when refreshing a post
         processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
-        fullPostsCompletedEvent.addHandler(HighlightUsers.applyFilter);
+        observerInstalledEvent.addHandler(HighlightUsers.applyFilter);
     },
 
     resolveUsers() {
@@ -94,12 +94,13 @@ export const HighlightUsers = {
 
     async applyFilter() {
         const is_enabled = await enabledContains(["highlight_users"]);
-        if (is_enabled)
+        if (is_enabled) {
+            const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
+            const users = HighlightUsers.resolveUsers();
             fastdom.mutate(async () => {
                 // we just need to run this once per page
-                const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-                const users = HighlightUsers.resolveUsers();
                 HighlightUsers.gatherCSS(users, groups);
             });
+        }
     },
 };
