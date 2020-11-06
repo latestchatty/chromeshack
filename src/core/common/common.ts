@@ -76,5 +76,19 @@ export const packValidTypes = (types: string, fileList: File[] | FileList) => {
     return [...fileList].filter((f) => typeArr.includes(f.type));
 };
 
-export const compressString = (input: string) => lzString.compressToUTF16(input);
-export const decompressString = (input: string) => lzString.decompressFromUTF16(input);
+export const compressString = (input: string) => {
+    try {
+        return lzString.compressToUTF16(input);
+    } catch (e) {
+        console.error("Something went wrong when compressing:", e);
+        return "";
+    }
+};
+export const decompressString = (input: string) => {
+    try {
+        return lzString.decompressFromUTF16(input);
+    } catch (e) {
+        console.error("Something went wrong when decompressing:", e, input);
+        return "";
+    }
+};
