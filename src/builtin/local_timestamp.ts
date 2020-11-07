@@ -1,4 +1,3 @@
-import fastdom from "fastdom";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 
@@ -53,11 +52,9 @@ export const LocalTimeStamp = {
     adjustTime(args: PostEventArgs) {
         const { post, root } = args || {};
         // change dates per given root
-        fastdom.mutate(() => {
-            const postDate = post?.querySelector(".postdate") as HTMLElement;
-            const rootDate = root?.querySelector(".postdate") as HTMLElement;
-            if (postDate) LocalTimeStamp.adjustPostTime({ post: postDate });
-            if (rootDate) LocalTimeStamp.adjustPostTime({ post: postDate });
-        });
+        const postDate = post?.querySelector(".postdate") as HTMLElement;
+        const rootDate = root?.querySelector(".postdate") as HTMLElement;
+        if (postDate) LocalTimeStamp.adjustPostTime({ post: postDate });
+        if (rootDate) LocalTimeStamp.adjustPostTime({ post: postDate });
     },
 };

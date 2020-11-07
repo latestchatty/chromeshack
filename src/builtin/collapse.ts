@@ -1,4 +1,3 @@
-import fastdom from "fastdom";
 import { elemMatches, locatePostRefs } from "../core/common";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
@@ -44,15 +43,13 @@ export const Collapse = {
             await Collapse.cullAfterCollapseTime();
             document.addEventListener("click", Collapse.collapseHandler);
             // check if thread should be collapsed
-            fastdom.mutate(async () => {
-                const { idx } = (await Collapse.findCollapsed(rootid.toString())) || {};
-                if (idx > -1) {
-                    collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
-                    rootContainer?.classList?.add("collapsed");
-                    close.setAttribute("class", "closepost hidden");
-                    show.setAttribute("class", "showpost");
-                }
-            });
+            const { idx } = (await Collapse.findCollapsed(rootid.toString())) || {};
+            if (idx > -1) {
+                collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
+                rootContainer?.classList?.add("collapsed");
+                close.setAttribute("class", "closepost hidden");
+                show.setAttribute("class", "showpost");
+            }
         }
     },
 

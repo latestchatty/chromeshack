@@ -19,9 +19,9 @@ export const NwsIncognito = {
 
     async hookToNwsPosts({ post }: PostEventArgs) {
         const is_enabled = await enabledContains(["nws_incognito"]);
-        fastdom.mutate(() => {
-            if (is_enabled) {
-                const nwsLinks = [...post?.querySelectorAll(".sel .fpmod_nws .postbody a, .op.fpmod_nws .postbody a")];
+        if (is_enabled) {
+            const nwsLinks = [...post?.querySelectorAll(".sel .fpmod_nws .postbody a, .op.fpmod_nws .postbody a")];
+            fastdom.mutate(() => {
                 for (const link of nwsLinks || []) {
                     // avoid reapplying
                     const _link = link as HTMLElement;
@@ -56,7 +56,7 @@ export const NwsIncognito = {
 
                     link?.parentNode?.replaceChild(cloned, _link);
                 }
-            }
-        });
+            });
+        }
     },
 };

@@ -1,4 +1,3 @@
-import fastdom from "fastdom";
 import { useCallback, useEffect, useState } from "react";
 import { arrHas, scrollToElement } from "../../core/common";
 import {
@@ -92,21 +91,16 @@ const usePendingPosts = (threaded: boolean) => {
 
     useEffect(() => {
         // update the window title and HPNP status text when our pending count changes
-        fastdom.measure(() => {
-            const newText = count > 0 ? `${indicator}${count}` : "";
-            setPendingText(newText);
-            fastdom.mutate(() => {
-                if (pendings.length > 0 && !document.title.startsWith(indicator))
-                    document.title = `${indicator}${document.title}`;
-                else if (document.title.startsWith(indicator)) document.title.split(indicator)[1];
-                // highlight the refresh button of unmarked threads that have pending posts
-                for (const p of pendings || []) {
-                    const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
-                    if (!isCollapsed(refreshBtn) && !isPending(refreshBtn))
-                        refreshBtn?.classList?.add("refresh_pending");
-                }
-            });
-        });
+        const newText = count > 0 ? `${indicator}${count}` : "";
+        setPendingText(newText);
+        if (pendings.length > 0 && !document.title.startsWith(indicator))
+            document.title = `${indicator}${document.title}`;
+        else if (document.title.startsWith(indicator)) document.title.split(indicator)[1];
+        // highlight the refresh button of unmarked threads that have pending posts
+        for (const p of pendings || []) {
+            const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
+            if (!isCollapsed(refreshBtn) && !isPending(refreshBtn)) refreshBtn?.classList?.add("refresh_pending");
+        }
     }, [count, pendings]);
     useEffect(() => {
         processNotifyEvent.addHandler(fetchPendings);

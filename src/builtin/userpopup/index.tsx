@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { elemMatches } from "../../core/common";
+import { elemMatches, parseToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import { UserPopupApp } from "./UserPopupApp";
 import "../../styles/userpopup.css";
@@ -27,8 +27,7 @@ export const UserPopup = {
             const isLoggedInUser = loggedInUsername?.toUpperCase() === _username?.toUpperCase();
 
             if (!containerRef && _elem) {
-                const appContainer = document.createElement("div");
-                appContainer.setAttribute("class", "userDropdown");
+                const appContainer = parseToElement(`<div class="userDropdown" />`);
                 render(
                     <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
                     appContainer,

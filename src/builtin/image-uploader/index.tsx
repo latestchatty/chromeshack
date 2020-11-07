@@ -5,6 +5,7 @@ import type { PostboxEventArgs } from "../../core/events.d";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
 import "../../styles/image_uploader.css";
+import { parseToElement } from "../../core/common";
 
 export const ImageUploader = {
     install() {
@@ -16,11 +17,11 @@ export const ImageUploader = {
         const { Provider: UploaderProvider } = useUploaderStore;
         const postForm = postbox?.querySelector("#postform");
 
-        const postFooter = document.createElement("div");
-        postFooter.setAttribute("class", "post_sub_container");
-        const IUContainer = document.createElement("div");
-        IUContainer.setAttribute("id", "react-container");
-        postFooter.appendChild(IUContainer);
+        const postFooter = parseToElement(/* html */ `
+            <div class="post_sub_container">
+                <div id="react-container" />
+            </div>
+        `);
         // insert our footer at the bottom of the postbox
         postForm.appendChild(postFooter);
 

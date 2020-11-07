@@ -1,6 +1,5 @@
-import fastdom from "fastdom";
 import { HU_Instance } from "../content";
-import { observerInstalledEvent, processPostEvent } from "../core/events";
+import { processPostEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
 import { enabledContains } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
@@ -29,14 +28,13 @@ export const Switchers = {
 
     install() {
         processPostEvent.addHandler(Switchers.loadSwitchers);
-        observerInstalledEvent.addHandler(Switchers.cacheSwitchers);
     },
 
     async cacheSwitchers() {
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
             // resolve and cache all offenders on the page once on load
-            const resolvedUsers = HU_Instance.resolveUsers();
+            const resolvedUsers = await HU_Instance.resolveUsers();
             for (const offender of Switchers.offenders) {
                 const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
                 if (!user) continue;
@@ -60,6 +58,7 @@ export const Switchers = {
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
             const offenderMutations = [] as Record<string, any>[];
+            if (Switchers.cacheSwitchers.length === 0) await Switchers.cacheSwitchers();
             for (const offender of Switchers.resolved || []) {
                 const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
                 const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
@@ -69,10 +68,8 @@ export const Switchers = {
                     matched: offender.matched,
                 });
             }
-            fastdom.mutate(() => {
-                for (const { posts, username, matched } of offenderMutations)
-                    for (const post of posts) Switchers.rewritePost(post, username, matched);
-            });
+            for (const { posts, username, matched } of offenderMutations)
+                for (const post of posts) Switchers.rewritePost(post, username, matched);
         }
     },
 

@@ -4,8 +4,8 @@ import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { ThreadPaneApp } from "./ThreadPaneApp";
 import { parsePosts } from "./helpers";
 import "../../styles/threadpane.css";
-import fastdom from "fastdom";
 import { observerInstalledEvent } from "../../core/events";
+import { parseToElement } from "../../core/common";
 
 const ThreadPane = {
     install() {
@@ -23,13 +23,9 @@ const ThreadPane = {
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
             const root = document.getElementById("page");
             const threads = document.querySelector("div.threads") as HTMLElement;
-            const parsed = await parsePosts(threads);
-            const appContainer = document.createElement("div");
-            appContainer.setAttribute("id", "cs_thread_pane");
-            fastdom.mutate(() => {
-                render(<ThreadPaneApp parsedPosts={parsed} />, appContainer);
-                root.appendChild(appContainer);
-            });
+            const appContainer = parseToElement(`<div id="cs_thread_pane" />`);
+            render(<ThreadPaneApp parsedPosts={parsePosts(threads)} />, appContainer);
+            root.appendChild(appContainer);
         }
     },
 };

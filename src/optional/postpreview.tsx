@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
-import { classNames, elemMatches, generatePreview, scrollToElement } from "../core/common";
+import { classNames, elemMatches, generatePreview, parseToElement, scrollToElement } from "../core/common";
 import { processPostBoxEvent, replyFieldEvent } from "../core/events";
 import { PostboxEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
@@ -126,11 +126,9 @@ const PostPreview = {
         const container = postbox.querySelector("#post__preview__app");
         const altPositionElem = postbox?.querySelector("#frm_body");
         if (is_enabled && !container && positionElem) {
-            const paneContainer = document.createElement("div");
-            paneContainer.setAttribute("id", "post__preview__pane");
+            const paneContainer = parseToElement(`<div id="post__preview__pane" />`) as HTMLElement;
             altPositionElem.parentNode.insertBefore(paneContainer, altPositionElem);
-            const appContainer = document.createElement("div");
-            appContainer.setAttribute("id", "post__preview__app");
+            const appContainer = parseToElement(`<div id="post__preview__app" />`);
             render(<PostPreviewApp postboxElem={postbox} paneMountElem={paneContainer} />, appContainer);
             positionElem.appendChild(appContainer);
         }

@@ -35,34 +35,36 @@ declare global {
 export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 
-// open a message channel for WinChatty events
-TabMessenger.connect();
-// try to fix incorrect positioning in single-thread mode
-singleThreadFix();
-// optional modules that rely on toggles
-ChattyNews.install();
-CustomUserFilters.install();
-Drafts.install();
-HighlightPendingPosts.install();
-HU_Instance.install();
-MediaEmbedder.install();
-NewCommentHighlighter.install();
-NwsIncognito.install();
-PostPreview.install();
-PostStyling.install();
-Switchers.install();
-Templates.install();
-ThreadPane.install();
-TwitchAutoplay.install();
+(async () => {
+    // open a message channel for WinChatty events
+    TabMessenger.connect();
+    // try to fix incorrect positioning in single-thread mode
+    singleThreadFix();
+    // optional modules that rely on toggles
+    ChattyNews.install();
+    CustomUserFilters.install();
+    Drafts.install();
+    HighlightPendingPosts.install();
+    HU_Instance.install();
+    MediaEmbedder.install();
+    NewCommentHighlighter.install();
+    NwsIncognito.install();
+    PostPreview.install();
+    PostStyling.install();
+    Switchers.install();
+    Templates.install();
+    TwitchAutoplay.install();
+    ThreadPane.install();
 
-// non-optional modules
-Collapse.install();
-CommentTags.install();
-EmojiPoster.install();
-ImageUploader.install();
-LocalTimeStamp.install();
-ModBanners.install();
-PostLengthCounter.install();
-UserPopup.install();
-// always make sure the ChromeShack event observer is last
-CS_Instance.install();
+    // non-optional modules
+    Collapse.install();
+    CommentTags.install();
+    EmojiPoster.install();
+    ImageUploader.install();
+    LocalTimeStamp.install();
+    ModBanners.install();
+    PostLengthCounter.install();
+    UserPopup.install();
+    // always make sure the ChromeShack event observer is last
+    await CS_Instance.install();
+})();

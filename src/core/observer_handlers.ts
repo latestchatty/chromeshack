@@ -16,7 +16,6 @@ import type { PostEventArgs, RefreshMutation } from "./events.d";
 import { setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
-import fastdom from "fastdom";
 
 const checkReplyCeiling = (rootEl: HTMLElement) => {
     // Both FF & Chrome get bogged down by nuLOL tags loading into extremely large threads
@@ -175,16 +174,14 @@ export const processPost = (args: PostEventArgs) => {
 export const processFullPosts = async () => {
     await processObserverInstalled();
     observerInstalledEvent.raise();
-    fastdom.measure(() => {
-        const fullposts = document.getElementsByClassName("fullpost");
-        for (let i = fullposts.length - 1; i >= 0; i--) {
-            const node = fullposts[i] as HTMLElement;
-            const args = locatePostRefs(node);
-            const { post, root } = args || {};
-            if (root || post) processPost(args);
-        }
-        fullPostsCompletedEvent.raise();
-    });
+    const fullposts = [...document.querySelectorAll("div.fullpost")];
+    const process = async (el: HTMLElement) => {
+        const args = locatePostRefs(el);
+        const { post, root } = args || {};
+        if (root || post) processPost(args);
+    };
+    await Promise.all(fullposts.map(process));
+    fullPostsCompletedEvent.raise();
 };
 export const processPostBox = (postbox: HTMLElement) => {
     if (postbox) processPostBoxEvent.raise({ postbox });

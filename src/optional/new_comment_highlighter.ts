@@ -1,7 +1,6 @@
 import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
-import { elemMatches } from "../core/common";
 import fastdom from "fastdom";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
@@ -10,19 +9,19 @@ export const NewCommentHighlighter = {
     // 2 hour timeout
     timeout: 1000 * 60 * 60 * 2,
 
-    async install() {
+    install() {
         processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
-        observerInstalledEvent.addHandler(async () => await NewCommentHighlighter.highlight());
+        observerInstalledEvent.addHandler(NewCommentHighlighter.highlight);
     },
 
-    async highlight(args?: PostEventArgs) {
+    async highlight(args?: PostEventArgs | void) {
         const { root } = args || {};
         const is_enabled = await enabledContains(["new_comment_highlighter"]);
         if (is_enabled) {
             const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
             const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
             const new_last_id = !overTimeout && NewCommentHighlighter.findLastID(root);
-            if (last_id > -1 && new_last_id >= last_id) NewCommentHighlighter.highlightPostsAfter(last_id, root);
+            if (last_id > -1 && new_last_id >= last_id) await NewCommentHighlighter.highlightPostsAfter(last_id, root);
             await NewCommentHighlighter.updateLastId(new_last_id);
             await NewCommentHighlighter.checkTime(null, true);
         }
@@ -43,35 +42,28 @@ export const NewCommentHighlighter = {
         } else return false;
     },
 
-    highlightPostsAfter(last_id: number, root?: HTMLElement) {
-        fastdom.measure(() => {
-            const new_posts = NewCommentHighlighter.getPostsAfter(last_id, root);
-            fastdom.mutate(() => {
-                for (const post of new_posts || []) {
-                    const preview = post.querySelector(".oneline_body");
-                    if (preview && !preview.classList.contains("newcommenthighlighter"))
-                        preview.classList.add("newcommenthighlighter");
+    async highlightPostsAfter(last_id: number, root?: HTMLElement) {
+        // grab all the posts with post ids after the last post id we've seen
+        fastdom.mutate(async () => {
+            const newer = [] as Element[];
+            const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
+            const process = async (li: HTMLElement, i: number, arr: any[]) => {
+                const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
+                const preview = li.querySelector(".oneline_body");
+                if (is_newer && !preview?.classList?.contains("newcommenthighlighter")) {
+                    preview.classList.add("newcommenthighlighter");
+                    newer.push(li);
                 }
-                if (new_posts?.length > 0) {
+                if (i === arr.length - 1) {
                     // update our "Comments ..." blurb at the top of the thread list
                     let commentDisplay = document.getElementById("chatty_settings");
                     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
                     const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-                    const newComments = commentsCount && `${commentsCount} Comments (${new_posts.length} New)`;
+                    const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
                     if (newComments) commentDisplay.textContent = newComments;
                 }
-            });
-        });
-    },
-
-    getPostsAfter(last_id: number, root?: HTMLElement) {
-        // grab all the posts with post ids after the last post id we've seen
-        return [...(root || document).querySelectorAll("li[id^='item_']")].filter((li) => {
-            const root = elemMatches(li?.parentElement?.parentElement, "div.root");
-            const is_root_newer = parseInt(root?.id?.substr(5)) >= last_id;
-            const postid = parseInt(li?.id?.substr(5));
-            // only include new replies and not new threads
-            return !is_root_newer && postid >= last_id;
+            };
+            await Promise.all(oneliners.map(process));
         });
     },
 

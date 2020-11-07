@@ -1,6 +1,11 @@
-import fastdom from "fastdom";
 import { Collapse } from "../../builtin/collapse";
-import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
+import {
+    elementFitsViewport,
+    elemMatches,
+    parseToElement,
+    scrollParentToChild,
+    scrollToElement,
+} from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import type { JumpToPostArgs, ParsedPost, ParsedReply, Recents } from "./index.d";
 
@@ -27,20 +32,16 @@ export const flashCard = (cardElem: HTMLElement) => {
 export const jumpToPost = (args: JumpToPostArgs) => {
     const { postid, rootid, options } = args || {};
     const { cardFlash, collapsed, postFlash, scrollParent, scrollPost, toFit, uncap } = options || {};
-    fastdom.measure(() => {
-        const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
-        const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
-        const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
-        const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
-        fastdom.mutate(() => {
-            if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
-            if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
-            else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
-            else if (scrollParent && card) scrollParentToChild(cardList, card);
-            if (cardFlash && card) flashCard(card);
-            if (postFlash && divRoot) flashPost(divRoot, liElem);
-        });
-    });
+    const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
+    const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
+    const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
+    const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
+    if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
+    if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
+    else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
+    else if (scrollParent && card) scrollParentToChild(cardList, card);
+    if (cardFlash && card) flashCard(card);
+    if (postFlash && divRoot) flashPost(divRoot, liElem);
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>
@@ -137,9 +138,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
         if (_linkSpan || _linkHref) {
             // convert links to unclickable styled representations
             const linkText = _linkSpan || _linkHref;
-            const replacement = document.createElement("span");
-            replacement.setAttribute("class", "cs_thread_pane_link");
-            replacement.textContent = linkText;
+            const replacement = parseToElement(`<span class="cs_thread_pane_link">${linkText}</span>`);
             element?.replaceWith(replacement);
         } else if (_spoiler)
             // make spoiler text in cards unclickable
@@ -188,13 +187,7 @@ export const parseRoot = async (rootElem: HTMLElement) => {
 export const parsePosts = async (divThreadsElem: HTMLElement) => {
     try {
         const roots = [...divThreadsElem?.querySelectorAll("div.root")] as HTMLElement[];
-        const result = await roots?.reduce(async (acc, r) => {
-            const parsed = await parseRoot(r);
-            const _acc = await acc;
-            if (parsed) _acc.push(parsed);
-            return _acc;
-        }, Promise.resolve([] as ParsedPost[]));
-        return result;
+        return await Promise.all(roots.map(parseRoot));
     } catch (e) {
         console.error(e);
     }

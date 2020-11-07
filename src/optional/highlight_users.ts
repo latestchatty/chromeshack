@@ -1,4 +1,3 @@
-import fastdom from "fastdom";
 import { insertStyle, objHas } from "../core/common";
 import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
@@ -24,11 +23,11 @@ export const HighlightUsers = {
         observerInstalledEvent.addHandler(HighlightUsers.applyFilter);
     },
 
-    resolveUsers() {
+    async resolveUsers() {
         if (objHas(HighlightUsers.cache)) return HighlightUsers.cache;
         const compiled = {} as ResolvedUsers;
         const posts = [...document.querySelectorAll("li[id^='item_'")];
-        for (const post of posts || []) {
+        const process = async (post: HTMLElement) => {
             const postid = parseInt(post?.id?.substr(5));
             const postdiv = post.querySelector(".fullpost, .oneline");
             const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
@@ -40,17 +39,22 @@ export const HighlightUsers = {
                 post.querySelector("span.user")?.textContent ||
                 post.querySelector("span.user>a")?.textContent;
             const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
-            const record = { id, mod: !!mod, op: !!op, postid, username };
-            if (!compiled[username]) compiled[username] = [record];
-            else compiled[username].push(record);
-        }
+            return { id, mod: !!mod, op: !!op, postid, username };
+        };
+        await Promise.all(
+            posts.map(async (p) => {
+                const r = await process(p as HTMLElement);
+                if (!compiled[r.username]) compiled[r.username] = [r];
+                else compiled[r.username].push(r);
+            }),
+        );
         HighlightUsers.cache = compiled;
         return HighlightUsers.cache;
     },
 
-    resolveUser(username: string) {
+    async resolveUser(username: string) {
         // renew the cache if this gets called before HU has a chance to run
-        if (!objHas(HighlightUsers.cache)) HighlightUsers.resolveUsers();
+        if (!objHas(HighlightUsers.cache)) await HighlightUsers.resolveUsers();
         return HighlightUsers.cache[`${username}`];
     },
 
@@ -96,11 +100,9 @@ export const HighlightUsers = {
         const is_enabled = await enabledContains(["highlight_users"]);
         if (is_enabled) {
             const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-            const users = HighlightUsers.resolveUsers();
-            fastdom.mutate(async () => {
-                // we just need to run this once per page
-                HighlightUsers.gatherCSS(users, groups);
-            });
+            const users = await HighlightUsers.resolveUsers();
+            // we just need to run this once per page
+            HighlightUsers.gatherCSS(users, groups);
         }
     },
 };
