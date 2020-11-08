@@ -8,11 +8,11 @@ export const Collapse = {
         processPostEvent.addHandler(Collapse.toggle);
     },
 
-    collapseHandler(e: MouseEvent) {
+    async collapseHandler(e: MouseEvent) {
         const this_node = e.target as HTMLElement;
         const collapse = elemMatches(this_node, "a.closepost");
         const uncollapse = elemMatches(this_node, "a.showpost");
-        const { rootid } = locatePostRefs(collapse) || locatePostRefs(uncollapse) || {};
+        const { rootid } = (await locatePostRefs(collapse)) || (await locatePostRefs(uncollapse)) || {};
         if (collapse && rootid) Collapse.close(e, rootid);
         else if (uncollapse && rootid) Collapse.show(e, rootid);
     },
@@ -81,7 +81,7 @@ export const Collapse = {
         Collapse.collapseThread(id);
     },
 
-    show(e: MouseEvent, id: number) {
+    async show(e: MouseEvent, id: number) {
         Collapse.unCollapseThread(id);
         const this_node = e.target as HTMLElement;
         if (
@@ -89,7 +89,7 @@ export const Collapse = {
             elemMatches(this_node, ".showpost.hidden")
         ) {
             // feed the refresh-thread event handler when uncollapsing
-            const args = locatePostRefs(this_node);
+            const args = await locatePostRefs(this_node);
             const { postid, rootid } = args || {};
             if (postid || rootid) processRefreshIntentEvent.raise(args);
         }

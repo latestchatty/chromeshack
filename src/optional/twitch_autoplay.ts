@@ -1,3 +1,4 @@
+import { domMutate } from "../core/common";
 import { observerInstalledEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 
@@ -14,7 +15,7 @@ export const TwitchAutoplay = {
             const articlePlayer = document.querySelector(".article-content iframe");
             let src = articlePlayer?.getAttribute("src");
             if (src?.indexOf("autoplay") === -1) src += "&autoplay=false";
-            articlePlayer?.setAttribute("src", src);
+            domMutate(() => articlePlayer?.setAttribute("src", src));
         }
     },
 };

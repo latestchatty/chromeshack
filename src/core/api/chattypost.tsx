@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 import type { ParsedResponse } from ".";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import "../../styles/chattypost.css";
-import { elemMatches, fetchSafe, objHas } from "../common";
+import { domMeasure, elemMatches, fetchSafe, objHas } from "../common";
 import parse from "html-react-parser";
 
 interface ParsedChattyPost {
@@ -17,30 +17,31 @@ interface ParsedChattyPost {
     postdate: string;
 }
 
-const parseChattyPost = (sanitizedFragment: DocumentFragment) => {
-    const fullpost = sanitizedFragment.querySelector(".fullpost") as HTMLDivElement;
-    const authorid = parseInt(fullpost?.getAttribute("class")?.split("fpauthor_")[1]);
-    const permalink = (sanitizedFragment.querySelector(".postnumber>a") as HTMLAnchorElement)?.href;
-    const postid = parseInt(permalink?.split("item_")[1]);
-    const author = (sanitizedFragment.querySelector(".user>a, .user") as HTMLAnchorElement)?.textContent;
-    const saneAuthor = author?.replace(/\s/gm, "+");
-    const icons = [...sanitizedFragment.querySelectorAll("span.author>img")] as HTMLImageElement[];
-    const postbody = (sanitizedFragment.querySelector(".postbody") as HTMLDivElement)?.innerHTML;
-    const postdate = (sanitizedFragment.querySelector(".postdate") as HTMLDivElement)?.textContent;
-    const fixedDate = LocalTimeStamp.fixTime(postdate);
-    return fullpost
-        ? ({
-              postid,
-              authorid,
-              permalink,
-              author,
-              saneAuthor,
-              icons,
-              postbody,
-              postdate: fixedDate,
-          } as ParsedChattyPost)
-        : null;
-};
+const parseChattyPost = async (sanitizedFragment: DocumentFragment) =>
+    await domMeasure(() => {
+        const fullpost = sanitizedFragment.querySelector(".fullpost") as HTMLDivElement;
+        const authorid = parseInt(fullpost?.getAttribute("class")?.split("fpauthor_")[1]);
+        const permalink = (sanitizedFragment.querySelector(".postnumber>a") as HTMLAnchorElement)?.href;
+        const postid = parseInt(permalink?.split("item_")[1]);
+        const author = (sanitizedFragment.querySelector(".user>a, .user") as HTMLAnchorElement)?.textContent;
+        const saneAuthor = author?.replace(/\s/gm, "+");
+        const icons = [...sanitizedFragment.querySelectorAll("span.author>img")] as HTMLImageElement[];
+        const postbody = (sanitizedFragment.querySelector(".postbody") as HTMLDivElement)?.innerHTML;
+        const postdate = (sanitizedFragment.querySelector(".postdate") as HTMLDivElement)?.textContent;
+        const fixedDate = LocalTimeStamp.fixTime(postdate);
+        return fullpost
+            ? ({
+                  postid,
+                  authorid,
+                  permalink,
+                  author,
+                  saneAuthor,
+                  icons,
+                  postbody,
+                  postdate: fixedDate,
+              } as ParsedChattyPost)
+            : null;
+    });
 
 const fetchChattyPost = async (postid: string) => {
     const singlePost = postid && `https://www.shacknews.com/frame_chatty.x?root=&id=${postid}`;
@@ -49,7 +50,7 @@ const fetchChattyPost = async (postid: string) => {
         // REVIEWER NOTE: we use DOMPurify here to return a sanitized DocumentFragment that we then parse
         const sanitized = DOMPurify.sanitize(elemText, { RETURN_DOM_FRAGMENT: true });
         if (!sanitized) return null;
-        return parseChattyPost(sanitized);
+        return await parseChattyPost(sanitized);
     }
     return null;
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { elemMatches, parseToElement } from "../../core/common";
+import { domMutate, elemMatches, parseToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import { UserPopupApp } from "./UserPopupApp";
 import "../../styles/userpopup.css";
@@ -32,7 +32,7 @@ export const UserPopup = {
                     <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
                     appContainer,
                 );
-                _elem.appendChild(appContainer);
+                domMutate(() => _elem.appendChild(appContainer));
             }
         }
     },

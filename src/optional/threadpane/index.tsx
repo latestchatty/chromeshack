@@ -1,11 +1,11 @@
 import React from "react";
 import { render } from "react-dom";
-import { enabledContains, getEnabledSuboption } from "../../core/settings";
-import { ThreadPaneApp } from "./ThreadPaneApp";
-import { parsePosts } from "./helpers";
-import "../../styles/threadpane.css";
+import { domMutate, parseToElement } from "../../core/common";
 import { observerInstalledEvent } from "../../core/events";
-import { parseToElement } from "../../core/common";
+import { enabledContains, getEnabledSuboption } from "../../core/settings";
+import "../../styles/threadpane.css";
+import { parsePosts } from "./helpers";
+import { ThreadPaneApp } from "./ThreadPaneApp";
 
 const ThreadPane = {
     install() {
@@ -14,7 +14,7 @@ const ThreadPane = {
 
     async apply() {
         const enabled = await enabledContains(["thread_pane"]);
-        const container = document.querySelector("div.cs_thread_pane");
+        let container = document.querySelector("div.cs_thread_pane");
         const chatty = document.getElementById("newcommentbutton");
         const testing = await getEnabledSuboption("testing_mode");
         // only enable thread pane on the main Chatty
@@ -23,9 +23,10 @@ const ThreadPane = {
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
             const root = document.getElementById("page");
             const threads = document.querySelector("div.threads") as HTMLElement;
-            const appContainer = parseToElement(`<div id="cs_thread_pane" />`);
-            render(<ThreadPaneApp parsedPosts={parsePosts(threads)} />, appContainer);
-            root.appendChild(appContainer);
+            container = parseToElement(`<div id="cs_thread_pane" />`);
+            const parsed = parsePosts(threads);
+            render(<ThreadPaneApp parsedPosts={parsed} />, container);
+            domMutate(() => root.appendChild(container));
         }
     },
 };

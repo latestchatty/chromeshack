@@ -3,8 +3,14 @@ import * as textFieldEdit from "text-field-edit";
 import type { PostEventArgs } from "../../core/events.d";
 import { arrHas } from "./";
 import type { PreviewReplacements } from "./index.d";
+import fastdom from "fastdom";
+import fastdomPromised from "fastdom/extensions/fastdom-promised";
 
 const $ = jQuery;
+
+const fastdomAsync = fastdom.extend(fastdomPromised);
+export const domMeasure = async (cb: any, ctx?: any) => fastdomAsync.measure(cb, ctx);
+export const domMutate = async (cb: any, ctx?: any) => fastdomAsync.mutate(cb, ctx);
 
 export const stripHtml = (html: string) => {
     // respect carriage returns
@@ -263,15 +269,19 @@ export const elemMatches = (elem: HTMLElement, selector: string) => {
 /// takes an Element of a post and returns post/root information
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
-    const _parent = postElem.parentNode as HTMLElement;
-    const post = elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
-    const root = postElem.classList?.contains("op")
-        ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
-        : (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
-    const postid = parseInt(post?.id?.substr(5));
-    const rootid = parseInt(root?.id?.substr(5));
-    const is_root = rootid && postid && rootid === postid;
-    return { post, postid, root, rootid, is_root } as PostEventArgs;
+    return domMeasure(() => {
+        const _parent = postElem.parentNode as HTMLElement;
+        const post =
+            elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
+        const root = postElem.classList?.contains("op")
+            ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
+            : (post?.closest(".root > ul > li") as HTMLElement) ||
+              (post?.querySelector(".root > ul > li") as HTMLElement);
+        const postid = parseInt(post?.id?.substr(5));
+        const rootid = parseInt(root?.id?.substr(5));
+        const is_root = rootid && postid && rootid === postid;
+        return { post, postid, root, rootid, is_root } as PostEventArgs;
+    });
 };
 
 export const disableTwitch = () => {

@@ -41,6 +41,8 @@ import {
     stripHtml,
     superTrim,
     parseToElement,
+    domMeasure,
+    domMutate,
 } from "./dom";
 import {
     fetchBackground,
@@ -75,6 +77,8 @@ export {
     locatePostRefs,
     decodeHTML,
     parseToElement,
+    domMeasure,
+    domMutate,
 };
 export {
     xhrRequestLegacy,

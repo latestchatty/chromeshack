@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { resolveChildren } from "../../core/useResolvedLinks";
 import type { ExpandoProps } from "./index.d";
@@ -13,7 +13,7 @@ export const RefreshIcon = ({ classes }: { classes: string }) => (
 );
 
 const Expando = (props: ExpandoProps) => {
-    const { response, idx, postid, options } = props || {};
+    const { response, options } = props || {};
     const { href, src, type: _type } = response || {};
     const { openByDefault } = options || {};
 
@@ -23,7 +23,6 @@ const Expando = (props: ExpandoProps) => {
     const [type, setType] = useState(_type as string);
     const newTabHref = useRef(href || src);
 
-    const id = postid ? `expando_${postid}-${idx}` : `expando-${idx}`;
     const expandoClasses = classNames("medialink", { toggled });
     const mediaClasses = classNames("media", { hidden: !toggled });
     const reloadClasses = classNames("refresh__icon", { loading: hasLoaded });
@@ -71,12 +70,12 @@ const Expando = (props: ExpandoProps) => {
             if (children) setToggled(true);
         }, 100);
     };
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (toggled) loadChildren();
     }, [toggled, loadChildren]);
 
     return (
-        <div id={id} className={expandoClasses} data-postid={postid} data-idx={idx} onClick={handleToggleClick}>
+        <div className={expandoClasses} onClick={handleToggleClick}>
             <a href={src || href} title={toggled ? "Hide embedded media" : "Show embedded media"}>
                 <span>{href || src}</span>
                 <div className="expando">{toggled ? <CompressIcon /> : <ExpandIcon />}</div>

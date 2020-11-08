@@ -22,9 +22,9 @@ const checkReplyCeiling = (rootEl: HTMLElement) => {
     // ... so we set an arbitrary ceiling here based on performance of a moderate-spec machine
     // ... which gets used for the nuLOL refresh/reply fixes that try to keep tag data up-to-date.
     const replies = rootEl?.querySelectorAll("li .capcontainer li[id^='item_']");
-    const totalReplies = (!window.chrome && replies?.length < 250) || replies.length < 500;
     const tags = rootEl?.querySelectorAll("li .capcontainer .lol-tags");
-    const totalTags = (!window.chrome && tags.length < 50) || tags.length < 75;
+    const totalReplies = (!window.chrome && replies?.length < 333) || replies.length < 750;
+    const totalTags = (!window.chrome && tags?.length < 35) || tags?.length < 75;
     return totalTags || totalReplies;
 };
 
@@ -131,7 +131,7 @@ export const handleRefreshClick = async (e: MouseEvent) => {
     const _this = e?.target as HTMLElement;
     const refreshBtn = elemMatches(_this, "div.refresh > a");
     if (refreshBtn) {
-        const raisedArgs = locatePostRefs(refreshBtn);
+        const raisedArgs = await locatePostRefs(refreshBtn);
         const { root, postid, rootid, is_root } = raisedArgs || {};
         processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
@@ -174,9 +174,9 @@ export const processPost = (args: PostEventArgs) => {
 export const processFullPosts = async () => {
     await processObserverInstalled();
     observerInstalledEvent.raise();
-    const fullposts = [...document.querySelectorAll("div.fullpost")];
+    const fullposts = [...document.querySelectorAll("div.fullpost")] as HTMLElement[];
     const process = async (el: HTMLElement) => {
-        const args = locatePostRefs(el);
+        const args = await locatePostRefs(el);
         const { post, root } = args || {};
         if (root || post) processPost(args);
     };

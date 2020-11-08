@@ -4,7 +4,7 @@ import { enabledContains } from "../../core/settings";
 import { HighlightPendingApp } from "./HighlightPendingApp";
 import "../../styles/highlight_pending.css";
 import { observerInstalledEvent } from "../../core/events";
-import { parseToElement } from "../../core/common";
+import { domMutate, parseToElement } from "../../core/common";
 
 export interface PendingPost {
     postId: number;
@@ -29,7 +29,7 @@ const HighlightPendingPosts = {
             render(<HighlightPendingApp threaded={isChatty} />, appContainer);
             // put our HPNP app next to the Shacknews logo in the top-left
             positionElem.classList?.add("hpnp__enabled");
-            positionElem.appendChild(appContainer);
+            domMutate(() => positionElem.appendChild(appContainer));
         }
     },
 };

@@ -7,7 +7,7 @@ export const ChromeShack = {
 
     async install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
-        const observer_handler = (mutationsList: MutationRecord[]) => {
+        const observer_handler = async (mutationsList: MutationRecord[]) => {
             try {
                 //console.log("mutation:", mutationsList);
                 for (const mutation of mutationsList) {
@@ -38,7 +38,7 @@ export const ChromeShack = {
                         }
                         if (elemMatches(addedParent, "li[id^='item_']")) {
                             // check for opening a fullpost
-                            const refs = locatePostRefs(addedParent);
+                            const refs = await locatePostRefs(addedParent);
                             processPost(refs);
                         }
                         if (elemMatches(added, "#postbox")) processPostBox(added);

@@ -1,7 +1,6 @@
 import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
-import fastdom from "fastdom";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
@@ -44,27 +43,25 @@ export const NewCommentHighlighter = {
 
     async highlightPostsAfter(last_id: number, root?: HTMLElement) {
         // grab all the posts with post ids after the last post id we've seen
-        fastdom.mutate(async () => {
-            const newer = [] as Element[];
-            const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
-            const process = async (li: HTMLElement, i: number, arr: any[]) => {
-                const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
-                const preview = li.querySelector(".oneline_body");
-                if (is_newer && !preview?.classList?.contains("newcommenthighlighter")) {
-                    preview.classList.add("newcommenthighlighter");
-                    newer.push(li);
-                }
-                if (i === arr.length - 1) {
-                    // update our "Comments ..." blurb at the top of the thread list
-                    let commentDisplay = document.getElementById("chatty_settings");
-                    if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
-                    const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-                    const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
-                    if (newComments) commentDisplay.textContent = newComments;
-                }
-            };
-            await Promise.all(oneliners.map(process));
-        });
+        const newer = [] as Element[];
+        const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
+        const process = async (li: HTMLElement, i: number, arr: any[]) => {
+            const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
+            const preview = li.querySelector(".oneline_body");
+            if (is_newer && !preview?.classList?.contains("newcommenthighlighter")) {
+                preview.classList.add("newcommenthighlighter");
+                newer.push(li);
+            }
+            if (i === arr.length - 1) {
+                // update our "Comments ..." blurb at the top of the thread list
+                let commentDisplay = document.getElementById("chatty_settings");
+                if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+                const commentsCount = commentDisplay?.textContent?.split(" ")[0];
+                const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
+                if (newComments) commentDisplay.textContent = newComments;
+            }
+        };
+        await Promise.all(oneliners.map(process));
     },
 
     findLastID(root: HTMLElement) {

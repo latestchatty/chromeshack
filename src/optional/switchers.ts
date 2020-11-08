@@ -1,5 +1,5 @@
 import { HU_Instance } from "../content";
-import { processPostEvent } from "../core/events";
+import { observerInstalledEvent, processPostEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
 import { enabledContains } from "../core/settings";
 import { ResolvedUser } from "./highlight_users";
@@ -28,29 +28,29 @@ export const Switchers = {
 
     install() {
         processPostEvent.addHandler(Switchers.loadSwitchers);
+        observerInstalledEvent.addHandler(Switchers.cacheSwitchers);
     },
 
     async cacheSwitchers() {
         const is_enabled = await enabledContains(["switchers"]);
-        if (is_enabled) {
+        if (is_enabled && Switchers.resolved.length === 0) {
             // resolve and cache all offenders on the page once on load
             const resolvedUsers = await HU_Instance.resolveUsers();
-            for (const offender of Switchers.offenders) {
-                const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
-                if (!user) continue;
-                const matchedOld = offender.old.toLowerCase() === user.username.toLowerCase();
-                const matchedNew = offender.new.toLowerCase() === user.username.toLowerCase();
+            const resolved = [] as SwitcherMatch[];
+            for (const of of Switchers.offenders || []) {
+                const user = resolvedUsers[of.new]?.[0] || resolvedUsers[of.old]?.[0];
+                const matchedOld = user && of.old.toLowerCase() === user.username.toLowerCase();
+                const matchedNew = user && of.new.toLowerCase() === user.username.toLowerCase();
                 if (matchedOld || matchedNew)
-                    Switchers.resolved = [
-                        ...Switchers.resolved,
-                        {
-                            id: user.id,
-                            username: user.username,
-                            matched: matchedNew ? offender.old : offender.new,
-                        } as SwitcherMatch,
-                    ];
+                    resolved.push({
+                        id: user.id,
+                        username: user.username,
+                        matched: matchedNew ? of.old : of.new,
+                    } as SwitcherMatch);
             }
-        }
+            Switchers.resolved = resolved;
+            return resolved;
+        } else return Switchers.resolved;
     },
 
     async loadSwitchers(args: PostEventArgs) {
@@ -58,7 +58,7 @@ export const Switchers = {
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled) {
             const offenderMutations = [] as Record<string, any>[];
-            if (Switchers.cacheSwitchers.length === 0) await Switchers.cacheSwitchers();
+            await Switchers.cacheSwitchers();
             for (const offender of Switchers.resolved || []) {
                 const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
                 const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
@@ -77,10 +77,10 @@ export const Switchers = {
         const newName = `${name} - (${oldName})`;
         const span = post.querySelector("span.oneline_user");
         const alt_span = post.querySelector("span.user");
+        const user_icons = post.querySelectorAll("img.chatty-user-icons");
+        // Switchers don't deserve flair icons
         if (span) span.textContent = newName;
         else if (alt_span) alt_span.firstChild.textContent = newName;
-        // Switchers don't deserve flair icons
-        const user_icons = post.querySelectorAll("img.chatty-user-icons");
         for (const icon of user_icons || []) icon.setAttribute("style", "display: none !important;");
     },
 };

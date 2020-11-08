@@ -1,4 +1,4 @@
-import { insertStyle, objHas } from "../core/common";
+import { domMeasure, insertStyle, objHas } from "../core/common";
 import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
 import { enabledContains, getSetting } from "../core/settings";
@@ -27,20 +27,21 @@ export const HighlightUsers = {
         if (objHas(HighlightUsers.cache)) return HighlightUsers.cache;
         const compiled = {} as ResolvedUsers;
         const posts = [...document.querySelectorAll("li[id^='item_'")];
-        const process = async (post: HTMLElement) => {
-            const postid = parseInt(post?.id?.substr(5));
-            const postdiv = post.querySelector(".fullpost, .oneline");
-            const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
-            const id =
-                parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
-                parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
-            const username =
-                post.querySelector("span.oneline_user")?.textContent ||
-                post.querySelector("span.user")?.textContent ||
-                post.querySelector("span.user>a")?.textContent;
-            const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
-            return { id, mod: !!mod, op: !!op, postid, username };
-        };
+        const process = async (post: HTMLElement) =>
+            await domMeasure(() => {
+                const postid = parseInt(post?.id?.substr(5));
+                const postdiv = post.querySelector(".fullpost, .oneline");
+                const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
+                const id =
+                    parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
+                    parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
+                const username =
+                    post.querySelector("span.oneline_user")?.textContent ||
+                    post.querySelector("span.user")?.textContent ||
+                    post.querySelector("span.user>a")?.textContent;
+                const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
+                return { id, mod: !!mod, op: !!op, postid, username };
+            });
         await Promise.all(
             posts.map(async (p) => {
                 const r = await process(p as HTMLElement);

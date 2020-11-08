@@ -1,5 +1,6 @@
 import { Collapse } from "../../builtin/collapse";
 import {
+    domMeasure,
     elementFitsViewport,
     elemMatches,
     parseToElement,
@@ -74,33 +75,34 @@ const getAuthor = (postElem: HTMLElement) => {
     return (username as HTMLElement)?.textContent?.split(" - ")[0] || "";
 };
 
-const parseReply = (postElem: HTMLElement) => {
-    const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
-    const postid = parseInt(post?.id.substr(5));
-    const oneline = post?.querySelector(".oneline") as HTMLElement;
-    const authorid = parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1]);
-    const mod = getMod(oneline);
-    const author = getAuthor(oneline);
-    const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
-    // detect if a post's parent is the rootpost
-    const _li = document.querySelector(`li#item_${postid}`);
-    const _parentLi = (_li?.parentNode as Element)?.closest("li") as HTMLElement;
-    const isRoot = elemMatches(_parentLi, "div.root > ul > li");
-    const op = !!elemMatches(oneline, ".op");
-    return postid
-        ? ({
-              author,
-              authorid,
-              body,
-              mod,
-              op,
-              postid,
-              parentRef: _parentLi && !isRoot ? _parentLi : null,
-          } as ParsedReply)
-        : null;
-};
+const parseReply = async (postElem: HTMLElement) =>
+    await domMeasure(() => {
+        const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
+        const postid = parseInt(post?.id.substr(5));
+        const oneline = post?.querySelector(".oneline") as HTMLElement;
+        const authorid = parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1]);
+        const mod = getMod(oneline);
+        const author = getAuthor(oneline);
+        const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
+        // detect if a post's parent is the rootpost
+        const _li = document.querySelector(`li#item_${postid}`);
+        const _parentLi = (_li?.parentNode as Element)?.closest("li") as HTMLElement;
+        const isRoot = elemMatches(_parentLi, "div.root > ul > li");
+        const op = !!elemMatches(oneline, ".op");
+        return postid
+            ? ({
+                  author,
+                  authorid,
+                  body,
+                  mod,
+                  op,
+                  postid,
+                  parentRef: _parentLi && !isRoot ? _parentLi : null,
+              } as ParsedReply)
+            : null;
+    });
 
-export const getRecents = (divRootElem: HTMLElement) => {
+export const getRecents = async (divRootElem: HTMLElement) => {
     // find the most recent posts in a thread - newest to oldest
     let lastRecentRef: HTMLElement;
     // find the most recent post in ascending age
@@ -113,7 +115,7 @@ export const getRecents = (divRootElem: HTMLElement) => {
     // walk up the reply tree to a distance limit of 4 parents
     const recentTree = [] as ParsedReply[];
     for (let i = 0; i < 4 && lastRecentRef; i++) {
-        const _parsed = parseReply(lastRecentRef);
+        const _parsed = await parseReply(lastRecentRef);
         lastRecentRef = _parsed.parentRef;
         // put our replies in render order (oldest to newest)
         if (_parsed?.postid !== recentRootId) recentTree.unshift(_parsed);
@@ -126,15 +128,16 @@ export const getRecents = (divRootElem: HTMLElement) => {
 };
 
 export const clonePostBody = (postElem: HTMLElement) => {
+    // clean up the postbody before processing
     // post body is empty (probably nuked)
     if (postElem?.textContent.length === 0) return null;
     const clone = postElem?.cloneNode(true) as HTMLElement;
-    // clean up the postbody before processing
+
     const elements = [...clone?.querySelectorAll("a, div.medialink, .jt_spoiler")];
     for (const element of elements || []) {
         const _linkSpan = (element.querySelector("a > span") as HTMLSpanElement)?.textContent;
         const _linkHref = (element as HTMLAnchorElement)?.href;
-        const _spoiler = elemMatches(element as HTMLElement, "span.jt_spoiler");
+        const _spoiler = element?.matches && element.matches("span.jt_spoiler");
         if (_linkSpan || _linkHref) {
             // convert links to unclickable styled representations
             const linkText = _linkSpan || _linkHref;
@@ -149,40 +152,40 @@ export const clonePostBody = (postElem: HTMLElement) => {
     return trimBodyHTML(clone);
 };
 
-export const parseRoot = async (rootElem: HTMLElement) => {
-    const root = elemMatches(rootElem, "div.root");
-    const rootid = root && parseInt(root?.id?.substr(5));
-    if (rootid < 1 || rootid > 50000000) {
-        console.error(`The thread ID of ${rootid} seems bogus.`);
-        return null;
-    }
-    const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
-    const fullpost = rootLi?.querySelector(".fullpost") as HTMLElement;
-    const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1]);
-    const author = getAuthor(rootLi);
-    const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
-    if (!author || !body) {
-        console.error(`Encountered what looks like a nuked post:`, rootid, root);
-        return null;
-    }
-    const mod = getMod(fullpost);
-    const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
-    const recents = getRecents(root);
-    const contained = await threadContainsLoggedUser(rootElem);
-    const collapsed = !!(await Collapse.findCollapsed(rootid.toString()));
-
-    return {
-        author,
-        authorid,
-        body,
-        contained,
-        count,
-        mod,
-        recents,
-        rootid,
-        collapsed,
-    } as ParsedPost;
-};
+export const parseRoot = async (rootElem: HTMLElement) =>
+    await domMeasure(async () => {
+        const root = elemMatches(rootElem, "div.root");
+        const rootid = root && parseInt(root?.id?.substr(5));
+        if (rootid < 1 || rootid > 50000000) {
+            console.error(`The thread ID of ${rootid} seems bogus.`);
+            return null;
+        }
+        const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
+        const fullpost = rootLi?.querySelector(".fullpost") as HTMLElement;
+        const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1]);
+        const author = getAuthor(rootLi);
+        const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
+        if (!author || !body) {
+            console.error(`Encountered what looks like a nuked post:`, rootid, root);
+            return null;
+        }
+        const mod = getMod(fullpost);
+        const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
+        const recents = await getRecents(root);
+        const contained = await threadContainsLoggedUser(rootElem);
+        const collapsed = !!(await Collapse.findCollapsed(rootid.toString()));
+        return {
+            author,
+            authorid,
+            body,
+            contained,
+            count,
+            mod,
+            recents,
+            rootid,
+            collapsed,
+        } as ParsedPost;
+    });
 
 export const parsePosts = async (divThreadsElem: HTMLElement) => {
     try {

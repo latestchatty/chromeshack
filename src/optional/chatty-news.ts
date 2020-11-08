@@ -77,7 +77,6 @@ export const ChattyNews = {
             `);
             // populate the newly created newsBox from the Chatty RSS server's articles
             const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
-
             alignmentBox?.appendChild(newsBox);
             articleBox?.appendChild(alignmentBox);
             // double check this is the full chatty page

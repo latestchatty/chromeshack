@@ -1,6 +1,7 @@
 /* eslint @typescript-eslint/no-unused-vars: "off" */
 
 import type { ResolvedUser } from "../optional/highlight_users";
+import { domMutate } from "./common";
 import type {
     CollapsedPostEventArgs,
     JumpToPostEventArgs,
@@ -27,14 +28,7 @@ class LiteEvent<T> implements LiteEventInterface<T> {
     }
 
     raise(...args: T[]) {
-        (async () => {
-            for (let i = 0; i < this.handlers.length; i++) {
-                const handler = this.handlers[i] as (...args: any[]) => void;
-                const isAsync = handler.constructor.name === "AsyncFunction";
-                if (isAsync) await handler(...args);
-                else handler(...args);
-            }
-        })();
+        this.handlers.forEach(async (h: any) => await h(...args));
     }
 
     expose(): LiteEventInterface<T> {

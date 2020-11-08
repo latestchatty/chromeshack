@@ -53,8 +53,8 @@ export const HU_Instance = HighlightUsers;
     PostStyling.install();
     Switchers.install();
     Templates.install();
-    TwitchAutoplay.install();
     ThreadPane.install();
+    TwitchAutoplay.install();
 
     // non-optional modules
     Collapse.install();
