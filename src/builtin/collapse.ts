@@ -3,6 +3,8 @@ import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from 
 import { getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
+    // 18hr threshold
+    timeout: 1000 * 60 * 60 * 18,
     collapsed: [] as CollapsedThread[],
 
     async install() {
@@ -33,9 +35,7 @@ export const Collapse = {
     },
 
     async cullAfterCollapseTime() {
-        // track per-thread expiry
-        const maxTime = 1000 * 60 * 60 * 18; // 18hr limit
-        const filtered = Collapse.collapsed.filter((c) => !timeOverThresh(c.timestamp, maxTime));
+        const filtered = Collapse.collapsed.filter((c) => !timeOverThresh(c.timestamp, Collapse.timeout));
         await Collapse.setCollapsed(filtered);
     },
 

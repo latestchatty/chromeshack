@@ -3,6 +3,7 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
 export const ChattyNews = {
+    // 15 minute threshold
     timeout: 1000 * 60 * 15,
 
     async checkTime(delayInMs: number) {

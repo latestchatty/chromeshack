@@ -6,8 +6,7 @@ import { getSetting, setSetting } from "../../core/settings";
 
 const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
-    //const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts
-    const maxAge = 1000 * 60 * 2; // 2min timeout on saved drafts
+    const maxAge = 1000 * 60 * 60 * 18; // 18hr timeout on saved drafts
     // filter any posts that are older than the cutoff and order by ascending age
     const lruByNewest = [...drafts]
         .filter((d) => !timeOverThresh(d.timestamp, maxAge))

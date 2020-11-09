@@ -5,8 +5,8 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
 export const NewCommentHighlighter = {
-    // 2 hour timeout
-    timeout: 1000 * 60 * 60 * 2,
+    // 1 hour threshold
+    timeout: 1000 * 60 * 60 * 1,
 
     async install() {
         await NewCommentHighlighter.highlight();
