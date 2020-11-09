@@ -3,7 +3,7 @@ import DOMPurify from "dompurify";
 import type { ParsedResponse } from ".";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import "../../styles/chattypost.css";
-import { domMeasure, elemMatches, fetchSafe, objHas } from "../common";
+import { domMeasure, elemMatches, fetchSafe, objHas, openAsWindow } from "../common";
 import parse from "html-react-parser";
 
 interface ParsedChattyPost {
@@ -67,7 +67,7 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
             _this && (elemMatches(_this, "div.chattypost__container span.jt_spoiler") as HTMLSpanElement);
         if (_link?.href) {
             e?.preventDefault();
-            window.open(_link.href, "_blank", "noopener,noreferrer");
+            openAsWindow(_link.href);
         } else if (spoilerTag && !spoilerTag.classList?.contains("jt_spoiler_clicked")) {
             spoilerTag.classList.remove("jt_spoiler");
             spoilerTag.classList.add("jt_spoiler_clicked");

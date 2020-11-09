@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { arrHas, classNames, elemMatches, objContainsProperty, objEmpty } from "../../common";
+import { arrHas, classNames, elemMatches, objContainsProperty, objEmpty, openAsWindow } from "../../common";
 import { ResolveMedia } from "../../useResolvedLinks";
 import { TwitterBadgeSVG, TwitterVerifiedSVG } from "./Icons";
 import type { TweetParsed } from "./twitter";
@@ -49,7 +49,7 @@ const Twitter = (props: { response: TweetParsed }) => {
         const _link = (elemMatches(_this, "a") || _this?.closest("a")) as HTMLAnchorElement;
         if (_link?.href) {
             e.preventDefault();
-            window.open(_link.href, "_blank", "noopener,noreferrer");
+            openAsWindow(_link.href);
         }
     };
 

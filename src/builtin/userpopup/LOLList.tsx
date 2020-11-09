@@ -1,10 +1,11 @@
 import React from "react";
+import { openAsWindow } from "../../core/common";
 
 const LOLListItem = (props: { href: string; text: string }) => {
     const { href, text } = props || {};
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
-        if (href) window.open(href, "_blank", "noopener,noreferrer");
+        if (href) openAsWindow(href);
     };
     return (
         <div className="dropdown__item" onClick={handleClick}>

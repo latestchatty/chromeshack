@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames, decodeHTML, elemMatches, fetchBackground } from "../../common";
+import { classNames, decodeHTML, elemMatches, fetchBackground, openAsWindow } from "../../common";
 import { ResolveMedia } from "../../useResolvedLinks";
 import { CommentsIcon, InstagramLogo, LikesIcon } from "./Icons";
 import type { InstagramParsed, InstagramResponse, InstagramShortcodeMedia } from "./instagram";
@@ -106,7 +106,7 @@ const Instagram = (props: { response: InstagramParsed }) => {
         const _link = (elemMatches(_this, "a") || _this?.closest("a")) as HTMLAnchorElement;
         if (_link?.href) {
             e.preventDefault();
-            window.open(_link.href, "_blank", "noopener,noreferrer");
+            openAsWindow(_link.href);
         }
     };
 
