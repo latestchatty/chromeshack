@@ -1,4 +1,5 @@
-import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
+import { timeOverThresh } from "../core/common";
+import { processPostRefreshEvent } from "../core/events";
 import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
@@ -8,9 +9,9 @@ export const NewCommentHighlighter = {
     // 2 hour timeout
     timeout: 1000 * 60 * 60 * 2,
 
-    install() {
+    async install() {
+        await NewCommentHighlighter.highlight();
         processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
-        observerInstalledEvent.addHandler(NewCommentHighlighter.highlight);
     },
 
     async highlight(args?: PostEventArgs | void) {
@@ -32,11 +33,11 @@ export const NewCommentHighlighter = {
     },
 
     async checkTime(delayInMs: number, reset?: boolean) {
-        const curTime = Date.now();
-        const lastHighlightTime = (await getSetting("last_highlight_time", curTime)) as number;
-        const diffTime = Math.abs(curTime - lastHighlightTime);
-        if (reset || diffTime > delayInMs) {
-            await setSetting("last_highlight_time", curTime);
+        const now = Date.now();
+        const lastHighlightTime = (await getSetting("last_highlight_time", now)) as number;
+        const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : now;
+        if (reset || overThresh) {
+            await setSetting("last_highlight_time", now);
             return true;
         } else return false;
     },

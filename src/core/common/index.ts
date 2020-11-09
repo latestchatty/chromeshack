@@ -19,6 +19,8 @@ import {
     packValidTypes,
     compressString,
     decompressString,
+    openAsWindow,
+    timeOverThresh,
 } from "./common";
 import {
     afterElem,
@@ -109,4 +111,6 @@ export {
     packValidTypes,
     compressString,
     decompressString,
+    openAsWindow,
+    timeOverThresh,
 };

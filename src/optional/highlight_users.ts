@@ -1,5 +1,5 @@
 import { domMeasure, insertStyle, objHas } from "../core/common";
-import { observerInstalledEvent, processPostRefreshEvent } from "../core/events";
+import { processPostRefreshEvent } from "../core/events";
 import type { HighlightGroup } from "../core/index.d";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -17,10 +17,10 @@ export interface ResolvedUsers {
 export const HighlightUsers = {
     cache: {} as ResolvedUsers,
 
-    install() {
+    async install() {
+        await HighlightUsers.applyFilter();
         // refresh our styling state when refreshing a post
         processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
-        observerInstalledEvent.addHandler(HighlightUsers.applyFilter);
     },
 
     async resolveUsers() {

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { arrHas, classNames, elemMatches, compressString, decompressString } from "../../core/common";
+import { arrHas, classNames, elemMatches, compressString, decompressString, timeOverThresh } from "../../core/common";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
 
@@ -12,11 +12,11 @@ export interface Draft {
 
 const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
-    const curTime = Date.now();
-    const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts
+    //const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts
+    const maxAge = 1000 * 60 * 2; // 2min timeout on saved drafts
     // filter any posts that are older than the cutoff and order by ascending age
     const lruByNewest = [...drafts]
-        .filter((d) => Math.abs(curTime - d.timestamp) < maxAge)
+        .filter((d) => !timeOverThresh(d.timestamp, maxAge))
         .sort((a, b) => b.timestamp - a.timestamp);
     return lruByNewest || ([] as Draft[]);
 };

@@ -3,7 +3,6 @@ import { arrHas, elemMatches, locatePostRefs } from "./common";
 import { disableTwitch, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
-    observerInstalledEvent,
     processEmptyTagsLoadedEvent,
     processPostBoxEvent,
     processPostEvent,
@@ -173,7 +172,6 @@ export const processPost = (args: PostEventArgs) => {
 };
 export const processFullPosts = async () => {
     await processObserverInstalled();
-    observerInstalledEvent.raise();
     const fullposts = [...document.querySelectorAll("div.fullpost")] as HTMLElement[];
     const process = async (el: HTMLElement) => {
         const args = await locatePostRefs(el);

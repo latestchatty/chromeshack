@@ -1,15 +1,9 @@
 import { domMutate } from "../core/common";
-import { observerInstalledEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 
 /// optionally disable auto-play on the Chatty's article Twitch player
 export const TwitchAutoplay = {
-    install() {
-        observerInstalledEvent.addHandler(TwitchAutoplay.apply);
-    },
-
-    async apply() {
-        // loads on startup
+    async install() {
         const is_enabled = await enabledContains(["twitchauto"]);
         if (is_enabled) {
             const articlePlayer = document.querySelector(".article-content iframe");

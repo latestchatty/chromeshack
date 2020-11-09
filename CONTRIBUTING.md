@@ -24,7 +24,6 @@ If you're interested in contributing a new content script or feature suggestion:
 -   For pull-requests make sure your code is rebased on the most recent version of the `master` branch.
 -   A few notes that you may want to be aware of when building new content scripts for Chrome Shack:
     -   In addition to the API provider notes above, Chrome Shack also offers a variety of events that are bubbled when the Chatty page changes:
-        -   `observerInstalledEvent` is fired immediately before processing any elements on the page (use this for on-start scripts)
         -   `processPostEvent` is fired every time a Chatty fullpost is loaded
         -   `fullPostsCompletedEvent` is fired once when all the rootposts on the Chatty are loaded initially
         -   `processPostBoxEvent` is fired when the user opens the Reply panel of a fullpost

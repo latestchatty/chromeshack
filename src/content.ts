@@ -41,23 +41,23 @@ export const HU_Instance = HighlightUsers;
     // try to fix incorrect positioning in single-thread mode
     singleThreadFix();
     // optional modules that rely on toggles
-    ChattyNews.install();
-    CustomUserFilters.install();
+    await ChattyNews.install();
+    await CustomUserFilters.install();
+    await HighlightPendingPosts.install();
+    await HU_Instance.install();
+    await NewCommentHighlighter.install();
+    await PostStyling.install();
+    await Switchers.install();
+    await ThreadPane.install();
+    await TwitchAutoplay.install();
     Drafts.install();
-    HighlightPendingPosts.install();
-    HU_Instance.install();
     MediaEmbedder.install();
-    NewCommentHighlighter.install();
     NwsIncognito.install();
     PostPreview.install();
-    PostStyling.install();
-    Switchers.install();
     Templates.install();
-    ThreadPane.install();
-    TwitchAutoplay.install();
 
     // non-optional modules
-    Collapse.install();
+    await Collapse.install();
     CommentTags.install();
     EmojiPoster.install();
     ImageUploader.install();

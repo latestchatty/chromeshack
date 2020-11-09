@@ -2,7 +2,10 @@
 
 describe("Two Pane Layout", () => {
     before(() => {
-        cy.loadExtensionDefaults({}, { enabled_scripts: ["thread_pane"] });
+        cy.loadExtensionDefaults(null, { enabled_scripts: ["thread_pane"] });
+    });
+    beforeEach(() => {
+        cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
     });
 
     context("thread interactivity", () => {
@@ -33,11 +36,20 @@ describe("Two Pane Layout", () => {
         });
 
         it("reply icon is shown for logged user", () => {
-            cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
             cy.visit("https://www.shacknews.com/chatty?id=40040022#item_40040022");
 
             const postid = "40040022";
             cy.get(`div#item_${postid} div.cs_thread_contains_user`).should("be.visible");
+        });
+
+        it("collapsed card interactions", () => {
+            cy.get("div.root>ul>li .postmeta>a.closepost").click();
+
+            const threadid = "40040022";
+            cy.get(`div#item_${threadid}`).as("card").should("have.class", "collapsed");
+
+            cy.get("div.root>ul>li .postmeta>a.showpost").click();
+            cy.get("@card").should("not.have.class", "collapsed");
         });
     });
 });

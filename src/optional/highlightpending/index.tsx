@@ -1,10 +1,9 @@
 import React from "react";
 import { render } from "react-dom";
-import { enabledContains } from "../../core/settings";
-import { HighlightPendingApp } from "./HighlightPendingApp";
-import "../../styles/highlight_pending.css";
-import { observerInstalledEvent } from "../../core/events";
 import { domMutate, parseToElement } from "../../core/common";
+import { enabledContains } from "../../core/settings";
+import "../../styles/highlight_pending.css";
+import { HighlightPendingApp } from "./HighlightPendingApp";
 
 export interface PendingPost {
     postId: number;
@@ -13,11 +12,7 @@ export interface PendingPost {
 }
 
 const HighlightPendingPosts = {
-    install() {
-        observerInstalledEvent.addHandler(HighlightPendingPosts.apply);
-    },
-
-    async apply() {
+    async install() {
         const isEnabled = await enabledContains(["highlight_pending_new_posts"]);
         const selectedPage = document.querySelector("a.selected_page") as HTMLAnchorElement;
         const isFirstPage = selectedPage?.href?.match(/page=1$/i);

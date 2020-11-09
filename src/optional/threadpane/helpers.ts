@@ -173,7 +173,7 @@ export const parseRoot = async (rootElem: HTMLElement) =>
         const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
         const recents = await getRecents(root);
         const contained = await threadContainsLoggedUser(rootElem);
-        const collapsed = !!(await Collapse.findCollapsed(rootid.toString()));
+        const collapsed = !!Collapse.findCollapsed(rootid);
         return {
             author,
             authorid,

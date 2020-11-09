@@ -1,4 +1,5 @@
 import type { ShackRSSItem } from "../core/common";
+import type { CollapsedThread } from "../builtin/collapse";
 
 export interface HighlightGroup {
     name?: string;
@@ -45,7 +46,6 @@ export type SettingKey =
     | "chatty_news_lastfetchtime"
     | "highlight_groups"
     | "image_uploader_toggled"
-    | "last_collapse_time"
     | "last_eventid"
     | "last_highlight_time"
     | "new_comment_highlighter_last_id"
@@ -61,12 +61,11 @@ export type SettingKey =
 export interface SettingsDict {
     enabled_scripts: EnabledOptions[];
     enabled_suboptions: EnabledSuboptions[];
-    collapsed_threads: number[];
+    collapsed_threads: CollapsedThread[];
     chatty_news_lastfetchdata: ShackRSSItem[];
     chatty_news_lastfetchtime: number;
     highlight_groups: HighlightGroup[];
     image_uploader_toggled: boolean;
-    last_collapse_time: number;
     last_eventid: number;
     last_highlight_time: number;
     new_comment_highlighter_last_id: number;

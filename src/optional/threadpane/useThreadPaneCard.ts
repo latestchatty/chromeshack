@@ -65,8 +65,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
     const updateCollapsed = useCallback(
         (args: CollapsedPostEventArgs) => {
             const { threadid, is_collapsed } = args || {};
-            if (threadid === rootid && is_collapsed) setCollapsed(true);
-            else if (threadid === rootid && !is_collapsed) setCollapsed(false);
+            if (threadid === rootid) setCollapsed(is_collapsed);
         },
         [rootid],
     );

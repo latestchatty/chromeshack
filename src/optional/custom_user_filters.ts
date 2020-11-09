@@ -1,14 +1,14 @@
 import { HU_Instance } from "../content";
-import { observerInstalledEvent, processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
+import { processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
 import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
 import type { ResolvedUser } from "./highlight_users";
 
 export const CustomUserFilters = {
     rootPostCount: 0,
 
-    install() {
+    async install() {
+        await CustomUserFilters.applyFilter();
         processPostRefreshEvent.addHandler(CustomUserFilters.applyFilter);
-        observerInstalledEvent.addHandler(CustomUserFilters.applyFilter);
     },
 
     async removeOLsForAuthorId({ id }: ResolvedUser) {

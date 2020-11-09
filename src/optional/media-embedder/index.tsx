@@ -32,7 +32,8 @@ export const MediaEmbedder = {
                 const detected = await detectMediaLink(l.href);
                 if (!detected) return;
                 const container = parseToElement(`<div id="react-media-element" />`);
-                post?.append(container);
+                // the container needs to remain in the DOM for events to work
+                postbody.append(container);
                 // replace each source link with the rendered media link
                 render(<Expando response={detected} options={{ openByDefault }} />, container, () =>
                     l.replaceWith(container.childNodes[0]),

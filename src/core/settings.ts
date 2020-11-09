@@ -44,9 +44,10 @@ export const setSetting = async (key: SettingKey, val: any) => {
 
 export const getSetting = async (key: SettingKey, defaultVal?: any) => {
     const settings = (await getSettings()) as Settings;
+    const found = settings[key];
     // overwrite key with default (if provided)
-    if (!Object.keys(settings).includes(key)) setSetting(key, defaultVal);
-    return settings[key] === undefined || settings[key] === null ? defaultVal || null : settings[key];
+    if (!found) setSetting(key, defaultVal);
+    return settings[key] === undefined || settings[key] === null ? defaultVal ?? null : found;
 };
 
 export const getSettingsVersion = async () => await getSetting("version", 0);
@@ -321,6 +322,8 @@ export const migrateSettings = async () => {
         // migrate pre-1.72 settings
         const settingsMutation = {
             key: [{ old: "selected_tab", new: "selected_upload_tab" }],
+            collapsed_threads: null,
+            last_collapse_time: null,
         } as MigratedSettings;
         const mutatedSettings = await mergeSettings(settingsMutation);
         await setSettings(mutatedSettings);
@@ -336,7 +339,6 @@ export const migrateSettings = async () => {
     if (imported || last_version !== current_version) {
         // reset time tracked variables when migrating from imported data
         await setSetting("new_comment_highlighter_last_id", -1);
-        await setSetting("last_collapse_time", -1);
         await setSetting("chatty_news_lastfetchtime", -1);
         await setEnabledSuboption("show_rls_notes");
         await updateSettingsVersion();

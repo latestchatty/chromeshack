@@ -36,7 +36,6 @@ class LiteEvent<T> implements LiteEventInterface<T> {
     }
 }
 
-export const observerInstalledEvent = new LiteEvent<void>();
 export const fullPostsCompletedEvent = new LiteEvent<void>();
 export const processPostEvent = new LiteEvent<PostEventArgs>();
 export const processPostBoxEvent = new LiteEvent<PostboxEventArgs>();

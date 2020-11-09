@@ -1,10 +1,18 @@
-import { elemMatches, locatePostRefs } from "../core/common";
+import { elemMatches, locatePostRefs, timeOverThresh } from "../core/common";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { PostEventArgs } from "../core/events.d";
 import { getSetting, setSetting } from "../core/settings";
 
+export interface CollapsedThread {
+    threadid: number;
+    timestamp: number;
+}
+
 export const Collapse = {
-    install() {
+    collapsed: [] as CollapsedThread[],
+
+    async install() {
+        await Collapse.getCollapsed();
         processPostEvent.addHandler(Collapse.toggle);
     },
 
@@ -13,76 +21,73 @@ export const Collapse = {
         const collapse = elemMatches(this_node, "a.closepost");
         const uncollapse = elemMatches(this_node, "a.showpost");
         const { rootid } = (await locatePostRefs(collapse)) || (await locatePostRefs(uncollapse)) || {};
-        if (collapse && rootid) Collapse.close(e, rootid);
-        else if (uncollapse && rootid) Collapse.show(e, rootid);
+        if (collapse && rootid) await Collapse.close(e, rootid);
+        else if (uncollapse && rootid) await Collapse.show(e, rootid);
     },
 
-    async findCollapsed(id: string) {
-        const collapsed = (await getSetting("collapsed_threads")) as string[];
-        const foundIdx = collapsed?.findIndex((c) => c === id);
-        return foundIdx > -1 ? { idx: foundIdx, collapsed } : null;
+    async getCollapsed() {
+        const _arr = (await getSetting("collapsed_threads", [])) as CollapsedThread[];
+        Collapse.collapsed = _arr;
+        await Collapse.cullAfterCollapseTime();
+    },
+    async setCollapsed(arr: CollapsedThread[]) {
+        await setSetting("collapsed_threads", arr);
+        Collapse.collapsed = arr;
+    },
+    findCollapsed(id: number) {
+        return Collapse.collapsed?.find((c) => c.threadid === id);
     },
 
     async cullAfterCollapseTime() {
+        // track per-thread expiry
         const maxTime = 1000 * 60 * 60 * 18; // 18hr limit
-        const curTime = Date.now();
-        const lastCollapseTime = (await getSetting("last_collapse_time", -1)) as number;
-        const diffTime = Math.abs(curTime - lastCollapseTime);
-        if (lastCollapseTime > -1 && diffTime > maxTime) {
-            await setSetting("last_collapse_time", curTime);
-            await setSetting("collapsed_threads", []);
-        }
+        const filtered = Collapse.collapsed.filter((c) => !timeOverThresh(c.timestamp, maxTime));
+        await Collapse.setCollapsed(filtered);
     },
 
-    async toggle({ post, root, rootid, is_root }: PostEventArgs) {
+    async toggle(args: PostEventArgs) {
+        const { post, root, rootid, is_root } = args || {};
         // only process for root posts
         if (post && is_root) {
             const rootContainer = root.closest("div.root") as HTMLElement;
             const close = post.querySelector("a.closepost");
             const show = post.querySelector("a.showpost");
-            await Collapse.cullAfterCollapseTime();
             document.addEventListener("click", Collapse.collapseHandler);
             // check if thread should be collapsed
-            const { idx } = (await Collapse.findCollapsed(rootid.toString())) || {};
-            if (idx > -1) {
-                collapsedPostEvent.raise({ threadid: rootid, is_collapsed: true });
+            const found = Collapse.findCollapsed(rootid);
+            if (found) {
+                collapsedPostEvent.raise({ threadid: found.threadid, is_collapsed: true });
                 rootContainer?.classList?.add("collapsed");
                 close.setAttribute("class", "closepost hidden");
                 show.setAttribute("class", "showpost");
-            }
+            } else collapsedPostEvent.raise({ threadid: rootid, is_collapsed: false });
         }
     },
 
-    collapseThread(id: number) {
+    async collapseThread(id: number) {
         const MAX_LENGTH = 100;
-        const _id = id.toString();
-        Collapse.findCollapsed(_id).then(({ idx, collapsed }) => {
-            if (idx === -1) {
-                collapsed.unshift(_id);
-                // remove a bunch if it gets too big
-                if (collapsed.length > MAX_LENGTH * 1.25) collapsed.splice(MAX_LENGTH);
-                setSetting("collapsed_threads", collapsed);
-                collapsedPostEvent.raise({ threadid: id, is_collapsed: true });
-            }
-        });
+        if (!Collapse.findCollapsed(id)) {
+            const _arr = [...Collapse.collapsed];
+            _arr.unshift({ threadid: id, timestamp: Date.now() });
+            // remove a bunch if it gets too big
+            if (_arr.length > MAX_LENGTH * 1.25) _arr.splice(MAX_LENGTH);
+            await Collapse.setCollapsed(_arr);
+            collapsedPostEvent.raise({ threadid: id, is_collapsed: true });
+        }
     },
 
-    unCollapseThread(id: number) {
-        Collapse.findCollapsed(id.toString()).then(({ idx, collapsed }) => {
-            if (idx > -1) {
-                collapsed.splice(idx, 1);
-                setSetting("collapsed_threads", collapsed);
-                collapsedPostEvent.raise({ threadid: id, is_collapsed: false });
-            }
-        });
+    async unCollapseThread(id: number) {
+        const filtered = Collapse.collapsed.filter((c) => c.threadid !== id);
+        await Collapse.setCollapsed(filtered);
+        collapsedPostEvent.raise({ threadid: id, is_collapsed: false });
     },
 
-    close(e: MouseEvent, id: number) {
-        Collapse.collapseThread(id);
+    async close(e: MouseEvent, id: number) {
+        await Collapse.collapseThread(id);
     },
 
     async show(e: MouseEvent, id: number) {
-        Collapse.unCollapseThread(id);
+        await Collapse.unCollapseThread(id);
         const this_node = e.target as HTMLElement;
         if (
             this_node?.parentNode?.querySelector(".closepost:not(.hidden)") &&

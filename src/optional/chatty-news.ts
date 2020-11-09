@@ -1,5 +1,4 @@
-import { arrHas, fetchSafe, parseToElement, ShackRSSItem } from "../core/common";
-import { observerInstalledEvent } from "../core/events";
+import { arrHas, fetchSafe, parseToElement, ShackRSSItem, timeOverThresh } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
@@ -7,12 +6,11 @@ export const ChattyNews = {
     timeout: 1000 * 60 * 15,
 
     async checkTime(delayInMs: number) {
-        const curTime = Date.now();
-        const lastFetchTime = (await getSetting("chatty_news_lastfetchtime", -1)) as number;
-        const diffTime = Math.abs(curTime - lastFetchTime);
-        if (lastFetchTime > -1 || diffTime > delayInMs) {
+        const lastFetchTime = (await getSetting("chatty_news_lastfetchtime", Date.now())) as number;
+        const overThresh = timeOverThresh(lastFetchTime, delayInMs);
+        if (lastFetchTime > -1 || !!overThresh) {
             // update if necessary or start fresh
-            await setSetting("chatty_news_lastfetchtime", curTime);
+            await setSetting("chatty_news_lastfetchtime", overThresh);
             return true;
         } else return false;
     },
@@ -88,7 +86,7 @@ export const ChattyNews = {
         }
     },
 
-    install() {
-        observerInstalledEvent.addHandler(ChattyNews.apply);
+    async install() {
+        await ChattyNews.apply();
     },
 };
