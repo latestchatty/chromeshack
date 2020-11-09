@@ -1,5 +1,4 @@
 import { fetchSafe } from "../common";
-import type { ParsedResponse } from "./";
 
 const resolveTenor = async (shortcode: string) => {
     const __obf = atob("UE9JODJZS1NWRENQ");

@@ -1,5 +1,3 @@
-import type { ParsedResponse } from "./";
-
 const parseLink = (href: string) => {
     const isGiphy = /https?:\/\/(?:.+\.)?giphy\.com\/\w+?(?:\/(\w+)$|.+?-(\w+)$)/i.exec(href);
     return isGiphy

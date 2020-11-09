@@ -1,6 +1,5 @@
 import { insertStyle, superTrim } from "../core/common";
 import { DefaultSettings } from "../core/default_settings";
-import type { HighlightGroup, Settings } from "../core/index.d";
 import {
     getSettings,
     mergeHighlightGroups,

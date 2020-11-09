@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { arrHas, superTrim } from "../core/common";
-import type { HighlightGroup as HighlightGroupType } from "../core/index.d";
 import { highlightGroupsEqual } from "../core/settings";
 import { addHighlightGroup, delHighlightGroup } from "./actions";
 import { FilterBox } from "./FilterBox";
 import { insertGroupCSS, randomHsl, trimName } from "./helpers";
-import type { PopupState } from "./index.d";
 import { usePopupStore } from "./popupStore";
 
 const HighlightGroup = (props: { name: string }) => {
@@ -15,7 +13,7 @@ const HighlightGroup = (props: { name: string }) => {
     const state = useStoreState() as PopupState;
     const dispatch = useStoreDispatch();
 
-    const [localGroup, setLocalGroup] = useState<HighlightGroupType>(
+    const [localGroup, setLocalGroup] = useState<HighlightGroup>(
         state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase()),
     );
     const [nameInput, setNameInput] = useState(localGroup.name);

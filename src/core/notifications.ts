@@ -1,7 +1,6 @@
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, fetchSafe } from "./common";
 import { processNotifyEvent } from "./events";
-import type { NewestEventResponse, NotifyEvent, NotifyMsg, NotifyResponse } from "./notifications.d";
 import { enabledContains, getEnabled, getSetting, setSetting } from "./settings";
 
 export const getEventId = async () => (await getSetting("last_eventid")) as number;

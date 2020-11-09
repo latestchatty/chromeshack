@@ -1,27 +1,10 @@
 import type { WebRequest } from "webextension-polyfill-ts";
 import { browser } from "webextension-polyfill-ts";
-import { FetchArgs, fetchSafe, JSONToFormData } from "./core/common";
 import { startNotifications } from "./core/notifications";
 import { migrateSettings } from "./core/settings";
 import { chatViewFix } from "./patches/chatViewFix";
 import { scrollByKeyFix } from "./patches/scrollByKeyFix";
-
-type OnMessageRequestName =
-    | "launchIncognito"
-    | "allowedIncognitoAccess"
-    | "chatViewFix"
-    | "scrollByKeyFix"
-    | "corbFetch"
-    | "corbPost";
-interface OnMessageRequest {
-    name: OnMessageRequestName;
-    data?: any;
-    value?: string;
-    url?: string;
-    fetchOpts: FetchArgs;
-    headers: any;
-    parseType: any;
-}
+import { fetchSafe, JSONToFormData } from "./core/common";
 
 browser.runtime.onMessage.addListener(
     async (request: OnMessageRequest): Promise<any> => {

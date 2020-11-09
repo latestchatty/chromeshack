@@ -6,12 +6,8 @@ import {
     processPostRefreshEvent,
     userFilterUpdateEvent,
 } from "../../core/events";
-import { CollapsedPostEventArgs, JumpToPostEventArgs, PendingPostEventArgs, PostEventArgs } from "../../core/events.d";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
-import type { PendingPost } from "../highlightpending";
-import { ResolvedUser } from "../highlight_users";
 import { jumpToPost, parseRoot } from "./helpers";
-import type { ParsedPost, ParsedReply } from "./index.d";
 
 const useThreadPaneCard = (post: ParsedPost) => {
     const [localPost, setLocalPost] = useState(post);

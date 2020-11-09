@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { arrHas, classNames, elemMatches, objContainsProperty, objEmpty, openAsWindow } from "../../common";
 import { ResolveMedia } from "../../useResolvedLinks";
 import { TwitterBadgeSVG, TwitterVerifiedSVG } from "./Icons";
-import type { TweetParsed } from "./twitter";
 
 const CompiledTweetText = ({ text }: { text: string }) => {
     if (!text) return <span />;

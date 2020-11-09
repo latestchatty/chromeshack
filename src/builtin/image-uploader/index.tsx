@@ -1,7 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
 import { processPostBoxEvent } from "../../core/events";
-import type { PostboxEventArgs } from "../../core/events.d";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
 import "../../styles/image_uploader.css";

@@ -1,10 +1,8 @@
 import React, { useRef } from "react";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
-import type { UploaderAction, UploaderState } from "./index.d";
 import { useUploaderStore } from "./uploaderStore";
 import { useImageUploader } from "./useImageUploader";
 
-export type UploadData = string[] | File[];
 const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
     const { postboxEl } = props || {};
     const parentRef = useRef(postboxEl);

@@ -3,7 +3,6 @@ import { render } from "react-dom";
 import { detectMediaLink } from "../../core/api";
 import { arrHas, domMutate, parseToElement } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
-import { PostEventArgs } from "../../core/events.d";
 import { enabledContains } from "../../core/settings";
 import "../../styles/embed_socials.css";
 import "../../styles/media.css";

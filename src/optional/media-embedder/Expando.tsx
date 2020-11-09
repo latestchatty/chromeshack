@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { isValidElement, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { classNames, elemMatches, getLinkType } from "../../core/common";
 import { resolveChildren } from "../../core/useResolvedLinks";
-import type { ExpandoProps } from "./index.d";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;
 const CompressIcon = () => <FontAwesomeIcon className="compress__icon" icon={faCompressAlt} />;

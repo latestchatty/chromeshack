@@ -1,12 +1,6 @@
 import { elemMatches, locatePostRefs, timeOverThresh } from "../core/common";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
-import { PostEventArgs } from "../core/events.d";
 import { getSetting, setSetting } from "../core/settings";
-
-export interface CollapsedThread {
-    threadid: number;
-    timestamp: number;
-}
 
 export const Collapse = {
     collapsed: [] as CollapsedThread[],

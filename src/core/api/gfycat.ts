@@ -1,6 +1,4 @@
 import { Dispatch } from "react";
-import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
-import type { UploaderAction, UploadFailurePayload, UploadSuccessPayload } from "../../builtin/image-uploader/index.d";
 import {
     fetchSafe,
     fetchSafeLegacy,
@@ -11,25 +9,10 @@ import {
     postBackground,
     waitToFetchSafe,
 } from "../common";
-import type { ParsedResponse } from "./";
 
 const gfycatApiUrl = "https://api.gfycat.com/v1/gfycats"; // GET
 const gfycatStatusUrl = "https://api.gfycat.com/v1/gfycats/fetch/status"; // GET
 const gfycatDropUrl = "https://filedrop.gfycat.com"; // POST
-
-interface GfycatResponse {
-    task?: string;
-    gfyname?: string;
-    code?: string;
-    errorMessage?: {
-        code?: string;
-        description?: string;
-    };
-    gfyItem?: {
-        webmUrl?: string;
-        mobileUrl?: string;
-    };
-}
 
 export const doResolveGfycat = async (...args: any[]) => {
     const [gfyname] = args;

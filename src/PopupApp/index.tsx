@@ -6,7 +6,6 @@ import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";
 import { HighlightGroups } from "./HighlightGroups";
 import { ImportExport } from "./ImportExport";
-import type { PopupState } from "./index.d";
 import { Option, OptionButton, OptionGroup, Suboption } from "./Options";
 import { usePopupStore } from "./popupStore";
 import { Tabs } from "./Tabs";

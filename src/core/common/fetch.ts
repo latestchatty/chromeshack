@@ -1,7 +1,6 @@
 import DOMPurify from "dompurify";
 import { browser } from "webextension-polyfill-ts";
 import { arrHas, isJSON, objHas } from "./";
-import type { PurifyConfig, ShackRSSItem, ParseType, PostArgs, FetchArgs } from "./index.d";
 
 const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
     const _objKeys = val && typeof val === "object" && Object.keys(val);

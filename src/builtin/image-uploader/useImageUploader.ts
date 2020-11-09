@@ -4,8 +4,6 @@ import { handleGfycatUpload } from "../../core/api/gfycat";
 import { handleImgurUpload } from "../../core/api/imgur";
 import { appendLinksToField, arrHas } from "../../core/common";
 import { getSetting, setSetting } from "../../core/settings";
-import { TAB_NAMES } from "./actions";
-import type { UploaderAction, UploaderState } from "./index.d";
 
 const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch: React.Dispatch<UploaderAction>) => {
     const fileChooserRef = useRef(null);

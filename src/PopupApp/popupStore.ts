@@ -1,5 +1,4 @@
 import { createStore } from "../core/createStore";
-import type { PopupAction, PopupState } from "./index.d";
 
 const initialState: PopupState = {
     options: [],

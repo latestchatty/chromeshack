@@ -1,6 +1,3 @@
-import type { FetchArgs, ParseType, ShackRSSItem } from "./index.d";
-export type { FetchArgs, ParseType, ShackRSSItem };
-
 import {
     arrEmpty,
     arrHas,

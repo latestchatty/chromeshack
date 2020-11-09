@@ -1,7 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
 import { processPostBoxEvent } from "../../core/events";
-import { PostboxEventArgs } from "../../core/events.d";
 import { enabledContains } from "../../core/settings";
 import { TemplatesApp } from "./TemplatesApp";
 import "../../styles/templates.css";

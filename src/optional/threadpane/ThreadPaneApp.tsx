@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
 import { RefreshIcon } from "../media-embedder/Expando";
-import type { ParsedPost, ParsedReply, Recents } from "./index.d";
 import { useThreadPaneCard } from "./useThreadPaneCard";
 import parse from "html-react-parser";
 

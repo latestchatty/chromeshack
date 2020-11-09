@@ -1,5 +1,4 @@
 import { elemMatches, locatePostRefs } from "./common";
-import type { RefreshMutation } from "./events.d";
 import { handleRootAdded, processFullPosts, processPost, processPostBox } from "./observer_handlers";
 
 export const ChromeShack = {

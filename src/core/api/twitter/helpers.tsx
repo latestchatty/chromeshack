@@ -1,6 +1,5 @@
 import { arrHas, decodeHTML, fetchBackground, objHas } from "../../common";
 import { getEnabledSuboption } from "../../settings";
-import type { TweetParsed, TwitterMediaItemVariant, TwitterResponse, TwitterResponseMediaItem } from "./twitter";
 
 export const sortByBitrate = (mediaArr: TwitterMediaItemVariant[]) => {
     // prioritize the highest bitrate source

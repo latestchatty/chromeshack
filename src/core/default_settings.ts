@@ -1,4 +1,3 @@
-import type { Settings } from "./index.d";
 const DefaultSettings: Settings = {
     enabled_scripts: [
         "shrink_user_icons",

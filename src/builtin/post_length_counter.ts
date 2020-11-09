@@ -1,7 +1,6 @@
 import { EmojiPoster } from "../builtin/emoji_poster";
 import { parseToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
-import type { PostboxEventArgs } from "../core/events.d";
 
 export const PostLengthCounter = {
     MAX_POST_BYTES: 105,

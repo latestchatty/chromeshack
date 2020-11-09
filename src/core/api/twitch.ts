@@ -1,5 +1,3 @@
-import type { ParsedResponse } from "./";
-
 const parseLink = (href: string) => {
     // $1 = VODs, $2 = channels, $3 = collections, $4 = time offset
     const isTwitch = /https?:\/\/(?!clips\.)(?:.*?\.)?twitch\.tv\/(?:(?:\w+\/v\/|videos\/)(\w+)|(\w+).?$)(?:.*?\??collection=([\w-]+))?(?:.*?\??t=(\w+)$)?/i.exec(

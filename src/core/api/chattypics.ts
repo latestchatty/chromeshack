@@ -1,8 +1,5 @@
 import { Dispatch } from "react";
-import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
-import type { UploaderAction, UploadFailurePayload, UploadSuccessPayload } from "../../builtin/image-uploader/index.d";
 import { arrEmpty, FormDataToJSON, isFileArr, isImage, isVideo, postBackground } from "../common";
-import type { ParsedResponse } from "./";
 
 const chattyPicsUrl = "https://chattypics.com/upload.php";
 

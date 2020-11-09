@@ -1,21 +1,9 @@
 import React from "react";
 import DOMPurify from "dompurify";
-import type { ParsedResponse } from ".";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import "../../styles/chattypost.css";
 import { domMeasure, elemMatches, fetchSafe, objHas, openAsWindow } from "../common";
 import parse from "html-react-parser";
-
-interface ParsedChattyPost {
-    postid: number;
-    permalink: string;
-    author: string;
-    authorid: number;
-    saneAuthor: string;
-    icons: HTMLImageElement[];
-    postbody: string;
-    postdate: string;
-}
 
 const parseChattyPost = async (sanitizedFragment: DocumentFragment) =>
     await domMeasure(() => {

@@ -1,4 +1,4 @@
-import { arrHas, fetchSafe, parseToElement, ShackRSSItem, timeOverThresh } from "../core/common";
+import { arrHas, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 

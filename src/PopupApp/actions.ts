@@ -1,7 +1,5 @@
-import type { HighlightGroup, Settings } from "../core/index.d";
 import { getSettings, setSettings } from "../core/settings";
 import { getRandomInt, randomHsl } from "./helpers";
-import type { FilterTypes, OptionsTypes, PopupAction, PopupState } from "./index.d";
 
 /*
  * IMPORTANT: ALWAYS RETURN GET/SET DATA FROM SETTINGS STORAGE - NOT STATE STORE!

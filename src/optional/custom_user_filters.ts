@@ -1,7 +1,6 @@
 import { HU_Instance } from "../content";
 import { processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
 import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
-import type { ResolvedUser } from "./highlight_users";
 
 export const CustomUserFilters = {
     rootPostCount: 0,

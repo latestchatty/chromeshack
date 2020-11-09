@@ -6,10 +6,7 @@ import {
     processNotifyEvent,
     processPostRefreshEvent,
 } from "../../core/events";
-import { PostEventArgs } from "../../core/events.d";
-import type { NotifyEvent, NotifyResponse } from "../../core/notifications.d";
 import { getSetting } from "../../core/settings";
-import type { PendingPost } from "./";
 
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
 const isPending = (elem: HTMLElement) => elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;

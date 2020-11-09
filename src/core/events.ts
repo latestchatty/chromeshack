@@ -1,21 +1,3 @@
-/* eslint @typescript-eslint/no-unused-vars: "off" */
-
-import type { ResolvedUser } from "../optional/highlight_users";
-import { domMutate } from "./common";
-import type {
-    CollapsedPostEventArgs,
-    JumpToPostEventArgs,
-    PendingPostEventArgs,
-    PostboxEventArgs,
-    PostEventArgs,
-} from "./events.d";
-import type { NotifyResponse } from "./notifications.d";
-
-interface LiteEventInterface<T> {
-    addHandler(handler: { (...args: T[]): void }): void;
-    removeHandler(handler: { (...args: T[]): void }): void;
-}
-
 class LiteEvent<T> implements LiteEventInterface<T> {
     private handlers: { (...args: T[]): void }[] = [];
 

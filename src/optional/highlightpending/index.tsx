@@ -5,12 +5,6 @@ import { enabledContains } from "../../core/settings";
 import "../../styles/highlight_pending.css";
 import { HighlightPendingApp } from "./HighlightPendingApp";
 
-export interface PendingPost {
-    postId: number;
-    threadId: number;
-    thread: HTMLElement;
-}
-
 const HighlightPendingPosts = {
     async install() {
         const isEnabled = await enabledContains(["highlight_pending_new_posts"]);

@@ -1,18 +1,6 @@
 import { domMeasure, insertStyle, objHas } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
-import type { HighlightGroup } from "../core/index.d";
 import { enabledContains, getSetting } from "../core/settings";
-
-export interface ResolvedUser {
-    id: number;
-    mod?: boolean;
-    op?: boolean;
-    postid?: number;
-    username: string;
-}
-export interface ResolvedUsers {
-    [x: string]: ResolvedUser[];
-}
 
 export const HighlightUsers = {
     cache: {} as ResolvedUsers,

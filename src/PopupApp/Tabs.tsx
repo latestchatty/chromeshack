@@ -2,11 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { classNames } from "../core/common";
 import { getSetting, setSetting } from "../core/settings";
 
-declare global {
-    interface Window {
-        browser: any;
-    }
-}
 const isChromeBrowser = !window.browser ? true : false;
 
 const storeActiveTab = async (idx: number) => await setSetting("selected_popup_tab", idx);

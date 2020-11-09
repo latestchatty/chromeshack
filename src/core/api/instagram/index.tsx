@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import type { ParsedResponse } from "../../api";
 import { fetchInstagramData, Instagram } from "./Components";
-import type { InstagramParsed } from "./instagram.d";
 
 const InstagramWrapper = (props: { response: InstagramParsed }) => {
     const { response } = props || {};
@@ -33,4 +31,3 @@ const parseLink = (href: string) => {
 export const isInstagram = (href: string) => parseLink(href);
 
 export { fetchInstagramData, InstagramWrapper as Instagram };
-export type { InstagramParsed };

@@ -22,18 +22,6 @@ import { isTwitter } from "./twitter";
 import { isXboxDVR } from "./xboxdvr";
 import { isYoutube } from "./youtube";
 
-export type ParsedType = "image" | "video" | "iframe" | "instagram" | "twitter" | "chattypost";
-export interface ParsedResponse {
-    src?: string;
-    href?: string;
-    type: ParsedType;
-    args?: string[];
-    cb?: (...args: string[]) => any;
-    component?: JSX.Element;
-    postid?: number;
-    idx?: number;
-}
-
 /*
  * detectMediaLink expects implemented parsers to return one of two objects:
  * 1) { src: string, type: ... }

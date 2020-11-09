@@ -4,12 +4,6 @@ import { arrHas, classNames, elemMatches, compressString, decompressString, time
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
 
-export interface Draft {
-    body: string;
-    postid: number;
-    timestamp: number;
-}
-
 const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
     //const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts

@@ -1,5 +1,4 @@
 import { isImage, isVideo } from "../common";
-import type { ParsedResponse } from "./";
 
 const parseLink = (href: string) => {
     const isDropbox = /https?:\/\/(?:.*?\.)?dropbox\.com\/s\/.+(?:png|jpe?g|gifv?|web[pm]|mov|mp4)\\?/i.test(href);

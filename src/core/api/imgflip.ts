@@ -1,5 +1,3 @@
-import type { ParsedResponse } from "./";
-
 const parseLink = (href: string) => {
     const isImgflip = /https?:\/\/(?:.+\.)?imgflip\.com\/(?:gif\/(\w+)|i\/(\w+))/i.exec(href);
     const video = isImgflip?.[1];

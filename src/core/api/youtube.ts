@@ -1,5 +1,3 @@
-import type { ParsedResponse } from "./";
-
 const decodeOffset = (text: string) => {
     const timeMatch = /(?:(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s))|(\d+)/i.exec(text);
     const hour = timeMatch && timeMatch[1];

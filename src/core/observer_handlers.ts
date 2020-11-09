@@ -1,4 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
+import { singleThreadFix } from "../patches/singleThreadFix";
 import { arrHas, elemMatches, locatePostRefs } from "./common";
 import { disableTwitch, scrollToElement } from "./common/dom";
 import {
@@ -11,8 +12,7 @@ import {
     processReplyEvent,
     processTagDataLoadedEvent,
 } from "./events";
-import type { PostEventArgs, RefreshMutation } from "./events.d";
-import { setUsername } from "./notifications";
+import { setUsername, TabMessenger } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
 
@@ -153,6 +153,10 @@ export const contentScriptLoaded = async () => {
     // set our current logged-in username once upon refreshing the Chatty
     const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
     if (loggedInUsername) await setUsername(loggedInUsername);
+    // open a message channel for WinChatty events
+    TabMessenger.connect();
+    // try to fix incorrect positioning in single-thread mode
+    singleThreadFix();
 };
 
 export const processObserverInstalled = async () => {

@@ -6,8 +6,8 @@ import { LocalTimeStamp } from "./builtin/local_timestamp";
 import { ModBanners } from "./builtin/mod_banners";
 import { PostLengthCounter } from "./builtin/post_length_counter";
 import { UserPopup } from "./builtin/userpopup";
-import { TabMessenger } from "./core/notifications";
 import { ChromeShack } from "./core/observer";
+import { contentScriptLoaded } from "./core/observer_handlers";
 import { ChattyNews } from "./optional/chatty-news";
 import { CustomUserFilters } from "./optional/custom_user_filters";
 import { Drafts } from "./optional/drafts";
@@ -19,18 +19,10 @@ import { NwsIncognito } from "./optional/nws_incognito";
 import { PostPreview } from "./optional/postpreview";
 import { PostStyling } from "./optional/post_style";
 import { Switchers } from "./optional/switchers";
-import { ThreadPane } from "./optional/threadpane";
 import { Templates } from "./optional/templates";
+import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
-import { singleThreadFix } from "./patches/singleThreadFix";
 import "./styles/chromeshack.css";
-import { contentScriptLoaded } from "./core/observer_handlers";
-
-declare global {
-    interface Window {
-        chrome: any;
-    }
-}
 
 // save some important refs for later
 export const CS_Instance = ChromeShack;
@@ -38,10 +30,6 @@ export const HU_Instance = HighlightUsers;
 
 (async () => {
     await contentScriptLoaded();
-    // open a message channel for WinChatty events
-    TabMessenger.connect();
-    // try to fix incorrect positioning in single-thread mode
-    singleThreadFix();
     // optional modules that rely on toggles
     await ChattyNews.install();
     await CustomUserFilters.install();

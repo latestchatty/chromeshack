@@ -1,6 +1,5 @@
 import { timeOverThresh } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
-import type { PostEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script

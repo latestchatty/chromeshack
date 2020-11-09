@@ -2,7 +2,6 @@
 import jQuery from "jquery";
 import { parseToElement } from "../core/common";
 import { submitFormEvent, processPostBoxEvent } from "../core/events";
-import type { PostboxEventArgs } from "../core/events.d";
 
 const $ = jQuery;
 

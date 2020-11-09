@@ -1,5 +1,4 @@
 import { isImage, isVideo } from "../common";
-import type { ParsedResponse } from "./";
 
 const parseLink = (href: string) => {
     const mediaMatch = /https?:\/\/.+?\/([\w\-._@#$%^&!()[\]{}+']+\.(?:png|jpe?g|web[mp]|gifv?|mp4))(?:[&?]?.+|$)/i.exec(

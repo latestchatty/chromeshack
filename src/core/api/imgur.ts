@@ -1,6 +1,4 @@
 import { Dispatch } from "react";
-import type { UploadData } from "../../builtin/image-uploader/ImageUploaderApp";
-import type { UploaderAction, UploadFailurePayload, UploadSuccessPayload } from "../../builtin/image-uploader/index.d";
 import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
 import {
     arrEmpty,
@@ -12,42 +10,11 @@ import {
     matchFileFormat,
     postBackground,
 } from "../common";
-import type { ParsedResponse } from "./";
 
 const imgurApiImageBaseUrl = "https://api.imgur.com/3/image";
 const imgurApiAlbumBaseUrl = "https://api.imgur.com/3/album";
 const imgurApiUploadUrl = "https://api.imgur.com/3/upload";
 const imgurClientId = "Client-ID c045579f61fc802";
-
-interface ImgurResolution {
-    imageId?: string;
-    albumId?: string;
-    galleryId?: string;
-}
-
-type ImgurMediaItem = {
-    mp4?: string;
-    link?: string;
-};
-interface ImgurResponse {
-    data: {
-        deletehash?: string;
-        images?: ImgurMediaItem[];
-        mp4?: string;
-        link?: string;
-    };
-}
-interface ImgurCreateAlbumResponse {
-    data: {
-        id?: string;
-        deletehash?: string;
-    };
-}
-
-interface ImgurSource {
-    src: string;
-    type: "image" | "video";
-}
 
 // wrap fetchSafe() so we can silence transmission exceptions
 const _auth = { Authorization: imgurClientId };

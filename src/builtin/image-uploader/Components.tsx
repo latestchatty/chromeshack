@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common";
-import type { ImageUploaderComponentProps } from "./index.d";
 
 const ExclamationCircleIcon = ({ className, title }: { className: string; title: string }) => (
     <FontAwesomeIcon className={className} title={title} icon={faExclamationCircle} />

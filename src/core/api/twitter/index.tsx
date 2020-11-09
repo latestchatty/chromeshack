@@ -1,8 +1,6 @@
 import React from "react";
-import type { ParsedResponse } from "../../api";
 import { useTweets } from "./Components";
 import { fetchTweets } from "./helpers";
-import type { TweetParsed } from "./twitter.d";
 
 const TwitterWrapper = (props: { response: TweetParsed }) => {
     /// wrap useTweets() returning memoized renders of <Twitter /> FC's
@@ -31,4 +29,3 @@ const parseLink = (href: string) => {
 export const isTwitter = (href: string) => parseLink(href);
 
 export { fetchTweets, useTweets };
-export type { TweetParsed };

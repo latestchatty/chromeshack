@@ -3,7 +3,6 @@ import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
 import { classNames, elemMatches, generatePreview, parseToElement, scrollToElement } from "../core/common";
 import { processPostBoxEvent, replyFieldEvent } from "../core/events";
-import { PostboxEventArgs } from "../core/events.d";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import parse, { DomElement, domToReact } from "html-react-parser";
 import "../styles/post_preview.css";

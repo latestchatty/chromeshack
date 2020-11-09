@@ -1,7 +1,5 @@
 import { arrHas, packValidTypes } from "../../core/common";
 import { createStore } from "../../core/createStore";
-import type { LOAD_FILES_ACTION, LOAD_TAB_ACTION, LOAD_URL_ACTION } from "./actions";
-import type { UploaderAction, UploaderState } from "./index.d";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
 export const videoFormats =

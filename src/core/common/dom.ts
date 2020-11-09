@@ -1,8 +1,6 @@
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
-import type { PostEventArgs } from "../../core/events.d";
 import { arrHas } from "./";
-import type { PreviewReplacements } from "./index.d";
 import fastdom from "fastdom";
 import fastdomPromised from "fastdom/extensions/fastdom-promised";
 
