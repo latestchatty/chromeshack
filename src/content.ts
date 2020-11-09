@@ -24,6 +24,7 @@ import { Templates } from "./optional/templates";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import { singleThreadFix } from "./patches/singleThreadFix";
 import "./styles/chromeshack.css";
+import { contentScriptLoaded } from "./core/observer_handlers";
 
 declare global {
     interface Window {
@@ -36,6 +37,7 @@ export const CS_Instance = ChromeShack;
 export const HU_Instance = HighlightUsers;
 
 (async () => {
+    await contentScriptLoaded();
     // open a message channel for WinChatty events
     TabMessenger.connect();
     // try to fix incorrect positioning in single-thread mode

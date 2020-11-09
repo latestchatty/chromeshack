@@ -148,9 +148,14 @@ export const handleRefreshClick = async (e: MouseEvent) => {
     }
 };
 
-export const processObserverInstalled = async () => {
+export const contentScriptLoaded = async () => {
     await mergeTransientSettings();
+    // set our current logged-in username once upon refreshing the Chatty
+    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
+    if (loggedInUsername) await setUsername(loggedInUsername);
+};
 
+export const processObserverInstalled = async () => {
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
     await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
@@ -160,10 +165,6 @@ export const processObserverInstalled = async () => {
 
     document.addEventListener("click", handleRefreshClick);
     processReplyEvent.addHandler(handleReplyAdded);
-
-    // set our current logged-in username once upon refreshing the Chatty
-    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
-    if (loggedInUsername) await setUsername(loggedInUsername);
 };
 
 export const processPost = (args: PostEventArgs) => {
