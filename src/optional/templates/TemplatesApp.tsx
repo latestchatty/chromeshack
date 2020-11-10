@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { faCheck, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { arrHas, classNames, compressString, decompressString, elemMatches } from "../../core/common";
@@ -53,6 +53,7 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
 
     const [templates, setTemplates] = useState([] as string[]);
     const [popupVisible, setPopupVisible] = useState(false);
+    const popupRef = useRef(null);
 
     const loadTemplatesFromStore = useCallback(() => {
         (async () => {
@@ -113,6 +114,10 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
     };
 
     useEffect(() => {
+        const height = popupRef?.current?.clientHeight;
+        if (height) popupRef.current.setAttribute("style", `top: -${height * 0.5}px;`);
+    }, [popupVisible]);
+    useEffect(() => {
         saveTemplatesToStore();
     }, [saveTemplatesToStore]);
     useEffect(() => {
@@ -132,7 +137,7 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
             <button id="templates__btn" className={classNames({ toggled: popupVisible })} onClick={handleBtnClick}>
                 Templates
             </button>
-            <div className={classNames("templates__popup", { visible: popupVisible })}>
+            <div className={classNames("templates__popup", { visible: popupVisible })} ref={popupRef}>
                 {templates.map((t, i) => {
                     return <TemplateItem key={i} idx={i} body={t} onClick={handlePopupClick} />;
                 })}
