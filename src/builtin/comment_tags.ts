@@ -1,5 +1,5 @@
 import * as textFieldEdit from "text-field-edit";
-import { domMeasure, domMutate, parseToElement } from "../core/common";
+import { domMeasure, domMutate } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 
@@ -28,41 +28,42 @@ export const CommentTags = {
                 ["sample", "s[", "]s", "jt_sample"],
             ],
             [
-                ["olive", "e[", "]e", "jt_olive"],
+                ["limegreen", "l[", "]l", "jt_lime"],
                 ["underline", "_[", "]_", "jt_underline"],
             ],
             [
-                ["limegreen", "l[", "]l", "jt_lime"],
+                ["orange", "n[", "]n", "jt_orange"],
                 ["strike", "-[", "]-", "jt_strike"],
             ],
             [
-                ["orange", "n[", "]n", "jt_orange"],
+                ["multisync", "p[", "]p", "jt_pink"],
                 ["spoiler", "o[", "]o", "jt_spoiler", "return doSpoiler(event);"],
             ],
             [
-                ["multisync", "p[", "]p", "jt_pink"],
+                ["olive", "e[", "]e", "jt_olive"],
                 ["code", "/{{", "}}/", "jt_code"],
             ],
         ];
 
         const setToggled = (await getSetting("tags_legend_toggled", false)) as boolean;
-        const table = parseToElement(
-            /*html*/ `<table id='shacktags_legend_table' class='${
-                !setToggled ? "hidden" : ""
-            }'><tbody></tbody></table>`,
-        );
-        const place = table.querySelector("tbody");
+        const table = document.createElement("table");
+        const tbody = table.appendChild(document.createElement("tbody"));
+        table.setAttribute("id", "shacktags_legend_table");
+        table.setAttribute("class", !setToggled ? "hidden" : "");
+
         for (const tr of tags) {
-            const row = place.appendChild(document.createElement("tr"));
+            const row = tbody.appendChild(document.createElement("tr"));
             for (const tag of tr) {
                 const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
                 const name_td = row.appendChild(document.createElement("td"));
-                name_td.appendChild(parseToElement(/*html*/ `<span class='${class_name}'>${name}</span>`));
+                const span = document.createElement("span");
+                span.setAttribute("class", class_name);
+                span.textContent = name;
+                name_td.appendChild(span);
                 if (clickFuncAsString?.length > 0) name_td.setAttribute("onclick", clickFuncAsString);
                 const code_td = row.appendChild(document.createElement("td"));
                 const button = code_td.appendChild(document.createElement("a"));
-                const buttonText = `${opening_tag}...${closing_tag}`;
-                button.appendChild(document.createTextNode(buttonText));
+                button.textContent = `${opening_tag}...${closing_tag}`;
                 button.href = "#";
                 button.addEventListener("click", async (e: MouseEvent) => {
                     e.preventDefault();
