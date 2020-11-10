@@ -1,4 +1,4 @@
-import { arrHas, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
+import { arrHas, domMutate, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
@@ -58,6 +58,8 @@ export const ChattyNews = {
             const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
             const alignmentBox = document.createElement("div");
             const subAlignmentBox = document.createElement("div");
+            // double check this is the full chatty page
+            const is_chatty = document.querySelector(".pagenavigation");
             alignmentBox.setAttribute("id", "chattynews__aligner");
             subAlignmentBox.setAttribute("id", "links__aligner");
             // leave our other text centered at the bottom of the article box
@@ -76,14 +78,14 @@ export const ChattyNews = {
             `);
             // populate the newly created newsBox from the Chatty RSS server's articles
             const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
-            alignmentBox?.appendChild(newsBox);
-            articleBox?.appendChild(alignmentBox);
-            // double check this is the full chatty page
-            const is_chatty = document.querySelector(".pagenavigation");
-            if ((await enabledContains(["thread_pane"])) && is_chatty)
-                articleBox?.classList?.add("thread__pane__enabled");
+            await domMutate(async () => {
+                alignmentBox?.appendChild(newsBox);
+                articleBox?.appendChild(alignmentBox);
+                if ((await enabledContains(["thread_pane"])) && is_chatty)
+                    articleBox?.classList?.add("thread__pane__enabled");
 
-            articleBox?.classList?.add("chatty__news__enabled");
+                articleBox?.classList?.add("chatty__news__enabled");
+            });
         }
     },
 

@@ -4,14 +4,14 @@ import { processPostBoxEvent } from "../../core/events";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
 import "../../styles/image_uploader.css";
-import { parseToElement } from "../../core/common";
+import { domMutate, parseToElement } from "../../core/common";
 
 export const ImageUploader = {
     install() {
-        processPostBoxEvent.addHandler(ImageUploader.installForm);
+        processPostBoxEvent.addHandler(ImageUploader.apply);
     },
 
-    installForm(args: PostboxEventArgs) {
+    apply(args: PostboxEventArgs) {
         const { postbox } = args || {};
         const { Provider: UploaderProvider } = useUploaderStore;
         const postForm = postbox?.querySelector("#postform");
@@ -21,20 +21,22 @@ export const ImageUploader = {
                 <div id="react-container" />
             </div>
         `);
-        // insert our footer at the bottom of the postbox
-        postForm.appendChild(postFooter);
 
         // move the shacktags legend into our footer for alignment
         const tagsLegend = postForm.querySelector("#shacktags_legend");
-        postFooter.insertBefore(tagsLegend, postFooter.childNodes[0]);
         // render our component on the postbox's chosen container node
-        const renderContainer = postForm.querySelector("#react-container");
+        const renderContainer = postFooter.querySelector("#react-container");
 
-        return render(
-            <UploaderProvider>
-                <ImageUploaderApp postboxEl={postbox} />
-            </UploaderProvider>,
-            renderContainer,
-        );
+        domMutate(() => {
+            postFooter.insertBefore(tagsLegend, postFooter.childNodes[0]);
+            render(
+                <UploaderProvider>
+                    <ImageUploaderApp postboxEl={postbox} />
+                </UploaderProvider>,
+                renderContainer,
+            );
+            // insert our footer at the bottom of the postbox
+            postForm.appendChild(postFooter);
+        });
     },
 };

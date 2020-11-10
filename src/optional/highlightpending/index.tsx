@@ -15,10 +15,12 @@ const HighlightPendingPosts = {
         const positionElem = document.querySelector(".header-bottom .logo.alt > a");
         if (isEnabled && !container && positionElem) {
             const appContainer = parseToElement(`<div id="hpnp__app__container" />`);
-            render(<HighlightPendingApp threaded={isChatty} />, appContainer);
             // put our HPNP app next to the Shacknews logo in the top-left
-            positionElem.classList?.add("hpnp__enabled");
-            domMutate(() => positionElem.appendChild(appContainer));
+            await domMutate(() => {
+                positionElem.classList?.add("hpnp__enabled");
+                render(<HighlightPendingApp threaded={isChatty} />, appContainer);
+                positionElem.appendChild(appContainer);
+            });
         }
     },
 };

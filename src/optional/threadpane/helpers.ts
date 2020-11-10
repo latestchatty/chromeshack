@@ -74,7 +74,7 @@ const getAuthor = (postElem: HTMLElement) => {
     return (username as HTMLElement)?.textContent?.split(" - ")[0] || "";
 };
 
-const parseReply = async (postElem: HTMLElement) =>
+export const parseReply = async (postElem: HTMLElement) =>
     await domMeasure(() => {
         const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
         const postid = parseInt(post?.id.substr(5));

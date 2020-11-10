@@ -4,7 +4,7 @@ import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import { TemplatesApp } from "./TemplatesApp";
 import "../../styles/templates.css";
-import { parseToElement } from "../../core/common";
+import { domMutate, parseToElement } from "../../core/common";
 
 const Templates = {
     install() {
@@ -19,8 +19,10 @@ const Templates = {
         if (is_enabled && !container && positionElem) {
             const appContainer = parseToElement(`<div id="templates__app" />`);
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
-            render(<TemplatesApp inputBox={inputBox} />, appContainer);
-            positionElem.append(appContainer);
+            await domMutate(() => {
+                render(<TemplatesApp inputBox={inputBox} />, appContainer);
+                positionElem.append(appContainer);
+            });
         }
     },
 };

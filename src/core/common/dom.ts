@@ -278,8 +278,8 @@ export const locatePostRefs = (postElem: HTMLElement) => {
         const postid = parseInt(post?.id?.substr(5));
         const rootid = parseInt(root?.id?.substr(5));
         const is_root = rootid && postid && rootid === postid;
-        return { post, postid, root, rootid, is_root } as PostEventArgs;
-    });
+        return { post, postid, root, rootid, is_root };
+    }) as Promise<PostEventArgs>;
 };
 
 export const disableTwitch = () => {

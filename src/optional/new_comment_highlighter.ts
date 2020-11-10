@@ -1,4 +1,4 @@
-import { timeOverThresh } from "../core/common";
+import { domMutate, timeOverThresh } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 
@@ -61,7 +61,7 @@ export const NewCommentHighlighter = {
                 if (newComments) commentDisplay.textContent = newComments;
             }
         };
-        await Promise.all(oneliners.map(process));
+        await domMutate(async () => await Promise.all(oneliners.map(process)));
     },
 
     findLastID(root: HTMLElement) {

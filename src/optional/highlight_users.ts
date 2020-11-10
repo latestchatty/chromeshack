@@ -1,4 +1,4 @@
-import { domMeasure, insertStyle, objHas } from "../core/common";
+import { domMeasure, domMutate, insertStyle, objHas } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -91,7 +91,9 @@ export const HighlightUsers = {
             const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
             const users = await HighlightUsers.resolveUsers();
             // we just need to run this once per page
-            HighlightUsers.gatherCSS(users, groups);
+            await domMutate(() => {
+                HighlightUsers.gatherCSS(users, groups);
+            });
         }
     },
 };

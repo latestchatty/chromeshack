@@ -28,11 +28,13 @@ export const UserPopup = {
 
             if (!containerRef && _elem) {
                 const appContainer = parseToElement(`<div class="userDropdown" />`);
-                render(
-                    <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
-                    appContainer,
-                );
-                domMutate(() => _elem.appendChild(appContainer));
+                await domMutate(() => {
+                    render(
+                        <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
+                        appContainer,
+                    );
+                    _elem.appendChild(appContainer);
+                });
             }
         }
     },

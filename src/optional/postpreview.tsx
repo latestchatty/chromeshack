@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
-import { classNames, elemMatches, generatePreview, parseToElement, scrollToElement } from "../core/common";
+import { classNames, domMutate, elemMatches, generatePreview, parseToElement, scrollToElement } from "../core/common";
 import { processPostBoxEvent, replyFieldEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import parse, { DomElement, domToReact } from "html-react-parser";
@@ -126,10 +126,12 @@ const PostPreview = {
         const altPositionElem = postbox?.querySelector("#frm_body");
         if (is_enabled && !container && positionElem) {
             const paneContainer = parseToElement(`<div id="post__preview__pane" />`) as HTMLElement;
-            altPositionElem.parentNode.insertBefore(paneContainer, altPositionElem);
             const appContainer = parseToElement(`<div id="post__preview__app" />`);
-            render(<PostPreviewApp postboxElem={postbox} paneMountElem={paneContainer} />, appContainer);
-            positionElem.appendChild(appContainer);
+            await domMutate(() => {
+                altPositionElem.parentNode.insertBefore(paneContainer, altPositionElem);
+                render(<PostPreviewApp postboxElem={postbox} paneMountElem={paneContainer} />, appContainer);
+                positionElem.appendChild(appContainer);
+            });
         }
     },
 };

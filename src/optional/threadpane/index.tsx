@@ -20,8 +20,10 @@ const ThreadPane = {
             const threads = document.querySelector("div.threads") as HTMLElement;
             container = parseToElement(`<div id="cs_thread_pane" />`);
             const parsed = parsePosts(threads);
-            render(<ThreadPaneApp parsedPosts={parsed} />, container);
-            domMutate(() => root.appendChild(container));
+            await domMutate(() => {
+                render(<ThreadPaneApp parsedPosts={parsed} />, container);
+                root.appendChild(container);
+            });
         }
     },
 };
