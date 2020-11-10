@@ -135,6 +135,13 @@ div.post_length_counter_text {
     width: 190px !important;
 }
 
+table#shacktags_legend_table {
+    display: table !important;
+}
+table#shacktags_legend_table.hidden {
+    display: none !important;
+}
+
 /* various hacks */
 
 /* ensure the pop-in of the lol tags doesn't cause the post to get taller */

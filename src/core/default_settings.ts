@@ -23,6 +23,7 @@ const DefaultSettings: Settings = {
     saved_drafts: [],
     saved_templates: [],
 
+    tags_legend_toggled: false,
     post_preview_toggled: false,
     image_uploader_toggled: true,
 

@@ -55,6 +55,7 @@ declare global {
         | "saved_templates"
         | "selected_upload_tab"
         | "selected_popup_tab"
+        | "tags_legend_toggled"
         | "user_filters"
         | "username"
         | "version";
@@ -75,6 +76,7 @@ declare global {
         saved_templates: string[];
         selected_upload_tab: string;
         selected_popup_tab: number;
+        tags_legend_toggled: boolean;
         user_filters: string[];
         username: string;
         version: number;

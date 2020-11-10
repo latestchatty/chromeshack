@@ -1,15 +1,32 @@
 /// <reference types="Cypress" />
 
 describe("Postbox interactions", () => {
+    before(() => {
+        cy.loadExtensionDefaults();
+    });
     beforeEach(() => {
         cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
     });
+    const url = "https://www.shacknews.com/chatty?id=38731437#item_38731437";
 
     context("Reply input/submission", () => {
+        it("CommentTabs interactions", () => {
+            cy.visit(url);
+
+            cy.get("li li.sel div.reply>a").as("replyBtn").click();
+            cy.get("#shacktags_legend_table").as("table").should("have.class", "hidden");
+            cy.get("#shacktags_legend_toggle").as("toggleBtn").click();
+            cy.get("@table").should("not.have.class", "hidden");
+            cy.reload();
+
+            cy.get("@replyBtn").click();
+            cy.get("@table").should("not.have.class", "hidden");
+        });
+
         it("Drafts input and persistence", () => {
             cy.loadExtensionDefaults(null, { enabled_scripts: ["drafts"], saved_drafts: [] });
+            cy.visit(url);
 
-            cy.visit("https://www.shacknews.com/chatty?id=38731437#item_38731437");
             cy.get("li li.sel div.reply>a").as("replyBtn").click();
             cy.get("div.drafts__dot").as("draftsDot").should("have.class", "invalid");
 
@@ -26,7 +43,7 @@ describe("Postbox interactions", () => {
 
         it("Templates interaction and persistence", () => {
             cy.loadExtensionDefaults(null, { enabled_scripts: ["templates"], saved_templates: [] });
-            cy.visit("https://www.shacknews.com/chatty?id=38731437#item_38731437");
+            cy.visit(url);
 
             const message =
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet luctus venenatis lectus magna fringilla urna porttitor. Lectus vestibulum mattis ullamcorper velit sed ullamcorper morbi tincidunt. Purus semper eget duis at tellus at urna condimentum mattis. Ipsum a arcu cursus vitae congue. At ultrices mi tempus imperdiet nulla malesuada pellentesque elit. Nam libero justo laoreet sit amet cursus sit. Consequat nisl vel pretium lectus quam id. Justo laoreet sit amet cursus sit amet. Sed sed risus pretium quam vulputate dignissim suspendisse in.";
@@ -52,8 +69,8 @@ describe("Postbox interactions", () => {
         });
 
         it("PostPreview tag interactions", () => {
-            cy.loadExtensionDefaults(null, { enabled_scripts: ["post_preview"] });
-            cy.reload();
+            cy.loadExtensionDefaults(null, { enabled_scripts: ["post_preview"], tags_legend_toggled: true });
+            cy.visit(url);
 
             cy.log("test post-preview enablement persistence");
             cy.get("li li.sel div.reply > a").as("replyBtn").click();
