@@ -13,9 +13,10 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
             const nPrevTabName = prevTabName?.toUpperCase() as TAB_NAMES;
             const nNextTabName = nextTabName.toUpperCase() as TAB_NAMES;
             // save our selected tab between sessions
-            setSetting("selected_upload_tab", nNextTabName).then(() => {
-                dispatch({ type: "LOAD_TAB", payload: { to: nNextTabName, from: nPrevTabName } });
-            });
+            (async () => {
+                await setSetting("selected_upload_tab", nNextTabName);
+            })();
+            dispatch({ type: "LOAD_TAB", payload: { to: nNextTabName, from: nPrevTabName } });
         },
         [dispatch],
     );
@@ -23,9 +24,10 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
     const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         const visibility = !state.visible;
-        setSetting("image_uploader_toggled", visibility).then(() =>
-            dispatch({ type: "TOGGLE_UPLOADER", payload: visibility }),
-        );
+        (async () => {
+            await setSetting("image_uploader_toggled", visibility);
+        })();
+        dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
     };
     const onClickTab = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
@@ -68,21 +70,21 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
             onClickCancelBtn(null);
         }
     }, [state.response, dispatch, parentRef, onClickCancelBtn]);
-    useEffect(() => {
-        // restore our saved hoster tab
-        getSetting("selected_upload_tab").then((tab: string) => {
-            if (tab) doSelectTab(tab);
-        });
-    }, [doSelectTab]);
 
+    // restore our saved hoster tab
+    useLayoutEffect(() => {
+        (async () => {
+            const tab = await getSetting("selected_upload_tab");
+            if (tab) doSelectTab(tab);
+        })();
+    }, [doSelectTab]);
     // track whether the uploader container is visible on start
     useLayoutEffect(() => {
         (async () => {
-            const is_toggled = await getSetting("image_uploader_toggled", true);
+            const is_toggled = (await getSetting("image_uploader_toggled", true)) as boolean;
             dispatch({ type: "TOGGLE_UPLOADER", payload: is_toggled });
         })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [dispatch]);
 
     return {
         fileChooserRef,

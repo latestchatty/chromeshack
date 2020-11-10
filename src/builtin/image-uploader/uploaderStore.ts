@@ -91,7 +91,7 @@ const tabReducer = (state: UploaderState, action: UploaderAction) => {
 
 const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
     if (action.type === "LOAD_TAB") return tabReducer(state, action);
-    else if (action.type === "TOGGLE_UPLOADER") return { ...state, visible: action.payload || !state.visible };
+    else if (action.type === "TOGGLE_UPLOADER") return { ...state, visible: action.payload };
     else if (action.type === "LOAD_FILES" || action.type === "LOAD_URL") return tabReducer(state, action);
     else if (action.type === "UPLOAD_PENDING") return { ...state, status: "Uploading...", isPending: true };
     else if (action.type === "UPLOAD_SUCCESS")

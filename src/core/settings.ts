@@ -37,8 +37,8 @@ export const getSetting = async (key: SettingKey, defaultVal?: any) => {
     const settings = (await getSettings()) as Settings;
     const found = settings[key];
     // overwrite key with default (if provided)
-    if (!found) setSetting(key, defaultVal);
-    return settings[key] === undefined || settings[key] === null ? defaultVal ?? null : found;
+    if (found == null && defaultVal != null) setSetting(key, defaultVal);
+    return found != null ? found : defaultVal ?? null;
 };
 
 export const getSettingsVersion = async () => await getSetting("version", 0);
