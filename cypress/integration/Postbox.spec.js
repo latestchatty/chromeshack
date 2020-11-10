@@ -17,9 +17,8 @@ describe("Postbox interactions", () => {
             cy.get("#shacktags_legend_table").as("table").should("have.class", "hidden");
             cy.get("#shacktags_legend_toggle").as("toggleBtn").click();
             cy.get("@table").should("not.have.class", "hidden");
-            cy.reload();
 
-            cy.get("@replyBtn").click();
+            cy.get("@replyBtn").click().click();
             cy.get("@table").should("not.have.class", "hidden");
         });
 
@@ -35,8 +34,7 @@ describe("Postbox interactions", () => {
             cy.get("#frm_body").as("replyInput").type(message, { delay: 0 }).wait(333);
             cy.get("@draftsDot").should("have.class", "valid");
 
-            cy.reload();
-            cy.get("@replyBtn").click();
+            cy.get("@replyBtn").click().click();
             cy.get("@replyInput").should("have.value", message);
             cy.get("@draftsDot").should("have.class", "valid");
         });
@@ -51,7 +49,7 @@ describe("Postbox interactions", () => {
             cy.get("#frm_body").as("replyInput").type(message, { delay: 0 }).wait(333);
             cy.get("button#templates__btn").as("templatesBtn").click();
             cy.get("button#save__btn").click();
-            cy.get("@replyBtn").click().wait(333).click();
+            cy.get("@replyBtn").click().click();
             cy.get("@replyInput").then((input) => expect(input[0].value).to.eq(""));
             cy.get("@templatesBtn").click();
             cy.get("div.template__item>span").eq(0).click();
@@ -59,7 +57,7 @@ describe("Postbox interactions", () => {
 
             cy.get("button#add__btn").click().click();
             cy.get("div.template__item").then((items) => expect(items.length).to.eq(3));
-            cy.get("@replyBtn").click().wait(333).click();
+            cy.get("@replyBtn").click().click();
 
             cy.get("@templatesBtn").click();
             cy.get("button#del__btn").as("delTempBtns").eq(1).click();
@@ -78,8 +76,7 @@ describe("Postbox interactions", () => {
             cy.get("#frm_body").as("replyInput");
             cy.get("#previewArea").as("previewArea");
             cy.get("@previewArea").should("be.visible");
-            cy.reload();
-            cy.get("@replyBtn").click();
+            cy.get("@replyBtn").click().click();
             cy.get("@previewArea").should("be.visible");
 
             cy.log("test post-length counter");

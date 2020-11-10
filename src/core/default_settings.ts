@@ -25,7 +25,7 @@ const DefaultSettings: Settings = {
 
     tags_legend_toggled: false,
     post_preview_toggled: false,
-    image_uploader_toggled: true,
+    image_uploader_toggled: false,
 
     highlight_groups: [
         {

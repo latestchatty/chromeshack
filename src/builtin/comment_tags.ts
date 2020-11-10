@@ -74,7 +74,7 @@ export const CommentTags = {
         const legend = document.getElementById("shacktags_legend");
         const ogTable = document.getElementById("shacktags_legend_table");
         const toggle = document.getElementById("shacktags_legend_toggle");
-        domMutate(() => {
+        return await domMutate(() => {
             toggle.removeAttribute("onclick");
             legend.removeChild(ogTable);
             legend.appendChild(table);
@@ -94,8 +94,8 @@ export const CommentTags = {
         }
     },
 
-    insertCommentTag(name: string, opening_tag: string, closing_tag: string) {
-        return domMeasure(() => {
+    async insertCommentTag(name: string, opening_tag: string, closing_tag: string) {
+        return await domMeasure(() => {
             const textarea = document.getElementById("frm_body") as HTMLInputElement;
             const scrollPosition = textarea.scrollTop;
             const start = textarea.selectionStart;

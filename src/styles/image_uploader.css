@@ -4,9 +4,9 @@
 
     --postbox-abg: rgba(100, 100, 100, 0.75);
     --postbox-bg: rgba(34, 34, 34, 1);
-    --postbox-afg: rgba(255, 255, 255, 0.66);
+    --postbox-afg: rgba(255, 255, 255, 1);
     --postbox-fg: rgba(255, 255, 255, 0.33);
-    --postbox-afgh: var(--postbox-afg);
+    --postbox-afgh: rgba(255, 255, 255, 0.66);
 
     --postbox-brd: rgba(68, 68, 68, 0.65);
     --postbox-abrd: rgba(68, 68, 68, 1);
@@ -83,7 +83,7 @@ span#toggleLabel {
     align-items: center;
     height: 22px;
     background-color: black;
-    color: var(--postbox-afgh);
+    color: var(--postbox-afg);
     width: calc(100% + 3px);
     cursor: pointer;
     margin: 0 0 0.25em 0;
@@ -172,7 +172,7 @@ span#toggleLabel:hover {
 #dropArea > span {
     font-size: 16px;
     font-style: italic;
-    color: var(--postbox-afg);
+    color: var(--postbox-afgh);
     padding: 0.25em;
 }
 #dropArea:not(.disabled) > span:hover {

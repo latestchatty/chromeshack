@@ -2,33 +2,44 @@
 
 describe("Image Uploader", () => {
     context("UI interactions", () => {
-        beforeEach(() => {
+        before(() => {
             // start with a blank default tab selection
             cy.loadExtensionDefaults(null, { selected_upload_tab: "" });
+        });
+        beforeEach(() => {
             cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
+        });
+        const url = "https://www.shacknews.com/chatty?id=40056583#item_40056583";
+
+        it("test toggle persistence", () => {
+            cy.visit(url);
+
+            cy.get("div.reply>a").as("replyButton").click();
+            cy.get("#uploader-toggle").as("toggle").click();
+            cy.get("#uploader-container").as("uploader").should("not.have.class", "hidden");
+            cy.get("@replyButton").click().click();
+            cy.get("@uploader").should("not.have.class", "hidden");
         });
 
         it("test tab switching and inputs", () => {
-            cy.visit("https://www.shacknews.com/chatty?id=40056583#item_40056583");
+            cy.loadExtensionDefaults(null, { image_uploader_toggled: true });
+            cy.visit(url);
 
-            cy.get("div.reply>a").as("replyButton").click();
+            cy.get("div.reply>a").as("replyBtn").click();
             cy.get("#tab-container .tab").as("tabs");
             cy.get("input#urlinput").as("urlInput");
 
-            cy.log("test tab switching and persistence");
             cy.get("@tabs")
                 .eq(1)
                 .click()
                 .then((tab) => expect(tab[0].id).to.eq("gfycatTab"));
             cy.get("#toggleLabel").as("uploaderToggle").click();
-            cy.reload();
-            cy.get("@replyButton").click();
+            cy.get("@replyBtn").click().click();
             cy.get("div#uploader-container").should("have.class", "hidden");
             cy.get("@uploaderToggle").click();
             cy.get("div.tab.active").then((tab) => expect(tab[0].id).to.eq("gfycatTab"));
 
-            cy.log("test tab inputs");
-            cy.get("@urlInput").type("https://localhost/test.jpeg");
+            cy.get("@urlInput").type("https://localhost/test.jpeg", { delay: 0 });
             cy.get("@urlInput")
                 .then((input) => {
                     expect(input[0].validity.patternMismatch).to.be.true;
@@ -37,7 +48,7 @@ describe("Image Uploader", () => {
                 .clear();
 
             const validInput = "https://localhost.com/test.mp4";
-            cy.get("@urlInput").type(validInput);
+            cy.get("@urlInput").type(validInput, { delay: 0 }).wait(250);
             cy.get("@urlInput").then((input) => expect(input[0].validity.valid).to.be.true);
 
             cy.get("@tabs").eq(0).click();
@@ -58,9 +69,7 @@ describe("Image Uploader", () => {
         });
 
         it("test file drop input", () => {
-            cy.reload();
-
-            cy.get("div.reply>a").as("replyButton").click();
+            cy.get("div.reply>a").click().click();
             // first tab (Imgur) supports anonymous multi-media album upload
             cy.get("input#fileChooser").as("fileInput");
             cy.get("@fileInput").attachFile("arcade1.jpg").attachFile("arcade2.jpg");
