@@ -16,6 +16,7 @@ declare global {
         | "drafts"
         | "enable_notifications"
         | "getpost"
+        | "hide_gamification_notices"
         | "hide_tagging_buttons"
         | "hide_tag_counts"
         | "highlight_pending_new_posts"
@@ -24,13 +25,13 @@ declare global {
         | "new_comment_highlighter"
         | "nws_incognito"
         | "post_preview"
+        | "reduced_color_user_icons"
         | "switchers"
         | "shrink_user_icons"
         | "social_loader"
         | "templates"
         | "thread_pane"
-        | "twitchauto"
-        | "reduced_color_user_icons";
+        | "twitchauto";
     export type EnabledSuboptions =
         | "cuf_hide_fullposts"
         | "imported"

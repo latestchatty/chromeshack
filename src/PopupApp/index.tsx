@@ -160,6 +160,11 @@ const PopupApp = () => {
                         label="Hide tag counts"
                         descriptions={["Hides interactive LOL buttons of oneline replies."]}
                     />
+                    <Option
+                        id="hide_gamification_notices"
+                        label="Hide gamification notices"
+                        descriptions={["Hides notices that would be shown when interacting with posts/lol-tags."]}
+                    />
                 </OptionGroup>
 
                 <OptionGroup label="User Flair">

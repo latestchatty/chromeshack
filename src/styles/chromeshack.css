@@ -149,15 +149,11 @@ div.fullpost .lol-tags {
     height: 18px !important;
     margin-top: -5px !important;
 }
-
-body.hide_tagging_buttons .lol-tags {
+body.hide_tagging_buttons .lol-tags,
+body.hide_tag_counts div.read-only-tags,
+body.hide_gamification_notices div.gamification-notifcation {
     display: none !important;
 }
-
-body.hide_tag_counts div.read-only-tags {
-    display: none !important;
-}
-
 /* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
 will un-shrink it if the shrink setting is not enabled */
 body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
@@ -166,7 +162,6 @@ body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
     height: 10px;
     vertical-align: text-top;
 }
-
 /* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
 only for users who want to see bright colors. */
 body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
@@ -176,11 +171,6 @@ body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
 a:hover > img.chatty-user-icons {
     opacity: 1;
     filter: none;
-}
-
-/* on the comments below articles the lol tag buttons are ridiculous */
-div.article-chatty span.lol-tags {
-    display: none !important;
 }
 
 /* don't let the lol counts cause the oneline to get taller */
@@ -195,11 +185,6 @@ span.lol-tags:not(.read-only-tags) {
 span.author > img.chatty-user-icons:nth-child(2),
 span.user > img.chatty-user-icons:nth-child(1) {
     margin-left: 0.33rem !important;
-}
-
-/* try to blend background color on wide screens */
-body.side-menu {
-    background: rgb(113, 46, 62);
 }
 
 /* fix oneliner who-tag'd popup width */
