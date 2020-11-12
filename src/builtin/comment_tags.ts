@@ -1,5 +1,5 @@
 import * as textFieldEdit from "text-field-edit";
-import { domMeasure, domMutate } from "../core/common";
+import { domMutate, parseToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 
@@ -46,19 +46,22 @@ export const CommentTags = {
         ];
 
         const setToggled = (await getSetting("tags_legend_toggled", false)) as boolean;
-        const table = document.createElement("table");
-        const tbody = table.appendChild(document.createElement("tbody"));
-        table.setAttribute("id", "shacktags_legend_table");
-        table.setAttribute("class", !setToggled ? "hidden" : "");
+        const table = parseToElement(/*html*/ `
+            <div id="shacktags_legend">
+                <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
+                <table id="shacktags_legend_table" class="${!setToggled ? "hidden" : ""}">
+                    <tbody id="shacktags_legend_table-body"></tbody>
+                </table>
+            </div>
+        `);
+        const tbody = table.querySelector("#shacktags_legend_table-body");
 
         for (const tr of tags) {
             const row = tbody.appendChild(document.createElement("tr"));
             for (const tag of tr) {
                 const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
                 const name_td = row.appendChild(document.createElement("td"));
-                const span = document.createElement("span");
-                span.setAttribute("class", class_name);
-                span.textContent = name;
+                const span = parseToElement(/*html*/ `<span class="${class_name}">${name}</span>`);
                 name_td.appendChild(span);
                 if (clickFuncAsString?.length > 0) name_td.setAttribute("onclick", clickFuncAsString);
                 const code_td = row.appendChild(document.createElement("td"));
@@ -67,19 +70,15 @@ export const CommentTags = {
                 button.href = "#";
                 button.addEventListener("click", async (e: MouseEvent) => {
                     e.preventDefault();
-                    await CommentTags.insertCommentTag(name, opening_tag, closing_tag);
+                    CommentTags.insertCommentTag(name, opening_tag, closing_tag);
                 });
             }
         }
 
-        const legend = document.getElementById("shacktags_legend");
-        const ogTable = document.getElementById("shacktags_legend_table");
-        const toggle = document.getElementById("shacktags_legend_toggle");
+        const ogLegend = document.getElementById("shacktags_legend");
+        table.addEventListener("click", CommentTags.toggleLegend, true);
         return await domMutate(() => {
-            toggle.removeAttribute("onclick");
-            legend.removeChild(ogTable);
-            legend.appendChild(table);
-            legend.addEventListener("click", CommentTags.toggleLegend, true);
+            ogLegend.replaceWith(table);
         });
     },
 
@@ -95,56 +94,27 @@ export const CommentTags = {
         }
     },
 
-    async insertCommentTag(name: string, opening_tag: string, closing_tag: string) {
-        return await domMeasure(() => {
-            const textarea = document.getElementById("frm_body") as HTMLInputElement;
-            const scrollPosition = textarea.scrollTop;
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-
-            let input: string;
-            if (end > start) input = textarea.value.substring(start, end);
-            else input = prompt("Type in the text you want to be " + name + ".", "");
-
-            if (!input || input?.length === 0) {
-                textarea.focus();
-                return;
-            }
-
-            // clean up the input
-            let whiteSpaceBefore = false;
-            const whiteSpaceAfter = false;
-            if (name == "code") {
-                whiteSpaceBefore = /^\s\s*/.test(input);
-                whiteSpaceBefore = /\s\s*$/.test(input);
-                // trim only excess ending whitespace
-                input = input.replace(/\s\s*$/, "");
-            }
-            // break up curly braces that confuse the shack
-            else input = input.replace(/^{/, "\n{").replace(/}$/, "}\n");
-
-            const mutatedComment =
-                textarea.value.substring(0, start) +
-                (whiteSpaceBefore ? " " : "") +
-                opening_tag +
-                input +
-                closing_tag +
-                (whiteSpaceAfter ? " " : "") +
-                textarea.value.substring(end, textarea.value.length);
-            textFieldEdit.set(textarea, mutatedComment);
-
-            let offset = whiteSpaceBefore ? 1 : 0;
-            if (end > start) {
-                offset += start + opening_tag.length;
-                textarea.setSelectionRange(offset, offset + input.length);
-            } else {
-                offset += start + input.length + opening_tag.length + closing_tag.length;
-                offset += whiteSpaceAfter ? 1 : 0;
-                textarea.setSelectionRange(offset, offset);
-            }
-
+    insertCommentTag(name: string, opening_tag: string, closing_tag: string) {
+        const textarea = document.getElementById("frm_body") as HTMLInputElement;
+        const scrollPos = textarea.scrollTop;
+        let value = textarea?.value;
+        const selectStart = textarea.selectionStart;
+        const selectEnd = textarea.selectionEnd;
+        // remove line-ending whitespace
+        if (name === "code") value = value.replace(/\s\s*$/, "");
+        // break up curly braces that confuse the shack
+        else value = value.replace(/^{/, "\n{").replace(/}$/, "}\n");
+        if (selectStart && selectEnd) {
+            const beforeSelection = value.substring(0, selectStart);
+            const afterSelection = value.substring(selectEnd, value.length);
+            const selection = value.substring(selectStart, selectEnd);
+            const mutatedText = `${beforeSelection}${opening_tag}${selection}${closing_tag}${afterSelection}`;
+            const selectStartOffset = selectStart + opening_tag.length;
+            const selectEndOffset = selectEnd + closing_tag.length;
+            textFieldEdit.set(textarea, mutatedText);
             textarea.focus();
-            textarea.scrollTop = scrollPosition;
-        });
+            textarea.setSelectionRange(selectStartOffset, selectEndOffset);
+            textarea.scrollTop = scrollPos;
+        } else alert("Select some text to apply this tag");
     },
 };
