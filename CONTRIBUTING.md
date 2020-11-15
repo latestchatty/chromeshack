@@ -34,7 +34,7 @@ If you're interested in contributing a new content script or feature suggestion:
         -   `processReplyEvent` is fired after submitting a reply to a loaded fullpost
         -   `processNotifyEvent` is fired when the WinChatty notifications system gets a new event message
     -   The WinChatty notifications' `processNotifyEvent` exposes the latest event message retrieved from the server (see: [WinChatty API](http://winchatty.com/v2/readme)).
--   Content scripts have to be registered in `content.ts`. Make sure to put event-dependent handlers **_before_** the `CS_Instance.install()` line.
+-   Content scripts have to be registered in `content.ts`. Make sure to put event-dependent handlers **_before_** the `ChromeShack.install()` line.
 
 # Running Cypress integration tests
 

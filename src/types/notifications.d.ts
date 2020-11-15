@@ -4,33 +4,37 @@ declare global {
     export type EventType = "lolCountsUpdate" | "newPost";
     export type PostCategory = "ontopic" | "nws" | "stupid" | "political" | "tangent" | "informative";
     export type LOLTags = "lol" | "inf" | "unf" | "tag" | "wtf" | "wow" | "aww";
-    export interface LOLTagUpdate {
+    export interface LOLTagData {
         count: number;
         postId?: number;
         tag: LOLTags;
     }
-    export interface NotifyEvent {
-        eventData: {
-            parentAuthor?: string;
-            post?: {
-                author?: string;
-                body?: string;
-                category?: PostCategory;
-                date?: string;
-                id?: number;
-                lols?: LOLTagUpdate[] | [];
-                parentId?: number;
-                threadId?: number;
-            };
-            postId?: number;
-            updates?: LOLTagUpdate[] | [];
+    export interface LOLTagEventData {
+        updates: LOLTagData[];
+    }
+    export interface NewPostData {
+        parentAuthor?: string;
+        post?: {
+            author?: string;
+            body?: string;
+            category?: PostCategory;
+            date?: string;
+            id?: number;
+            lols?: LOLTagData[];
+            parentId?: number;
+            threadId?: number;
+            isCortex?: boolean;
         };
+        postId?: number;
+    }
+    export interface NotifyEvent {
+        eventData: NewPostData | LOLTagEventData;
         eventDate: string;
         eventId: string;
         eventType: EventType;
     }
     export interface NotifyResponse {
-        events: NotifyEvent[] | [];
+        events: NotifyEvent[];
         lastEventId: number;
         tooManyEvents: boolean;
         error?: boolean;

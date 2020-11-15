@@ -1,14 +1,22 @@
 import React from "react";
 import { render } from "react-dom";
+import { parseToElement } from "../../core/common";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
-import { TemplatesApp } from "./TemplatesApp";
 import "../../styles/templates.css";
-import { domMutate, parseToElement } from "../../core/common";
+import { TemplatesApp } from "./TemplatesApp";
 
 const Templates = {
+    cachedEl: null as HTMLElement,
+
     install() {
         processPostBoxEvent.addHandler(Templates.apply);
+        Templates.cacheInjectables();
+    },
+
+    cacheInjectables() {
+        const appContainer = parseToElement(`<div id="templates__app" />`);
+        Templates.cachedEl = appContainer as HTMLElement;
     },
 
     async apply(args: PostboxEventArgs) {
@@ -17,12 +25,9 @@ const Templates = {
         const positionElem = postbox?.querySelector("div.csubmit");
         const container = postbox.querySelector("#templates__app");
         if (is_enabled && !container && positionElem) {
-            const appContainer = parseToElement(`<div id="templates__app" />`);
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
-            await domMutate(() => {
-                render(<TemplatesApp inputBox={inputBox} />, appContainer);
-                positionElem.append(appContainer);
-            });
+            render(<TemplatesApp inputBox={inputBox} />, Templates.cachedEl);
+            positionElem.append(Templates.cachedEl);
         }
     },
 };

@@ -68,9 +68,8 @@ declare global {
         audioEnabled?: boolean;
     }
 
-    export interface IntersectionObserverConfig {
-        root?: HTMLElement;
-        threshold: number[] | number;
-        [x: string]: any;
+    export interface IntersectionObserverConfig extends IntersectionObserverInit {
+        delay?: number[] | number;
+        trackVisibility?: boolean;
     }
 }

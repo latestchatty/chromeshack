@@ -1,4 +1,4 @@
-import { domMeasure, domMutate, insertStyle, objHas } from "../core/common";
+import { domMeasure, insertStyle, objHas } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -15,36 +15,35 @@ export const HighlightUsers = {
         if (objHas(HighlightUsers.cache)) return HighlightUsers.cache;
         const compiled = {} as ResolvedUsers;
         const posts = [...document.querySelectorAll("li[id^='item_'")];
-        const process = async (post: HTMLElement) =>
-            await domMeasure(() => {
-                const postid = parseInt(post?.id?.substr(5));
-                const postdiv = post.querySelector(".fullpost, .oneline");
-                const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
-                const id =
-                    parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
-                    parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
-                const username =
-                    post.querySelector("span.oneline_user")?.textContent ||
-                    post.querySelector("span.user")?.textContent ||
-                    post.querySelector("span.user>a")?.textContent;
-                const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
-                return { id, mod: !!mod, op: !!op, postid, username };
-            });
-        await Promise.all(
-            posts.map(async (p) => {
-                const r = await process(p as HTMLElement);
+        const process = (post: HTMLElement) => {
+            const postid = parseInt(post?.id?.substr(5));
+            const postdiv = post.querySelector(".fullpost, .oneline");
+            const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
+            const id =
+                parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
+                parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
+            const username =
+                post.querySelector("span.oneline_user")?.textContent ||
+                post.querySelector("span.user")?.textContent ||
+                post.querySelector("span.user>a")?.textContent;
+            const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
+            return { id, mod: !!mod, op: !!op, postid, username };
+        };
+        await domMeasure(() => {
+            for (const p of posts) {
+                const r = process(p as HTMLElement);
                 if (!compiled[r.username]) compiled[r.username] = [r];
                 else compiled[r.username].push(r);
-            }),
-        );
+            }
+        });
         HighlightUsers.cache = compiled;
         return HighlightUsers.cache;
     },
 
     async resolveUser(username: string) {
         // renew the cache if this gets called before HU has a chance to run
-        if (!objHas(HighlightUsers.cache)) await HighlightUsers.resolveUsers();
-        return HighlightUsers.cache[`${username}`];
+        if (Object.keys(HighlightUsers.cache).length === 0) await HighlightUsers.resolveUsers();
+        return HighlightUsers.cache[username];
     },
 
     gatherCSS(users: ResolvedUsers, groups: HighlightGroup[]) {
@@ -91,9 +90,7 @@ export const HighlightUsers = {
             const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
             const users = await HighlightUsers.resolveUsers();
             // we just need to run this once per page
-            await domMutate(() => {
-                HighlightUsers.gatherCSS(users, groups);
-            });
+            HighlightUsers.gatherCSS(users, groups);
         }
     },
 };

@@ -64,10 +64,11 @@ const usePendingPosts = (threaded: boolean) => {
             // build new pendings on top of old ones as long as they're unique threads
             const loggedUser = (await getSetting("username")) as string;
             const reducedPosts = newPosts.reduce((acc, p) => {
-                const postId = p.eventData?.postId;
-                const threadId = p.eventData?.post?.threadId;
+                const eventData = p.eventData as NewPostData;
+                const postId = eventData?.postId;
+                const threadId = eventData?.post?.threadId;
                 const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
-                const isAuthorMe = p.eventData.post.author.toLowerCase() === loggedUser.toLowerCase();
+                const isAuthorMe = eventData.post.author.toLowerCase() === loggedUser.toLowerCase();
                 // don't grab new posts that contain our logged-in user as the author
                 if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
                 return acc;
@@ -88,12 +89,13 @@ const usePendingPosts = (threaded: boolean) => {
 
     useEffect(() => {
         // update the window title and HPNP status text when our pending count changes
-        const newText = count > 0 ? `${indicator}${count}` : "";
+        const newText = count > 0 ? `${count}` : "";
         setPendingText(newText);
+        if (pendings.length > 0 && !document.title.startsWith(indicator))
+            document.title = `${indicator}${document.title}`;
+        else if (pendings.length === 0 && document.title.startsWith(indicator))
+            document.title = document.title.split(indicator)[1];
         domMutate(() => {
-            if (pendings.length > 0 && !document.title.startsWith(indicator))
-                document.title = `${indicator}${document.title}`;
-            else if (document.title.startsWith(indicator)) document.title.split(indicator)[1];
             // highlight the refresh button of unmarked threads that have pending posts
             for (const p of pendings || []) {
                 const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;

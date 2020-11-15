@@ -9,9 +9,17 @@ import "../../styles/media.css";
 import { Expando } from "./Expando";
 
 export const MediaEmbedder = {
+    cachedEl: null as HTMLElement,
+
     install() {
+        MediaEmbedder.cacheInjectables();
         processPostEvent.addHandler(MediaEmbedder.processPost);
         processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
+    },
+
+    cacheInjectables() {
+        const container = parseToElement(`<div id="react-media-element" />`);
+        MediaEmbedder.cachedEl = container as HTMLElement;
     },
 
     async processPost(args: PostEventArgs) {
@@ -30,7 +38,7 @@ export const MediaEmbedder = {
             const process = async (l: HTMLAnchorElement) => {
                 const detected = await detectMediaLink(l.href);
                 if (!detected) return;
-                const container = parseToElement(`<div id="react-media-element" />`);
+                const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
                 await domMutate(() => {
                     // the container needs to remain in the DOM for events to work
                     postbody.append(container);
@@ -40,7 +48,7 @@ export const MediaEmbedder = {
                     );
                 });
             };
-            domMutate(async () => await Promise.all(links.map(process)));
+            await Promise.all(links.map(process));
         }
     },
 };

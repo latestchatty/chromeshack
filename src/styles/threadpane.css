@@ -14,15 +14,26 @@
 }
 
 body.cs_thread_pane_enable {
-    margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
+    margin-left: 420px;
+    overflow-x: hidden;
 }
-
-body.cs_thread_pane_enable header {
-    margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
-    width: calc(100% - var(--thread-pane-width) - var(--thread-pane-scrollbar-width)) !important;
+body.cs_thread_pane_enable div#page,
+body.cs_thread_pane_enable div#page div.header-bottom-right {
+    /* let the header buttons be responsive */
+    min-width: 0;
+}
+@media (max-width: 1196px) {
+    /* hide full banners if width is narrow */
+    body.cs_thread_pane_enable div.show_banners div.fpmod_offtopic,
+    body.cs_thread_pane_enable div.show_banners div.fpmod_political,
+    body.cs_thread_pane_enable div.show_banners div.fpmod_stupid,
+    body.cs_thread_pane_enable div.show_banners div.fpmod_informative {
+        background-size: 0;
+    }
 }
 
 div#cs_thread_pane {
+    grid-area: a;
     position: fixed;
     top: 0;
     left: 0;

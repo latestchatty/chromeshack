@@ -4,39 +4,36 @@ import { processPostBoxEvent } from "../../core/events";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
 import "../../styles/image_uploader.css";
-import { domMutate, parseToElement } from "../../core/common";
+import { parseToElement } from "../../core/common";
 
 export const ImageUploader = {
+    cachedEl: null as HTMLElement,
+
     install() {
         processPostBoxEvent.addHandler(ImageUploader.apply);
+        ImageUploader.cacheInjectable();
     },
 
-    apply(args: PostboxEventArgs) {
+    cacheInjectable() {
+        const el = parseToElement(/* html */ `<div id="image__uploader__container" />`);
+        ImageUploader.cachedEl = el as HTMLElement;
+    },
+
+    async apply(args: PostboxEventArgs) {
         const { postbox } = args || {};
         const { Provider: UploaderProvider } = useUploaderStore;
-        const postForm = postbox?.querySelector("#postform");
-
-        const postFooter = parseToElement(/* html */ `
-            <div class="post_sub_container">
-                <div id="react-container" />
-            </div>
-        `);
-
-        // move the shacktags legend into our footer for alignment
-        const tagsLegend = postForm.querySelector("#shacktags_legend");
-        // render our component on the postbox's chosen container node
-        const renderContainer = postFooter.querySelector("#react-container");
-
-        domMutate(() => {
-            postFooter.insertBefore(tagsLegend, postFooter.childNodes[0]);
+        const renderContainer = postbox?.querySelector("#post_sub_container");
+        let appContainer = renderContainer?.querySelector("#image__uploader__container");
+        if (!appContainer && renderContainer) {
+            appContainer = ImageUploader.cachedEl;
             render(
                 <UploaderProvider>
                     <ImageUploaderApp postboxEl={postbox} />
                 </UploaderProvider>,
-                renderContainer,
+                appContainer,
             );
             // insert our footer at the bottom of the postbox
-            postForm.appendChild(postFooter);
-        });
+            renderContainer.append(appContainer);
+        }
     },
 };

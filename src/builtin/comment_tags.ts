@@ -1,62 +1,66 @@
 import * as textFieldEdit from "text-field-edit";
-import { domMutate, parseToElement } from "../core/common";
+import { parseToElement } from "../core/common";
 import { processPostBoxEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
+import "../styles/comment_tags.css";
 
 export const CommentTags = {
-    install() {
+    cachedEl: null as HTMLElement,
+
+    tags: [
+        [
+            ["red", "r{", "}r", "jt_red"],
+            ["italics", "/[", "]/", "jt_italics"],
+        ],
+        [
+            ["green", "g{", "}g", "jt_green"],
+            ["bold", "b[", "]b", "jt_bold"],
+        ],
+        [
+            ["blue", "b{", "}b", "jt_blue"],
+            ["quote", "q[", "]q", "jt_quote"],
+        ],
+        [
+            ["yellow", "y{", "}y", "jt_yellow"],
+            ["sample", "s[", "]s", "jt_sample"],
+        ],
+        [
+            ["limegreen", "l[", "]l", "jt_lime"],
+            ["underline", "_[", "]_", "jt_underline"],
+        ],
+        [
+            ["orange", "n[", "]n", "jt_orange"],
+            ["strike", "-[", "]-", "jt_strike"],
+        ],
+        [
+            ["multisync", "p[", "]p", "jt_pink"],
+            ["spoiler", "o[", "]o", "jt_spoiler", "return doSpoiler(event);"],
+        ],
+        [
+            ["olive", "e[", "]e", "jt_olive"],
+            ["code", "/{{", "}}/", "jt_code"],
+        ],
+    ],
+
+    async install() {
         processPostBoxEvent.addHandler(CommentTags.installCommentTags);
+        await CommentTags.cacheInjectable();
     },
 
-    async installCommentTags(args: PostboxEventArgs) {
-        if (!args) return;
-        const tags = [
-            [
-                ["red", "r{", "}r", "jt_red"],
-                ["italics", "/[", "]/", "jt_italics"],
-            ],
-            [
-                ["green", "g{", "}g", "jt_green"],
-                ["bold", "b[", "]b", "jt_bold"],
-            ],
-            [
-                ["blue", "b{", "}b", "jt_blue"],
-                ["quote", "q[", "]q", "jt_quote"],
-            ],
-            [
-                ["yellow", "y{", "}y", "jt_yellow"],
-                ["sample", "s[", "]s", "jt_sample"],
-            ],
-            [
-                ["limegreen", "l[", "]l", "jt_lime"],
-                ["underline", "_[", "]_", "jt_underline"],
-            ],
-            [
-                ["orange", "n[", "]n", "jt_orange"],
-                ["strike", "-[", "]-", "jt_strike"],
-            ],
-            [
-                ["multisync", "p[", "]p", "jt_pink"],
-                ["spoiler", "o[", "]o", "jt_spoiler", "return doSpoiler(event);"],
-            ],
-            [
-                ["olive", "e[", "]e", "jt_olive"],
-                ["code", "/{{", "}}/", "jt_code"],
-            ],
-        ];
-
+    async cacheInjectable() {
         const setToggled = (await getSetting("tags_legend_toggled", false)) as boolean;
         const table = parseToElement(/*html*/ `
-            <div id="shacktags_legend">
-                <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
-                <table id="shacktags_legend_table" class="${!setToggled ? "hidden" : ""}">
-                    <tbody id="shacktags_legend_table-body"></tbody>
-                </table>
+            <div id="post_sub_container">
+                <div id="shacktags_legend">
+                    <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
+                    <table id="shacktags_legend_table" class="${!setToggled ? "shown" : ""}">
+                        <tbody id="shacktags_legend_table-body"></tbody>
+                    </table>
+                </div>
             </div>
-        `);
+        `) as HTMLElement;
         const tbody = table.querySelector("#shacktags_legend_table-body");
-
-        for (const tr of tags) {
+        for (const tr of CommentTags.tags) {
             const row = tbody.appendChild(document.createElement("tr"));
             for (const tag of tr) {
                 const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
@@ -74,12 +78,20 @@ export const CommentTags = {
                 });
             }
         }
-
-        const ogLegend = document.getElementById("shacktags_legend");
         table.addEventListener("click", CommentTags.toggleLegend, true);
-        return await domMutate(() => {
-            ogLegend.replaceWith(table);
-        });
+        CommentTags.cachedEl = table;
+    },
+
+    async installCommentTags(args: PostboxEventArgs) {
+        if (!args) return;
+        const { postbox } = args || {};
+        const postForm = postbox.querySelector("#postform");
+        // remove the pre-existing legend box
+        const ogLegend = postForm?.querySelector("fieldset > #shacktags_legend");
+        ogLegend.parentElement.removeChild(ogLegend);
+        const legend = postForm?.querySelector("#post_sub_container");
+        const cachedLegend = CommentTags.cachedEl;
+        if (!legend) postForm.append(cachedLegend);
     },
 
     async toggleLegend(e: MouseEvent) {

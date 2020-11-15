@@ -1,38 +1,19 @@
-/* workaround for busted jt_code tag */
-pre.jt_code {
-    display: block !important;
-    font-family: monospace !important;
-    font-size: 13px !important;
-    line-height: 14px !important;
-    border-left: 1px solid #666 !important;
-    padding: 0 0 3px 10px !important;
-    margin: 5px 0 5px 10px !important;
-    white-space: pre-wrap !important;
-    word-wrap: break-word !important;
-}
-.jt_code br {
-    display: block !important;
-}
-
 /* moderator tags */
 div.fpmod_offtopic {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #7d7d7d !important;
 }
-
 div.fpmod_political {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #f8a500 !important;
 }
-
 div.fpmod_stupid {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
 }
-
 div.fpmod_informative {
     background-position: right top;
     background-repeat: no-repeat;
@@ -126,20 +107,13 @@ p.rules div.emoji-tagline {
 div.ctextarea {
     margin-bottom: -10px !important;
 }
-div.post_length_counter_text {
+div#post_length_counter_text {
     display: inline-flex;
     align-items: center;
     font-size: 10px;
     color: #c0c0c0;
     margin-top: -10px;
     width: 190px !important;
-}
-
-table#shacktags_legend_table {
-    display: table !important;
-}
-table#shacktags_legend_table.hidden {
-    display: none !important;
 }
 
 /* various hacks */
@@ -178,6 +152,11 @@ div.read-only-tags {
     height: 1px;
 }
 
+/* switchers: hide offenders' chatty-icons */
+img.chatty-user-icons.hidden {
+    display: none !important;
+}
+
 /* put some spacing between the user icons, label and tagline */
 span.lol-tags:not(.read-only-tags) {
     margin-left: 0.25rem !important;
@@ -197,7 +176,7 @@ span.user > img.chatty-user-icons:nth-child(1) {
     width: 100% !important;
 }
 
-/* fix spacing and responsiveness submit-line buttons */
+/* fix spacing and responsiveness of submit-line buttons */
 div.csubmit {
     clear: none !important;
     display: flex !important;

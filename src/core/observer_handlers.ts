@@ -1,7 +1,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { singleThreadFix } from "../patches/singleThreadFix";
 import { arrHas, elemMatches, locatePostRefs } from "./common";
-import { disableTwitch, scrollToElement } from "./common/dom";
+import { disableTwitch, domMeasure, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
     processEmptyTagsLoadedEvent,
@@ -28,7 +28,7 @@ const checkReplyCeiling = (rootEl: HTMLElement) => {
 };
 
 const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
-    const removeUnusedTagline = (post: HTMLElement) => {
+    const removeUnusedTagline = async (post: HTMLElement) => {
         // avoid having a duplicate (unused) tagline
         const rootTags = post?.querySelectorAll(".root>ul>li > .fullpost span.lol-tags");
         const postTags = post?.querySelectorAll("li li.sel > .fullpost span.lol-tags");
@@ -39,14 +39,13 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
         const postTags = [
             ...post?.querySelectorAll(".fullpost > .postmeta .lol-tags > .tag-container"),
         ] as HTMLElement[];
-        const postTagsWithData = arrHas(postTags)
-            ? postTags.reduce((acc, t: HTMLSpanElement) => {
-                  const withData = elemMatches(t, ".nonzero");
-                  if (withData) acc.push(withData);
-                  return acc;
-              }, [] as HTMLElement[])
-            : [];
-        return arrHas(postTagsWithData) ? postTagsWithData : null;
+        if (postTags.length > 0)
+            return postTags.reduce((acc, t: HTMLElement) => {
+                const withData = t.matches(".nonzero") && t;
+                if (withData) acc.push(withData);
+                return acc;
+            }, [] as HTMLElement[]);
+        else return [];
     };
 
     const _timeout = timeout || 1000; // 1s timeout by default
@@ -54,15 +53,15 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     return new Promise((resolve, reject) => {
         let tagsTimer = 0;
         if (!post) return reject(null);
-        const tagsInterval = setInterval(() => {
+        const tagsInterval = setInterval(async () => {
             // check every timeStep for data being loaded up to a timeout
             const tagCheckResult = collectTagData(post);
             if (tagsTimer <= _timeout && arrHas(tagCheckResult)) {
-                removeUnusedTagline(post);
+                await removeUnusedTagline(post);
                 clearInterval(tagsInterval);
                 return resolve(tagCheckResult);
             } else if (tagsTimer > _timeout) {
-                removeUnusedTagline(post);
+                await removeUnusedTagline(post);
                 clearInterval(tagsInterval);
                 return reject(null);
             }
@@ -108,7 +107,7 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
     const reply = parentid && post?.querySelector("li.sel.last");
     const raisedArgs = { post: reply || post, postid: parentid || postid, root, rootid } as PostEventArgs;
     if (reply && root && !(await getEnabled("hide_tagging_buttons"))) processReplyEvent.raise(raisedArgs, mutation);
-    else if (post && root)
+    if (post && root)
         handleTagsEvent(raisedArgs)
             .then((neArgs) => handlePostRefresh(neArgs, mutation))
             .catch((eArgs) => handlePostRefresh(eArgs, mutation));
@@ -150,16 +149,16 @@ export const handleRefreshClick = async (e: MouseEvent) => {
 
 export const contentScriptLoaded = async () => {
     await mergeTransientSettings();
-    // set our current logged-in username once upon refreshing the Chatty
-    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
-    if (loggedInUsername) await setUsername(loggedInUsername);
+    await domMeasure(async () => {
+        // set our current logged-in username once upon refreshing the Chatty
+        const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
+        if (loggedInUsername) await setUsername(loggedInUsername);
+    });
     // open a message channel for WinChatty events
     TabMessenger.connect();
     // try to fix incorrect positioning in single-thread mode
     singleThreadFix();
-};
 
-export const processObserverInstalled = async () => {
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
     await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
@@ -176,7 +175,6 @@ export const processPost = (args: PostEventArgs) => {
     handleTagsEvent(args);
 };
 export const processFullPosts = async () => {
-    await processObserverInstalled();
     const fullposts = [...document.querySelectorAll("div.fullpost")] as HTMLElement[];
     const process = async (el: HTMLElement) => {
         const args = await locatePostRefs(el);

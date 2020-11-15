@@ -1,12 +1,14 @@
 import lzString from "lz-string";
 
-export const arrHas = (arr: any[]) => arr && Array.isArray(arr) && arr.length > 0;
-export const arrEmpty = (arr: any[]) => arr && Array.isArray(arr) && arr.length === 0;
-export const objHas = (obj: Record<string, any>) => obj && typeof obj === "object" && Object.keys(obj).length > 0;
-export const objEmpty = (obj: Record<string, any>) => obj && typeof obj === "object" && Object.keys(obj).length === 0;
+export const arrHas = (arr: any[]) => arr != null && Array.isArray(arr) && arr.length > 0;
+export const arrEmpty = (arr: any[]) => arr !== null && Array.isArray(arr) && arr.length === 0;
+export const objHas = (obj: Record<string, any>) =>
+    obj != null && typeof obj === "object" && Object.keys(obj).length > 0;
+export const objEmpty = (obj: Record<string, any>) =>
+    obj != null && typeof obj === "object" && Object.keys(obj).length === 0;
 
 export const objContainsProperty = (key: string, obj: Record<string, any>) =>
-    obj && Object.prototype.hasOwnProperty.call(obj, key);
+    objHas(obj) && Object.prototype.hasOwnProperty.call(obj, key);
 
 export const isJSON = (text: string) => {
     try {

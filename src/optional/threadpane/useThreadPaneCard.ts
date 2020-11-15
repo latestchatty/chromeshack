@@ -6,6 +6,7 @@ import {
     processPostRefreshEvent,
     userFilterUpdateEvent,
 } from "../../core/events";
+import { getUsername } from "../../core/notifications";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { jumpToPost, parseRoot } from "./helpers";
 
@@ -81,8 +82,9 @@ const useThreadPaneCard = (post: ParsedPost) => {
             const { rootid: threadid } = args || {};
             if (threadid === rootid) {
                 setPending(false);
+                const loggedUser = await getUsername();
                 const threadRoot = document.querySelector(`div.root#root_${rootid}`) as HTMLElement;
-                const parsed = threadRoot && (await parseRoot(threadRoot));
+                const parsed = threadRoot && (await parseRoot(threadRoot, loggedUser));
                 if (parsed) setLocalPost(parsed);
                 if (parsed?.recents) setLocalRecents(parsed?.recents);
             }

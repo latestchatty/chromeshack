@@ -40,10 +40,11 @@ const notificationClicked = (notificationId: string) => {
 
 const matchNotification = async (nEvent: NotifyEvent) => {
     const loggedInUsername = (await getUsername())?.toLowerCase();
-    const matches = (await getSetting("notifications")) as string[];
-    const parentAuthor = nEvent?.eventData?.parentAuthor?.toLowerCase();
-    const postAuthor = nEvent?.eventData?.post?.author?.toLowerCase();
-    const postEventBody = nEvent?.eventData?.post?.body?.toLowerCase();
+    const newPostEvent = nEvent as NewPostData;
+    const matches = (await getSetting("notifications", [])) as string[];
+    const parentAuthor = newPostEvent?.parentAuthor?.toLowerCase();
+    const postAuthor = newPostEvent?.post?.author?.toLowerCase();
+    const postEventBody = newPostEvent?.post?.body?.toLowerCase();
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
     const postAuthorIsMe = postAuthor === loggedInUsername;
@@ -71,8 +72,9 @@ const handleNotification = async (response: NotifyResponse) => {
     for (const event of events || [])
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);
-            if (notify_enabled && match && event?.eventData?.post?.author) {
-                const post = event.eventData.post;
+            const eventData = event as NewPostData;
+            if (notify_enabled && match && eventData?.post?.author) {
+                const post = eventData.post;
                 browser.notifications.create(`ChromeshackNotification${post.id.toString()}`, {
                     type: "basic",
                     title: "New post by " + post.author,

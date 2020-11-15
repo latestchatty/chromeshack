@@ -7,8 +7,16 @@ import "../../styles/drafts.css";
 import { parseToElement } from "../../core/common";
 
 const Drafts = {
+    cachedEl: null as HTMLElement,
+
     install() {
         processPostBoxEvent.addHandler(Drafts.apply);
+        Drafts.cacheInjectables();
+    },
+
+    cacheInjectables() {
+        const appContainer = parseToElement(`<div id="drafts__app" />`);
+        Drafts.cachedEl = appContainer as HTMLElement;
     },
 
     async apply(args: PostboxEventArgs) {
@@ -17,12 +25,11 @@ const Drafts = {
         const positionElem = postbox?.querySelector("div.ctextarea");
         const container = postbox.querySelector("#drafts__app");
         if (is_enabled && !container && positionElem) {
-            const appContainer = parseToElement(`<div id="drafts__app" />`);
             const nearestLi = postbox?.closest && postbox.closest("li[id^='item_']");
             const postid = parseInt(nearestLi?.id?.substr(5));
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
-            render(<DraftsApp postid={postid} inputBox={inputBox} />, appContainer);
-            positionElem.parentElement.insertBefore(appContainer, positionElem.nextElementSibling);
+            render(<DraftsApp postid={postid} inputBox={inputBox} />, Drafts.cachedEl);
+            positionElem.parentElement.insertBefore(Drafts.cachedEl, positionElem.nextElementSibling);
         }
     },
 };

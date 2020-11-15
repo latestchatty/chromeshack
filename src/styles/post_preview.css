@@ -29,3 +29,8 @@ div#postbox {
     outline: none !important;
     color: rgb(85, 85, 85) !important;
 }
+
+/* workaround for busted jt_code tag inside previewArea */
+#previewArea .jt_code br {
+    display: block !important;
+}

@@ -10,8 +10,20 @@ const $ = jQuery;
  * workaround Chatty's poor support for unicode surrogate pairs.
  */
 export const EmojiPoster = {
+    cachedEl: null as HTMLElement,
+
     install() {
         processPostBoxEvent.addHandler(EmojiPoster.apply);
+        EmojiPoster.cacheInjectables();
+    },
+
+    cacheInjectables() {
+        const el = parseToElement(/*html*/ `
+            <div class="emoji-tagline">
+                <span class="tagline-sep">▪</span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
+            </div>
+        `);
+        EmojiPoster.cachedEl = el as HTMLElement;
     },
 
     apply(args: PostboxEventArgs) {
@@ -45,11 +57,7 @@ export const EmojiPoster = {
             // educate the user on how to open the OS' Emoji Picker
             const _rulesParent = postbox?.querySelector("p.rules") as HTMLElement;
             // parse our nodes into a document fragment
-            const _emojiTaglineFragment = parseToElement(/*html*/ `
-                <div class="emoji-tagline">
-                    <span class="tagline-sep">▪</span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
-                </div>
-            `);
+            const _emojiTaglineFragment = EmojiPoster.cachedEl;
             _rulesParent?.append(_emojiTaglineFragment);
         }
     },

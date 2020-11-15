@@ -24,37 +24,37 @@ import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import "./styles/chromeshack.css";
 
-// save some important refs for later
-export const CS_Instance = ChromeShack;
-export const HU_Instance = HighlightUsers;
-
 (async () => {
     await contentScriptLoaded();
-    // optional modules that rely on toggles
-    await ChattyNews.install();
-    await CustomUserFilters.install();
-    await HighlightPendingPosts.install();
-    await HU_Instance.install();
-    await NewCommentHighlighter.install();
-    await PostStyling.install();
-    await Switchers.install();
-    await ThreadPane.install();
+    // early modules
+    await Collapse.install();
     await TwitchAutoplay.install();
-    Drafts.install();
+    LocalTimeStamp.install();
+    UserPopup.install();
+    ModBanners.install();
+    await PostStyling.install();
+    await HighlightUsers.install();
+    await CustomUserFilters.install();
+    await Switchers.install();
+
+    // heavy modules
     MediaEmbedder.install();
     NwsIncognito.install();
+    await HighlightPendingPosts.install();
+    await NewCommentHighlighter.install();
+    await ThreadPane.install();
+    await ChattyNews.install();
+
+    // everything else
+    await CommentTags.install();
+    ImageUploader.install();
+
+    Drafts.install();
     PostPreview.install();
     Templates.install();
-
-    // non-optional modules
-    await Collapse.install();
-    CommentTags.install();
     EmojiPoster.install();
-    ImageUploader.install();
-    LocalTimeStamp.install();
-    ModBanners.install();
     PostLengthCounter.install();
-    UserPopup.install();
+
     // always make sure the ChromeShack event observer is last
-    await CS_Instance.install();
+    await ChromeShack.install();
 })();

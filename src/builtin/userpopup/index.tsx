@@ -1,11 +1,23 @@
 import React from "react";
 import { render } from "react-dom";
-import { domMutate, elemMatches, parseToElement } from "../../core/common";
+import { elemMatches, parseToElement } from "../../core/common";
 import { getUsername } from "../../core/notifications";
-import { UserPopupApp } from "./UserPopupApp";
 import "../../styles/userpopup.css";
+import { UserPopupApp } from "./UserPopupApp";
 
 export const UserPopup = {
+    cachedEl: null as HTMLElement,
+
+    install() {
+        document.addEventListener("click", UserPopup.clickHandler);
+        UserPopup.cacheInjectables();
+    },
+
+    cacheInjectables() {
+        const appContainer = parseToElement(`<div class="userDropdown" />`);
+        UserPopup.cachedEl = appContainer as HTMLElement;
+    },
+
     async clickHandler(e: MouseEvent) {
         const mini_mode = window.matchMedia("(max-width: 1024px)");
         if (mini_mode.matches) return;
@@ -27,19 +39,12 @@ export const UserPopup = {
             const isLoggedInUser = loggedInUsername?.toUpperCase() === _username?.toUpperCase();
 
             if (!containerRef && _elem) {
-                const appContainer = parseToElement(`<div class="userDropdown" />`);
-                await domMutate(() => {
-                    render(
-                        <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
-                        appContainer,
-                    );
-                    _elem.appendChild(appContainer);
-                });
+                render(
+                    <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
+                    UserPopup.cachedEl,
+                );
+                _elem.appendChild(UserPopup.cachedEl);
             }
         }
-    },
-
-    install() {
-        document.addEventListener("click", UserPopup.clickHandler);
     },
 };

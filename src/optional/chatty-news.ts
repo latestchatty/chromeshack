@@ -79,11 +79,10 @@ export const ChattyNews = {
             // populate the newly created newsBox from the Chatty RSS server's articles
             const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
             await domMutate(async () => {
-                alignmentBox?.appendChild(newsBox);
-                articleBox?.appendChild(alignmentBox);
+                alignmentBox?.append(newsBox);
+                articleBox?.append(alignmentBox);
                 if ((await enabledContains(["thread_pane"])) && is_chatty)
                     articleBox?.classList?.add("thread__pane__enabled");
-
                 articleBox?.classList?.add("chatty__news__enabled");
             });
         }

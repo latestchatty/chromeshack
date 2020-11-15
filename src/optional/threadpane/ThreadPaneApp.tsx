@@ -1,10 +1,12 @@
 import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
-import { arrHas, classNames, scrollParentToChild } from "../../core/common";
-import { RefreshIcon } from "../media-embedder/Expando";
-import { useThreadPaneCard } from "./useThreadPaneCard";
 import parse from "html-react-parser";
+import React, { useLayoutEffect, useState } from "react";
+import { arrHas, classNames, scrollParentToChild } from "../../core/common";
+import { getUsername } from "../../core/notifications";
+import { RefreshIcon } from "../media-embedder/Expando";
+import { parseRoot } from "./helpers";
+import { useThreadPaneCard } from "./useThreadPaneCard";
 
 const StepForwardIcon = () => <FontAwesomeIcon icon={faAngleDoubleRight} />;
 const CommentDotsIcon = () => <FontAwesomeIcon icon={faCommentDots} />;
@@ -94,15 +96,16 @@ const ThreadPaneJumpToTop = () => {
     );
 };
 
-const ThreadPaneApp = (props: { parsedPosts: Promise<ParsedPost[]> }) => {
-    const { parsedPosts } = props || {};
+const ThreadPaneApp = () => {
     const [parsed, setParsed] = useState([] as ParsedPost[]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         (async () => {
-            setParsed(await parsedPosts);
+            const loggedUser = await getUsername();
+            const roots = [...document.querySelectorAll("div.root")] as HTMLElement[];
+            setParsed(roots.map((r) => parseRoot(r, loggedUser)));
         })();
-    }, [parsedPosts]);
+    }, []);
 
     return arrHas(parsed) ? (
         <div id="cs_thread_pane_list">
