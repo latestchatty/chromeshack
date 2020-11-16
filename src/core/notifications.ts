@@ -40,7 +40,7 @@ const notificationClicked = (notificationId: string) => {
 
 const matchNotification = async (nEvent: NotifyEvent) => {
     const loggedInUsername = (await getUsername())?.toLowerCase();
-    const newPostEvent = nEvent as NewPostData;
+    const newPostEvent = nEvent.eventData as NewPostData;
     const matches = (await getSetting("notifications", [])) as string[];
     const parentAuthor = newPostEvent?.parentAuthor?.toLowerCase();
     const postAuthor = newPostEvent?.post?.author?.toLowerCase();
@@ -48,13 +48,15 @@ const matchNotification = async (nEvent: NotifyEvent) => {
     const postEventHasMe = postEventBody?.includes(loggedInUsername);
     const parentAuthorIsMe = parentAuthor === loggedInUsername;
     const postAuthorIsMe = postAuthor === loggedInUsername;
-    const postEventHasMatches = matches?.reduce((acc, m) => {
-        const mToLower = m.toLowerCase();
-        const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
-        // trim extra trailing space from phrase matches for posterity
-        if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
-        return acc;
-    }, [] as string[]);
+    const postEventHasMatches =
+        postEventBody &&
+        matches?.reduce((acc, m) => {
+            const mToLower = m.toLowerCase();
+            const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
+            // trim extra trailing space from phrase matches for posterity
+            if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
+            return acc;
+        }, [] as string[]);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
     else if (!postAuthorIsMe && arrHas(postEventHasMatches)) {
