@@ -1,10 +1,10 @@
 import type { WebRequest } from "webextension-polyfill-ts";
 import { browser } from "webextension-polyfill-ts";
+import { fetchSafe, JSONToFormData } from "./core/common";
 import { startNotifications } from "./core/notifications";
 import { migrateSettings } from "./core/settings";
 import { chatViewFix } from "./patches/chatViewFix";
 import { scrollByKeyFix } from "./patches/scrollByKeyFix";
-import { fetchSafe, JSONToFormData } from "./core/common";
 
 browser.runtime.onMessage.addListener(
     async (request: OnMessageRequest): Promise<any> => {

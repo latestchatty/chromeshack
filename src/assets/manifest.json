@@ -50,8 +50,8 @@
         "https://*.youtube.com/embed/*",
         "https://api.streamable.com/videos/*",
         "https://api.twitter.com/1.1/statuses/show/*",
-        "https://shacknews.com/chatty/*",
-        "https://www.shacknews.com/chatty/*"
+        "https://*.shacknews.com/chatty/*",
+        "https://*.shacknews.com/chatty"
     ],
     "web_accessible_resources": [
         "images/offtopic.png",
