@@ -19,11 +19,9 @@ export const UserPopup = {
     },
 
     async clickHandler(e: MouseEvent) {
-        const mini_mode = window.matchMedia("(max-width: 1024px)");
-        if (mini_mode.matches) return;
-
         const _this = e?.target as HTMLElement;
-        const userLink = elemMatches(_this, "span.user > a");
+        // cover both logged-in and logged-out cases
+        const userLink = elemMatches(_this, "span.user > a") || elemMatches(_this, "span.user");
         const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
         const accountName = accountLink
             ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.textContent
@@ -32,7 +30,7 @@ export const UserPopup = {
 
         if (userLink || accountLink) {
             e.preventDefault();
-            const _username = userLink?.textContent || accountName;
+            const _username = userLink?.textContent.trim() || accountName.trim();
             const _elem = userLink || accountLink;
             const containerRef = _elem?.querySelector(".userDropdown") as HTMLUListElement;
             const loggedInUsername = await getUsername();
