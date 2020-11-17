@@ -41,10 +41,11 @@ function clickItem(b, f) {
         return false;
     }
 }
+var previous = document.getElementById("chatviewfix-wjs");
 var chatViewFixElem = document.createElement("script");
 chatViewFixElem.id = "chatviewfix-wjs";
 chatViewFixElem.textContent = \`${elementFitsViewport.toString()}${scrollToElement.toString()}${elementIsVisible.toString()}\${clickItem.toString()}\${show_item_fullpost.toString()}\${scrollToItem.toString()}\`;
-document.getElementsByTagName("body")[0].append(chatViewFixElem);
+if (!previous) document.getElementsByTagName("body")[0].append(chatViewFixElem);
 undefined;`,
         });
     } catch (e) {

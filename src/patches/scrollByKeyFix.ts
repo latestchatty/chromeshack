@@ -34,10 +34,11 @@ function chat_onkeypress(b) {
     }
     return true;
 }
+var previous = document.getElementById("scrollbykeyfix-wjs");
 var scrollByKeyFix = document.createElement("script");
 scrollByKeyFix.id = "scrollbykeyfix-wjs";
 scrollByKeyFix.textContent = \`\${check_event_target.toString()}\${chat_onkeypress.toString()}\`;
-document.getElementsByTagName("body")[0].append(scrollByKeyFix);
+if (!previous) document.getElementsByTagName("body")[0].append(scrollByKeyFix);
 undefined;`,
         });
     } catch (e) {
