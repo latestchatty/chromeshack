@@ -17,9 +17,9 @@ body.cs_thread_pane_enable {
     margin-left: 420px;
     overflow-x: hidden;
 }
+/* let the header buttons be responsive */
 body.cs_thread_pane_enable div#page,
 body.cs_thread_pane_enable div#page div.header-bottom-right {
-    /* let the header buttons be responsive */
     min-width: 0;
 }
 @media (max-width: 1196px) {

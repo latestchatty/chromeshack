@@ -89,7 +89,7 @@ const usePendingPosts = (threaded: boolean) => {
 
     useEffect(() => {
         // update the window title and HPNP status text when our pending count changes
-        const newText = count > 0 ? `${count}` : "";
+        const newText = count > 0 && threaded ? `${count}` : count > 0 && !threaded ? `${indicator}${count}` : "";
         setPendingText(newText);
         if (pendings.length > 0 && !document.title.startsWith(indicator))
             document.title = `${indicator}${document.title}`;
@@ -101,7 +101,7 @@ const usePendingPosts = (threaded: boolean) => {
             if (!isCollapsed(refreshBtn) && !isPending(refreshBtn))
                 domMutate(() => refreshBtn?.classList?.add("refresh_pending"));
         }
-    }, [count, pendings]);
+    }, [threaded, count, pendings]);
     useEffect(() => {
         processNotifyEvent.addHandler(fetchPendings);
         processPostRefreshEvent.addHandler(updateRefreshed);

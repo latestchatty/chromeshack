@@ -55,17 +55,6 @@ button:focus {
     color: #000000 !important;
 }
 
-a.chromeshack_options_link {
-    position: absolute;
-    top: 6px;
-    left: 14px;
-}
-a.chromeshack_options_link.singlepost {
-    position: relative;
-    top: 0 !important;
-    left: 0 !important;
-}
-
 div#postbox fieldset {
     /* workaround for responsiveness at small widths */
     max-width: calc(100% - 1px) !important;

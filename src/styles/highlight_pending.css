@@ -9,7 +9,10 @@
 }
 
 /* pending post highlighter */
-a.hpnp__enabled {
+.logo.alt.hpnp__enabled {
+    margin-right: 0 !important;
+}
+.hpnp__enabled > a {
     display: flex !important;
 }
 #hpnp__app__container {
@@ -19,15 +22,39 @@ a.hpnp__enabled {
     padding: 0;
     margin: 0;
 }
-header:not(.pinned) #hpnp__app__container {
+
+/* wide mode (fat header + no threadpane) */
+#hpnp__app__container.header-shown:not(.narrow) {
     max-height: 29px;
     top: 10px;
-    left: 10px;
+    left: 6px;
 }
-header.pinned #hpnp__app__container {
+#hpnp__app__container.header-shown:not(.narrow) #statustext {
+    font-size: 25px;
+}
+/* wide mode (slim header) */
+#hpnp__app__container.header-shown.scrolled {
+    max-height: 22px;
+    top: -1px;
+    left: -75px;
+}
+/* narrow mode (slim header) */
+#hpnp__app__container.narrow.header-shown {
     max-height: 22px;
     top: 5px;
-    left: 10px;
+    left: 6px;
+}
+#hpnp__container:hover {
+    opacity: 1 !important;
+}
+/* narrow mode (no header) */
+#hpnp__app__container.narrow.scrolled #hpnp__container,
+#hpnp__app__container.narrow:not(.header-shown) #hpnp__container {
+    position: absolute;
+    top: 30px;
+    left: -200px;
+    opacity: 0.33;
+    transition: opacity 0.2s ease;
 }
 
 #hpnp__container {
@@ -43,12 +70,14 @@ header.pinned #hpnp__app__container {
 
 #hpnp__container #statustext {
     position: relative;
+    padding: 0 0.25em;
     margin-top: 2px;
     font-size: 20px;
     font-weight: 600;
     font-family: var(--hpnp__font-family);
 }
 #hpnp__container #statustext:not(.threaded) {
+    /*  */
     padding: 0 6px 0 4px !important;
 }
 #hpnp__container #prev__btn,
@@ -62,10 +91,6 @@ header.pinned #hpnp__app__container {
     margin: 0 !important;
     padding: 0 !important;
 }
-#hpnp__container:hover {
-    background-color: var(--hpnp__bg-hover-color) !important;
-    border-color: var(--hpnp__border-hover-color) !important;
-}
 #prev__btn:active > svg,
 #next__btn:active > svg,
 #hpnp__container #statustext:active {
@@ -77,6 +102,11 @@ header.pinned #hpnp__app__container {
 }
 #hpnp__container #next__btn {
     margin: 0 3px 0 4px !important;
+}
+#hpnp__container #next__btn:hover,
+#hpnp__container #prev__btn:hover {
+    background-color: var(--hpnp__bg-hover-color) !important;
+    border-color: var(--hpnp__fg-hover-color) !important;
 }
 svg.hpnp__prev__icon,
 svg.hpnp__next__icon {

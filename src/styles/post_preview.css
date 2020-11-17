@@ -34,3 +34,6 @@ div#postbox {
 #previewArea .jt_code br {
     display: block !important;
 }
+#previewArea > a {
+    text-decoration: underline !important;
+}
