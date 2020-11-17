@@ -34,7 +34,7 @@ function chat_onkeypress(b) {
     }
     return true;
 }
-let scrollByKeyFix = document.createElement("script");
+var scrollByKeyFix = document.createElement("script");
 scrollByKeyFix.id = "scrollbykeyfix-wjs";
 scrollByKeyFix.textContent = \`\${check_event_target.toString()}\${chat_onkeypress.toString()}\`;
 document.getElementsByTagName("body")[0].append(scrollByKeyFix);

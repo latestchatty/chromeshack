@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { domMutate, parseToElement } from "../../core/common";
+import { parseToElement } from "../../core/common";
 import { enabledContains } from "../../core/settings";
 import "../../styles/highlight_pending.css";
 import { HighlightPendingApp } from "./HighlightPendingApp";
@@ -16,11 +16,9 @@ const HighlightPendingPosts = {
         if (isEnabled && !container && positionElem) {
             const appContainer = parseToElement(`<div id="hpnp__app__container" />`);
             // put our HPNP app next to the Shacknews logo in the top-left
-            await domMutate(() => {
-                positionElem.classList?.add("hpnp__enabled");
-                render(<HighlightPendingApp threaded={isChatty} />, appContainer);
-                positionElem.appendChild(appContainer);
-            });
+            positionElem.classList?.add("hpnp__enabled");
+            render(<HighlightPendingApp threaded={isChatty} />, appContainer);
+            positionElem.appendChild(appContainer);
         }
     },
 };

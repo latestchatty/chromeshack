@@ -1,8 +1,8 @@
+import fastdom from "fastdom";
+import fastdomPromised from "fastdom/extensions/fastdom-promised";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
 import { arrHas } from "./";
-import fastdom from "fastdom";
-import fastdomPromised from "fastdom/extensions/fastdom-promised";
 
 const $ = jQuery;
 
@@ -267,19 +267,15 @@ export const elemMatches = (elem: HTMLElement, selector: string) => {
 /// takes an Element of a post and returns post/root information
 export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
-    return domMeasure(() => {
-        const _parent = postElem.parentNode as HTMLElement;
-        const post =
-            elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
-        const root = postElem.classList?.contains("op")
-            ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
-            : (post?.closest(".root > ul > li") as HTMLElement) ||
-              (post?.querySelector(".root > ul > li") as HTMLElement);
-        const postid = parseInt(post?.id?.substr(5));
-        const rootid = parseInt(root?.id?.substr(5));
-        const is_root = rootid && postid && rootid === postid;
-        return { post, postid, root, rootid, is_root };
-    }) as Promise<PostEventArgs>;
+    const _parent = postElem.parentNode as HTMLElement;
+    const post = elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
+    const root = postElem.classList?.contains("op")
+        ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
+        : (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
+    const postid = parseInt(post?.id?.substr(5));
+    const rootid = parseInt(root?.id?.substr(5));
+    const is_root = rootid && postid && rootid === postid;
+    return { post, postid, root, rootid, is_root } as PostEventArgs;
 };
 
 export const disableTwitch = () => {
@@ -305,10 +301,10 @@ export const decodeHTML = (text: string) => {
 };
 
 export const insertStyle = (css: string, containerName: string) => {
-    const _style = parseToElement(/*html*/ `
-        <style id="${containerName}">${css}</style>
-    `);
-    const existing = document.querySelector(`style#${containerName}`);
+    const existing = document.getElementById(containerName);
     if (existing) existing.parentElement.removeChild(existing);
+    const _style = document.createElement("style");
+    _style.setAttribute("id", containerName);
+    _style.textContent = css;
     document.querySelector("head")?.append(_style);
 };

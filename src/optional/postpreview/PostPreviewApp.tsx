@@ -1,36 +1,9 @@
-import parse, { DomElement, domToReact } from "html-react-parser";
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { createPortal, render } from "react-dom";
 import { debounce } from "ts-debounce";
-import { classNames, elemMatches, generatePreview, parseToElement, scrollToElement } from "../core/common";
-import { processPostBoxEvent, replyFieldEvent } from "../core/events";
-import { enabledContains, getSetting, setSetting } from "../core/settings";
-import "../styles/post_preview.css";
-
-const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: string }) => {
-    const { target, toggled, input } = props || {};
-    const onSpoilerClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-        const _this = e.target as HTMLElement;
-        if (!_this?.classList?.contains("jt_spoiler_clicked")) {
-            _this.classList.remove("jt_spoiler");
-            _this.classList.add("jt_spoiler_clicked");
-        }
-    };
-    const modifySpoiler = (node: DomElement) => {
-        if (node.name === "span" && node.attribs["class"].includes("jt_spoiler"))
-            return (
-                <span className={node.attribs["class"]} onClick={onSpoilerClick}>
-                    {domToReact(node.children)}
-                </span>
-            );
-    };
-    return createPortal(
-        <div id="previewArea" className={classNames({ hidden: !toggled })}>
-            {parse(input, { replace: (node) => modifySpoiler(node) })}
-        </div>,
-        target,
-    );
-};
+import { classNames, elemMatches, generatePreview, scrollToElement } from "../../core/common";
+import { replyFieldEvent } from "../../core/events";
+import { getSetting, setSetting } from "../../core/settings";
+import { PostPreviewPane } from "./PostPreviewPane";
 
 const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLElement }) => {
     const { postboxElem, paneMountElem } = props || {};
@@ -76,9 +49,11 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
             await setSetting("post_preview_toggled", toggled);
         })();
     }, [toggled, postboxRef]);
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (!postboxRef) return;
         const inputArea = postboxRef.querySelector("#frm_body") as HTMLInputElement;
+        const parentFullpost = postboxRef.closest("li.sel");
+        const replyBtn = parentFullpost?.querySelector(".fullpost .reply>a") as HTMLElement;
         const closeFormBtn = inputArea?.closest(".postbox")?.querySelector("div.closeform>a") as HTMLElement;
 
         fullpostRef.current = postboxRef.closest("li.sel") as HTMLElement;
@@ -89,13 +64,15 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
 
         inputArea.addEventListener("input", handleInput);
         replyFieldEvent.addHandler(handleExternalInput);
+        replyBtn.addEventListener("click", jumpToNearestFullpost);
         closeFormBtn.addEventListener("click", jumpToNearestFullpost);
         return () => {
             inputArea.removeEventListener("input", handleInput);
             replyFieldEvent.removeHandler(handleExternalInput);
+            replyBtn.removeEventListener("click", jumpToNearestFullpost);
             closeFormBtn.removeEventListener("click", jumpToNearestFullpost);
         };
-    }, [postboxRef, handleInput, toggled, debouncedInputRef]);
+    }, [paneMountRef, postboxRef, handleInput, toggled, debouncedInputRef]);
     useLayoutEffect(() => {
         (async () => {
             const is_toggled = (await getSetting("post_preview_toggled", false)) as boolean;
@@ -112,38 +89,4 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
         </>
     );
 };
-
-const PostPreview = {
-    cachedPaneEl: null as HTMLElement,
-    cachedAppEl: null as HTMLElement,
-
-    install() {
-        processPostBoxEvent.addHandler(PostPreview.apply);
-        PostPreview.cacheInjectables();
-    },
-
-    cacheInjectables() {
-        const paneContainer = parseToElement(`<div id="post__preview__pane" />`) as HTMLElement;
-        const appContainer = parseToElement(`<div id="post__preview__app" />`) as HTMLElement;
-        PostPreview.cachedPaneEl = paneContainer;
-        PostPreview.cachedAppEl = appContainer;
-    },
-
-    async apply(args: PostboxEventArgs) {
-        const { postbox } = args || {};
-        const is_enabled = await enabledContains(["post_preview"]);
-        const positionElem = postbox?.querySelector("div.csubmit");
-        const container = postbox.querySelector("#post__preview__app");
-        const altPositionElem = postbox?.querySelector("#frm_body");
-        if (is_enabled && !container && positionElem) {
-            render(
-                <PostPreviewApp postboxElem={postbox} paneMountElem={PostPreview.cachedPaneEl} />,
-                PostPreview.cachedAppEl,
-            );
-            altPositionElem.parentNode.insertBefore(PostPreview.cachedPaneEl, altPositionElem);
-            positionElem.append(PostPreview.cachedAppEl);
-        }
-    },
-};
-
-export { PostPreview };
+export { PostPreviewApp };

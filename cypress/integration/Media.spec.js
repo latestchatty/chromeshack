@@ -8,7 +8,7 @@ describe("Media Embedder", () => {
         cy.fixture("_shack_li_").then((li) => cy.setCookie("_shack_li_", li, { domain: "shacknews.com" }));
     });
 
-    context("interactive with media links in DOM", () => {
+    context("Imgur", () => {
         it("Imgur single-image", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39952896#item_39952896");
             cy.get("li li.sel div.medialink").as("medialink").click();
@@ -38,6 +38,13 @@ describe("Media Embedder", () => {
             cy.get(".embla__button--next").click();
             cy.get("div.media .is-selected").and((img) => expect(img.eq(0)).to.be.visible);
         });
+        it("Imgur multi-image from named gallery", () => {
+            cy.visit("https://www.shacknews.com/chatty?id=40121388#item_40121388");
+            cy.get("li li.sel div.medialink").click();
+            cy.get("div.media img").and((img) => expect(img.eq(0)).to.be.visible);
+            cy.get(".embla__button--next").click();
+            cy.get("div.media .is-selected").and((img) => expect(img.eq(0)).to.be.visible);
+        });
         it("Imgur video", () => {
             cy.visit("https://www.shacknews.com/chatty?id=38024123#item_38024123");
             cy.get("div.medialink").click();
@@ -49,11 +56,12 @@ describe("Media Embedder", () => {
             cy.get("div.media video").and((video) => expect(video[0].src).to.eq("https://i.imgur.com/KiKjnt6.mp4"));
         });
         it("Imgur named video from gallery", () => {
-            cy.visit("https://www.shacknews.com/chatty?id=39951288#item_39951288");
-            cy.get("div.medialink").click();
-            cy.get("div.media video").and((video) => expect(video[0].src).to.eq("https://i.imgur.com/loslUTc.mp4"));
+            cy.visit("https://www.shacknews.com/chatty?id=39924469#item_39924469");
+            cy.get("li li.sel div.medialink").click();
+            cy.get("div.media video").and((video) => expect(video[0].src).to.eq("https://i.imgur.com/T3Pt5kF.mp4"));
         });
-
+    });
+    context("Direct-link media", () => {
         it("Direct-link images", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39953172#item_39953172");
             cy.get(".root>ul>li div.medialink").eq(1).click();
@@ -68,7 +76,9 @@ describe("Media Embedder", () => {
             cy.get("li li.sel div.medialink").click();
             cy.get("div.media video").and((video) => expect(video[0].src).to.eq("https://i.imgur.com/itKm9JS.mp4"));
         });
+    });
 
+    context("Dropbox", () => {
         it("Dropbox images", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39848548#item_39848548");
             cy.get("div.medialink").click();
@@ -83,7 +93,9 @@ describe("Media Embedder", () => {
                 expect(video[0].src).to.eq("https://www.dropbox.com/s/8qk8lfwwtaubk44/20200512_193538.mp4?raw=1"),
             );
         });
+    });
 
+    context("Other hosts", () => {
         it("Chattypics images", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39945481#item_39945481");
             cy.get("li li.sel div.medialink").eq(0).click();
@@ -132,8 +144,10 @@ describe("Media Embedder", () => {
                 expect(img[2].src).to.eq("https://pbs.twimg.com/media/EgouUwDXsAA8S_8.jpg");
             });
         });
+    });
 
-        it("Embedded Chattypost", () => {
+    context("Chattypost", () => {
+        it("embeds", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39952360#item_39952360");
             cy.get("li li.sel div.medialink").click();
             cy.get("div.media .postbody > a").and((link) =>
@@ -142,15 +156,17 @@ describe("Media Embedder", () => {
                 ),
             );
         });
+    });
 
-        it("NWS Incognito enabled with media links", () => {
+    context("NWS Incognito", () => {
+        it("enabled with media links", () => {
             cy.visit("https://www.shacknews.com/chatty?id=26073414#item_26073414");
             cy.get("li li.sel .postbody a").and((links) => {
                 expect(links[0].innerText).to.eq("http://imgur.com/a/re0yH (Incognito)");
                 expect(links[1].innerText).to.eq("http://imgur.com/a/wq9mu (Incognito)");
             });
         });
-        it("NWS Incognito disabled with navigable Imgur gallery", () => {
+        it("disabled with navigable Imgur gallery", () => {
             cy.loadExtensionDefaults({ exclude: true }, { enabled_scripts: ["nws_incognito"] });
             cy.reload();
 

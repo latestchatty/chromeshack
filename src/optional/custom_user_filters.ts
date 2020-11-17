@@ -49,7 +49,7 @@ export const CustomUserFilters = {
             CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
             const hideFPs = !!(await getEnabledSuboption("cuf_hide_fullposts"));
             for (const filteredUser of filteredUsers) {
-                const resolved = await HighlightUsers.resolveUser(filteredUser);
+                const resolved = HighlightUsers.resolveUser(filteredUser);
                 for (const record of resolved || []) {
                     userFilterUpdateEvent.raise(record);
                     await CustomUserFilters.removeOLsForAuthorId(record, hideFPs);

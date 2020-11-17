@@ -1,4 +1,4 @@
-import { domMeasure, insertStyle, objHas } from "../core/common";
+import { insertStyle, objHas } from "../core/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting } from "../core/settings";
 
@@ -11,38 +11,39 @@ export const HighlightUsers = {
         processPostRefreshEvent.addHandler(HighlightUsers.applyFilter);
     },
 
-    async resolveUsers() {
+    resolveUsers() {
         if (objHas(HighlightUsers.cache)) return HighlightUsers.cache;
         const compiled = {} as ResolvedUsers;
         const posts = [...document.querySelectorAll("li[id^='item_'")];
         const process = (post: HTMLElement) => {
             const postid = parseInt(post?.id?.substr(5));
-            const postdiv = post.querySelector(".fullpost, .oneline");
-            const op = postdiv.querySelector(".root>ul>li li>.fullpost.op");
-            const id =
-                parseInt(postdiv?.getAttribute("class")?.split("olauthor_")?.[1]) ||
-                parseInt(postdiv?.getAttribute("class")?.split("fpauthor_")?.[1]);
+            const fullpost = post.querySelector(".fullpost");
+            const fullpostAuthor = fullpost?.getAttribute("class")?.split("fpauthor_");
+            const oneline = post.querySelector(".oneline");
+            const onelineAuthor = oneline?.getAttribute("class")?.split("olauthor_");
+            const op = fullpost?.matches && fullpost.matches(".op");
+            const fpauthor_id = fullpostAuthor && parseInt(fullpostAuthor?.[1]);
+            const olauthor_id = onelineAuthor && parseInt(onelineAuthor?.[1]);
+            const id = olauthor_id ?? fpauthor_id;
             const username =
-                post.querySelector("span.oneline_user")?.textContent ||
-                post.querySelector("span.user")?.textContent ||
+                post.querySelector("span.oneline_user")?.textContent ??
+                post.querySelector("span.user")?.textContent ??
                 post.querySelector("span.user>a")?.textContent;
-            const mod = postdiv?.querySelector("a.shackmsg ~ img[alt='moderator']");
-            return { id, mod: !!mod, op: !!op, postid, username };
+            const mod = fullpost?.querySelector("a.shackmsg ~ img[alt='moderator']");
+            return { id, mod: !!mod, op, postid, username };
         };
-        await domMeasure(() => {
-            for (const p of posts) {
-                const r = process(p as HTMLElement);
-                if (!compiled[r.username]) compiled[r.username] = [r];
-                else compiled[r.username].push(r);
-            }
-        });
+        for (const p of posts) {
+            const r = process(p as HTMLElement);
+            if (!compiled[r.username]) compiled[r.username] = [r];
+            else compiled[r.username].push(r);
+        }
         HighlightUsers.cache = compiled;
         return HighlightUsers.cache;
     },
 
-    async resolveUser(username: string) {
+    resolveUser(username: string) {
         // renew the cache if this gets called before HU has a chance to run
-        if (Object.keys(HighlightUsers.cache).length === 0) await HighlightUsers.resolveUsers();
+        if (Object.keys(HighlightUsers.cache).length === 0) HighlightUsers.resolveUsers();
         return HighlightUsers.cache[username];
     },
 
@@ -88,7 +89,7 @@ export const HighlightUsers = {
         const is_enabled = await enabledContains(["highlight_users"]);
         if (is_enabled) {
             const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
-            const users = await HighlightUsers.resolveUsers();
+            const users = HighlightUsers.resolveUsers();
             // we just need to run this once per page
             HighlightUsers.gatherCSS(users, groups);
         }

@@ -41,7 +41,7 @@ function clickItem(b, f) {
         return false;
     }
 }
-let chatViewFixElem = document.createElement("script");
+var chatViewFixElem = document.createElement("script");
 chatViewFixElem.id = "chatviewfix-wjs";
 chatViewFixElem.textContent = \`${elementFitsViewport.toString()}${scrollToElement.toString()}${elementIsVisible.toString()}\${clickItem.toString()}\${show_item_fullpost.toString()}\${scrollToItem.toString()}\`;
 document.getElementsByTagName("body")[0].append(chatViewFixElem);

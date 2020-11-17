@@ -50,7 +50,7 @@ export const NewCommentHighlighter = {
                 const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
                 const preview = li.querySelector(".oneline_body");
                 const is_highlighted = preview?.classList?.contains("newcommenthighlighter");
-                return await domMutate(() => {
+                await domMutate(() => {
                     if (is_newer && !is_highlighted) {
                         preview.classList.add("newcommenthighlighter");
                         newer.push(li);

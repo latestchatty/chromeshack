@@ -1,4 +1,4 @@
-import { domMeasure, domMutate } from "../core/common";
+import { domMutate } from "../core/common";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { HighlightUsers } from "./highlight_users";
@@ -16,6 +16,7 @@ export const Switchers = {
         { old: "jingletard", new: "Jingletardigrade" },
         { old: "ArB", new: "jingleArB" },
         { old: "Rigor Morts", new: "dewhickey" },
+        { old: "pigvomit", new: "Proximate Cause" },
     ],
 
     resolved: [] as SwitcherMatch[],
@@ -29,22 +30,19 @@ export const Switchers = {
         const is_enabled = await enabledContains(["switchers"]);
         if (is_enabled && Switchers.resolved.length === 0) {
             // resolve and cache all offenders on the page once on load
-            const resolvedUsers = await HighlightUsers.resolveUsers();
-            const resolved = await Switchers.offenders.reduce(async (acc, offender) => {
-                const _acc = await acc;
-                await domMeasure(() => {
-                    const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
-                    const matchedOld = user && offender.old.toLowerCase() === user.username.toLowerCase();
-                    const matchedNew = user && offender.new.toLowerCase() === user.username.toLowerCase();
-                    if (matchedOld || matchedNew)
-                        _acc.push({
-                            id: user.id,
-                            username: user.username,
-                            matched: matchedNew ? offender.old : offender.new,
-                        });
-                });
-                return _acc;
-            }, Promise.resolve([] as SwitcherMatch[]));
+            const resolvedUsers = HighlightUsers.resolveUsers();
+            const resolved = Switchers.offenders.reduce((acc, offender) => {
+                const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
+                const matchedOld = user && offender.old.toLowerCase() === user.username.toLowerCase();
+                const matchedNew = user && offender.new.toLowerCase() === user.username.toLowerCase();
+                if (matchedOld || matchedNew)
+                    acc.push({
+                        id: user.id,
+                        username: user.username,
+                        matched: matchedNew ? offender.old : offender.new,
+                    });
+                return acc;
+            }, [] as SwitcherMatch[]);
             Switchers.resolved = resolved;
             return resolved;
         } else return Switchers.resolved;
@@ -56,21 +54,17 @@ export const Switchers = {
         if (is_enabled) {
             const offenderMutations = [] as Record<string, any>[];
             if (Switchers.resolved.length === 0) await Switchers.cacheSwitchers();
-            for (const offender of Switchers.resolved || [])
-                await domMeasure(() => {
-                    const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
-                    const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
-                    offenderMutations.push({
-                        posts: [...offenderOLs, ...offenderFPs],
-                        username: offender.username,
-                        matched: offender.matched,
-                    });
+            for (const offender of Switchers.resolved || []) {
+                const offenderOLs = [...post?.querySelectorAll(`div.olauthor_${offender.id}`)] as HTMLElement[];
+                const offenderFPs = [...post?.querySelectorAll(`div.fpauthor_${offender.id}`)] as HTMLElement[];
+                offenderMutations.push({
+                    posts: [...offenderOLs, ...offenderFPs],
+                    username: offender.username,
+                    matched: offender.matched,
                 });
-
-            await domMutate(() => {
-                for (const { posts, username, matched } of offenderMutations)
-                    for (const post of posts) Switchers.rewritePost(post, username, matched);
-            });
+            }
+            for (const { posts, username, matched } of offenderMutations)
+                for (const post of posts) await domMutate(() => Switchers.rewritePost(post, username, matched));
         }
     },
 
@@ -82,6 +76,7 @@ export const Switchers = {
         if (span) span.textContent = newName;
         else if (alt_span) alt_span.firstChild.textContent = newName;
         // Switchers don't deserve flair icons
-        for (const icon of user_icons || []) if (!icon.classList?.contains("hidden")) icon.classList?.add("hidden");
+        for (const icon of user_icons || [])
+            if (!icon.classList?.contains("hidden")) domMutate(() => icon.classList?.add("hidden"));
     },
 };

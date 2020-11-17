@@ -4,7 +4,7 @@ import { handleRootAdded, processFullPosts, processPost, processPostBox } from "
 export const ChromeShack = {
     refreshing: [] as RefreshMutation[],
 
-    async install() {
+    install() {
         // use MutationObserver instead of Mutation Events for a massive performance boost
         const observer_handler = async (mutationsList: MutationRecord[]) => {
             try {
@@ -53,6 +53,6 @@ export const ChromeShack = {
             subtree: true,
             childList: true,
         });
-        await processFullPosts();
+        processFullPosts();
     },
 };

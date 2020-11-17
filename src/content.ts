@@ -25,36 +25,34 @@ import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import "./styles/chromeshack.css";
 
 (async () => {
-    await contentScriptLoaded();
-    // early modules
-    await Collapse.install();
-    await TwitchAutoplay.install();
-    LocalTimeStamp.install();
-    UserPopup.install();
-    ModBanners.install();
-    await PostStyling.install();
-    await HighlightUsers.install();
-    await CustomUserFilters.install();
-    await Switchers.install();
-
-    // heavy modules
-    MediaEmbedder.install();
-    NwsIncognito.install();
-    await HighlightPendingPosts.install();
-    await NewCommentHighlighter.install();
-    await ThreadPane.install();
-    await ChattyNews.install();
-
-    // everything else
-    await CommentTags.install();
-    ImageUploader.install();
-
-    Drafts.install();
-    PostPreview.install();
-    Templates.install();
-    EmojiPoster.install();
-    PostLengthCounter.install();
-
-    // always make sure the ChromeShack event observer is last
-    await ChromeShack.install();
+    try {
+        await contentScriptLoaded();
+        // ^ make sure this is first
+        await ChattyNews.install();
+        await Collapse.install();
+        await CommentTags.install();
+        await CustomUserFilters.install();
+        await HighlightPendingPosts.install();
+        await HighlightUsers.install();
+        await NewCommentHighlighter.install();
+        await PostStyling.install();
+        await Switchers.install();
+        await TwitchAutoplay.install();
+        await ThreadPane.install();
+        Drafts.install();
+        EmojiPoster.install();
+        ImageUploader.install();
+        LocalTimeStamp.install();
+        MediaEmbedder.install();
+        ModBanners.install();
+        NwsIncognito.install();
+        PostLengthCounter.install();
+        PostPreview.install();
+        Templates.install();
+        UserPopup.install();
+        // always make sure the ChromeShack observer is last
+        ChromeShack.install();
+    } catch (e) {
+        console.error(e);
+    }
 })();

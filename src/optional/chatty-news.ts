@@ -1,4 +1,4 @@
-import { arrHas, domMutate, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
+import { arrHas, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
@@ -78,13 +78,11 @@ export const ChattyNews = {
             `);
             // populate the newly created newsBox from the Chatty RSS server's articles
             const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
-            await domMutate(async () => {
-                alignmentBox?.append(newsBox);
-                articleBox?.append(alignmentBox);
-                if ((await enabledContains(["thread_pane"])) && is_chatty)
-                    articleBox?.classList?.add("thread__pane__enabled");
-                articleBox?.classList?.add("chatty__news__enabled");
-            });
+            alignmentBox?.append(newsBox);
+            articleBox?.append(alignmentBox);
+            if ((await enabledContains(["thread_pane"])) && is_chatty)
+                articleBox?.classList?.add("thread__pane__enabled");
+            articleBox?.classList?.add("chatty__news__enabled");
         }
     },
 

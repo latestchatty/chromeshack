@@ -1,7 +1,7 @@
 /*eslint no-control-regex: 0*/
 import jQuery from "jquery";
 import { parseToElement } from "../core/common";
-import { submitFormEvent, processPostBoxEvent } from "../core/events";
+import { processPostBoxEvent, submitFormEvent } from "../core/events";
 
 const $ = jQuery;
 

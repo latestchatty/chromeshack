@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { arrHas, classNames, elemMatches, compressString, decompressString, timeOverThresh } from "../../core/common";
+import { arrHas, classNames, compressString, decompressString, elemMatches, timeOverThresh } from "../../core/common";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
 

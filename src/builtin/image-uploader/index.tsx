@@ -1,10 +1,10 @@
 import React from "react";
 import { render } from "react-dom";
+import { parseToElement } from "../../core/common";
 import { processPostBoxEvent } from "../../core/events";
+import "../../styles/image_uploader.css";
 import { ImageUploaderApp } from "./ImageUploaderApp";
 import { useUploaderStore } from "./uploaderStore";
-import "../../styles/image_uploader.css";
-import { parseToElement } from "../../core/common";
 
 export const ImageUploader = {
     cachedEl: null as HTMLElement,

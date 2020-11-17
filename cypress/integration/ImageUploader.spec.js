@@ -12,7 +12,7 @@ describe("Image Uploader", () => {
         const url = "https://www.shacknews.com/chatty?id=40056583#item_40056583";
 
         it("test toggle persistence", () => {
-            cy.visit(url);
+            cy.visit(url).wait(500);
 
             cy.get("div.reply>a").as("replyButton").click();
             cy.get("#uploader-toggle").as("toggle").click();
@@ -23,7 +23,7 @@ describe("Image Uploader", () => {
 
         it("test tab switching and inputs", () => {
             cy.loadExtensionDefaults(null, { image_uploader_toggled: true });
-            cy.visit(url);
+            cy.visit(url).wait(500);
 
             cy.get("div.reply>a").as("replyBtn").click();
             cy.get("#tab-container .tab").as("tabs");
@@ -48,7 +48,7 @@ describe("Image Uploader", () => {
                 .clear();
 
             const validInput = "https://localhost.com/test.mp4";
-            cy.get("@urlInput").type(validInput, { delay: 0 }).wait(250);
+            cy.get("@urlInput").type(validInput, { delay: 0 }).wait(500);
             cy.get("@urlInput").then((input) => expect(input[0].validity.valid).to.be.true);
 
             cy.get("@tabs").eq(0).click();

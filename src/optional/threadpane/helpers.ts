@@ -1,13 +1,5 @@
 import { Collapse } from "../../builtin/collapse";
-import {
-    domMeasure,
-    domMutate,
-    elementFitsViewport,
-    elemMatches,
-    parseToElement,
-    scrollParentToChild,
-    scrollToElement,
-} from "../../core/common";
+import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
     if (!rootElem) return;
@@ -29,23 +21,19 @@ export const flashCard = (cardElem: HTMLElement) => {
     }, 0);
 };
 
-export const jumpToPost = async (args: JumpToPostArgs) => {
+export const jumpToPost = (args: JumpToPostArgs) => {
     const { postid, rootid, options } = args || {};
     const { cardFlash, collapsed, postFlash, scrollParent, scrollPost, toFit, uncap } = options || {};
-    return await domMeasure(async () => {
-        const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
-        const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
-        const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
-        const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
-        return await domMutate(async () => {
-            if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
-            if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
-            else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
-            else if (scrollParent && card) scrollParentToChild(cardList, card);
-            if (cardFlash && card) flashCard(card);
-            if (postFlash && divRoot) flashPost(divRoot, liElem);
-        });
-    });
+    const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
+    const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
+    const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
+    const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
+    if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
+    if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
+    else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
+    else if (scrollParent && card) scrollParentToChild(cardList, card);
+    if (cardFlash && card) flashCard(card);
+    if (postFlash && divRoot) flashPost(divRoot, liElem);
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>
@@ -144,7 +132,9 @@ export const clonePostBody = (postElem: HTMLElement) => {
         if (_linkSpan || _linkHref) {
             // convert links to unclickable styled representations
             const linkText = _linkSpan || _linkHref;
-            const replacement = parseToElement(`<span class="cs_thread_pane_link">${linkText}</span>`);
+            const replacement = document.createElement("span");
+            replacement.setAttribute("class", "cs_thread_pane_link");
+            replacement.textContent = linkText;
             element?.replaceWith(replacement);
         } else if (_spoiler)
             // make spoiler text in cards unclickable

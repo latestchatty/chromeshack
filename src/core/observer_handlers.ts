@@ -1,7 +1,7 @@
 import { browser } from "webextension-polyfill-ts";
 import { singleThreadFix } from "../patches/singleThreadFix";
 import { arrHas, elemMatches, locatePostRefs } from "./common";
-import { disableTwitch, domMeasure, scrollToElement } from "./common/dom";
+import { disableTwitch, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
     processEmptyTagsLoadedEvent,
@@ -149,20 +149,17 @@ export const handleRefreshClick = async (e: MouseEvent) => {
 
 export const contentScriptLoaded = async () => {
     await mergeTransientSettings();
-    await domMeasure(async () => {
-        // set our current logged-in username once upon refreshing the Chatty
-        const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
-        if (loggedInUsername) await setUsername(loggedInUsername);
-    });
     // open a message channel for WinChatty events
     TabMessenger.connect();
     // try to fix incorrect positioning in single-thread mode
     singleThreadFix();
-
+    // set our current logged-in username once upon refreshing the Chatty
+    const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
+    if (loggedInUsername) await setUsername(loggedInUsername);
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
-    await browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.log);
+    browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.error);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
-    await browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.log);
+    browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.error);
     // disable article Twitch player if we're running Cypress tests for a speed boost
     if (await getEnabledSuboption("testing_mode")) disableTwitch();
 
@@ -174,14 +171,13 @@ export const processPost = (args: PostEventArgs) => {
     processPostEvent.raise(args);
     handleTagsEvent(args);
 };
-export const processFullPosts = async () => {
+export const processFullPosts = () => {
     const fullposts = [...document.querySelectorAll("div.fullpost")] as HTMLElement[];
-    const process = async (el: HTMLElement) => {
-        const args = await locatePostRefs(el);
+    for (const el of fullposts) {
+        const args = locatePostRefs(el);
         const { post, root } = args || {};
         if (root || post) processPost(args);
-    };
-    await Promise.all(fullposts.map(process));
+    }
     fullPostsCompletedEvent.raise();
 };
 export const processPostBox = (postbox: HTMLElement) => {

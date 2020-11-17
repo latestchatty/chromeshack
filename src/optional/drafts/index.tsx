@@ -1,10 +1,10 @@
 import React from "react";
 import { render } from "react-dom";
+import { parseToElement } from "../../core/common";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
-import { DraftsApp } from "./DraftsApp";
 import "../../styles/drafts.css";
-import { parseToElement } from "../../core/common";
+import { DraftsApp } from "./DraftsApp";
 
 const Drafts = {
     cachedEl: null as HTMLElement,

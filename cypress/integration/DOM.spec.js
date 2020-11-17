@@ -12,7 +12,9 @@ describe("DOM interactions", () => {
         it("user flairs enabled", () => {
             cy.visit("https://www.shacknews.com/chatty?id=40040034#item_40040034");
 
-            cy.get("li.sel img.chatty-user-icons").first().should("have.css", "width", "10px");
+            cy.get("li.sel img.chatty-user-icons")
+                .first()
+                .then((icon) => expect(icon[0].width).to.be.eq(10));
             cy.get("li.sel img.chatty-user-icons").first().should("have.css", "filter", "grayscale(0.75)");
         });
         it("user flairs disabled", () => {
@@ -22,7 +24,9 @@ describe("DOM interactions", () => {
             );
             cy.reload();
 
-            cy.get("li.sel img.chatty-user-icons").first().should("not.have.css", "width", "10px");
+            cy.get("li.sel img.chatty-user-icons")
+                .first()
+                .then((icon) => expect(icon[0].width).to.be.eq(14));
             cy.get("li.sel img.chatty-user-icons").first().should("not.have.css", "filter", "grayscale(0.75)");
         });
 

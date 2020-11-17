@@ -44,16 +44,16 @@ export const CommentTags = {
 
     async install() {
         processPostBoxEvent.addHandler(CommentTags.installCommentTags);
-        await CommentTags.cacheInjectable();
+        await CommentTags.cacheInjectables();
     },
 
-    async cacheInjectable() {
+    async cacheInjectables() {
         const setToggled = (await getSetting("tags_legend_toggled", false)) as boolean;
         const table = parseToElement(/*html*/ `
             <div id="post_sub_container">
                 <div id="shacktags_legend">
                     <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
-                    <table id="shacktags_legend_table" class="${!setToggled ? "shown" : ""}">
+                    <table id="shacktags_legend_table" class="${!setToggled ? "hidden" : ""}">
                         <tbody id="shacktags_legend_table-body"></tbody>
                     </table>
                 </div>
@@ -116,7 +116,7 @@ export const CommentTags = {
         if (name === "code") value = value.replace(/\s\s*$/, "");
         // break up curly braces that confuse the shack
         else value = value.replace(/^{/, "\n{").replace(/}$/, "}\n");
-        if (selectStart && selectEnd) {
+        if (selectStart >= 0 && selectEnd > 0) {
             const beforeSelection = value.substring(0, selectStart);
             const afterSelection = value.substring(selectEnd, value.length);
             const selection = value.substring(selectStart, selectEnd);

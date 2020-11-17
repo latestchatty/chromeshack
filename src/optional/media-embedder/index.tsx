@@ -39,14 +39,14 @@ export const MediaEmbedder = {
                 const detected = await detectMediaLink(l.href);
                 if (!detected) return;
                 const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
-                await domMutate(() => {
-                    // the container needs to remain in the DOM for events to work
-                    postbody.append(container);
-                    // replace each source link with the rendered media link
+                // the container needs to remain in the DOM for events to work
+                postbody.append(container);
+                // replace each source link with the rendered media link
+                await domMutate(() =>
                     render(<Expando response={detected} options={{ openByDefault }} />, container, () =>
                         l.replaceWith(container.childNodes[0]),
-                    );
-                });
+                    ),
+                );
             };
             await Promise.all(links.map(process));
         }

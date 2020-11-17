@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { faCheck, faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { arrHas, classNames, compressString, decompressString, elemMatches } from "../../core/common";
-import { getSetting, setSetting } from "../../core/settings";
 import { replyFieldEvent } from "../../core/events";
+import { getSetting, setSetting } from "../../core/settings";
 
 const SaveIcon = () => <FontAwesomeIcon className="templates__icon save--icon" icon={faCheck} />;
 const DelIcon = () => <FontAwesomeIcon className="templates__icon del--icon" icon={faTimes} />;

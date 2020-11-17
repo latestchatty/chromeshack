@@ -95,13 +95,12 @@ const usePendingPosts = (threaded: boolean) => {
             document.title = `${indicator}${document.title}`;
         else if (pendings.length === 0 && document.title.startsWith(indicator))
             document.title = document.title.split(indicator)[1];
-        domMutate(() => {
-            // highlight the refresh button of unmarked threads that have pending posts
-            for (const p of pendings || []) {
-                const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
-                if (!isCollapsed(refreshBtn) && !isPending(refreshBtn)) refreshBtn?.classList?.add("refresh_pending");
-            }
-        });
+        // highlight the refresh button of unmarked threads that have pending posts
+        for (const p of pendings || []) {
+            const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
+            if (!isCollapsed(refreshBtn) && !isPending(refreshBtn))
+                domMutate(() => refreshBtn?.classList?.add("refresh_pending"));
+        }
     }, [count, pendings]);
     useEffect(() => {
         processNotifyEvent.addHandler(fetchPendings);
