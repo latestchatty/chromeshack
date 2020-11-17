@@ -17,6 +17,7 @@ export const Switchers = {
         { old: "ArB", new: "jingleArB" },
         { old: "Rigor Morts", new: "dewhickey" },
         { old: "pigvomit", new: "Proximate Cause" },
+        { old: "Jayx77", new: ".Jayson" },
     ],
 
     resolved: [] as SwitcherMatch[],
