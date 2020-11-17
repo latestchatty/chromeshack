@@ -34,7 +34,10 @@ export const getCookieValue = (name: string, defaultValue: string) => {
 };
 
 export const convertUrlToLink = (text: string) => {
-    return text.replace(/(https?:\/\/[^ |^<]+)/g, '<a href="$1" target="_blank">$1</a>');
+    const urlRgx = /(?:ft|htt?)ps?:\/\/(?:[\w-]+:[\w-]+@)?[\w-.]+(?:\:\d+)?\/?(?:\S+[^!,.\s]+?)/gi;
+    return text.replace(urlRgx, (m) => {
+        return `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`;
+    });
 };
 
 export const generatePreview = (postText: string) => {

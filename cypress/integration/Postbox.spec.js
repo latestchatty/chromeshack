@@ -78,18 +78,28 @@ describe("Postbox interactions", () => {
             cy.get("li li.sel div.reply > a").as("replyBtn").click();
             cy.get("#previewButton").click();
             cy.get("#frm_body").as("replyInput");
-            cy.get("#previewArea").as("previewArea");
-            cy.get("@previewArea").should("be.visible");
+            cy.get("#previewArea").as("preview");
+            cy.get("@preview").should("be.visible");
             cy.get("@replyBtn").click().click();
-            cy.get("@previewArea").should("be.visible");
+            cy.get("@preview").should("be.visible");
 
             const message = "This is a test of the post preview feature.";
             cy.get("@replyInput").type(message, { delay: 0 }).wait(333);
-            cy.get("@previewArea").should("be.visible").should("have.text", message);
+            cy.get("@preview").should("be.visible").should("have.text", message);
             cy.get("#post_length_counter_text").should("have.text", "Characters remaining in post preview: 62");
         });
 
-        it("formatting works", () => {
+        it("url detection works", () => {
+            const message = "Just some text with a url in it https://github.com/latestchatty/chromeshack/issues.";
+            const rendered =
+                'Just some text with a url in it <a href="https://github.com/latestchatty/chromeshack/issues" target="_blank" rel="noopener noreferrer">https://github.com/latestchatty/chromeshack/issues</a>.';
+            cy.get("#frm_body").as("replyInput").clear();
+            cy.get("#previewArea").as("preview").should("be.visible");
+            cy.get("@replyInput").type(message, { delay: 0 }).wait(333);
+            cy.get("@preview").then((preview) => expect(preview.html()).to.eq(rendered));
+        });
+
+        it("codeblock formatting works", () => {
             const shackIcon = `&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 &&&&&&&&&&&&&&&&&&&&&&%####%%&&&&&&&&&&&&&&&&&&&
 &&&&&&&&&&&&&&&%(////(((((((((////(%&&&&&&&&&&&&
