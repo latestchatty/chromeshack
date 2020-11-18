@@ -149,6 +149,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
 export const parseRoot = (rootElem: HTMLElement, user: string) => {
     const root = elemMatches(rootElem, "div.root");
     const rootid = root && parseInt(root?.id?.substr(5));
+    // try to return early for threads with invalid ids
     if (rootid < 1 || rootid > 50000000) {
         console.error(`The thread ID of ${rootid} seems bogus.`);
         return null;
@@ -158,12 +159,13 @@ export const parseRoot = (rootElem: HTMLElement, user: string) => {
     const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1]);
     const author = getAuthor(rootLi);
     const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
-    if (!author || !body) {
-        console.error(`Encountered what looks like a nuked post:`, rootid, root);
+    const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
+    // return blank cards for potentially invalid root posts
+    if ((!author && !body) || !author || (!body && count === 0)) {
+        console.error(`Encountered what looks like a nuked or invalid post:`, rootid, root);
         return null;
     }
     const mod = getMod(fullpost);
-    const count = [...rootLi?.querySelectorAll("div.capcontainer li")]?.length;
     const recents = getRecents(root);
     const contained = threadContainsLoggedUser(rootElem, user);
     const collapsed = !!Collapse.findCollapsed(rootid);
