@@ -103,7 +103,12 @@ const ThreadPaneApp = () => {
         (async () => {
             const loggedUser = await getUsername();
             const roots = [...document.querySelectorAll("div.root")] as HTMLElement[];
-            setParsed(roots.map((r) => parseRoot(r, loggedUser)));
+            const parsedRoots = roots.reduce((acc, r) => {
+                const parsed = parseRoot(r, loggedUser);
+                if (parsed != null) acc.push(parsed);
+                return acc;
+            }, [] as ParsedPost[]);
+            if (parsedRoots.length > 0) setParsed(parsedRoots);
         })();
     }, []);
 
