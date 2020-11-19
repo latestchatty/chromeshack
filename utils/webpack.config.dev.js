@@ -15,7 +15,7 @@ module.exports = merge(common, {
         new CopyWebpackPlugin({
             patterns: [
                 {
-                    from: path.resolve(paths.assets, "manifest.json"),
+                    from: path.resolve(paths.assets, "manifest.dev.json"),
                     to: path.resolve(paths.dist, "manifest.json"),
                     transform(c) {
                         return modifyManifestDevChrome(c);

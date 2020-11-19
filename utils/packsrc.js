@@ -24,7 +24,15 @@ dirExists(zipDir)
         archive.on("error", console.log);
         archive.pipe(output);
         archive.glob(`**/*`, {
-            ignore: ["node_modules/**", ".git/**", "dist/**", "artifacts/**", "dist.pem"],
+            ignore: [
+                "cypress/fixtures/_shack_li_.txt",
+                "node_modules/**",
+                ".git/**",
+                "dist/**",
+                "artifacts/**",
+                "mochawesome-report/**",
+                "dist.pem",
+            ],
         });
         archive.finalize();
     })
