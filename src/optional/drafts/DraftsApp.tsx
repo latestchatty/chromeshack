@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { arrHas, classNames, compressString, decompressString, elemMatches, timeOverThresh } from "../../core/common";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
@@ -33,6 +33,9 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
             if (foundRecord?.body) {
                 setInputVal(foundRecord.body);
                 setValid(true);
+            } else {
+                setInputVal("");
+                setValid(false);
             }
         })();
     }, [postid]);
@@ -48,9 +51,9 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
                     });
                 // filter out old drafts when saving
                 const filtered = _drafts ? await filterDraftsLRU(_drafts) : [];
-                if (filtered) await setSetting("saved_drafts", filtered);
-                const foundRecord = filtered.filter((d) => d.postid === postid)?.[0];
-                setValid(!!foundRecord);
+                await setSetting("saved_drafts", filtered);
+                const foundRecord = !!filtered.filter((d) => d.postid === postid)?.[0];
+                setValid(foundRecord);
             })();
         },
         [postid],
@@ -71,7 +74,6 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
             if (foundIdx > -1 && v.length === 0) _drafts.splice(foundIdx);
             else if (foundIdx === -1 && record) _drafts.unshift(record);
             else if (foundIdx > -1 && record) _drafts[foundIdx] = record;
-
             setDrafts(_drafts);
             debouncedSave(_drafts);
         },
@@ -93,31 +95,32 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
         },
         [postid, saveDraftsToStore],
     );
-
-    useEffect(() => {
-        // handle the input box as a controller input
-        inputBox.value = inputVal;
-        replyFieldEvent.raise(inputBox);
-    }, [inputBox, inputVal]);
-    useEffect(() => {
-        const handleInput = (e: Event | HTMLInputElement) => {
+    const handleInput = useCallback(
+        (e: Event | HTMLInputElement) => {
             const _this = ((e as Event)?.target as HTMLInputElement) || (e as HTMLInputElement);
             const _val = _this?.value;
             setInputVal(_val);
             saveToDraft(_val);
-        };
-        const handleExternalInput = (el: HTMLInputElement) => handleInput(el);
+        },
+        [saveToDraft],
+    );
+    const handleExternalInput = useCallback((el: HTMLInputElement) => handleInput(el), [handleInput]);
 
+    useLayoutEffect(() => {
+        // handle the input box as a controlled input
+        inputBox.value = inputVal;
+        replyFieldEvent.raise(inputBox);
+    }, [inputBox, inputVal]);
+    useEffect(() => {
         inputBox.addEventListener("input", handleInput);
         replyFieldEvent.addHandler(handleExternalInput);
         submitFormEvent.addHandler(handleSubmit);
-
         return () => {
             inputBox.removeEventListener("input", handleInput);
             replyFieldEvent.removeHandler(handleExternalInput);
             submitFormEvent.removeHandler(handleSubmit);
         };
-    }, [inputBox, handleSubmit, saveToDraft]);
+    }, [inputBox, handleInput, handleExternalInput, handleSubmit]);
     useEffect(() => {
         loadDraftsFromStore();
     }, [loadDraftsFromStore]);
