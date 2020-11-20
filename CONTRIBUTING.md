@@ -51,6 +51,15 @@ The Cypress E2E integration test suite requires a login cookie fixture in order 
 -   Use `npm run build:pack` to generate deployables in the `artifact/` folder when uploading to AMO or the Chrome addon store.
 -   Tag a release on GitHub.
 -   Add the zip to the release.
+-   Release to the Firefox Add-ons site.
+    -   Log into the [Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/).
+    -   Click "Edit Product Page" under "Chrome Shack" under "My Add-ons"
+    -   Click "Upload New Version" on the left side
+    -   Click "Select a file..." and pick the zip
+    -   Click "Continue"
+    -   Do You Need to Submit Source Code? Click "Yes", select the "src" zip in the artifacts directory, and click "Continue"
+    -   Convert release notes to plain text and paste in
+    -   Click "Submit Version"
 -   Release to the Chrome Web Store.
     -   Log into the [Developer Dashboard](https://chrome.google.com/u/2/webstore/devconsole/).
     -   In the upper right corner, click the "Publisher" dropdown and pick "Chrome Shack Publishers".
@@ -61,16 +70,7 @@ The Cypress E2E integration test suite requires a login cookie fixture in order 
     -   Click "Upload Updated Package" in the top bar.
     -   Upload the zip.
     -   Click Publish Item. Click "PUBLISH" when prompted.
--   Release to the Firefox Add-ons site.
-    -   Log into the [Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/).
-    -   Click "Edit Product Page" under "Chrome Shack" under "My Add-ons"
-    -   Click "Upload New Version" on the left side
-    -   Click "Select a file..." and pick the zip
-    -   Click "Continue"
-    -   Do You Need to Submit Source Code? Click "Yes", select the "src" zip in the artifacts directory, and click "Continue"
-    -   Convert release notes to plain text and paste in
-    -   Click "Submit Version"
-    -   You're done!
+-   You're done!
 
 # How to request release access
 
