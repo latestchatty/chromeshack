@@ -34,9 +34,9 @@ export const getCookieValue = (name: string, defaultValue: string) => {
 };
 
 export const convertUrlToLink = (text: string) => {
-    const urlRgx = /(?:ft|htt?)ps?:\/\/(?:[\w-]+:[\w-]+@)?[\w-.]+(?:\:\d+)?\/?(?:\S+[^!,.\s]+?)/gi;
-    return text.replace(urlRgx, (m) => {
-        return `<a href="${m}" target="_blank" rel="noopener noreferrer">${m}</a>`;
+    const urlRgx = /((ftp|https?):\/\/([\w-]+(\:[\w-]+)?@)?(.+?\.)?([\w-]+\.[\w-]{2,4}(?:\:\d+)?|.+?)\/?[^\s{}<>()]+\b)/gi;
+    return text.replace(urlRgx, (m, m1) => {
+        return `<a href="${m1}" target="_blank" rel="noopener noreferrer">${m1}</a>`;
     });
 };
 

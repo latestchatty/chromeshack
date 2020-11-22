@@ -16,7 +16,7 @@ export const Collapse = {
         const this_node = e.target as HTMLElement;
         const collapse = elemMatches(this_node, "a.closepost");
         const uncollapse = elemMatches(this_node, "a.showpost");
-        const { rootid } = (await locatePostRefs(collapse)) || (await locatePostRefs(uncollapse)) || {};
+        const { rootid } = locatePostRefs(collapse) || locatePostRefs(uncollapse) || {};
         if (collapse && rootid) await Collapse.close(e, rootid);
         else if (uncollapse && rootid) await Collapse.show(e, rootid);
     },
@@ -88,7 +88,7 @@ export const Collapse = {
             elemMatches(this_node, ".showpost.hidden")
         ) {
             // feed the refresh-thread event handler when uncollapsing
-            const args = await locatePostRefs(this_node);
+            const args = locatePostRefs(this_node);
             const { postid, rootid } = args || {};
             if (postid || rootid) processRefreshIntentEvent.raise(args);
         }

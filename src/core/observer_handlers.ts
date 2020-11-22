@@ -129,7 +129,7 @@ export const handleRefreshClick = async (e: MouseEvent) => {
     const _this = e?.target as HTMLElement;
     const refreshBtn = elemMatches(_this, "div.refresh > a");
     if (refreshBtn) {
-        const raisedArgs = await locatePostRefs(refreshBtn);
+        const raisedArgs = locatePostRefs(refreshBtn);
         const { root, postid, rootid, is_root } = raisedArgs || {};
         processRefreshIntentEvent.raise(raisedArgs);
         const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;

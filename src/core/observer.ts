@@ -37,7 +37,7 @@ export const ChromeShack = {
                         }
                         if (elemMatches(addedParent, "li[id^='item_']")) {
                             // check for opening a fullpost
-                            const refs = await locatePostRefs(addedParent);
+                            const refs = locatePostRefs(addedParent);
                             processPost(refs);
                         }
                         if (elemMatches(added, "#postbox")) processPostBox(added);
