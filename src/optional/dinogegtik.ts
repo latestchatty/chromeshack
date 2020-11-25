@@ -34,15 +34,12 @@ export const DinoGegtik = {
 
                 const postBody = fullpost?.querySelector("div.postbody") as HTMLDivElement;
                 const postBodyClone = postBody?.cloneNode(true) as HTMLElement;
-                const expando = postBodyClone?.querySelector("div.expando") as HTMLDivElement;
-                if (expando) expando.parentNode.removeChild(expando);
-
                 const lines = SentenceParser.parseIntoLines(postBodyClone?.innerHTML);
-                const comic_div = document.createElement("div");
-                comic_div.id = comic_id;
-                comic_div.className = "dinogegtik";
-                comic_div.style.backgroundImage = `url("${browser.runtime.getURL("images/dinogegtik.png")}")`;
-                comic_div.style.height = lines.length <= 3 ? "244px" : "487px";
+                const image = browser.runtime.getURL("images/dinogegtik.png");
+                const comic_height = lines.length <= 3 ? "244px" : "487px";
+                const comic_div = parseToElement(/*html*/ `
+                    <div id="${comic_id}" class="dinogegtik" style="height: ${comic_height}; background-image: url(${image});" />
+                `) as HTMLDivElement;
 
                 const max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
                 for (let i = 0; i < max; i++) {

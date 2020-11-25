@@ -25,9 +25,6 @@ export const SparklyComic = {
 
                 const postBody = fullpost?.querySelector("div.postbody") as HTMLElement;
                 const postBodyClone = postBody?.cloneNode(true) as HTMLElement;
-                const expando = postBodyClone?.querySelector("div.expando") as HTMLElement;
-
-                if (expando) expando?.parentNode?.removeChild(expando);
                 const lines = SentenceParser.parseIntoLines(postBodyClone?.innerHTML);
                 const comic_div = parseToElement(/*html*/ `<div id="${comic_id}" class="sparklycomic" />`);
 

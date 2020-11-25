@@ -26,6 +26,7 @@ div.dinogegtik div.panel {
     position: absolute;
     display: block;
     overflow: hidden;
+    overflow-wrap: break-word;
     line-height: 1em;
 }
 
