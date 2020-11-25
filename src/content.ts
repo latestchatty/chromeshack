@@ -18,11 +18,14 @@ import { NewCommentHighlighter } from "./optional/new_comment_highlighter";
 import { NwsIncognito } from "./optional/nws_incognito";
 import { PostPreview } from "./optional/postpreview";
 import { PostStyling } from "./optional/post_style";
+import { SparklyComic } from "./optional/sparkly_comic";
+import { DinoGegtik } from "./optional/dinogegtik";
 import { Switchers } from "./optional/switchers";
 import { Templates } from "./optional/templates";
 import { ThreadPane } from "./optional/threadpane";
 import { TwitchAutoplay } from "./optional/twitch_autoplay";
 import "./styles/chromeshack.css";
+import "./styles/comic_scripts.css";
 
 (async () => {
     try {
@@ -32,10 +35,12 @@ import "./styles/chromeshack.css";
         await Collapse.install();
         await CommentTags.install();
         await CustomUserFilters.install();
+        await DinoGegtik.install();
         await HighlightPendingPosts.install();
         await HighlightUsers.install();
         await NewCommentHighlighter.install();
         await PostStyling.install();
+        await SparklyComic.install();
         await Switchers.install();
         await TwitchAutoplay.install();
         await ThreadPane.install();

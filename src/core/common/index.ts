@@ -54,6 +54,7 @@ import {
     waitToResolve,
     xhrRequestLegacy,
 } from "./fetch";
+import { SentenceParser } from "./sentence_parser";
 
 export {
     stripHtml,
@@ -111,3 +112,4 @@ export {
     openAsWindow,
     timeOverThresh,
 };
+export { SentenceParser };

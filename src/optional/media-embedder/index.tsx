@@ -36,8 +36,9 @@ export const MediaEmbedder = {
         const rendered = [...post?.querySelectorAll("div#react-media-element")];
         if (rendered.length === 0 && arrHas(links)) {
             const process = async (l: HTMLAnchorElement) => {
+                const childOfComic = l.closest("div.panel");
                 const detected = await detectMediaLink(l.href);
-                if (!detected) return;
+                if (childOfComic || !detected) return;
                 const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
                 // the container needs to remain in the DOM for events to work
                 postbody.append(container);

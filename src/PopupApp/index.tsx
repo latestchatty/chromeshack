@@ -82,6 +82,7 @@ const PopupApp = () => {
                         descriptions={["Disable auto-play on the Chatty's article Twitch embed."]}
                     ></Option>
                 </OptionGroup>
+                <br />
             </div>
 
             <div title="Notify">
@@ -146,6 +147,7 @@ const PopupApp = () => {
                         options={state.filters}
                     />
                 </OptionGroup>
+                <br />
             </div>
 
             <div title="Flair">
@@ -171,6 +173,20 @@ const PopupApp = () => {
                     <Option id="shrink_user_icons" label="Shrink user icons" />
                     <Option id="reduced_color_user_icons" label="Reduced color user icons" />
                 </OptionGroup>
+
+                <OptionGroup label="User Comics">
+                    <Option
+                        id="dinogegtik"
+                        label="Dino-Gegtik"
+                        descriptions={["Replace gegtik posts with a dinosaur meme."]}
+                    />
+                    <Option
+                        id="sparkly_comic"
+                        label="Sparkly Comic"
+                        descriptions={["Replace sparkly posts with a storyboard."]}
+                    />
+                </OptionGroup>
+                <br />
             </div>
 
             <div title="Extras">
@@ -237,6 +253,7 @@ const PopupApp = () => {
                     buttonlabel="Release Notes"
                     onClick={handleRlsNotesBtn}
                 />
+                <br />
             </div>
         </Tabs>
     );

@@ -41,10 +41,15 @@ export const HighlightUsers = {
         return HighlightUsers.cache;
     },
 
-    resolveUser(username: string) {
+    resolveUser(usernames: string[]) {
         // renew the cache if this gets called before HU has a chance to run
         if (Object.keys(HighlightUsers.cache).length === 0) HighlightUsers.resolveUsers();
-        return HighlightUsers.cache[username];
+        // return a filtered ResolvedUsers object for the query
+        return usernames.reduce((acc, u) => {
+            const result = HighlightUsers.cache[u];
+            if (result) return { ...acc, [u]: result };
+            return acc;
+        }, {} as ResolvedUsers);
     },
 
     gatherCSS(users: ResolvedUsers, groups: HighlightGroup[]) {

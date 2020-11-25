@@ -48,13 +48,12 @@ export const CustomUserFilters = {
             if (!filteredUsers || filteredUsers.length === 0) return;
             CustomUserFilters.rootPostCount = document.querySelector(".threads")?.childElementCount ?? 0;
             const hideFPs = !!(await getEnabledSuboption("cuf_hide_fullposts"));
-            for (const filteredUser of filteredUsers) {
-                const resolved = HighlightUsers.resolveUser(filteredUser);
-                for (const record of resolved || []) {
+            const resolved = HighlightUsers.resolveUser(filteredUsers);
+            for (const records of Object.values(resolved) || [])
+                for (const record of records || []) {
                     userFilterUpdateEvent.raise(record);
                     await CustomUserFilters.removeOLsForAuthorId(record, hideFPs);
                 }
-            }
         }
     },
 };
