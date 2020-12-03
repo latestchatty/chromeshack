@@ -88,11 +88,11 @@ const Twitter = (props: { response: TweetParsed }) => {
                                             <img
                                                 className="user__profile__pic"
                                                 alt=""
-                                                src={response.tweetQuoted.profilePicUrl}
+                                                src={response.tweetQuoted.profilePic}
                                             />
                                         </a>
                                         <a
-                                            href={response.tweetQuoted ? response.tweetQuoted.profilePic : "#"}
+                                            href={response.tweetQuoted ? response.tweetQuoted.profilePicUrl : "#"}
                                             id="twitter__quote__displayname"
                                         >
                                             {response.tweetQuoted.displayName || ""}
