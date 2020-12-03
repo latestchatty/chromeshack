@@ -42,16 +42,17 @@ export const renderTweetObj = async (response: TwitterResponse) => {
             result = {
                 ...result,
                 tweetQuoted: {
-                    quotedTimestamp: new Date(Date.parse(response.quoted_status.created_at)).toLocaleString(),
-                    quotedUrl: response.quoted_status_permalink.expanded,
-                    quotedDisplayName: response.quoted_status.user.name,
-                    quotedRealName: response.quoted_status.user.screen_name,
-                    quotedProfilePic: response.quoted_status.user.profile_image_url_https,
-                    quotedText: decodeHTML(response.quoted_status.full_text),
-                    quotedMediaItems: response.quoted_status.extended_entities
+                    timestamp: new Date(Date.parse(response.quoted_status.created_at)).toLocaleString(),
+                    tweetUrl: response.quoted_status_permalink.expanded,
+                    displayName: response.quoted_status.user.name,
+                    realName: response.quoted_status.user.screen_name,
+                    profilePic: response.quoted_status.user.profile_image_url_https,
+                    profilePicUrl: `https://twitter.com/${response.quoted_status.user.screen_name}`,
+                    tweetText: decodeHTML(response.quoted_status.full_text),
+                    tweetMediaItems: response.quoted_status.extended_entities
                         ? collectMedia(response.quoted_status.extended_entities.media)
                         : null,
-                    quotedUserVerified: response.quoted_status.user.verified,
+                    userVerified: response.quoted_status.user.verified,
                 },
             };
 

@@ -74,16 +74,14 @@ const handleNotification = async (response: NotifyResponse) => {
     for (const event of events || [])
         if (event.eventType === "newPost") {
             const match = await matchNotification(event);
-            const eventData = event as NewPostData;
-            if (notify_enabled && match && eventData?.post?.author) {
-                const post = eventData.post;
+            const post = (event.eventData as NewPostData)?.post;
+            if (notify_enabled && match && post)
                 browser.notifications.create(`ChromeshackNotification${post.id.toString()}`, {
                     type: "basic",
                     title: "New post by " + post.author,
                     message: match,
                     iconUrl: "images/icon.png",
                 });
-            }
         }
 };
 

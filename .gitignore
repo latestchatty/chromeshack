@@ -13,3 +13,4 @@ mochawesome-report
 /cypress/screenshots/
 /cypress/fixtures/_shack_li_.txt
 debug.log
+.DS_Store

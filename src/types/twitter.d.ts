@@ -14,16 +14,7 @@ declare global {
         tweetMediaItems?: string[];
         timestamp?: string;
         userVerified?: boolean;
-        tweetQuoted?: {
-            quotedTimestamp: string;
-            quotedUrl: string;
-            quotedProfilePic: string;
-            quotedDisplayName: string;
-            quotedRealName: string;
-            quotedText: string;
-            quotedMediaItems: string[];
-            quotedUserVerified: boolean;
-        };
+        tweetQuoted?: TweetParsed;
         unavailable?: boolean;
     }
 
@@ -51,22 +42,49 @@ declare global {
         name: string;
         verified: boolean;
     }
+    // target: https://twitter.com/hashtag/${hash}?src=hash
+    export interface TwitterResponseHashtag {
+        indices: [number, number];
+        text: string;
+    }
+    // target: https://twitter.com/search?q=%24${sym}&src=cashtag_click
+    export interface TwitterResponseSymbol {
+        indices: [number, number];
+        text: string;
+    }
     export interface TwitterResponseUrl {
-        url: string;
-        expanded_url: string;
+        display_url: string;
         expanded?: string;
+        expanded_url: string;
+        indices: [number, number];
+        url: string;
+    }
+    // target: https://twitter.com/${tag}
+    export interface TwitterResponseMention {
+        id: number;
+        indices: [number, number];
+        name: string;
+        screen_name: string;
+    }
+    export interface TwitterResponseEntities {
+        hashtags: TwitterResponseHashtag[];
+        symbols: TwitterResponseSymbol[];
+        urls: TwitterResponseUrl[];
+        user_mentions: TwitterResponseMention[];
     }
     export interface TwitterResponse {
-        id_str: string;
-        in_reply_to_status_id_str?: string;
         created_at: string;
+        entities: TwitterResponseEntities;
+        errors?: any;
+        in_reply_to_status_id_str?: string;
+        id_str: string;
+        favorite_count: number;
         full_text: string;
-        user: TwitterUserResponse;
-        urls?: TwitterResponseUrl[];
         extended_entities?: TwitterResponseMedia;
         quoted_status_id_str?: string;
         quoted_status_permalink?: TwitterResponseUrl;
         quoted_status: TwitterResponse;
-        errors: any;
+        retweet_count: number;
+        user: TwitterUserResponse;
     }
 }

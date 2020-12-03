@@ -1,8 +1,8 @@
 import { browser } from "webextension-polyfill-ts";
-import { HighlightUsers } from "../optional/highlight_users";
 import { parseToElement, SentenceParser } from "../core/common";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
+import { HighlightUsers } from "../optional/highlight_users";
 
 export const DinoGegtik = {
     panels: [
