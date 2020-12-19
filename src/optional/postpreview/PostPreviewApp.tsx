@@ -64,12 +64,12 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
 
         inputArea.addEventListener("input", handleInput);
         replyFieldEvent.addHandler(handleExternalInput);
-        replyBtn.addEventListener("click", jumpToNearestFullpost);
+        replyBtn?.addEventListener("click", jumpToNearestFullpost);
         closeFormBtn.addEventListener("click", jumpToNearestFullpost);
         return () => {
             inputArea.removeEventListener("input", handleInput);
             replyFieldEvent.removeHandler(handleExternalInput);
-            replyBtn.removeEventListener("click", jumpToNearestFullpost);
+            replyBtn?.removeEventListener("click", jumpToNearestFullpost);
             closeFormBtn.removeEventListener("click", jumpToNearestFullpost);
         };
     }, [paneMountRef, postboxRef, handleInput, toggled, debouncedInputRef]);
