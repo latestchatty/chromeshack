@@ -76,7 +76,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
                     <StepForwardIcon />
                 </div>
             </div>
-            <div className="cs_thread_pane_root_body">{parse(body)}</div>
+            <div className="cs_thread_pane_root_body">{body ? parse(body) : ""}</div>
             {!collapsed && <ThreadPaneReplies recents={localRecents} />}
         </div>
     ) : null;
