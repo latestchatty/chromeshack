@@ -20,8 +20,9 @@ export const UserPopup = {
 
     async clickHandler(e: MouseEvent) {
         const _this = e?.target as HTMLElement;
+        const isLoggedIn = document.querySelector("li#user_posts");
         // cover both logged-in and logged-out cases
-        const userLink = elemMatches(_this, "span.user > a") || elemMatches(_this, "span.user");
+        const userLink = isLoggedIn ? elemMatches(_this, "span.user > a") : elemMatches(_this, "span.user");
         const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
         const accountName = accountLink
             ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.textContent

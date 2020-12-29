@@ -1,8 +1,8 @@
-import { debounce } from "ts-debounce";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getSetting } from "../../core/settings";
-import { decompressString, compressString, arrHas, timeOverThresh, elemMatches } from "../../core/common";
+import { debounce } from "ts-debounce";
+import { arrHas, compressString, decompressString, elemMatches, timeOverThresh } from "../../core/common";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
+import { getSetting } from "../../core/settings";
 
 export const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
