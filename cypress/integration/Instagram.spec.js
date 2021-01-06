@@ -10,7 +10,7 @@ describe("Instagram", () => {
                 .and((img) => expect(img[0].naturalWidth).to.be.greaterThan(0));
         });
         it("opens with single video", () => {
-            cy.visit("https://www.shacknews.com/chatty?id=39927836#item_39927836");
+            cy.visit("https://www.shacknews.com/chatty?id=40233347#item_40233347");
             cy.get("li li.sel div.medialink").click();
             cy.get("div.media div.instagram__embed video").and((video) => {
                 expect(video[0].paused).eq(false);

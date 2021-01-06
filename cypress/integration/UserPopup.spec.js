@@ -15,7 +15,7 @@ describe("UserPopup", () => {
             .should("be.visible");
         cy.get("@dropdownItems").eq(0).find("span").should("have.text", "shirif's Posts");
         cy.get("@userLabel").click();
-        cy.get("@dropdown").should("not.be.visible");
+        cy.get("@dropdown").should("not.exist");
     });
 
     it("popup mutates custom-filters", () => {
