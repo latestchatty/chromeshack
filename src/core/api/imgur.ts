@@ -33,32 +33,35 @@ const _post = async (url: string, data: string, fetchOpts?: Record<string, any>)
 
 export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResolution) => {
     try {
-        const albumImageUrl = albumId && imageId && `${imgurApiAlbumBaseUrl}/${albumId}/image/${imageId}`;
-        const galleryUrl = galleryId && `${imgurApiAlbumBaseUrl}/${galleryId}`;
-        const albumUrl = albumId && `${imgurApiAlbumBaseUrl}/${albumId}`;
-        // since a shortcode could be either an image or an album try both
-        const imageUrl = imageId ? `${imgurApiImageBaseUrl}/${imageId}` : `${imgurApiImageBaseUrl}/${albumId}`;
-
-        // try resolving as a single image album
-        const _albumImage: ImgurResponse = albumImageUrl && (await _fetch(albumImageUrl));
-        const resolvedAlbumImage = _albumImage ? _albumImage?.data?.mp4 || _albumImage?.data?.link : null;
-        if (resolvedAlbumImage) return [resolvedAlbumImage];
-
-        // next try resolving as a multi-image album
-        const _album: ImgurResponse = albumUrl ? await _fetch(albumUrl) : galleryUrl ? await _fetch(galleryUrl) : null;
-        const resolvedMedia = arrHas(_album?.data?.images)
-            ? _album.data.images.reduce((acc, v) => {
-                  acc.push(v.mp4 || v.link);
-                  return acc;
-              }, [] as string[])
+        const albumImageUrl = albumId && imageId ? `${imgurApiAlbumBaseUrl}/${albumId}/image/${imageId}` : null;
+        const albumUrl = albumId
+            ? `${imgurApiAlbumBaseUrl}/${albumId}`
+            : galleryId
+            ? `${imgurApiAlbumBaseUrl}/${galleryId}`
             : null;
-        if (arrHas(resolvedMedia)) return resolvedMedia;
+        // since a shortcode could be an image, album or gallery try them all
+        const imageUrl = imageId
+            ? `${imgurApiImageBaseUrl}/${imageId}`
+            : albumId
+            ? `${imgurApiImageBaseUrl}/${albumId}`
+            : galleryId
+            ? `${imgurApiImageBaseUrl}/${galleryId}`
+            : null;
 
-        // finally try resolving as a standalone image if everything else fails
-        const _image: ImgurResponse = imageUrl && (await _fetch(imageUrl));
-        const resolvedImage = _image ? _image?.data?.mp4 || _image?.data?.link : null;
-        if (resolvedImage) return [resolvedImage];
-
+        // try all of our potential matches
+        const task = (
+            await Promise.all(
+                [albumImageUrl, albumUrl, imageUrl].map(async (u) => {
+                    if (!u) return;
+                    const resp: ImgurResponse = await _fetch(u);
+                    const album = arrHas(resp?.data?.images) ? resp?.data?.images.map((i) => i?.mp4 || i?.link) : null;
+                    const link = resp?.data?.mp4 || resp?.data?.link || null;
+                    const media = isImage(link) || isVideo(link) ? [link] : null;
+                    return album || media || null;
+                }),
+            )
+        ).find((t) => !!t);
+        if (arrHas(task)) return task;
         throw new Error(`Could not resolve Imgur using any available method: ${imageId} ${albumId} ${galleryId}`);
     } catch (e) {
         console.error(e);

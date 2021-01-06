@@ -2,9 +2,6 @@
     "editor.tabSize": 4,
     "files.eol": "\n",
     "files.insertFinalNewline": true,
-    "eslint.packageManager": "npm",
-    "eslint.alwaysShowStatus": true,
-    "eslint.lintTask.enable": true,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll": true

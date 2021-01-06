@@ -9,17 +9,15 @@ describe("Media Embedder", () => {
     });
 
     context("Imgur", () => {
-        it("Imgur single-image", () => {
-            cy.visit("https://www.shacknews.com/chatty?id=39952896#item_39952896");
+        it("Imgur single-image toggling", () => {
+            cy.visit("https://www.shacknews.com/chatty?id=40293789#item_40293789");
             cy.get("li li.sel div.medialink").as("medialink").click();
             cy.get("div.media img")
                 .as("embed")
-                .and((img) => expect(img[0].src).to.eq("https://i.imgur.com/DJHWVfU.jpg"));
-
-            cy.log("test that clicking image toggles embed");
-            cy.get("@embed").should("be.visible").click();
+                .and((img) => expect(img[0].src).to.eq("https://i.imgur.com/A57xP8Z.jpg"))
+                .click();
             cy.get("@medialink").should("not.have.class", "toggled");
-            cy.get("@embed").should("not.be.visible");
+            cy.get("@embed").should("not.exist");
         });
         it("Imgur single-image gallery", () => {
             cy.visit("https://www.shacknews.com/chatty?id=39944691#item_39944691");
