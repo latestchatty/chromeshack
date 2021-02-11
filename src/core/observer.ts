@@ -28,16 +28,20 @@ export const ChromeShack = {
 
                     for (const addedNode of mutation.addedNodes || []) {
                         const added = addedNode as HTMLElement;
-                        const addedParent = added?.parentNode as HTMLElement;
-                        if (elemMatches(added, "div.root")) {
+                        const target = mutation?.target as HTMLElement;
+                        const postLi = elemMatches(target, "li[id^='item_']");
+                        const addedFullpost = postLi && elemMatches(added, "div.fullpost");
+                        const addedThread =
+                            elemMatches(target as HTMLElement, "div.threads") && elemMatches(added, "div.root");
+                        if (addedThread) {
                             // check for a thread replacement (refresh or reply)
-                            const rootid = parseInt(added?.id?.substr(5));
+                            const rootid = parseInt(addedThread?.id?.substr(5));
                             const foundMutation = ChromeShack.refreshing.find((r) => r.rootid === rootid);
                             if (foundMutation) handleRootAdded(foundMutation);
                         }
-                        if (elemMatches(addedParent, "li[id^='item_']")) {
+                        if (addedFullpost) {
                             // check for opening a fullpost
-                            const refs = locatePostRefs(addedParent);
+                            const refs = locatePostRefs(addedFullpost);
                             processPost(refs);
                         }
                         if (elemMatches(added, "#postbox")) processPostBox(added);

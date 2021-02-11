@@ -34,6 +34,8 @@ module.exports = merge(common, {
         new CopyWebpackPlugin({
             patterns: [
                 {
+                    from: path.resolve(paths.rootDir, "*.md"),
+                    to: paths.dist,
                     from: path.resolve(paths.assets, "manifest.prod.json"),
                     to: path.resolve(paths.dist, "manifest.json"),
                     transform(c) {

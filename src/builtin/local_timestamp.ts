@@ -32,14 +32,14 @@ export const LocalTimeStamp = {
     },
 
     replaceTime(dateStr: string, postDate: HTMLElement) {
-        const timeText = document.createTextNode(dateStr);
+        const timestamp = postDate?.childNodes?.[2] || postDate?.childNodes?.[1];
+        const fixedTime = dateStr && document.createTextNode(dateStr);
         // either a fullpost with a timer or a reply without one
-        const textNode = postDate?.childNodes[1] || postDate?.childNodes[0];
-        if (textNode?.nodeType === 3) textNode.parentNode.replaceChild(timeText, textNode);
+        if (timestamp?.nodeType === 3) timestamp.parentNode.replaceChild(fixedTime, timestamp);
     },
 
     adjustPostTime({ post }: PostEventArgs) {
-        const dateStr = post?.textContent;
+        const dateStr = post?.childNodes?.[2]?.textContent || post?.childNodes?.[1]?.textContent;
         const fixedTime = dateStr && LocalTimeStamp.fixTime(dateStr);
         const is_corrected = post?.classList?.contains("timestamp_corrected");
         if (fixedTime && !is_corrected) {

@@ -1,6 +1,6 @@
 /* eslint-disable */
 const path = require("path");
-const FileManagerPlugin = require("filemanager-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
@@ -54,16 +54,11 @@ module.exports = {
             filename: "[name].css",
             chunkFilename: "[id].css",
         }),
-        new FileManagerPlugin({
-            onEnd: [
-                {
-                    copy: [
-                        { source: path.resolve(paths.assets, "popup.html"), destination: paths.dist },
-                        { source: path.resolve(paths.assets, "release_notes.html"), destination: paths.dist },
-                        { source: path.resolve(paths.rootDir, "*.md"), destination: paths.dist },
-                        { source: paths.assetImages, destination: paths.distImages },
-                    ],
-                },
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: path.resolve(paths.assets, "popup.html"), to: paths.dist },
+                { from: path.resolve(paths.assets, "release_notes.html"), to: paths.dist },
+                { from: paths.assetImages, to: paths.distImages },
             ],
         }),
         new ForkTsCheckerWebpackPlugin({
