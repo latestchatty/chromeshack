@@ -47,8 +47,11 @@ The Cypress E2E integration test suite requires a login cookie fixture in order 
 
 # Release procedure
 
--   Update the version in `packages.json` and `release_notes.html` (`manifest.json` is updated from `packages.json` automatically).
--   Use `npm run build:pack` to generate deployables in the `artifact/` folder when uploading to AMO or the Chrome addon store.
+-   Update the version in `package.json` and `src/assets/release_notes.html` (`manifest.json` is updated from `package.json` automatically).
+-   To use the Docker build environment, run `cd build` and `./buildenv.sh`.
+-   Clean with: `rm -rf dist artifacts node_modules`
+-   Install prerequisites with: `npm install`
+-   Use `npm run build:pack` to generate deployables in the `artifacts/` folder when uploading to AMO or the Chrome addon store.
 -   Tag a release on GitHub.
 -   Add the zip to the release.
 -   Release to the Firefox Add-ons site.
