@@ -60,17 +60,6 @@ const PopupApp = () => {
                         ]}
                     />
                     <Option
-                        id="social_loader"
-                        label="Embed social media"
-                        descriptions={["Supported links: Twitter and Instagram."]}
-                    >
-                        <Suboption
-                            id="social_loader_settings"
-                            optionid="sl_show_tweet_threads"
-                            label="Show Twitter threads when opening Twitter links"
-                        />
-                    </Option>
-                    <Option
                         id="getpost"
                         label="Embed Chatty posts"
                         descriptions={["Replace Shacknews Chatty links with embedded posts when clicked."]}

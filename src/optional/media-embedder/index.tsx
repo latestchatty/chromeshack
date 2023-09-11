@@ -4,7 +4,6 @@ import { detectMediaLink } from "../../core/api";
 import { arrHas, domMutate, parseToElement } from "../../core/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
-import "../../styles/embed_socials.css";
 import "../../styles/media.css";
 import { Expando } from "./Expando";
 
@@ -25,7 +24,7 @@ export const MediaEmbedder = {
     async processPost(args: PostEventArgs) {
         const { post } = args || {};
         // don't do processing if we don't need to
-        const is_enabled = await enabledContains(["media_loader", "social_loader", "getpost"]);
+        const is_enabled = await enabledContains(["media_loader", "getpost"]);
         const isNWS = post?.querySelector(".fullpost.fpmod_nws");
         const NWS_enabled = await enabledContains(["nws_incognito"]);
         if ((isNWS && NWS_enabled) || !is_enabled) return;

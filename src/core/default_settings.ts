@@ -10,7 +10,6 @@ const DefaultSettings: Settings = {
         "post_preview",
         "reduced_color_user_icons",
         "shrink_user_icons",
-        "social_loader",
     ],
 
     enabled_suboptions: ["cuf_hide_fullposts"],

@@ -1,4 +1,4 @@
-export {};
+export { };
 
 declare global {
     export interface HighlightGroup {
@@ -30,7 +30,6 @@ declare global {
         | "sparkly_comic"
         | "switchers"
         | "shrink_user_icons"
-        | "social_loader"
         | "templates"
         | "thread_pane"
         | "twitchauto";

@@ -1,4 +1,3 @@
-import type { WebRequest } from "webextension-polyfill-ts";
 import { browser } from "webextension-polyfill-ts";
 import { fetchSafe, JSONToFormData } from "./core/common";
 import { startNotifications } from "./core/notifications";
@@ -48,29 +47,7 @@ browser.runtime.onMessage.addListener(
     },
 );
 
-/*
-    Workaround for Twitter API's lack of support for cross-domain JSON fetch.
-    NOTE: we override only responses from "api.twitter.com" and sanitize the fetch result
-        with a fetch() helper in common.js so only non-HTML containing JSON is ever used.
-*/
 try {
-    const responseListener = (details: WebRequest.OnHeadersReceivedDetailsType) => {
-        details.responseHeaders.push({
-            name: "Access-Control-Allow-Headers",
-            value: "*",
-        });
-        details.responseHeaders.push({
-            name: "Access-Control-Allow-Methods",
-            value: "GET",
-        });
-        return { responseHeaders: details.responseHeaders };
-    };
-    browser.webRequest.onHeadersReceived.removeListener(responseListener);
-    browser.webRequest.onHeadersReceived.addListener(responseListener, { urls: ["https://api.twitter.com/*"] }, [
-        "blocking",
-        "responseHeaders",
-    ]);
-
     (async () => {
         // attempt to migrate legacy settings on startup
         await migrateSettings();

@@ -11,14 +11,11 @@ import { isGiphy } from "./giphy";
 import { isImgflip } from "./imgflip";
 /// resolvable media embeds
 import { isImgur } from "./imgur";
-/// native social embeds
-import { isInstagram } from "./instagram";
 /// resolvable iframe embeds
 import { isStreamable } from "./streamable";
 import { isTenor } from "./tenor";
 import { isTwimg } from "./twimg";
 import { isTwitch } from "./twitch";
-import { isTwitter } from "./twitter";
 import { isXboxDVR } from "./xboxdvr";
 import { isYoutube } from "./youtube";
 
@@ -30,7 +27,6 @@ import { isYoutube } from "./youtube";
  */
 export const detectMediaLink = async (href: string): Promise<ParsedResponse> => {
     const mediaEnabled = await enabledContains(["media_loader"]);
-    const socialsEnabled = await enabledContains(["social_loader"]);
     const chattypostEnabled = await enabledContains(["getpost"]);
 
     // test if href matches any of our parsers
@@ -59,12 +55,6 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
         const youtube = isYoutube(href);
         const iframeEmbeds = twitch || xboxdvr || youtube;
         if (objHas(iframeEmbeds)) return iframeEmbeds;
-    }
-    if (socialsEnabled) {
-        const instagram = isInstagram(href);
-        const twitter = isTwitter(href);
-        const socialEmbeds = instagram || twitter;
-        if (objHas(socialEmbeds)) return socialEmbeds;
     }
     if (chattypostEnabled) {
         const chattypost = isChattyLink(href);
