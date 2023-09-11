@@ -29,7 +29,9 @@ export const HighlightUsers = {
                 post.querySelector("span.oneline_user")?.textContent ??
                 post.querySelector("span.user")?.textContent ??
                 post.querySelector("span.user>a")?.textContent;
-            const mod = fullpost?.querySelector("a.shackmsg ~ img[alt='moderator']");
+            const mod =
+                fullpost?.querySelector("a.shackmsg ~ img[alt='moderator']") ??
+                oneline?.querySelector("img.chatty-user-icons[alt='moderator']");
             return { id, mod: !!mod, op, postid, username };
         };
         for (const p of posts) {
@@ -53,40 +55,43 @@ export const HighlightUsers = {
     },
 
     gatherCSS(users: ResolvedUsers, groups: HighlightGroup[]) {
-        let css = "";
-        const usernames = Object.keys(users);
-        for (const user of usernames || [])
-            for (const group of groups || [])
-                if (group.enabled)
-                    if (group.name === "Original Poster")
-                        css += `div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} } `;
-                    else if (group.name === "Mods") {
-                        const { id, mod } = users[user]?.[0];
-                        if (mod) {
-                            const rules = [
-                                `div.fpauthor_${id} span.author span.user>a`,
-                                `div.chattypost__hdr.fpauthor_${id} span.username>a`,
-                                `div.olauthor_${id} span.oneline_user`,
-                                `.authorid_${id}, .replyid_${id}`,
-                            ].join(", ");
-                            css += `${rules} { ${group.css} } `;
-                        }
-                    } else {
-                        const { id } = users[user]?.[0];
-                        const foundUser = group.users?.find((u) => u.toLowerCase() === user.toLowerCase());
-                        if (foundUser && group.css.length > 0) {
-                            const rules = [
-                                `div.fpauthor_${id} span.author span.user>a`,
-                                `div.chattypost__hdr.fpauthor_${id} span.username>a`,
-                                `div.olauthor_${id} span.oneline_user`,
-                                `.authorid_${id}, .replyid_${id}`,
-                            ].join(", ");
-                            css += `${rules} { ${group.css} } `;
-                        }
+        const cssRules: string[] = [];
+        const usernames = Object.keys(users) || [];
+
+        for (const user of usernames)
+            for (const group of groups) {
+                if (!group.enabled) continue;
+                const { id, mod } = users[user]?.[0];
+
+                if (group.name === "Original Poster")
+                    cssRules.push(`div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} }`);
+                else if (group.name === "Mods" && mod) {
+                    const rules = [
+                        `div.fpauthor_${id} span.author span.user>a`,
+                        `div.chattypost__hdr.fpauthor_${id} span.username>a`,
+                        `div.olauthor_${id} span.oneline_user`,
+                        `.authorid_${id}, .replyid_${id}`,
+                    ].join(", ");
+                    cssRules.push(`${rules} { ${group.css} }`);
+                } else {
+                    const { id } = users[user]?.[0];
+                    const foundUser = group.users?.find((u) => u.toLowerCase() === user.toLowerCase());
+                    if (foundUser && group.css.length > 0) {
+                        const rules = [
+                            `div.fpauthor_${id} span.author span.user>a`,
+                            `div.chattypost__hdr.fpauthor_${id} span.username>a`,
+                            `div.olauthor_${id} span.oneline_user`,
+                            `.authorid_${id}, .replyid_${id}`,
+                        ].join(", ");
+                        cssRules.push(`${rules} { ${group.css} }`);
                     }
+                }
+            }
 
         // don't highlight current user as mod/employee/dev
-        css += "span.this_user { color: rgb(0, 191, 243) !important; }";
+        cssRules.push("span.this_user { color: rgb(0, 191, 243) !important; }");
+
+        const css = cssRules.join(" ");
         insertStyle(css, "highlighted-users");
     },
 
