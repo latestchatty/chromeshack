@@ -4,16 +4,19 @@ div.fpmod_offtopic {
     background-repeat: no-repeat;
     border-top: 1px solid #7d7d7d !important;
 }
+
 div.fpmod_political {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #f8a500 !important;
 }
+
 div.fpmod_stupid {
     background-position: right top;
     background-repeat: no-repeat;
     border-top: 1px solid #379700 !important;
 }
+
 div.fpmod_informative {
     background-position: right top;
     background-repeat: no-repeat;
@@ -26,12 +29,14 @@ span.oneline_body {
     border-left-color: rgba(0, 153, 255, 0);
     padding-left: 3px;
 }
+
 span.newcommenthighlighter {
     border-left-color: rgba(0, 153, 255, 1);
     border-left-width: 1px;
     border-left-style: solid;
     padding-left: 2px !important;
 }
+
 div.oneline.olmod_informative span.newcommenthighlighter,
 div.oneline.olmod_nws span.newcommenthighlighter {
     /* leave room for left-justified inline icons */
@@ -74,11 +79,13 @@ p.rules {
     font-size: 12px !important;
     white-space: nowrap;
 }
+
 /* emoji tagline on the postbox form */
-p.rules > a {
+p.rules>a {
     display: inline-flex;
     justify-content: right;
 }
+
 p.rules div.emoji-tagline {
     overflow: hidden !important;
     white-space: nowrap !important;
@@ -86,16 +93,19 @@ p.rules div.emoji-tagline {
     text-align: center;
     font-size: 12px;
 }
-.emoji-tagline > span {
+
+.emoji-tagline>span {
     font-weight: bold;
 }
-.emoji-tagline > span.tagline-sep {
+
+.emoji-tagline>span.tagline-sep {
     margin: 0 0.75em;
 }
 
 div.ctextarea {
     margin-bottom: -10px !important;
 }
+
 div#post_length_counter_text {
     display: inline-flex;
     align-items: center;
@@ -112,26 +122,29 @@ div.fullpost .lol-tags {
     height: 18px !important;
     margin-top: -5px !important;
 }
+
 body.hide_tagging_buttons .lol-tags,
 body.hide_tag_counts div.read-only-tags,
 body.hide_gamification_notices div.gamification-notifcation {
     display: none !important;
 }
+
 /* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
 will un-shrink it if the shrink setting is not enabled */
 body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
     opacity: 0.75;
-    width: 10px;
-    height: 10px;
+    width: 10px !important;
+    height: 10px !important;
     vertical-align: text-top;
 }
+
 /* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
 only for users who want to see bright colors. */
 body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
     filter: grayscale(75%);
 }
 
-a:hover > img.chatty-user-icons {
+a:hover>img.chatty-user-icons {
     opacity: 1;
     filter: none;
 }
@@ -150,8 +163,9 @@ img.chatty-user-icons.hidden {
 span.lol-tags:not(.read-only-tags) {
     margin-left: 0.25rem !important;
 }
-span.author > img.chatty-user-icons:nth-child(2),
-span.user > img.chatty-user-icons:nth-child(1) {
+
+span.author>img.chatty-user-icons:nth-child(2),
+span.user>img.chatty-user-icons:nth-child(1) {
     margin-left: 0.33rem !important;
 }
 
@@ -160,6 +174,7 @@ span.user > img.chatty-user-icons:nth-child(1) {
     width: unset !important;
     white-space: nowrap;
 }
+
 #page.theme2 ul.interacted-user-list li {
     position: relative;
     width: 100% !important;
@@ -173,6 +188,7 @@ div.csubmit {
     justify-content: center;
     flex-wrap: wrap;
 }
-div.csubmit > button#frm_submit {
+
+div.csubmit>button#frm_submit {
     min-width: 175px !important;
 }
