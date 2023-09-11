@@ -1,7 +1,7 @@
 import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import parse from "html-react-parser";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { arrHas, classNames, scrollParentToChild } from "../../core/common";
 import { getUsername } from "../../core/notifications";
 import { RefreshIcon } from "../media-embedder/Expando";
@@ -99,8 +99,8 @@ const ThreadPaneJumpToTop = () => {
 const ThreadPaneApp = () => {
     const [parsed, setParsed] = useState([] as ParsedPost[]);
 
-    useLayoutEffect(() => {
-        (async () => {
+    useEffect(() => {
+        const initPane = async () => {
             const loggedUser = await getUsername();
             const roots = [...document.querySelectorAll("div.root")] as HTMLElement[];
             const parsedRoots = roots.reduce((acc, r) => {
@@ -109,7 +109,9 @@ const ThreadPaneApp = () => {
                 return acc;
             }, [] as ParsedPost[]);
             if (parsedRoots.length > 0) setParsed(parsedRoots);
-        })();
+        };
+
+        initPane();
     }, []);
 
     return arrHas(parsed) ? (
