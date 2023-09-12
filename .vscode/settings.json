@@ -1,10 +1,5 @@
 {
     "editor.tabSize": 4,
     "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.fixAll": true
-    },
-    "typescript.tsdk": "./node_modules/typescript/lib"
+    "files.insertFinalNewline": true
 }
