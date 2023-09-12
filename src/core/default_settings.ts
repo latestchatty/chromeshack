@@ -188,6 +188,7 @@ const DefaultSettings: Settings = {
                 "Romsteady",
                 "drhazard", // Volition
                 "freakynipples69", // MindShaft
+                "gameindustryplant",
             ],
         },
         {

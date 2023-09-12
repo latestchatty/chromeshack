@@ -62,6 +62,7 @@ export const HighlightUsers = {
             for (const group of groups) {
                 if (!group.enabled) continue;
                 const { id, mod } = users[user]?.[0];
+                const foundUser = group.users?.find((u) => u.toLowerCase() === user.toLowerCase());
 
                 if (group.name === "Original Poster")
                     cssRules.push(`div.oneline.op span.oneline_user, .cs_thread_pane_reply_author.op { ${group.css} }`);
@@ -73,18 +74,14 @@ export const HighlightUsers = {
                         `.authorid_${id}, .replyid_${id}`,
                     ].join(", ");
                     cssRules.push(`${rules} { ${group.css} }`);
-                } else {
-                    const { id } = users[user]?.[0];
-                    const foundUser = group.users?.find((u) => u.toLowerCase() === user.toLowerCase());
-                    if (foundUser && group.css.length > 0) {
-                        const rules = [
-                            `div.fpauthor_${id} span.author span.user>a`,
-                            `div.chattypost__hdr.fpauthor_${id} span.username>a`,
-                            `div.olauthor_${id} span.oneline_user`,
-                            `.authorid_${id}, .replyid_${id}`,
-                        ].join(", ");
-                        cssRules.push(`${rules} { ${group.css} }`);
-                    }
+                } else if (foundUser && group.css.length > 0) {
+                    const rules = [
+                        `div.fpauthor_${id} span.author span.user>a`,
+                        `div.chattypost__hdr.fpauthor_${id} span.username>a`,
+                        `div.olauthor_${id} span.oneline_user`,
+                        `.authorid_${id}, .replyid_${id}`,
+                    ].join(", ");
+                    cssRules.push(`${rules} { ${group.css} }`);
                 }
             }
 
