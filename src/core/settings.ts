@@ -1,4 +1,5 @@
 import { browser } from "webextension-polyfill-ts";
+import { importSettings } from "../PopupApp/helpers";
 import { arrHas, objEmpty, objHas, superTrim } from "./common";
 import { DefaultSettings } from "./default_settings";
 
@@ -282,7 +283,7 @@ export const migrateSettings = async () => {
     let current_version = getManifestVersion();
     let last_version = (await getSettingsVersion()) || current_version;
     let migrated = false;
-    if (legacy_settings && legacy_settings["version"] <= 1.63) {
+    if (legacy_settings?.["version"] <= 1.63) {
         // quick reload of default settings from nuStorage
         await resetSettings().then(getSettings);
         // preserve previous convertible filters and notifications state
@@ -318,6 +319,19 @@ export const migrateSettings = async () => {
         } as MigratedSettings;
         const mutatedSettings = await mergeSettings(settingsMutation);
         await setSettings(mutatedSettings);
+        migrated = true;
+    }
+    if (legacy_settings?.["version"] <= 1.73) {
+        // make sure highlight_groups are up-to-date for 1.74
+        const mutatedGroups = await mergeHighlightGroups(
+            DefaultSettings.highlight_groups,
+            legacy_settings?.["highlight_groups"],
+        );
+        const mutatedSettings = {
+            ...legacy_settings,
+            highlight_groups: mutatedGroups,
+        };
+        await importSettings(JSON.stringify(mutatedSettings));
         migrated = true;
     }
     if (migrated) console.log("settings have been migrated:", await getSettings());
