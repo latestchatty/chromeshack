@@ -1,4 +1,5 @@
-import { domMeasure, domMutate, timeOverThresh } from "../core/common";
+import { domMeasure, domMutate } from "../core/common/dom";
+import { timeOverThresh } from "../core/common/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 

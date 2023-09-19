@@ -1,4 +1,4 @@
-import { domMutate } from "../core/common";
+import { domMutate } from "../core/common/dom";
 import { enabledContains } from "../core/settings";
 
 /// optionally disable auto-play on the Chatty's article Twitch player

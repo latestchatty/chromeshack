@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { elemMatches, parseToElement } from "../../core/common";
+import { elemMatches, parseToElement } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
 import "../../styles/userpopup.css";
 import { UserPopupApp } from "./UserPopupApp";

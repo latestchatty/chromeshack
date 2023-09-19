@@ -1,5 +1,5 @@
 import { Collapse } from "../../builtin/collapse";
-import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common";
+import { elementFitsViewport, elemMatches, scrollParentToChild, scrollToElement } from "../../core/common/dom";
 
 export const flashPost = (rootElem: HTMLDivElement, liElem?: HTMLLIElement) => {
     if (!rootElem) return;

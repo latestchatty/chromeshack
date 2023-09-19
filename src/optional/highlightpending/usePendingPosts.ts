@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { arrHas, domMutate, scrollToElement } from "../../core/common";
+import { domMutate, scrollToElement } from "../../core/common/dom";
+import { arrHas } from "../../core/common/common";
 import {
     hpnpJumpToPostEvent,
     pendingPostsUpdateEvent,

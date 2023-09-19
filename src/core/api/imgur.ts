@@ -3,13 +3,11 @@ import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploade
 import {
     arrEmpty,
     arrHas,
-    fetchSafe,
-    FormDataToJSON,
     isImage,
     isVideo,
-    matchFileFormat,
-    postBackground,
-} from "../common";
+} from "../common/common";
+import { fetchSafe, postBackground } from "../common/fetch";
+import { FormDataToJSON, matchFileFormat } from "../common/dom";
 
 const imgurApiImageBaseUrl = "https://api.imgur.com/3/image";
 const imgurApiAlbumBaseUrl = "https://api.imgur.com/3/album";

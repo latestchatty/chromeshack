@@ -1,8 +1,8 @@
-import { useEmblaCarousel } from "embla-carousel/react";
+import useEmblaCarousel, { EmblaOptionsType } from "embla-carousel-react";
 import React, { useCallback, useEffect, useState } from "react";
-import "../../styles/embla.css";
-import { arrHas } from "../common";
+import { arrHas } from "../common/common";
 import { NextButton, PrevButton } from "./CarouselButtons";
+import "../../styles/embla.css";
 
 const EmblaSlide = (props: { children: React.ReactNode }) => {
     const { children } = props || {};
@@ -20,8 +20,9 @@ const EmblaSlides = (props: { slides: React.ReactNode[] }) => {
 
 const Carousel = (props: { slides: React.ReactNode[] }) => {
     const { slides } = props || {};
+    const options = { speed: 30 } as EmblaOptionsType;
 
-    const [viewportRef, embla] = useEmblaCarousel({ speed: 30 });
+    const [viewportRef, embla] = useEmblaCarousel(options);
     const [viewportHeight, setViewportHeight] = useState(0);
     const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
     const [nextBtnEnabled, setNextBtnEnabled] = useState(false);

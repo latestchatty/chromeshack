@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { handleChattypicsUpload } from "../../core/api/chattypics";
 import { handleGfycatUpload } from "../../core/api/gfycat";
 import { handleImgurUpload } from "../../core/api/imgur";
-import { appendLinksToField, arrHas } from "../../core/common";
+import { arrHas } from "../../core/common/common";
+import { appendLinksToField } from "../../core/common/dom";
 import { getSetting, setSetting } from "../../core/settings";
 
 const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch: React.Dispatch<UploaderAction>) => {

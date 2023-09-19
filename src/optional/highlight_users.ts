@@ -1,4 +1,5 @@
-import { insertStyle, objHas } from "../core/common";
+import { objHas } from "../core/common/common";
+import { insertStyle } from "../core/common/dom";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting } from "../core/settings";
 

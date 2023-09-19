@@ -1,5 +1,5 @@
 import React from "react";
-import { openAsWindow } from "../../core/common";
+import { openAsWindow } from "../../core/common/dom";
 
 const LOLListItem = (props: { href: string; text: string }) => {
     const { href, text } = props || {};

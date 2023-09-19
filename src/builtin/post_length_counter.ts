@@ -1,5 +1,5 @@
 import { EmojiPoster } from "../builtin/emoji_poster";
-import { parseToElement } from "../core/common";
+import { parseToElement } from "../core/common/dom";
 import { processPostBoxEvent } from "../core/events";
 
 export const PostLengthCounter = {

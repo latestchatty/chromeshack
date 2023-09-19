@@ -1,4 +1,4 @@
-import { objHas } from "../common";
+import { objHas } from "../common/common";
 import { enabledContains } from "./../settings";
 /// normal image/video embeds
 import { isChattypics } from "./chattypics";

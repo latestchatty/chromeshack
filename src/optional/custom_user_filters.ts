@@ -1,4 +1,4 @@
-import { domMeasure, domMutate } from "../core/common";
+import { domMeasure, domMutate } from "../core/common/dom";
 import { processPostRefreshEvent, userFilterUpdateEvent } from "../core/events";
 import { enabledContains, getEnabledSuboption, getSetting } from "../core/settings";
 import { HighlightUsers } from "./highlight_users";

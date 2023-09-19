@@ -95,11 +95,6 @@ export const decompressString = (input: string) => {
     }
 };
 
-export const openAsWindow = (href: string) => {
-    const newWindow = window.open(href, "_blank", "noopener,noreferrer");
-    if (newWindow) newWindow.opener = null;
-};
-
 export const timeOverThresh = (timestamp: number, threshold: number) => {
     // returns the current time if over a given threshold (in miliseconds)
     const now = Date.now();

@@ -1,5 +1,7 @@
 import { Dispatch } from "react";
-import { arrEmpty, FormDataToJSON, isFileArr, isImage, isVideo, postBackground } from "../common";
+import { arrEmpty, isFileArr, isImage, isVideo } from "../common/common";
+import { postBackground } from "../common/fetch";
+import { FormDataToJSON } from "../common/dom";
 
 const chattyPicsUrl = "https://chattypics.com/upload.php";
 

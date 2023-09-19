@@ -2,7 +2,8 @@ import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import parse from "html-react-parser";
 import React, { useEffect, useState } from "react";
-import { arrHas, classNames, scrollParentToChild } from "../../core/common";
+import { arrHas, classNames } from "../../core/common/common";
+import { scrollParentToChild } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
 import { RefreshIcon } from "../media-embedder/Expando";
 import { parseRoot } from "./helpers";

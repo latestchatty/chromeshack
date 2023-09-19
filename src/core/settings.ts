@@ -1,6 +1,7 @@
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { importSettings } from "../PopupApp/helpers";
-import { arrHas, objEmpty, objHas, superTrim } from "./common";
+import { arrHas, objEmpty, objHas } from "./common/common";
+import { superTrim } from "./common/dom";
 import { DefaultSettings } from "./default_settings";
 
 /// GETTERS
@@ -61,13 +62,14 @@ export const getEnabledSuboption = async (key: EnabledSuboptions) => {
     return suboptions.find((x) => x.toUpperCase() === key.toUpperCase()) || null;
 };
 
-export const getSettingsLegacy = () => {
-    const settings = { ...localStorage };
-    for (const key of Object.keys(settings) || [])
-        if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
-            settings[key] = JSON.parse(settings[key]);
-        else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
-        else settings[key] = JSON.parse(settings[key]);
+export const getSettingsLegacy = async () => {
+    const storage = await browser.storage.local.get();
+    const settings = { ...DefaultSettings, ...storage };
+    // for (const key of Object.keys(settings) || [])
+    //     if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
+    //         settings[key] = JSON.parse(settings[key]);
+    //     else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
+    //     else settings[key] = JSON.parse(settings[key]);
 
     return settings;
 };
@@ -279,7 +281,7 @@ export const mergeSettings = async (newSettings: MigratedSettings) => {
 };
 
 export const migrateSettings = async () => {
-    const legacy_settings = getSettingsLegacy();
+    const legacy_settings = await getSettingsLegacy();
     let current_version = getManifestVersion();
     let last_version = (await getSettingsVersion()) || current_version;
     let migrated = false;

@@ -1,5 +1,5 @@
-import { browser } from "webextension-polyfill-ts";
-import { domMutate } from "../core/common";
+import browser from "webextension-polyfill";
+import { domMutate } from "../core/common/dom";
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 

@@ -1,6 +1,6 @@
 import DOMPurify from "dompurify";
-import { browser } from "webextension-polyfill-ts";
-import { arrHas, isJSON, objHas } from "./";
+import browser from "webextension-polyfill";
+import { arrHas, isJSON, objHas } from "./common";
 
 const sanitizeObj = (val: any, purifyConfig?: PurifyConfig) => {
     const _objKeys = val && typeof val === "object" && Object.keys(val);
@@ -174,6 +174,7 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
         fetch(url, fetchOpts)
             .then(async (res) => {
                 const result = (res?.ok || res?.statusText === "OK") && res.text();
+                console.log("DOMPurify returns:", DOMPurify.sanitize);
                 const parsed = result ? parseFetchResponse(result, parseType) : null;
                 if (parsed) return resolve(parsed);
                 console.error(res);

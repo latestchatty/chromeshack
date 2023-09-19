@@ -1,4 +1,4 @@
-import { isImage, isVideo } from "../common";
+import { isImage, isVideo } from "../common/common";
 
 const parseLink = (href: string) => {
     const isTwimg = /(https?:\/\/(?:.+\.)?twimg\.com\/media\/)(?:([\w-]+)\?format=([\w]+)&?|([\w-.]+))?/i.exec(href);

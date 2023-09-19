@@ -1,6 +1,6 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect } from "react";
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { resetSettings } from "../core/settings";
 import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";

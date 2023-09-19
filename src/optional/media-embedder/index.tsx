@@ -1,7 +1,8 @@
 import React from "react";
 import { render } from "react-dom";
 import { detectMediaLink } from "../../core/api";
-import { arrHas, domMutate, parseToElement } from "../../core/common";
+import { domMutate, parseToElement } from "../../core/common/dom";
+import { arrHas } from "../../core/common/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import "../../styles/media.css";

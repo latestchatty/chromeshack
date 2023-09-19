@@ -1,4 +1,4 @@
-import { scrollToElement } from "../core/common";
+import { scrollToElement } from "../core/common/dom";
 import { fullPostsCompletedEvent } from "../core/events";
 
 /*

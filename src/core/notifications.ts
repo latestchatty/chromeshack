@@ -1,5 +1,6 @@
-import { browser } from "webextension-polyfill-ts";
-import { arrHas, fetchSafe } from "./common";
+import browser from "webextension-polyfill";
+import { arrHas } from "./common/common";
+import { fetchSafe } from "./common/fetch";
 import { processNotifyEvent } from "./events";
 import { enabledContains, getEnabled, getSetting, setSetting } from "./settings";
 
@@ -12,7 +13,7 @@ export const TabMessenger = {
     send(msg: NotifyMsg) {
         // NOTE: call this from a background script
         browser.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
-            for (const tab of tabs || []) browser.tabs.sendMessage(tab.id, msg);
+            for (const tab of tabs || []) browser.tabs.sendMessage(tab.id as number, msg);
         });
     },
     connect() {
@@ -59,8 +60,8 @@ const matchNotification = async (nEvent: NotifyEvent) => {
         }, [] as string[]);
     if (postEventHasMe) return "Someone mentioned your name.";
     else if (parentAuthorIsMe) return "Someone replied to you.";
-    else if (!postAuthorIsMe && arrHas(postEventHasMatches)) {
-        const message = `Someone mentioned: ${postEventHasMatches.join(", ")}`;
+    else if (!postAuthorIsMe && arrHas(postEventHasMatches as string[])) {
+        const message = `Someone mentioned: ${(postEventHasMatches as string[]).join(", ")}`;
         return `${message.slice(0, 115)}...`;
     } else return null;
 };
@@ -76,7 +77,7 @@ const handleNotification = async (response: NotifyResponse) => {
             const match = await matchNotification(event);
             const post = (event.eventData as NewPostData)?.post;
             if (notify_enabled && match && post)
-                browser.notifications.create(`ChromeshackNotification${post.id.toString()}`, {
+                browser.notifications.create(`ChromeshackNotification${post?.id?.toString()}`, {
                     type: "basic",
                     title: "New post by " + post.author,
                     message: match,

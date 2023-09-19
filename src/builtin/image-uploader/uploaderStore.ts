@@ -1,4 +1,4 @@
-import { arrHas, packValidTypes } from "../../core/common";
+import { arrHas, packValidTypes } from "../../core/common/common";
 import { createStore } from "../../core/createStore";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";

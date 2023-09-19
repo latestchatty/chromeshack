@@ -1,4 +1,4 @@
-import { elemMatches, locatePostRefs } from "./common";
+import { elemMatches, locatePostRefs } from "./common/dom";
 import { handleRootAdded, processFullPosts, processPost, processPostBox } from "./observer_handlers";
 
 export const ChromeShack = {

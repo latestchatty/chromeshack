@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { parseToElement } from "../../core/common";
+import { parseToElement } from "../../core/common/dom";
 import { enabledContains } from "../../core/settings";
 import "../../styles/highlight_pending.css";
 import { HighlightPendingApp } from "./HighlightPendingApp";

@@ -2,7 +2,7 @@ import fastdom from "fastdom";
 import fastdomPromised from "fastdom/extensions/fastdom-promised";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
-import { arrHas } from "./";
+import { arrHas } from "./common";
 
 const $ = jQuery;
 
@@ -310,4 +310,9 @@ export const insertStyle = (css: string, containerName: string) => {
     _style.setAttribute("id", containerName);
     _style.textContent = css;
     document.querySelector("head")?.append(_style);
+};
+
+export const openAsWindow = (href: string) => {
+    const newWindow = window.open(href, "_blank", "noopener,noreferrer");
+    if (newWindow) newWindow.opener = null;
 };

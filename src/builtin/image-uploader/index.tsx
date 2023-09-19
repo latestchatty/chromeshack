@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { parseToElement } from "../../core/common";
+import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import "../../styles/image_uploader.css";
 import { ImageUploaderApp } from "./ImageUploaderApp";

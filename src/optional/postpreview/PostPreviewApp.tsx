@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { classNames, elemMatches, generatePreview, scrollToElement } from "../../core/common";
+import { elemMatches, generatePreview, scrollToElement } from "../../core/common/dom";
+import { classNames } from "../../core/common/common";
 import { replyFieldEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
 import { PostPreviewPane } from "./PostPreviewPane";

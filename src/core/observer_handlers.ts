@@ -1,6 +1,7 @@
-import { browser } from "webextension-polyfill-ts";
+import browser from "webextension-polyfill";
 import { singleThreadFix } from "../patches/singleThreadFix";
-import { arrHas, elemMatches, locatePostRefs } from "./common";
+import { elemMatches, locatePostRefs } from "./common/dom";
+import { arrHas } from "./common/common";
 import { disableTwitch, scrollToElement } from "./common/dom";
 import {
     fullPostsCompletedEvent,
@@ -32,8 +33,10 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
         // avoid having a duplicate (unused) tagline
         const rootTags = post?.querySelectorAll(".root>ul>li > .fullpost span.lol-tags");
         const postTags = post?.querySelectorAll("li li.sel > .fullpost span.lol-tags");
-        if (rootTags.length > 1) rootTags[0].parentElement.removeChild(rootTags[0]);
-        if (postTags.length > 1) postTags[0].parentElement.removeChild(postTags[0]);
+        if (rootTags.length > 1 && rootTags[0]?.parentElement)
+            rootTags[0].parentElement.removeChild(rootTags[0]);
+        if (postTags.length > 1 && postTags[0]?.parentElement)
+            postTags[0].parentElement.removeChild(postTags[0]);
     };
     const collectTagData = (post: HTMLElement) => {
         const postTags = [

@@ -1,7 +1,8 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { isValidElement, useCallback, useLayoutEffect, useRef, useState } from "react";
-import { classNames, elemMatches, getLinkType } from "../../core/common";
+import { classNames, getLinkType } from "../../core/common/common";
+import { elemMatches } from "../../core/common/dom";
 import { resolveChildren } from "../../core/useResolvedLinks";
 
 const ExpandIcon = () => <FontAwesomeIcon className="expand__icon" icon={faExpandAlt} />;

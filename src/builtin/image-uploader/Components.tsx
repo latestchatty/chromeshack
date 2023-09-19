@@ -2,7 +2,7 @@ import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { classNames, getFileCount } from "../../core/common";
+import { classNames, getFileCount } from "../../core/common/common";
 
 const ExclamationCircleIcon = ({ className, title }: { className: string; title: string }) => (
     <FontAwesomeIcon className={className} title={title} icon={faExclamationCircle} />

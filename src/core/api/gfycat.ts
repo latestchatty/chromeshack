@@ -1,14 +1,16 @@
 import { Dispatch } from "react";
 import {
-    fetchSafe,
-    fetchSafeLegacy,
-    FormDataToJSON,
     isFileArr,
     isUrlArr,
     objEmpty,
+} from "../common/common";
+import { FormDataToJSON } from "../common/dom";
+import {
+    fetchSafe,
+    fetchSafeLegacy,
     postBackground,
-    waitToFetchSafe,
-} from "../common";
+    waitToFetchSafe
+} from "../common/fetch";
 
 const gfycatApiUrl = "https://api.gfycat.com/v1/gfycats"; // GET
 const gfycatStatusUrl = "https://api.gfycat.com/v1/gfycats/fetch/status"; // GET

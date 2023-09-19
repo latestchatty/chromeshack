@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { arrHas, superTrim } from "../core/common";
+import { arrHas } from "../core/common/common";
+import { superTrim } from "../core/common/dom";
 import { highlightGroupsEqual } from "../core/settings";
 import { addHighlightGroup, delHighlightGroup } from "./actions";
 import { FilterBox } from "./FilterBox";

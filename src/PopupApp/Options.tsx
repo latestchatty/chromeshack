@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { arrHas, classNames } from "../core/common";
+import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
 import { usePopupStore } from "./popupStore";
 

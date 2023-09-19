@@ -4,5 +4,6 @@ pkgs.mkShell {
   nativeBuildInputs = with pkgs.buildPackages; [
     nodejs_20
     nodePackages.prettier
+    nodePackages.pnpm
   ];
 }

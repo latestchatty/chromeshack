@@ -1,7 +1,7 @@
 import { faVolumeMute, faVolumeUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useRef, useState } from "react";
-import { classNames } from "../common";
+import { classNames } from "../common/common";
 import { useIntersectObserver } from "./useIntersectObserver";
 
 const VolumeUpIcon = () => <FontAwesomeIcon className="unmute__icon" icon={faVolumeUp} />;

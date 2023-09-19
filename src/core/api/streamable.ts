@@ -1,4 +1,4 @@
-import { fetchBackground } from "../common";
+import { fetchBackground } from "../common/fetch";
 
 const resolveStreamable = async (shortcode: string) => {
     const __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";

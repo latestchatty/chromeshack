@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { arrHas } from "../../core/common";
+import { arrHas } from "../../core/common/common";
 import {
     addHighlightUser,
     enabledContains,

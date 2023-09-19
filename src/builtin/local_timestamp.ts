@@ -9,7 +9,7 @@ export const LocalTimeStamp = {
         hour: "numeric",
         minute: "numeric",
         timeZoneName: "short",
-    },
+    } as Intl.DateTimeFormatOptions,
 
     install() {
         processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);

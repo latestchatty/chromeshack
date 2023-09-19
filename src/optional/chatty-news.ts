@@ -1,4 +1,6 @@
-import { arrHas, fetchSafe, parseToElement, timeOverThresh } from "../core/common";
+import { arrHas, timeOverThresh } from "../core/common/common";
+import { parseToElement } from "../core/common/dom";
+import { fetchSafe } from "../core/common/fetch";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
 import "../styles/chatty-news.css";
 
@@ -23,7 +25,7 @@ export const ChattyNews = {
             // cache each successful fetch for 15 minutes
             rss = await fetchSafe({
                 url: "https://www.shacknews.com/feed/rss",
-                // REVIEWER NOTE: this is sanitized through DOMPurify in fetch.ts:75
+                // REVIEWER NOTE: this is sanitized through DOMPurify
                 parseType: { chattyRSS: true },
             });
             await setSetting("chatty_news_lastfetchdata", rss);

@@ -1,5 +1,6 @@
-import { browser } from "webextension-polyfill-ts";
-import { parseToElement, SentenceParser } from "../core/common";
+import browser from "webextension-polyfill";
+import { parseToElement } from "../core/common/dom";
+import { SentenceParser } from "../core/common/sentence_parser";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { HighlightUsers } from "../optional/highlight_users";

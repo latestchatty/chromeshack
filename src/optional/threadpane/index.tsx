@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { parseToElement } from "../../core/common";
+import { parseToElement } from "../../core/common/dom";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import "../../styles/threadpane.css";
 import { ThreadPaneApp } from "./ThreadPaneApp";

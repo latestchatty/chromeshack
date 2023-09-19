@@ -1,9 +1,12 @@
 import React, { isValidElement, useEffect, useState } from "react";
 import { detectMediaLink } from "../api";
-import { arrHas } from "../common";
+import { arrHas } from "../common/common";
 import { Carousel } from "./Carousel";
 import { Iframe, Image } from "./Components";
 import { FlexVideo } from "./FlexVideo";
+
+import type MediaOptions from "../../types/mediaEmbedder";
+import type MediaProps from "../../types/mediaEmbedder";
 
 const loadComponent = (opts: URLProps) => {
     // takes a ParsedResponse and returns a rendered media component

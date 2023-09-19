@@ -1,9 +1,12 @@
-import DOMPurify from "dompurify";
-import parse from "html-react-parser";
 import React from "react";
+import parse from "html-react-parser";
+import DOMPurify from "dompurify";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
+import { elemMatches, openAsWindow } from "../common/dom";
+import { objHas } from "../common/common";
+import { fetchSafe } from "../common/fetch";
+
 import "../../styles/chattypost.css";
-import { elemMatches, fetchSafe, objHas, openAsWindow } from "../common";
 
 const parseChattyPost = async (sanitizedFragment: DocumentFragment) => {
     const fullpost = sanitizedFragment.querySelector(".fullpost") as HTMLDivElement;

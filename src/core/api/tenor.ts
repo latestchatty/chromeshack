@@ -1,4 +1,4 @@
-import { fetchSafe } from "../common";
+import { fetchSafe } from "../common/fetch";
 
 const resolveTenor = async (shortcode: string) => {
     const __obf = atob("UE9JODJZS1NWRENQ");

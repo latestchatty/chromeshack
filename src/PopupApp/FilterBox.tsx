@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { arrHas, classNames } from "../core/common";
+import { arrHas, classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
 import { usePopupStore } from "./popupStore";
 

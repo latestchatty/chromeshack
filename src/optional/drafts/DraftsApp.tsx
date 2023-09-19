@@ -1,5 +1,5 @@
 import React from "react";
-import { classNames } from "../../core/common";
+import { classNames } from "../../core/common/common";
 import { useDrafts } from "./useDrafts";
 
 const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {

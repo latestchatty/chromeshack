@@ -1,5 +1,5 @@
 import * as textFieldEdit from "text-field-edit";
-import { parseToElement } from "../core/common";
+import { parseToElement } from "../core/common/dom";
 import { processPostBoxEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 import "../styles/comment_tags.css";

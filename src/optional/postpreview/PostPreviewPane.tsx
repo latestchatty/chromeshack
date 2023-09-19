@@ -1,8 +1,7 @@
-import type { DomElement } from "html-react-parser";
-import parse, { domToReact } from "html-react-parser";
+import parse, { domToReact, Element } from "html-react-parser";
 import React from "react";
 import { createPortal } from "react-dom";
-import { classNames } from "../../core/common";
+import { classNames } from "../../core/common/common";
 
 const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: string }) => {
     const { target, toggled, input } = props || {};
@@ -13,7 +12,7 @@ const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: 
             _this.classList.add("jt_spoiler_clicked");
         }
     };
-    const modifySpoiler = (node: DomElement) => {
+    const modifySpoiler = (node: Element) => {
         if (node.name === "span" && node.attribs["class"].includes("jt_spoiler"))
             return (
                 <span className={node.attribs["class"]} onClick={onSpoilerClick}>
@@ -23,7 +22,7 @@ const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: 
     };
     return createPortal(
         <div id="previewArea" className={classNames({ hidden: !toggled })}>
-            {parse(input, { replace: (node) => modifySpoiler(node) })}
+            {parse(input, { replace: (node: Element) => modifySpoiler(node) })}
         </div>,
         target,
     );

@@ -10,17 +10,11 @@ Links:
 
 ## How to build
 
-NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
+NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (8.x+ recommended). Use `pnpm i` for installing dependencies.
 
--   Development mode (`npm run build:dev`) includes full source mapping, and runs an extension reloader plugin through webpack that will reload Chrome/Firefox when files are changed. If you wish to test via a disposable Firefox profile then use `npm run webext` separate from `npm run build:dev`.
+-   Development mode (`pnpm run dev`) includes full source mapping, and runs an extension reloader through vite that will reload the browser when files are changed.
 
--   Production code is generated in the `dist/` folder by running `npm run build:prod`.
-
--   Deployment packages can be generated with `npm run build:pack`. This results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
-
--   The full E2E test suite can be run with `npm run mocha` which produces a report found in `mochawesome-report/` (_look in `CONTRIBUTING.md` for critical information_).
-
--   The Cypress GUI can be opened with `npm run cypress` to run individual tests or to debug a test spec.
+-   Production code is generated in the `dist/` folder by running `pnpm run build`.
 
 #### Dependencies used in this project
 

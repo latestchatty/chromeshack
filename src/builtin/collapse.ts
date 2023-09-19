@@ -1,4 +1,5 @@
-import { elemMatches, locatePostRefs, timeOverThresh } from "../core/common";
+import { elemMatches, locatePostRefs } from "../core/common/dom";
+import { timeOverThresh } from "../core/common/common";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
 import { getSetting, setSetting } from "../core/settings";
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { domMeasure } from "../../core/common";
+import { domMeasure } from "../../core/common/dom";
 import { useIntersectObserver } from "../../core/useResolvedLinks/useIntersectObserver";
 
 const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {

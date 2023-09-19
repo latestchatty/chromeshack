@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { classNames } from "../core/common";
+import { classNames } from "../core/common/common";
 import { getSetting, setSetting } from "../core/settings";
 
 const isChromeBrowser = !window.browser ? true : false;

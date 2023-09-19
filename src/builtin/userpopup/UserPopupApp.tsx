@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { unmountComponentAtNode } from "react-dom";
-import { elemMatches } from "../../core/common";
+import { elemMatches } from "../../core/common/dom";
 import { HighlightFilters } from "./HighlightFilters";
 import { LOLList } from "./LOLList";
 import { UserFilter } from "./UserFilter";

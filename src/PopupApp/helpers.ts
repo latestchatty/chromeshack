@@ -1,4 +1,4 @@
-import { insertStyle, superTrim } from "../core/common";
+import { insertStyle, superTrim } from "../core/common/dom";
 import { DefaultSettings } from "../core/default_settings";
 import {
     getSettings,
