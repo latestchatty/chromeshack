@@ -62,4 +62,11 @@ export default defineConfig({
       manifest,
     }),
   ],
+  server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      port: 5173,
+    },
+  },
 });
