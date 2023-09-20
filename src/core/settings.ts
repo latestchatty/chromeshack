@@ -323,7 +323,7 @@ export const migrateSettings = async () => {
         await setSettings(mutatedSettings);
         migrated = true;
     }
-    if (legacy_settings?.["version"] <= 1.73) {
+    if (last_version <= 1.73) {
         // make sure highlight_groups are up-to-date for 1.74
         const mutatedGroups = await mergeHighlightGroups(
             DefaultSettings.highlight_groups,
@@ -333,7 +333,7 @@ export const migrateSettings = async () => {
             ...legacy_settings,
             highlight_groups: mutatedGroups,
         };
-        await importSettings(JSON.stringify(mutatedSettings));
+        await setSettings(mutatedSettings);
         migrated = true;
     }
     if (migrated) console.log("settings have been migrated:", await getSettings());
