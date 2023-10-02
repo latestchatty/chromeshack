@@ -35,14 +35,14 @@
 /* wide mode (slim header) */
 #hpnp__app__container.header-shown.scrolled {
     max-height: 22px;
-    top: -1px;
-    left: -75px;
+    top: -0.25rem;
+    left: -3.5rem;
 }
 /* narrow mode (slim header) */
 #hpnp__app__container.narrow.header-shown {
     max-height: 22px;
-    top: 5px;
-    left: 6px;
+    top: 0.33rem;
+    left: 0.75rem;
 }
 #hpnp__container:hover {
     opacity: 1 !important;
