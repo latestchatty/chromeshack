@@ -26,8 +26,8 @@
 /* wide mode (fat header + no threadpane) */
 #hpnp__app__container.header-shown:not(.narrow) {
     max-height: 29px;
-    top: 10px;
-    left: 6px;
+    top: 0.35rem;
+    left: 0.75rem;
 }
 #hpnp__app__container.header-shown:not(.narrow) #statustext {
     font-size: 25px;
