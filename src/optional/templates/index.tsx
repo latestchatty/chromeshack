@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -26,8 +26,10 @@ const Templates = {
         const container = postbox.querySelector("#templates__app");
         if (is_enabled && !container && positionElem) {
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
-            render(<TemplatesApp inputBox={inputBox} />, Templates.cachedEl);
+            
+            const root = createRoot(Templates.cachedEl!);
             positionElem.append(Templates.cachedEl);
+            root.render(<TemplatesApp inputBox={inputBox} />);
         }
     },
 };

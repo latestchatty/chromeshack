@@ -181,13 +181,6 @@ const PopupApp = () => {
             <div title="Extras">
                 <OptionGroup label="Bells and whistles">
                     <Option
-                        id="nws_incognito"
-                        label="Open NWS links in incognito mode"
-                        descriptions={[
-                            "When clicking links in posts moderated as Not Work Safe, open in an incognito window rather than a normal window. Firefox users must enable 'Run in Private Windows' in the addon settings.",
-                        ]}
-                    />
-                    <Option
                         id="switchers"
                         label="Shame switchers"
                         descriptions={["Show the original username of shackers who changed names."]}

@@ -336,7 +336,6 @@ export const migrateSettings = async () => {
         await setSettings(mutatedSettings);
         migrated = true;
     }
-    if (migrated) console.log("settings have been migrated:", await getSettings());
 
     // pull the latest version data after the migration
     current_version = getManifestVersion();
@@ -357,7 +356,7 @@ export const migrateSettings = async () => {
     }
     await removeEnabledSuboption("imported");
 
-    console.log("migrateSettings post-migration:", await getSettings());
+    if (migrated || imported) console.log("migrateSettings post-migration:", await getSettings());
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {

@@ -6,5 +6,10 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "include": ["vite.config.ts", "package.json"]
+  "include": [
+    "vite.popup.config.ts",
+    "vite.content.config.ts",
+    "vite.serviceWorker.config.ts",
+    "vite.offscreen.config.ts"
+  ]
 }

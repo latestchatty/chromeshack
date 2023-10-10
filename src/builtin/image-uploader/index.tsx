@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import "../../styles/image_uploader.css";
@@ -26,11 +26,11 @@ export const ImageUploader = {
         let appContainer = renderContainer?.querySelector("#image__uploader__container");
         if (!appContainer && renderContainer) {
             appContainer = ImageUploader.cachedEl;
-            render(
+            const root = createRoot(appContainer!);
+            root.render(
                 <UploaderProvider>
                     <ImageUploaderApp postboxEl={postbox} />
-                </UploaderProvider>,
-                appContainer,
+                </UploaderProvider>
             );
             // insert our footer at the bottom of the postbox
             renderContainer.append(appContainer);

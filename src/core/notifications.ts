@@ -27,7 +27,8 @@ export const TabMessenger = {
 
 const setInitialNotificationsEventId = async () => {
     const resp: NewestEventResponse = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
-    if (resp) await setEventId(resp.eventId);
+    if (!resp) return;
+    await setEventId(resp.eventId);
 };
 
 const notificationClicked = (notificationId: string) => {
@@ -88,37 +89,38 @@ const handleNotification = async (response: NotifyResponse) => {
 
 const pollNotifications = async () => {
     const greenLightTimer = 15000; // tick
-    const redLightTimer = 60000; // tock
+    const redLightTimer = 29000; // tock
     try {
         // TODO: have the consuming scripts set a consumer suboption
         const enabled = (await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"));
-        if (enabled) {
-            let nEventId = await getEventId();
-            if (!nEventId) {
-                // avoid getting hung in a tock loop if saved id is unusable
-                await setInitialNotificationsEventId();
-                nEventId = await getEventId();
-            }
-            const resp: NotifyResponse =
-                nEventId &&
-                (await fetchSafe({
-                    url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
-                }));
-            if (resp?.lastEventId && !resp.error) {
-                await setEventId(resp.lastEventId);
-                await handleNotification(resp);
-                // recheck every tick
-                setTimeout(pollNotifications, greenLightTimer);
-            } else if (resp?.code === "ERR_TOO_MANY_EVENTS") {
-                await setInitialNotificationsEventId();
-                // busy signal - recheck on next tick
-                setTimeout(pollNotifications, greenLightTimer);
-            }
-            // fail - recheck on next tock
-            else setTimeout(pollNotifications, redLightTimer);
+        if (!enabled) {
+            // recheck every tick for enablement
+            return setTimeout(pollNotifications, greenLightTimer);
         }
-        // recheck every tick for enablement
-        else setTimeout(pollNotifications, greenLightTimer);
+        
+        let nEventId = await getEventId();
+        if (!nEventId) {
+            // avoid getting hung in a tock loop if saved id is unusable
+            await setInitialNotificationsEventId();
+            nEventId = await getEventId();
+        }
+        const resp: NotifyResponse =
+            nEventId &&
+            (await fetchSafe({
+                url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
+            }));
+        if (resp?.lastEventId && !resp.error) {
+            await setEventId(resp.lastEventId);
+            await handleNotification(resp);
+            // recheck every tick
+            setTimeout(pollNotifications, greenLightTimer);
+        } else if (resp?.code === "ERR_TOO_MANY_EVENTS") {
+            await setInitialNotificationsEventId();
+            // busy signal - recheck on next tick
+            setTimeout(pollNotifications, greenLightTimer);
+        }
+        // fail - recheck on next tock
+        else setTimeout(pollNotifications, redLightTimer);
     } catch (e) {
         console.log(e);
         // retry every tock

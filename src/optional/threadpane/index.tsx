@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import "../../styles/threadpane.css";
@@ -15,10 +15,12 @@ const ThreadPane = {
         if ((testing || chatty) && enabled && !container) {
             // apply css to make room for threadpane div
             document.querySelector("body")?.classList?.add("cs_thread_pane_enable");
-            const root = document.getElementById("page");
+            const rootEl = document.getElementById("page");
             const appContainer = parseToElement(`<div id="cs_thread_pane" />`);
-            render(<ThreadPaneApp />, appContainer);
-            root.append(appContainer);
+
+            const root = createRoot(appContainer!);
+            rootEl.append(appContainer);
+            root.render(<ThreadPaneApp />);
         }
     },
 };

@@ -12,6 +12,7 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "sourceMap": true,
     "noEmit": true,
     "jsx": "react-jsx",
     "types": ["node", "chrome", "./src/types"],

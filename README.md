@@ -12,13 +12,17 @@ Links:
 
 NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (8.x+ recommended). Use `pnpm i` for installing dependencies.
 
--   Development mode (`pnpm run dev`) includes full source mapping, and runs an extension reloader through vite that will reload the browser when files are changed.
+-   (`pnpm dev`) includes full source mapping and a Chrome/WebKit manifest in the `dist/` folder.
 
--   Production code is generated in the `dist/` folder by running `pnpm run build`.
+-   (`pnpm dev:firefox`) includes full source mapping and a Firefox manifest in the `dist/` folder.
+
+-   Production code for Chromium/WebKit is generated in the `dist/` folder by running `pnpm build`.
+
+-   Production code for Firefox is generated in the `dist/` folder by running `pnpm build:firefox`.
 
 #### Dependencies used in this project
 
-NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated when `npm run build:prod` is used for licensing information.
+NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated when `pnpm generate-licenses` is used for detailed licensing information.
 
 -   [Embla](https://github.com/davidcetinkaya/embla-carousel)
 -   [jQuery](https://github.com/jquery/jquery)
@@ -31,3 +35,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated w
 -   [lz-string](https://github.com/pieroxy/lz-string)
 -   [html-react-parser](https://github.com/remarkablemark/html-react-parser)
 -   [fastdom](https://github.com/wilsonpage/fastdom)
+-   [js-xss](https://github.com/leizongmin/js-xss)

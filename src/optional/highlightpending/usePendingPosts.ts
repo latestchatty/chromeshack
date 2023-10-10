@@ -69,7 +69,7 @@ const usePendingPosts = (threaded: boolean) => {
                 const postId = eventData?.postId;
                 const threadId = eventData?.post?.threadId;
                 const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
-                const isAuthorMe = eventData.post.author.toLowerCase() === loggedUser.toLowerCase();
+                const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
                 // don't grab new posts that contain our logged-in user as the author
                 if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
                 return acc;

@@ -18,6 +18,8 @@ export const Switchers = {
         { old: "Rigor Morts", new: "dewhickey" },
         { old: "pigvomit", new: "Proximate Cause" },
         { old: "Jayx77", new: ".Jayson" },
+        { old: "PlanetPerfecto", new: "Subterranean Jenkem Farmer" },
+        { old: "Kaijuseijin", new: "liquid_sinister" },
     ],
 
     resolved: [] as SwitcherMatch[],

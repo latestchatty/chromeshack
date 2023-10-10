@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -31,9 +31,11 @@ const PostPreview = {
         if (is_enabled && !container && positionElem) {
             const clonedAppEl = PostPreview.cachedAppEl.cloneNode(false) as HTMLElement;
             const clonedPaneEl = PostPreview.cachedPaneEl.cloneNode(false) as HTMLElement;
-            render(<PostPreviewApp postboxElem={postbox} paneMountElem={clonedPaneEl} />, clonedAppEl);
+            
+            const root = createRoot(clonedAppEl!);
             altPositionElem.parentNode.insertBefore(clonedPaneEl, altPositionElem);
             positionElem.append(clonedAppEl);
+            root.render(<PostPreviewApp postboxElem={postbox} paneMountElem={clonedPaneEl} />);
         }
     },
 };

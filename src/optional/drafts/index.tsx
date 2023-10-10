@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -28,8 +28,10 @@ const Drafts = {
             const nearestLi = postbox?.closest && postbox.closest("li[id^='item_']");
             const postid = parseInt(nearestLi?.id?.substr(5));
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
-            render(<DraftsApp postid={postid} inputBox={inputBox} />, Drafts.cachedEl);
+
+            const root = createRoot(Drafts.cachedEl!);
             positionElem.parentElement.insertBefore(Drafts.cachedEl, positionElem.nextElementSibling);
+            root.render(<DraftsApp postid={postid} inputBox={inputBox} />);
         }
     },
 };

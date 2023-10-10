@@ -1,5 +1,5 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { elemMatches, parseToElement } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
 import "../../styles/userpopup.css";
@@ -38,11 +38,9 @@ export const UserPopup = {
             const isLoggedInUser = loggedInUsername?.toUpperCase() === _username?.toUpperCase();
 
             if (!containerRef && _elem) {
-                render(
-                    <UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />,
-                    UserPopup.cachedEl,
-                );
                 _elem.appendChild(UserPopup.cachedEl);
+                const root = createRoot(UserPopup.cachedEl!);
+                root.render(<UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />);
             }
         }
     },

@@ -7,7 +7,6 @@ import {
 import { FormDataToJSON } from "../common/dom";
 import {
     fetchSafe,
-    fetchSafeLegacy,
     postBackground,
     waitToFetchSafe
 } from "../common/fetch";
@@ -23,7 +22,7 @@ export const doResolveGfycat = async (...args: any[]) => {
         const url = gfyname ? `${gfycatApiUrl}/${gfyname}` : null;
         if (!url) throw Error("Unable to resolve gfyname!");
 
-        const result: GfycatResponse = window.chrome ? await fetchSafe({ url }) : await fetchSafeLegacy({ url });
+        const result: GfycatResponse = await fetchSafe({ url });
         // sanitized in common.js
         const media = result?.gfyItem?.mobileUrl || result?.gfyItem?.webmUrl;
         return media ? { src: media, type: "video" } : null;

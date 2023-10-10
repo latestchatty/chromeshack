@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
 import { classNames, getLinkType } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { resolveChildren } from "../../core/useResolvedLinks";
@@ -70,7 +70,7 @@ const Expando = (props: ExpandoProps) => {
             if (children) setToggled(true);
         }, 100);
     };
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (toggled) loadChildren();
     }, [toggled, loadChildren]);
 

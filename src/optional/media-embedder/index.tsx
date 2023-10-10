@@ -1,7 +1,7 @@
 import React from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { detectMediaLink } from "../../core/api";
-import { domMutate, parseToElement } from "../../core/common/dom";
+import { parseToElement } from "../../core/common/dom";
 import { arrHas } from "../../core/common/common";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -26,9 +26,7 @@ export const MediaEmbedder = {
         const { post } = args || {};
         // don't do processing if we don't need to
         const is_enabled = await enabledContains(["media_loader", "getpost"]);
-        const isNWS = post?.querySelector(".fullpost.fpmod_nws");
-        const NWS_enabled = await enabledContains(["nws_incognito"]);
-        if ((isNWS && NWS_enabled) || !is_enabled) return;
+        if (!is_enabled) return;
         // render inside a hidden container in each fullpost
         const postbody = post?.querySelector(".sel > .fullpost > .postbody");
         const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
@@ -42,12 +40,9 @@ export const MediaEmbedder = {
                 const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
                 // the container needs to remain in the DOM for events to work
                 postbody.append(container);
-                // replace each source link with the rendered media link
-                await domMutate(() =>
-                    render(<Expando response={detected} options={{ openByDefault }} />, container, () =>
-                        l.replaceWith(container.childNodes[0]),
-                    ),
-                );
+                const root = createRoot(container!);
+                l.parentNode.replaceChild(container, l);
+                root.render(<Expando response={detected} options={{ openByDefault }} />);
             };
             await Promise.all(links.map(process));
         }

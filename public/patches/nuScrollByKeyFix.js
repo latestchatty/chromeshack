@@ -1,9 +1,3 @@
-import browser from "webextension-polyfill";
-
-export const scrollByKeyFix = async () => {
-    try {
-        return browser.tabs.executeScript({
-            code: /*javascript*/ `
 // monkeypatch nuChatty's broken scroll-post-by-A/Z functionality
 function check_event_target(a) {
     // use chrome/firefox methods to check the event target
@@ -34,14 +28,7 @@ function chat_onkeypress(b) {
     }
     return true;
 }
-var previous = document.getElementById("scrollbykeyfix-wjs");
-var scrollByKeyFix = document.createElement("script");
-scrollByKeyFix.id = "scrollbykeyfix-wjs";
-scrollByKeyFix.textContent = \`\${check_event_target.toString()}\${chat_onkeypress.toString()}\`;
-if (!previous) document.getElementsByTagName("body")[0].append(scrollByKeyFix);
-undefined;`,
-        });
-    } catch (e) {
-        /* eat exceptions here */
-    }
-};
+let scrollByKeyFixEl = document.createElement("script");
+scrollByKeyFixEl.id = "scrollbykeyfix";
+scrollByKeyFixEl.textContent = `${check_event_target.toString()}${chat_onkeypress.toString()}`;
+document.querySelector("body").appendChild(scrollByKeyFixEl);

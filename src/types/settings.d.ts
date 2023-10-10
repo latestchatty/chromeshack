@@ -24,7 +24,6 @@ declare global {
         | "highlight_users"
         | "media_loader"
         | "new_comment_highlighter"
-        | "nws_incognito"
         | "post_preview"
         | "reduced_color_user_icons"
         | "sparkly_comic"
