@@ -326,14 +326,14 @@ export const migrateSettings = async () => {
     if (last_version <= 1.73) {
         // make sure highlight_groups are up-to-date for 1.74
         const mutatedGroups = await mergeHighlightGroups(
-            DefaultSettings.highlight_groups,
             legacy_settings?.["highlight_groups"],
+            DefaultSettings.highlight_groups,
         );
-        const mutatedSettings = {
+        await setSettings({
             ...legacy_settings,
             highlight_groups: mutatedGroups,
-        };
-        await setSettings(mutatedSettings);
+        });
+        console.log("merged highlight groups:", mutatedGroups);
         migrated = true;
     }
 
@@ -356,7 +356,7 @@ export const migrateSettings = async () => {
     }
     await removeEnabledSuboption("imported");
 
-    if (migrated || imported) console.log("migrateSettings post-migration:", await getSettings());
+    console.log("after migrateSettings:", await getSettings());
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
