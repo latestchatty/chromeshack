@@ -9,15 +9,15 @@
     "build:serviceWorker": "vite build --config vite.serviceWorker.config.ts",
     "build:content": "vite build --config vite.content.config.ts",
     "build:popup": "vite build --config vite.popup.config.ts",
-    "build:offscreen": "vite build --config vite.offscreen.config.ts",
+    "build:js": "run-s build:serviceWorker build:content build:popup",
     "clean": "rm -rf dist/",
     "manifest:clean": "rm -f dist/manifest.sm.json dist/manifestv3.ffx.json",
     "manifest:dev": "mv dist/manifest.sm.json dist/manifest.json && rm -f dist/manifestv3.ffx.json",
     "manifest:firefox": "mv dist/manifestv3.ffx.json dist/manifest.json && rm -f dist/manifest.sm.json",
-    "dev": "tsc && NODE_ENV=development run-s clean build:serviceWorker build:content build:popup build:offscreen manifest:dev",
-    "dev:firefox": "tsc && NODE_ENV=development run-s clean build:serviceWorker build:content build:popup manifest:firefox",
-    "build": "tsc && NODE_ENV=production run-s clean build:serviceWorker build:content build:popup build:offscreen manifest:clean",
-    "build:firefox": "tsc && NODE_ENV=production run-s clean build:serviceWorker build:content build:popup manifest:firefox"
+    "dev": "tsc && NODE_ENV=development run-s clean build:js manifest:dev",
+    "dev:firefox": "tsc && NODE_ENV=development run-s clean build:js manifest:firefox",
+    "build": "NODE_ENV=production run-s clean build:js manifest:clean",
+    "build:firefox": "NODE_ENV=production run-s clean build:js manifest:firefox"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
@@ -35,7 +35,6 @@
     "react-dom": "^18.2.0",
     "text-field-edit": "^4.0.0",
     "ts-debounce": "^4.0.0",
-    "webextension-polyfill": "^0.10.0",
     "xss": "^1.0.14"
   },
   "devDependencies": {

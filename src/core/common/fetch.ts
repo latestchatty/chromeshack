@@ -1,6 +1,5 @@
 import DOMPurify from "dompurify";
 import xss from "xss";
-import browser from "webextension-polyfill";
 import { arrHas, isJSON, objHas } from "./common";
 
 const sanitizeObj = (val: any) => {
@@ -127,9 +126,9 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
 
 // sugar for the CORB-safe versions of fetchSafe() GET/POST
 export const fetchBackground = ({ url, fetchOpts, parseType }: FetchArgs) =>
-    browser.runtime.sendMessage({ name: "corbFetch", url, fetchOpts, parseType });
+    chrome.runtime.sendMessage({ name: "corbFetch", url, fetchOpts, parseType });
 export const postBackground = ({ url, fetchOpts, parseType, data }: PostArgs) =>
-    browser.runtime.sendMessage({
+    chrome.runtime.sendMessage({
         name: "corbPost",
         url,
         fetchOpts,

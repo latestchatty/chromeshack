@@ -1,4 +1,3 @@
-import browser from "webextension-polyfill";
 import { singleThreadFix } from "../patches/singleThreadFix";
 import { elemMatches, locatePostRefs } from "./common/dom";
 import { arrHas } from "./common/common";
@@ -160,9 +159,9 @@ export const contentScriptLoaded = async () => {
     const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
     if (loggedInUsername) await setUsername(loggedInUsername);
     // monkey patch the 'clickItem()' method on Chatty once we're done loading
-    browser.runtime.sendMessage({ name: "chatViewFix" }).catch(console.error);
+    chrome.runtime.sendMessage({ name: "chatViewFix" }).catch(console.error);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
-    browser.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.error);
+    chrome.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.error);
     // disable article Twitch player if we're running Cypress tests for a speed boost
     if (await getEnabledSuboption("testing_mode")) disableTwitch();
 

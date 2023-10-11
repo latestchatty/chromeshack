@@ -1,6 +1,5 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
 import React, { useEffect } from "react";
-import browser from "webextension-polyfill";
 import { resetSettings } from "../core/settings";
 import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";
@@ -22,8 +21,8 @@ const PopupApp = () => {
         })();
     };
     const handleRlsNotesBtn = () => {
-        browser.tabs.create({
-            url: browser.runtime.getURL("release_notes.html"),
+        chrome.tabs.create({
+            url: chrome.runtime.getURL("release_notes.html"),
         });
     };
 

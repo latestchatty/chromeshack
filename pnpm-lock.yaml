@@ -46,9 +46,6 @@ dependencies:
   ts-debounce:
     specifier: ^4.0.0
     version: 4.0.0
-  webextension-polyfill:
-    specifier: ^0.10.0
-    version: 0.10.0
   xss:
     specifier: ^1.0.14
     version: 1.0.14
@@ -66,9 +63,6 @@ devDependencies:
   '@types/jquery':
     specifier: ^3.5.22
     version: 3.5.22
-  '@types/lodash':
-    specifier: ^4.14.199
-    version: 4.14.199
   '@types/node':
     specifier: ^20.8.4
     version: 20.8.4
@@ -704,10 +698,6 @@ packages:
     resolution: {integrity: sha512-ISQFeUK5GwRftLK4PVvKTWEVCxZ2BpaqBz0TWkIq5w4vGojxZP9+XkqgcPjxoqmPeew+HLyWthCBvK7GdF5NYA==}
     dependencies:
       '@types/sizzle': 2.3.3
-    dev: true
-
-  /@types/lodash@4.14.199:
-    resolution: {integrity: sha512-Vrjz5N5Ia4SEzWWgIVwnHNEnb1UE1XMkvY5DGXrAeOGE9imk0hgTHh5GyDjLDJi9OTCn9oo9dXH1uToK1VRfrg==}
     dev: true
 
   /@types/node@20.8.4:
@@ -2370,10 +2360,6 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
-
-  /webextension-polyfill@0.10.0:
-    resolution: {integrity: sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==}
-    dev: false
 
   /which-boxed-primitive@1.0.2:
     resolution: {integrity: sha512-bwZdv0AKLpplFY2KZRX6TvyuN7ojjr7lwkg6ml0roIy9YeuSr7JS372qlNW18UQYzgYK9ziGcerWqZOmEn9VNg==}

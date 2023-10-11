@@ -1,4 +1,3 @@
-import browser from "webextension-polyfill";
 import { importSettings } from "../PopupApp/helpers";
 import { arrHas, objEmpty, objHas } from "./common/common";
 import { superTrim } from "./common/dom";
@@ -8,12 +7,12 @@ import { DefaultSettings } from "./default_settings";
 
 export const getSettings = async (defaults?: Settings) => {
     try {
-        let settings = (await browser.storage.local.get()) as Settings;
+        let settings = (await chrome.storage.local.get()) as Settings;
         if (objEmpty(settings) && !defaults) {
-            await browser.storage.local.set({ ...DefaultSettings, ...settings });
-            settings = (await browser.storage.local.get()) as Settings;
+            await chrome.storage.local.set({ ...DefaultSettings, ...settings });
+            settings = (await chrome.storage.local.get()) as Settings;
         } else if (defaults) {
-            await browser.storage.local.set(defaults);
+            await chrome.storage.local.set(defaults);
             settings = defaults;
         }
         return settings;
@@ -26,12 +25,12 @@ export const setSetting = async (key: SettingKey, val: any) => {
     // Check each time we set a key that the val will fit within the storage limit
     // ... if we don't do this then the settings store can become corrupted
     // ... causing data loss of some kv-pairs.
-    const maxSize = 5000000; // the limit is 5MiB for browser.storage.local
+    const maxSize = 5000000; // the limit is 5MiB for chrome.storage.local
     const _settings = await getSettings();
     const _newVal = { [key]: val };
     const _withVal = { ..._settings, ..._newVal };
     const _newSetLen = JSON.stringify(_withVal).length;
-    if (_newSetLen < maxSize) await browser.storage.local.set(_newVal);
+    if (_newSetLen < maxSize) await chrome.storage.local.set(_newVal);
     else console.error("Unable to write value - would cause storage overflow:", _withVal, _newSetLen);
 };
 
@@ -44,7 +43,7 @@ export const getSetting = async (key: SettingKey, defaultVal?: any) => {
 };
 
 export const getSettingsVersion = async () => await getSetting("version", 0);
-export const getManifestVersion = () => parseFloat(browser.runtime.getManifest().version);
+export const getManifestVersion = () => parseFloat(chrome.runtime.getManifest().version);
 
 export const getEnabled = async (key?: EnabledOptions) => {
     const enabled = (await getSetting("enabled_scripts")) as string[];
@@ -63,7 +62,7 @@ export const getEnabledSuboption = async (key: EnabledSuboptions) => {
 };
 
 export const getSettingsLegacy = async () => {
-    const storage = await browser.storage.local.get();
+    const storage = await chrome.storage.local.get();
     const settings = { ...DefaultSettings, ...storage };
     // for (const key of Object.keys(settings) || [])
     //     if (/[A-F0-9]{8}-(?:[A-F0-9]{4}-){3}[A-F0-9]{12}/.test(settings[key]))
@@ -102,8 +101,8 @@ export const setEnabledSuboption = async (key: EnabledSuboptions) => {
 };
 
 export const setSettings = async (obj: Settings) => {
-    await browser.storage.local.clear();
-    return await browser.storage.local.set(obj);
+    await chrome.storage.local.clear();
+    return await chrome.storage.local.set(obj);
 };
 
 export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) => {
@@ -132,10 +131,10 @@ export const removeEnabledSuboption = async (key: EnabledSuboptions) => {
     return filtered;
 };
 
-export const removeSetting = (key: SettingKey) => browser.storage.local.remove(key);
+export const removeSetting = (key: SettingKey) => chrome.storage.local.remove(key);
 
 export const resetSettings = async (defaults?: Settings) => {
-    await browser.storage.local.clear();
+    await chrome.storage.local.clear();
     return await getSettings(defaults);
 };
 
@@ -351,7 +350,7 @@ export const migrateSettings = async () => {
     } else await updateSettingsVersion();
     // only show release notes once after the version is updated
     if (show_notes && !imported) {
-        await browser.tabs.create({ url: "release_notes.html" });
+        await chrome.tabs.create({ url: "release_notes.html" });
         await removeEnabledSuboption("show_rls_notes");
     }
     await removeEnabledSuboption("imported");
