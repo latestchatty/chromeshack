@@ -1,4 +1,3 @@
-import browser from "webextension-polyfill";
 import { arrHas } from "./common/common";
 import { fetchSafe } from "./common/fetch";
 import { processNotifyEvent } from "./events";
@@ -12,31 +11,31 @@ export const setUsername = async (username: string) => await setSetting("usernam
 export const TabMessenger = {
     send(msg: NotifyMsg) {
         // NOTE: call this from a background script
-        browser.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
-            for (const tab of tabs || []) browser.tabs.sendMessage(tab.id as number, msg);
+        chrome.tabs.query({ url: "https://*.shacknews.com/chatty*" }).then((tabs) => {
+            for (const tab of tabs || []) chrome.tabs.sendMessage(tab.id as number, msg);
         });
     },
     connect() {
         // NOTE: call this from a content script
-        browser.runtime.onMessage.addListener((msg: NotifyMsg) => {
+        chrome.runtime.onMessage.addListener((msg: NotifyMsg) => {
             if (msg.name === "notifyEvent") return Promise.resolve(processNotifyEvent.raise(msg.data));
             else return Promise.resolve(true);
         });
     },
 };
 
-const setInitialNotificationsEventId = async () => {
+export const setInitialNotificationsEventId = async () => {
     const resp: NewestEventResponse = await fetchSafe({ url: "https://winchatty.com/v2/getNewestEventId" });
     if (!resp) return;
     await setEventId(resp.eventId);
 };
 
-const notificationClicked = (notificationId: string) => {
+export const notificationClicked = (notificationId: string) => {
     if (notificationId.indexOf("ChromeshackNotification") > -1) {
         const postId = notificationId.replace("ChromeshackNotification", "");
         const url = `https://www.shacknews.com/chatty?id=${postId}#item_${postId}`;
-        browser.tabs.create({ url: url });
-        browser.notifications.clear(notificationId);
+        chrome.tabs.create({ url: url });
+        chrome.notifications.clear(notificationId);
     }
 };
 
@@ -78,58 +77,40 @@ const handleNotification = async (response: NotifyResponse) => {
             const match = await matchNotification(event);
             const post = (event.eventData as NewPostData)?.post;
             if (notify_enabled && match && post)
-                browser.notifications.create(`ChromeshackNotification${post?.id?.toString()}`, {
+                chrome.notifications.create(`ChromeshackNotification${post?.id?.toString()}`, {
                     type: "basic",
                     title: "New post by " + post.author,
                     message: match,
                     iconUrl: "images/icon.png",
-                });
+                }, (id) => setTimeout(() => {
+                    chrome.notifications.clear(id);
+                }, 3000));
         }
 };
 
-const pollNotifications = async () => {
-    const greenLightTimer = 15000; // tick
-    const redLightTimer = 29000; // tock
+export const alarmNotifications = async () => {
     try {
-        // TODO: have the consuming scripts set a consumer suboption
         const enabled = (await getEnabled("enable_notifications")) || (await getEnabled("highlight_pending_new_posts"));
-        if (!enabled) {
-            // recheck every tick for enablement
-            return setTimeout(pollNotifications, greenLightTimer);
-        }
+        if (!enabled) return;
         
         let nEventId = await getEventId();
+        let resp: NotifyResponse = null;
         if (!nEventId) {
             // avoid getting hung in a tock loop if saved id is unusable
             await setInitialNotificationsEventId();
             nEventId = await getEventId();
+        } else {
+            resp = await fetchSafe({url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`});
         }
-        const resp: NotifyResponse =
-            nEventId &&
-            (await fetchSafe({
-                url: `https://winchatty.com/v2/pollForEvent?includeParentAuthor=true&lastEventId=${nEventId}`,
-            }));
+
+        console.log("alarmNotifications tick:", nEventId, resp);
         if (resp?.lastEventId && !resp.error) {
             await setEventId(resp.lastEventId);
             await handleNotification(resp);
-            // recheck every tick
-            setTimeout(pollNotifications, greenLightTimer);
         } else if (resp?.code === "ERR_TOO_MANY_EVENTS") {
             await setInitialNotificationsEventId();
-            // busy signal - recheck on next tick
-            setTimeout(pollNotifications, greenLightTimer);
         }
-        // fail - recheck on next tock
-        else setTimeout(pollNotifications, redLightTimer);
     } catch (e) {
         console.log(e);
-        // retry every tock
-        setTimeout(pollNotifications, redLightTimer);
     }
-};
-
-export const startNotifications = async () => {
-    browser.notifications.onClicked.addListener(notificationClicked);
-    await setInitialNotificationsEventId();
-    await pollNotifications();
 };

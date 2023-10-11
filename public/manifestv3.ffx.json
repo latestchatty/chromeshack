@@ -38,7 +38,8 @@
       "tabs",
       "storage",
       "scripting",
-      "notifications"
+      "notifications",
+      "alarms"
     ],
     "host_permissions": [
       "https://api.imgur.com/3/*",

@@ -9,7 +9,6 @@
   "include": [
     "vite.popup.config.ts",
     "vite.content.config.ts",
-    "vite.serviceWorker.config.ts",
-    "vite.offscreen.config.ts"
+    "vite.serviceWorker.config.ts"
   ]
 }

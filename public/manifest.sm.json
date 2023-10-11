@@ -31,7 +31,7 @@
       "storage",
       "scripting",
       "notifications",
-      "offscreen"
+      "alarms"
     ],
     "host_permissions": [
       "https://api.imgur.com/3/*",

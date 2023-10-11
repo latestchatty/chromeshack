@@ -102,3 +102,14 @@ export const timeOverThresh = (timestamp: number, threshold: number) => {
     if (diffTime > threshold) return now;
     else return false;
 };
+
+export const getCurrentTabId = async () => {
+    let queryOptions = { active: true, lastFocusedWindow: true };
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab.id;
+}
+
+export const isFirefox = () => {
+    // @ts-ignore
+    return typeof InstallTrigger !== "undefined";
+}
