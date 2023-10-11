@@ -11,7 +11,6 @@ licenseChecker.init({ start: './', json: true }, function (err, packages) {
   let licenses = '';
   for (const packageName in packages) {
     const packageInfo = packages[packageName];
-    console.log("processing: ", packageInfo);
 
     if (packageInfo && packageInfo.licenseFile) {
       licenses += `Package: ${packageName}\n`;
