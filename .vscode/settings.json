@@ -1,5 +1,6 @@
 {
     "editor.tabSize": 4,
+    "prettier.tabWidth": 4,
     "files.eol": "\n",
-    "files.insertFinalNewline": true
+    "files.insertFinalNewline": true,
 }
