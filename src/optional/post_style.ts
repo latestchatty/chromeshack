@@ -1,4 +1,3 @@
-import { domMutate } from "../core/common/dom";
 import { enabledContains } from "../core/settings";
 
 export const PostStyling = {
@@ -13,8 +12,6 @@ export const PostStyling = {
         if (!(await enabledContains(["shrink_user_icons"]))) alterations.push("do_not_shrink_user_icons");
         if (!(await enabledContains(["reduced_color_user_icons"]))) alterations.push("do_not_reduce_color_user_icons");
 
-        return await domMutate(() => {
-            document.body.className = `${document.body.className} ${alterations.join(" ")}`;
-        });
+        document.body.className = `${document.body.className} ${alterations.join(" ")}`;
     },
 };

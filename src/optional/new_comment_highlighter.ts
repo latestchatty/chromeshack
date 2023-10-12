@@ -1,4 +1,3 @@
-import { domMeasure, domMutate } from "../core/common/dom";
 import { timeOverThresh } from "../core/common/common";
 import { processPostRefreshEvent } from "../core/events";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
@@ -21,7 +20,7 @@ export const NewCommentHighlighter = {
             const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
             const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
             let new_last_id;
-            if (!overTimeout) new_last_id = await NewCommentHighlighter.findLastID(root);
+            if (!overTimeout) new_last_id = NewCommentHighlighter.findLastID(root);
             if (last_id > -1 && new_last_id >= last_id) await NewCommentHighlighter.highlightPostsAfter(last_id, root);
             await NewCommentHighlighter.updateLastId(new_last_id);
         }
@@ -46,37 +45,32 @@ export const NewCommentHighlighter = {
         // grab all the posts with post ids after the last post id we've seen
         const newer = [] as Element[];
         const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
-        const process = async (li: HTMLElement, i: number, arr: any[]) =>
-            await domMeasure(async () => {
-                const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
-                const preview = li.querySelector(".oneline_body");
-                const is_highlighted = preview?.classList?.contains("newcommenthighlighter");
-                await domMutate(() => {
-                    if (is_newer && !is_highlighted) {
-                        preview.classList.add("newcommenthighlighter");
-                        newer.push(li);
-                    }
-                    if (i === arr.length - 1) {
-                        // update our "Comments ..." blurb at the top of the thread list
-                        let commentDisplay = document.getElementById("chatty_settings");
-                        if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
-                        const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-                        const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
-                        if (newComments) commentDisplay.textContent = newComments;
-                    }
-                });
-            });
+        const process = async (li: HTMLElement, i: number, arr: any[]) => {
+            const is_newer = parseInt(li?.id?.substr(5)) >= last_id;
+            const preview = li.querySelector(".oneline_body");
+            const is_highlighted = preview?.classList?.contains("newcommenthighlighter");
+            if (is_newer && !is_highlighted) {
+                preview.classList.add("newcommenthighlighter");
+                newer.push(li);
+            }
+            if (i === arr.length - 1) {
+                // update our "Comments ..." blurb at the top of the thread list
+                let commentDisplay = document.getElementById("chatty_settings");
+                if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+                const commentsCount = commentDisplay?.textContent?.split(" ")[0];
+                const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
+                if (newComments) commentDisplay.textContent = newComments;
+            }
+        };
         await Promise.all(oneliners.map(process));
     },
 
-    async findLastID(root: HTMLElement) {
-        return await domMeasure(() => {
-            // 'oneline0' is applied to highlight the most recent post in each thread
-            // we only want the first one, since the top post will contain the most recent
-            // reply.
-            const mostRecent = (root || document).querySelector("div.oneline0") as HTMLElement;
-            const recentid = parseInt(mostRecent?.parentElement?.id?.substr(5));
-            return recentid > -1 ? recentid : null;
-        });
+    findLastID(root: HTMLElement) {
+        // 'oneline0' is applied to highlight the most recent post in each thread
+        // we only want the first one, since the top post will contain the most recent
+        // reply.
+        const mostRecent = (root || document).querySelector("div.oneline0") as HTMLElement;
+        const recentid = parseInt(mostRecent?.parentElement?.id?.substr(5));
+        return recentid > -1 ? recentid : null;
     },
 };

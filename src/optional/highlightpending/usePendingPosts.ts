@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { domMutate, scrollToElement } from "../../core/common/dom";
+import { scrollToElement } from "../../core/common/dom";
 import { arrHas } from "../../core/common/common";
 import {
     hpnpJumpToPostEvent,
@@ -100,7 +100,7 @@ const usePendingPosts = (threaded: boolean) => {
         for (const p of pendings || []) {
             const refreshBtn = p.thread?.querySelector("div.refresh a") as HTMLElement;
             if (!isCollapsed(refreshBtn) && !isPending(refreshBtn))
-                domMutate(() => refreshBtn?.classList?.add("refresh_pending"));
+                refreshBtn?.classList?.add("refresh_pending")
         }
     }, [threaded, count, pendings]);
     useEffect(() => {

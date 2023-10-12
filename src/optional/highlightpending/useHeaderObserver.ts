@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
-import { domMeasure } from "../../core/common/dom";
 import { useIntersectObserver } from "../../core/useResolvedLinks/useIntersectObserver";
 
 const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
@@ -11,10 +10,10 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
     // use a debounced scroll handler to detect when the header minimizes by scrolling in wide-mode
     const headerScrolled = useCallback(() => {
         const _threshold = headerEl?.clientHeight;
-        if (window.pageYOffset > _threshold) setHasScrolled(true);
+        if (window.scrollY > _threshold) setHasScrolled(true);
         else setHasScrolled(false);
     }, [headerEl]);
-    const debounceScroll = useRef(debounce((e: Event) => domMeasure(() => headerScrolled()), 100)).current;
+    const debounceScroll = useRef(debounce((e: Event) => headerScrolled(), 100)).current;
     useEffect(() => {
         if (!targetEl || !headerEl) return;
         setObservedElem(headerEl as HTMLElement);

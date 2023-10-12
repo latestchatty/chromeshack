@@ -1,4 +1,3 @@
-import { domMutate } from "../core/common/dom";
 import { processPostEvent } from "../core/events";
 import { enabledContains } from "../core/settings";
 import { HighlightUsers } from "./highlight_users";
@@ -67,7 +66,8 @@ export const Switchers = {
                 });
             }
             for (const { posts, username, matched } of offenderMutations)
-                for (const post of posts) await domMutate(() => Switchers.rewritePost(post, username, matched));
+                for (const post of posts)
+                    Switchers.rewritePost(post, username, matched)
         }
     },
 
@@ -80,6 +80,7 @@ export const Switchers = {
         else if (alt_span) alt_span.firstChild.textContent = newName;
         // Switchers don't deserve flair icons
         for (const icon of user_icons || [])
-            if (!icon.classList?.contains("hidden")) domMutate(() => icon.classList?.add("hidden"));
+            if (!icon.classList?.contains("hidden"))
+                icon.classList?.add("hidden");
     },
 };

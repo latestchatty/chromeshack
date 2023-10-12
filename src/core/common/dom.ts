@@ -1,14 +1,8 @@
-import fastdom from "fastdom";
-import fastdomPromised from "fastdom/extensions/fastdom-promised";
 import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
 import { arrHas } from "./common";
 
 const $ = jQuery;
-
-const fastdomAsync = fastdom.extend(fastdomPromised);
-export const domMeasure = async (cb: any, ctx?: any) => fastdomAsync.measure(cb, ctx);
-export const domMutate = async (cb: any, ctx?: any) => fastdomAsync.mutate(cb, ctx);
 
 export const stripHtml = (html: string) => {
     // respect carriage returns
@@ -131,7 +125,7 @@ export function scrollToElement(
     const _offset = offset === undefined ? headerHeight : offset;
     // position visibly by default - use offset if 'toFit'
     const visibleY = toFit ? _offset : -($(window).height() / 4);
-    const scrollY = (elem as HTMLElement).getBoundingClientRect().top + window.pageYOffset + visibleY;
+    const scrollY = (elem as HTMLElement).getBoundingClientRect().top + window.scrollY + visibleY;
     window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
 }
 
