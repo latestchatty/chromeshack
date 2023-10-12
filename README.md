@@ -12,13 +12,11 @@ Links:
 
 NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (8.x+ recommended). Use `pnpm i` for installing dependencies.
 
--   (`pnpm dev`) includes full source mapping and a Chrome/WebKit manifest in the `dist/` folder.
+-   (`pnpm dev`) includes full source mapping and a Chrome/WebKit manifest in the `dist-chrome/` folder.
 
--   (`pnpm dev:firefox`) includes full source mapping and a Firefox manifest in the `dist/` folder.
+-   (`pnpm dev:firefox`) includes full source mapping and a Firefox manifest in the `dist-firefox/` folder.
 
--   Production code for Chromium/WebKit is generated in the `dist/` folder by running `pnpm build`.
-
--   Production code for Firefox is generated in the `dist/` folder by running `pnpm build:firefox`.
+-   (`pnpm build:pkg`) builds production code for Chromium/WebKit/Firefox and places zipped archives in `artifacts/` for upload to AMO and CWS.
 
 #### Dependencies used in this project
 
@@ -33,5 +31,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated
 -   [text-field-edit](https://github.com/fregante/text-field-edit)
 -   [lz-string](https://github.com/pieroxy/lz-string)
 -   [html-react-parser](https://github.com/remarkablemark/html-react-parser)
--   [fastdom](https://github.com/wilsonpage/fastdom)
 -   [js-xss](https://github.com/leizongmin/js-xss)
