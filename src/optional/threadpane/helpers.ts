@@ -131,7 +131,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
         const _spoiler = element?.matches && element.matches("span.jt_spoiler");
         if (_linkSpan || _linkHref) {
             // convert links to unclickable styled representations
-            const linkText = _linkSpan || _linkHref;
+            const linkText = _linkSpan || element.textContent || _linkHref;
             const replacement = document.createElement("span");
             replacement.setAttribute("class", "cs_thread_pane_link");
             replacement.textContent = linkText;
