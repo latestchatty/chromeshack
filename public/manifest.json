@@ -3,64 +3,59 @@
     "name": "Chrome Shack",
     "version": "1.74",
     "description": "Collection of scripts for Shacknews.",
+    "icons": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "96": "images/icon96.png",
+        "128": "images/icon-chrome-web-store.png",
+        "144": "images/icon144.png"
+    },
     "action": {
-      "default_icon": "images/shack.png",
-      "default_title": "Chrome Shack",
-      "default_popup": "src/popup.html"
+        "default_icon": "images/icon16.png",
+        "default_title": "Chrome Shack",
+        "default_popup": "src/popup.html"
     },
     "background": {
-      "service_worker": "background.global.js",
-      "type": "module"
+        "service_worker": "background.global.js",
+        "type": "module"
     },
     "content_scripts": [
-      {
-        "js": ["content.global.js"],
-        "css": [ "style.css" ],
-        "all_frames": false,
-        "run_at": "document_end",
-        "matches": [
-          "https://www.shacknews.com/chatty",
-          "https://www.shacknews.com/chatty?id=*",
-          "https://www.shacknews.com/tags-*"
-        ]
-      }
+        {
+            "js": ["content.global.js"],
+            "css": ["style.css"],
+            "all_frames": false,
+            "run_at": "document_end",
+            "matches": ["https://www.shacknews.com/chatty*", "https://www.shacknews.com/tags-*"]
+        }
     ],
-    "permissions": [
-      "activeTab",
-      "tabs",
-      "storage",
-      "scripting",
-      "notifications",
-      "alarms"
-    ],
+    "permissions": ["tabs", "storage", "scripting", "notifications", "alarms"],
     "host_permissions": [
-      "https://api.imgur.com/3/*",
-      "https://api.gfycat.com/v1/gfycats/*",
-      "https://filedrop.gfycat.com/*",
-      "https://chattypics.com/*",
-      "https://winchatty.com/v2/*",
-      "https://*.youtube.com/embed/*",
-      "https://api.streamable.com/videos/*",
-      "https://www.shacknews.com/chatty",
-      "https://www.shacknews.com/chatty?id=*"
+        "https://api.imgur.com/3/*",
+        "https://api.gfycat.com/v1/gfycats/*",
+        "https://filedrop.gfycat.com/*",
+        "https://chattypics.com/*",
+        "https://winchatty.com/v2/*",
+        "https://*.youtube.com/embed/*",
+        "https://api.streamable.com/videos/*",
+        "https://www.shacknews.com/chatty*"
     ],
     "web_accessible_resources": [
         {
-          "matches": ["*://*/*"],
-          "resources": [
-            "images/offtopic.png",
-            "images/political.png",
-            "images/stupid.png",
-            "images/interesting.png",
-            "images/shack.png",
-            "images/dinogegtik.png",
-            "images/sparkly1.jpg",
-            "images/sparkly2.jpg",
-            "images/sparkly3.jpg",
-            "images/sparkly4.jpg",
-            "images/sparkly5.jpg",
-            "images/sparkly6.jpg"
-          ]
+            "matches": ["*://*/*"],
+            "resources": [
+                "images/offtopic.png",
+                "images/political.png",
+                "images/stupid.png",
+                "images/interesting.png",
+                "images/shack.png",
+                "images/dinogegtik.png",
+                "images/sparkly1.jpg",
+                "images/sparkly2.jpg",
+                "images/sparkly3.jpg",
+                "images/sparkly4.jpg",
+                "images/sparkly5.jpg",
+                "images/sparkly6.jpg"
+            ]
         }
     ]
 }
