@@ -31,7 +31,7 @@ const ImportExport = () => {
             (async () => {
                 const exported = await exportSettings();
                 setFieldBox(exported);
-                if (textRef.current && copyToClipboard(textRef.current, exported))
+                if (textRef.current && (await copyToClipboard(textRef.current, exported)))
                     alert("Exported settings to clipboard");
             })();
         } catch (e) {

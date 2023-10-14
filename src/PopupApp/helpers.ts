@@ -42,12 +42,17 @@ export const objConditionalFilter = (disallowed: string[], obj: Record<string, a
         }, {});
 };
 
-export const copyToClipboard = (textArea: HTMLTextAreaElement, exportable: string) => {
+export const copyToClipboard = async (textArea: HTMLTextAreaElement, exportable: string) => {
     const _textArea = textArea?.nodeName === "TEXTAREA" ? (textArea as HTMLTextAreaElement) : null;
     if (_textArea && exportable?.length > 0) {
-        _textArea.select();
-        document.execCommand("copy");
-        return true;
+        return await navigator.clipboard.writeText(exportable).then(
+            () => {
+                return true;
+            },
+            () => {
+                return false;
+            }
+        );
     } else return false;
 };
 
