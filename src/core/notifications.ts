@@ -77,14 +77,12 @@ const handleNotification = async (response: NotifyResponse) => {
             const match = await matchNotification(event);
             const post = (event.eventData as NewPostData)?.post;
             if (notify_enabled && match && post)
-                chrome.notifications.create(`ChromeshackNotification${post?.id?.toString()}`, {
-                    type: "basic",
-                    title: "New post by " + post.author,
-                    message: match,
-                    iconUrl: "images/icon.png",
-                }, (id) => setTimeout(() => {
-                    chrome.notifications.clear(id);
-                }, 3000));
+            chrome.notifications.create(`ChromeshackNotification${post?.id?.toString()}`, {
+                type: "basic",
+                title: "New post by " + post.author,
+                message: match,
+                iconUrl: "images/icon.png",
+            });
         }
 };
 
