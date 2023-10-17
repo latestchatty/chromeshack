@@ -1,8 +1,8 @@
-import { fetchBackground } from "../common/fetch";
+import { fetchBackground, fetchSafe } from "../common/fetch";
 
 const resolveStreamable = async (shortcode: string) => {
     const __obf = "Basic aG9tdWhpY2xpckB3ZW1lbC50b3A=:JiMtMlQoOH1HSDxgJlhySg==";
-    const json = await fetchBackground({
+    const json = await fetchSafe({
         url: `https://api.streamable.com/videos/${shortcode}`,
         fetchOpts: { headers: { Authorization: __obf } },
         parseType: { json: { ALLOWED_TAGS: ["iframe"] } },
