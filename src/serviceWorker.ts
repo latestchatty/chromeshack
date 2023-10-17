@@ -1,43 +1,48 @@
 import { fetchSafe } from "./core/common/fetch";
 import { JSONToFormData } from "./core/common/dom";
 import { isFirefox, getCurrentTabId } from "./core/common/common";
-import {
-    setInitialNotificationsEventId,
-    notificationClicked,
-    alarmNotifications
-} from "./core/notifications";
+import { setInitialNotificationsEventId, notificationClicked, alarmNotifications } from "./core/notifications";
 import { migrateSettings } from "./core/settings";
 
+// use non-async response here due to: https://bugs.chromium.org/p/chromium/issues/detail?id=1185241
 chrome.runtime.onMessage.addListener(
-    async (request: OnMessageRequest): Promise<any> => {
+    (request: OnMessageRequest, sender: chrome.runtime.MessageSender, sendResponse: any) => {
         try {
-            if (request.name === "scrollByKeyFix" && isFirefox())
+            if (request.name === "scrollByKeyFix" && isFirefox()) {
                 // scroll-by-key fix for Chatty
-                return await chrome.scripting.executeScript({
-                    target: { tabId: await getCurrentTabId() },
-                    files: ["patches/nuScrollByKeyFix.js"],
+                getCurrentTabId().then((tabId) => {
+                    chrome.scripting
+                        .executeScript({
+                            target: { tabId },
+                            files: ["patches/nuScrollByKeyFix.js"],
+                        })
+                        .then((r) => {
+                            sendResponse(r);
+                        });
                 });
-            else if (request.name === "corbFetch") {
+            } else if (request.name === "corbFetch") {
                 const fetchArgs: FetchArgs = {
                     url: request.url as string,
                     fetchOpts: request.fetchOpts,
                     parseType: request.parseType,
                 };
-                return fetchSafe(fetchArgs);
+                fetchSafe(fetchArgs).then((response) => {
+                    sendResponse(response);
+                });
             } else if (request.name === "corbPost") {
                 const _fd = request.data ? JSONToFormData(request.data) : null;
                 const fetchArgs: FetchArgs = {
                     url: request.url as string,
                     fetchOpts: {
                         ...request.fetchOpts,
-                        method: request.fetchOpts?.method
-                            ? request.fetchOpts.method
-                            : "POST",
+                        method: request.fetchOpts?.method ? request.fetchOpts.method : "POST",
                         body: _fd,
                     },
                     parseType: request.parseType,
                 };
-                return fetchSafe(fetchArgs);
+                fetchSafe(fetchArgs).then((response) => {
+                    sendResponse(response);
+                });
             }
             return true;
         } catch (e) {
@@ -60,6 +65,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await setInitialNotificationsEventId();
     chrome.alarms.create("notification-alarm", {
         delayInMinutes: 1,
-        periodInMinutes: 1
+        periodInMinutes: 1,
     });
 })();
