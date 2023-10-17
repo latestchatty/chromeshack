@@ -11,13 +11,7 @@ import { migrateSettings } from "./core/settings";
 chrome.runtime.onMessage.addListener(
     async (request: OnMessageRequest): Promise<any> => {
         try {
-            if (request.name === "chatViewFix" && isFirefox())
-                // scroll-to-post fix for Chatty
-                return await chrome.scripting.executeScript({
-                    target: { tabId: await getCurrentTabId() },
-                    files: ["patches/nuChatViewFix.js"],
-                });
-            else if (request.name === "scrollByKeyFix" && isFirefox())
+            if (request.name === "scrollByKeyFix" && isFirefox())
                 // scroll-by-key fix for Chatty
                 return await chrome.scripting.executeScript({
                     target: { tabId: await getCurrentTabId() },

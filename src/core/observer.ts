@@ -1,5 +1,11 @@
 import { elemMatches, locatePostRefs } from "./common/dom";
-import { handleRootAdded, processFullPosts, processPost, processPostBox } from "./observer_handlers";
+import {
+    handleRootAdded,
+    processFullPosts,
+    processPost,
+    processPostBox,
+    processUncapThread,
+} from "./observer_handlers";
 
 export const ChromeShack = {
     refreshing: [] as RefreshMutation[],
@@ -24,6 +30,13 @@ export const ChromeShack = {
                         const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
                         // track our reply mutation based on the root thread id (like a refresh)
                         if (foundIdx === -1) ChromeShack.refreshing.unshift({ parentid, rootid });
+                    }
+
+                    // check for opening capped root posts
+                    if (mutation.type === "attributes" && mutation.oldValue?.indexOf("capped") > -1) {
+                        const root = mutation.target as HTMLElement;
+                        const rootid = root != undefined ? parseInt(root.id?.substr(5)) : -1;
+                        processUncapThread({ root, rootid });
                     }
 
                     for (const addedNode of mutation.addedNodes || []) {
@@ -56,6 +69,8 @@ export const ChromeShack = {
             characterData: true,
             subtree: true,
             childList: true,
+            attributeFilter: ["class"],
+            attributeOldValue: true,
         });
         processFullPosts();
     },

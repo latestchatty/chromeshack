@@ -26,6 +26,10 @@ declare global {
     export interface JumpToPostEventArgs {
         threadid: number;
     }
+    export interface UncapThreadEventArgs {
+        root: HTMLElement;
+        rootid: number;
+    }
 
     export interface RefreshMutation {
         postid?: number;

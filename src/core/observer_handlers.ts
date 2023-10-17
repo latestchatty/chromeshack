@@ -11,10 +11,12 @@ import {
     processRefreshIntentEvent,
     processReplyEvent,
     processTagDataLoadedEvent,
+    processUncapThreadEvent,
 } from "./events";
 import { setUsername, TabMessenger } from "./notifications";
 import { ChromeShack } from "./observer";
 import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
+import { scrollToUncappedPostFix } from "../patches/scrollToPostFix";
 
 const checkReplyCeiling = (rootEl: HTMLElement) => {
     // Both FF & Chrome get bogged down by nuLOL tags loading into extremely large threads
@@ -155,11 +157,11 @@ export const contentScriptLoaded = async () => {
     TabMessenger.connect();
     // try to fix incorrect positioning in single-thread mode
     singleThreadFix();
+    // try to fix the busted 'clickItem()' method on Chatty when uncapping root posts
+    scrollToUncappedPostFix();
     // set our current logged-in username once upon refreshing the Chatty
     const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
     if (loggedInUsername) await setUsername(loggedInUsername);
-    // monkey patch the 'clickItem()' method on Chatty once we're done loading
-    chrome.runtime.sendMessage({ name: "chatViewFix" }).catch(console.error);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
     chrome.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.error);
     // disable article Twitch player if we're running Cypress tests for a speed boost
@@ -184,4 +186,7 @@ export const processFullPosts = () => {
 };
 export const processPostBox = (postbox: HTMLElement) => {
     if (postbox) processPostBoxEvent.raise({ postbox });
+};
+export const processUncapThread = (args: UncapThreadEventArgs) => {
+    processUncapThreadEvent.raise(args);
 };

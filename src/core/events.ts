@@ -27,6 +27,7 @@ export const processPostRefreshEvent = new LiteEvent<PostEventArgs>();
 export const processEmptyTagsLoadedEvent = new LiteEvent<PostEventArgs>();
 export const processTagDataLoadedEvent = new LiteEvent<PostEventArgs>();
 export const processNotifyEvent = new LiteEvent<NotifyResponse>();
+export const processUncapThreadEvent = new LiteEvent<UncapThreadEventArgs>();
 // react app events
 export const collapsedPostEvent = new LiteEvent<CollapsedPostEventArgs>();
 export const pendingPostsUpdateEvent = new LiteEvent<PendingPostEventArgs>();

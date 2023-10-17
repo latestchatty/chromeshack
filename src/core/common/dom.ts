@@ -266,9 +266,7 @@ export const locatePostRefs = (postElem: HTMLElement) => {
     if (!postElem) return null;
     const _parent = postElem.parentNode as HTMLElement;
     const post = elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
-    const root = postElem.classList?.contains("op")
-        ? (postElem.parentNode.parentNode.parentNode as HTMLElement)
-        : (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
+    const root = (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
     const postid = parseInt(post?.id?.substr(5));
     const rootid = parseInt(root?.id?.substr(5));
     const is_root = rootid && postid && rootid === postid;
