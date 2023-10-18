@@ -9,12 +9,13 @@ import { isDropbox } from "./dropbox";
 import { isGfycat } from "./gfycat";
 import { isGiphy } from "./giphy";
 import { isImgflip } from "./imgflip";
+import { isTwimg } from "./twimg";
+import { isGstatic } from "./gstatic";
 /// resolvable media embeds
 import { isImgur } from "./imgur";
 /// resolvable iframe embeds
 import { isStreamable } from "./streamable";
 import { isTenor } from "./tenor";
-import { isTwimg } from "./twimg";
 import { isTwitch } from "./twitch";
 import { isXboxDVR } from "./xboxdvr";
 import { isYoutube } from "./youtube";
@@ -36,8 +37,9 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
         const twimg = isTwimg(href);
         const giphy = isGiphy(href);
         const imgflip = isImgflip(href);
+        const gstatic = isGstatic(href);
         const directmedia = isDirectMedia(href);
-        const normalMedia = chattypics || dropbox || twimg || giphy || imgflip || directmedia;
+        const normalMedia = chattypics || dropbox || twimg || giphy || imgflip || gstatic || directmedia;
         if (objHas(normalMedia)) return normalMedia;
 
         const imgur = isImgur(href);
