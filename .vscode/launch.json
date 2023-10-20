@@ -9,8 +9,6 @@
             "request": "attach",
             "name": "Attach to Chrome",
             "port": 9222,
-            "webRoot": "${workspaceFolder}/dist",
-            "url": "https://www.shacknews.com/chatty"
          }
     ]
 }
