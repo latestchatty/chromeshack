@@ -58,20 +58,12 @@ export const ChattyNews = {
 
         const tp_enabled = await enabledContains(["thread_pane"]);
         // move all non-media elements into an alignment container for better responsiveness
-        const articleBox = document.querySelector(".article-content") as HTMLElement;
-        const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
         const alignmentBox = document.createElement("div");
         const subAlignmentBox = document.createElement("div");
         // double check this is the full chatty page
         const is_chatty = document.getElementById("newcommentbutton");
         alignmentBox.setAttribute("id", "chattynews__aligner");
         subAlignmentBox.setAttribute("id", "links__aligner");
-        // leave our other text centered at the bottom of the article box
-        for (const [i, p] of articleChildren.entries() || [])
-            if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
-            else alignmentBox.appendChild(p);
-
-        alignmentBox?.appendChild(subAlignmentBox);
 
         const newsBoxFragment = parseToElement(/*html*/ `
             <div class="chatty-news">
@@ -80,9 +72,20 @@ export const ChattyNews = {
                 <div><ul id="recent-articles"></ul></div>
             </div>
         `);
+
         // populate the newly created newsBox from the Chatty RSS server's articles
         const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
+
+        // leave our other text centered at the bottom of the article box
+        const articleChildren = [...document.querySelectorAll(".article-content p:not(:nth-child(2))")];
+        for (const [i, p] of articleChildren.entries() || []) {
+            if (i !== articleChildren.length - 1) subAlignmentBox.appendChild(p);
+            else alignmentBox.appendChild(p);
+        }
+        alignmentBox?.appendChild(subAlignmentBox);
+        
         alignmentBox?.append(newsBox);
+        const articleBox = document.querySelector(".article-content") as HTMLElement;
         articleBox?.append(alignmentBox);
         // mark the article box so we know to align for ThreadPane width
         if (tp_enabled && is_chatty) articleBox?.classList?.add("thread__pane__enabled");
