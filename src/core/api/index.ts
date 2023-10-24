@@ -1,8 +1,6 @@
 import { objHas } from "../common/common";
 import { enabledContains } from "./../settings";
-/// normal image/video embeds
-import { isChattypics } from "./chattypics";
-/// special embeds
+/// normal embeds
 import { isChattyLink } from "./chattypost";
 import { isDirectMedia } from "./directmedia";
 import { isDropbox } from "./dropbox";
@@ -32,14 +30,13 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
 
     // test if href matches any of our parsers
     if (mediaEnabled) {
-        const chattypics = isChattypics(href);
         const dropbox = isDropbox(href);
         const twimg = isTwimg(href);
         const giphy = isGiphy(href);
         const imgflip = isImgflip(href);
         const gstatic = isGstatic(href);
         const directmedia = isDirectMedia(href);
-        const normalMedia = chattypics || dropbox || twimg || giphy || imgflip || gstatic || directmedia;
+        const normalMedia = dropbox || twimg || giphy || imgflip || gstatic || directmedia;
         if (objHas(normalMedia)) return normalMedia;
 
         const imgur = isImgur(href);
