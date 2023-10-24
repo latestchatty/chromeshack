@@ -23,8 +23,6 @@ const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
     /// tabs are defined by id and label
     const tabs = [
         { id: "imgurTab", label: "Imgur" },
-        { id: "gfycatTab", label: "Gfycat" },
-        { id: "chattypicsTab", label: "Chattypics" },
     ];
 
     return (

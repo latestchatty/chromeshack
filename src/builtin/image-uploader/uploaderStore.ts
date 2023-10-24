@@ -37,18 +37,7 @@ const tabReducer = (state: UploaderState, action: UploaderAction) => {
         fileAction?.payload?.length > 0 ? packValidTypes(state.formats, fileAction.payload) : undefined;
 
     if (action.type === "LOAD_TAB") {
-        if (nextTabName === "CHATTYPICSTAB")
-            return {
-                ...state,
-                uploadDisabled: !stateHasFiles,
-                cancelDisabled: !stateHasFiles,
-                selectedTab: nextTabName,
-                filesDisabled: stateHasFiles || false,
-                urlDisabled: true,
-                multifile: true,
-                formats: `${imageFormats}`,
-            };
-        else if (nextTabName === "GFYCATTAB" || nextTabName === "IMGURTAB") {
+        if (nextTabName === "IMGURTAB") {
             const newState = {
                 ...state,
                 uploadDisabled: !(stateHasUrl || stateHasFiles),

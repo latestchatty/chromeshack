@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { handleChattypicsUpload } from "../../core/api/chattypics";
-import { handleGfycatUpload } from "../../core/api/gfycat";
 import { handleImgurUpload } from "../../core/api/imgur";
 import { arrHas } from "../../core/common/common";
 import { appendLinksToField } from "../../core/common/dom";
@@ -45,8 +43,6 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
                 const _tabName = selectedTab as TAB_NAMES;
                 const data = arrHas(fileData) ? fileData : !urlDisabled && urlData ? [urlData] : null;
                 if (_tabName === "IMGURTAB") await handleImgurUpload(data, dispatch);
-                else if (_tabName === "GFYCATTAB") await handleGfycatUpload(data, dispatch);
-                else if (_tabName === "CHATTYPICSTAB") await handleChattypicsUpload(data as File[], dispatch);
             }
         })();
     };

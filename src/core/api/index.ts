@@ -4,7 +4,6 @@ import { enabledContains } from "./../settings";
 import { isChattyLink } from "./chattypost";
 import { isDirectMedia } from "./directmedia";
 import { isDropbox } from "./dropbox";
-import { isGfycat } from "./gfycat";
 import { isGiphy } from "./giphy";
 import { isImgflip } from "./imgflip";
 import { isTwimg } from "./twimg";
@@ -40,9 +39,8 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
         if (objHas(normalMedia)) return normalMedia;
 
         const imgur = isImgur(href);
-        const gfycat = isGfycat(href);
         const tenor = isTenor(href);
-        const resolvableMedia = imgur || gfycat || tenor;
+        const resolvableMedia = imgur || tenor;
         if (objHas(resolvableMedia)) return resolvableMedia;
 
         const streamable = isStreamable(href);
