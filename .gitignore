@@ -17,3 +17,8 @@ mochawesome-report
 debug.log
 .DS_Store
 .envrc
+.env
+/test-results/
+/playwright-report/
+/playwright/.cache/
+_shack_li_.json

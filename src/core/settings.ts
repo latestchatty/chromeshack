@@ -391,9 +391,13 @@ const mergeTransients = async (transientData: Settings, transientOpts?: Transien
 };
 export const mergeTransientSettings = async () => {
     // process any testing related settings passed in by cypress
-    const localTransientOpts = localStorage["transient-opts"];
-    const localTransientData = localStorage["transient-data"];
     try {
+        const localTransientOpts = window.localStorage.getItem("transient-opts");
+        const localTransientData = window.localStorage.getItem("transient-data");
+        
+        if (localTransientOpts || localTransientData)
+            console.log("mergeTransientSettings:", localTransientOpts, localTransientData);
+
         const transientOpts = localTransientOpts && JSON.parse(localTransientOpts);
         const transientData = localTransientData && JSON.parse(localTransientData);
         if (transientData) {
