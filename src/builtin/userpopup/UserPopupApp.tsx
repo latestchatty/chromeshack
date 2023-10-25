@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { unmountComponentAtNode } from "react-dom";
 import { elemMatches } from "../../core/common/dom";
 import { HighlightFilters } from "./HighlightFilters";
 import { LOLList } from "./LOLList";
 import { UserFilter } from "./UserFilter";
+import { type Root } from "react-dom/client";
+import { userPopupEvent } from "../../core/events";
 
-const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean }) => {
-    const { username, isLoggedInUser, isUserBadge } = props || {};
+const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean; parentRoot: Root }) => {
+    const { username, isLoggedInUser, isUserBadge, parentRoot } = props || {};
     const rootRef = useRef(null);
 
     useEffect(() => {
@@ -14,10 +15,9 @@ const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUser
             const _this = e.target as HTMLElement;
             const root = rootRef?.current?.parentNode as HTMLElement;
             const is_lol_elem = elemMatches(_this, ".userDropdown span");
-            // the below is a preemptive compatibility solution for React 17.x+
             if (!is_lol_elem && root) {
                 // forcefully unmount our popup when clicking outside
-                unmountComponentAtNode(root);
+                userPopupEvent.raise({ root: parentRoot });
                 root.parentNode.removeChild(root);
             }
         };

@@ -1,3 +1,4 @@
+import type { Root } from "react-dom/client";
 export {};
 
 declare global {
@@ -35,5 +36,9 @@ declare global {
         postid?: number;
         rootid?: number;
         parentid?: number;
+    }
+
+    export interface UserPopupEventArgs {
+        root: Root;
     }
 }

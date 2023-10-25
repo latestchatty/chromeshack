@@ -4,18 +4,24 @@ import { elemMatches, parseToElement } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
 import "../../styles/userpopup.css";
 import { UserPopupApp } from "./UserPopupApp";
+import { userPopupEvent } from "../../core/events";
 
 export const UserPopup = {
     cachedEl: null as HTMLElement,
 
     install() {
         document.addEventListener("click", UserPopup.clickHandler);
+        userPopupEvent.addHandler(UserPopup.userPopupEventHandler);
         UserPopup.cacheInjectables();
     },
 
     cacheInjectables() {
         const appContainer = parseToElement(`<div class="userDropdown" />`);
         UserPopup.cachedEl = appContainer as HTMLElement;
+    },
+
+    userPopupEventHandler({ root }: UserPopupEventArgs) {
+        if (root != null) root.unmount();
     },
 
     async clickHandler(e: MouseEvent) {
@@ -40,7 +46,7 @@ export const UserPopup = {
             if (!containerRef && _elem) {
                 _elem.appendChild(UserPopup.cachedEl);
                 const root = createRoot(UserPopup.cachedEl!);
-                root.render(<UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} />);
+                root.render(<UserPopupApp username={_username} isLoggedInUser={isLoggedInUser} isUserBadge={!!userLink} parentRoot={root} />);
             }
         }
     },

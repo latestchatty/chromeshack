@@ -35,3 +35,4 @@ export const userFilterUpdateEvent = new LiteEvent<ResolvedUser>();
 export const hpnpJumpToPostEvent = new LiteEvent<JumpToPostEventArgs>();
 export const replyFieldEvent = new LiteEvent<HTMLInputElement>();
 export const submitFormEvent = new LiteEvent<Event>();
+export const userPopupEvent = new LiteEvent<UserPopupEventArgs>();
