@@ -89,7 +89,8 @@ span#toggleLabel:hover {
 }
 #tab-container .active:last-child,
 #tab-container .inactive:last-child {
-    border-radius: 0 6px 0 0;
+    /*border-radius: 0 6px 0 0;*/
+    border-radius: 6px 6px 0 0;
 }
 #tab-container .active:not(:first-child):not(:last-child),
 #tab-container .inactive:not(:first-child):not(:last-child) {
