@@ -1,5 +1,5 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -8,6 +8,7 @@ import { DraftsApp } from "./DraftsApp";
 
 const Drafts = {
     cachedEl: null as HTMLElement,
+    cachedRoot: null as Root,
 
     install() {
         processPostBoxEvent.addHandler(Drafts.apply);
@@ -29,9 +30,12 @@ const Drafts = {
             const postid = parseInt(nearestLi?.id?.substr(5));
             const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
 
-            const root = createRoot(Drafts.cachedEl!);
+            if (!Drafts.cachedRoot) {
+                const root = createRoot(Drafts.cachedEl!);
+                Drafts.cachedRoot = root;
+            }
             positionElem.parentElement.insertBefore(Drafts.cachedEl, positionElem.nextElementSibling);
-            root.render(<DraftsApp postid={postid} inputBox={inputBox} />);
+            Drafts.cachedRoot.render(<DraftsApp postid={postid} inputBox={inputBox} />);
         }
     },
 };

@@ -1,10 +1,11 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import "../../styles/post_preview.css";
 import { PostPreviewApp } from "./PostPreviewApp";
+import { Templates } from "../templates";
 
 const PostPreview = {
     cachedPaneEl: null as HTMLElement,
@@ -31,7 +32,7 @@ const PostPreview = {
         if (is_enabled && !container && positionElem) {
             const clonedAppEl = PostPreview.cachedAppEl.cloneNode(false) as HTMLElement;
             const clonedPaneEl = PostPreview.cachedPaneEl.cloneNode(false) as HTMLElement;
-            
+
             const root = createRoot(clonedAppEl!);
             altPositionElem.parentNode.insertBefore(clonedPaneEl, altPositionElem);
             positionElem.append(clonedAppEl);
