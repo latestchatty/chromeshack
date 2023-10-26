@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { arrHas, compressString, decompressString, timeOverThresh } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
-import { getSetting } from "../../core/settings";
+import { getSetting, setSetting } from "../../core/settings";
 
 export const filterDraftsLRU = async (drafts: Draft[]) => {
     if (!arrHas(drafts)) return [] as Draft[];
@@ -52,7 +52,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
                     });
                 // filter out old drafts when saving
                 const filtered = _drafts ? await filterDraftsLRU(_drafts) : [];
-                await getSetting("saved_drafts", filtered);
+                await setSetting("saved_drafts", filtered);
                 const foundRecord = filtered.filter((d) => d.postid === postid);
                 setValid(arrHas(foundRecord));
             })();
@@ -117,7 +117,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
 
     const handleExternalInput = useCallback((el: HTMLInputElement) => handleInput(el), [handleInput]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         // handle the input box as a controlled input
         inputBox.value = inputVal;
         replyFieldEvent.raise(inputBox);
