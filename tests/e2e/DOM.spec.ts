@@ -45,10 +45,7 @@ test("shame switchers enabled", async ({ page }) => {
         d: { enabled_scripts: ["switchers"] },
     });
 
-    const selector = "li li.sel span.user";
-    await page.waitForSelector(selector);
-    const userSpan = page.locator(selector);
-    expect(await userSpan.textContent()).toMatch(/\w+ - \(\w+\)/);
+    await expect(page.locator("li li.sel span.user")).toHaveText(/\w+ - \(\w+\)/);
 });
 
 test("chatty-news enabled", async ({ page }) => {

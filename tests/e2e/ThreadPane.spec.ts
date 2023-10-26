@@ -29,7 +29,7 @@ test("valid cards clicked jumps to post", async ({ page }) => {
 });
 test("reply icon and collapse interactions", async ({ page, context }) => {
     const postid = "40040022";
-    await navigate(page, "https://www.shacknews.com/chatty?id=40040022#item_40040022", {
+    await navigate(page, `https://www.shacknews.com/chatty?id=${postid}#item_${postid}`, {
         d: { enabled_scripts: ["thread_pane"] },
     }, context);
     await page.waitForSelector("div#cs_thread_pane", { state: "visible" });

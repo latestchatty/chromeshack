@@ -4,8 +4,8 @@ import fs from "fs";
 import path from "path";
 
 dotenv.config();
-const _login = process.env.CYPRESSUSR;
-const _pass = process.env.CYPRESSPW;
+const _login = process.env.TESTUSR;
+const _pass = process.env.TESTPW;
 const outputPath = path.resolve("./tests/fixtures/_shack_li_.json");
 const body = `get_fields%5B%5D=result&user-identifier=${_login}&supplied-pass=${_pass}&remember-login=0`;
 

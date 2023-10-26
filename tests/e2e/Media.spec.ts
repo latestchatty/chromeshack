@@ -39,6 +39,7 @@ test.describe("Imgur", () => {
         const slides = targetEmbed.locator("div.media .embla__slide");
         // first slide should be loaded and visible
         const firstSlide = slides.nth(0).locator("img");
+        await firstSlide.scrollIntoViewIfNeeded();
         await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
         expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/PAQBtnb.jpg");
         // check that the first embed gallery buttons work correctly
@@ -64,6 +65,7 @@ test.describe("Imgur", () => {
         const slides = targetEmbed.locator("div.media .embla__slide");
         await expect(slides).toHaveCount(13);
         const firstSlide = slides.nth(0).locator("img");
+        await firstSlide.scrollIntoViewIfNeeded();
         await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
         expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/dPMm4MC.jpg");
     });
@@ -73,6 +75,7 @@ test.describe("Imgur", () => {
         await targetEmbed.click();
         // first slide should be loaded and visible
         const firstSlide = targetEmbed.locator("div.media video").nth(0);
+        await firstSlide.scrollIntoViewIfNeeded();
         await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
         expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/bLutSUl.mp4");
     });
@@ -83,6 +86,7 @@ test.describe("Imgur", () => {
         await targetEmbed.click();
         // first slide should be loaded and visible
         const firstSlide = targetEmbed.locator("div.media video").nth(0);
+        await firstSlide.scrollIntoViewIfNeeded();
         await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
         expect(await firstSlide.getAttribute("src")).toMatch("");
     });
@@ -92,6 +96,7 @@ test.describe("Imgur", () => {
         await targetEmbed.click();
         // first slide should be loaded and visible
         const videoEmbed = targetEmbed.locator("div.media video").nth(0);
+        await videoEmbed.scrollIntoViewIfNeeded();
         await expect(videoEmbed).toBeInViewport({ ratio: 0.1 });
         expect(await videoEmbed.getAttribute("src")).toMatch("https://i.imgur.com/T3Pt5kF.mp4");
     });
@@ -105,6 +110,7 @@ test.describe("Direct-link media", () => {
         await targetEmbed.click();
         // first slide should be loaded and visible
         const firstSlide = targetEmbed.locator("div.media img").nth(0);
+        await firstSlide.scrollIntoViewIfNeeded();
         await expect(firstSlide).toBeVisible();
         expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/jECE21g.jpg");
     });
@@ -115,6 +121,7 @@ test.describe("Direct-link media", () => {
         await targetEmbed.click();
         // first slide should be loaded and visible
         const videoEmbed = targetEmbed.locator("div.media video");
+        await videoEmbed.scrollIntoViewIfNeeded();
         await expect(videoEmbed).toBeInViewport({ ratio: 0.1 });
         expect(await videoEmbed.getAttribute("src")).toMatch("https://i.imgur.com/itKm9JS.mp4");
     });
@@ -126,6 +133,7 @@ test("Chatty post", async ({ page }) => {
     const targetEmbed = medialinks.nth(0);
     await targetEmbed.click();
     const chattypostContainer = targetEmbed.locator(".chattypost__container");
+    await chattypostContainer.scrollIntoViewIfNeeded();
     await expect(chattypostContainer).toBeInViewport({ ratio: 0.1 });
     // if chatty post loaded it should have body text
     const postbody = await chattypostContainer.locator("div.postbody").innerText();
@@ -139,6 +147,7 @@ test.describe("Dropbox", () => {
         const targetEmbed = medialinks.nth(0);
         await targetEmbed.click();
         const imageEmbed = targetEmbed.locator("div.media img");
+        await imageEmbed.scrollIntoViewIfNeeded();
         await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
         expect(await imageEmbed.getAttribute("src")).toMatch(
             "https://www.dropbox.com/s/r9feiqem9qiclqk/2016%20Bulked%20Up.jpg?raw=1"
@@ -150,6 +159,7 @@ test.describe("Dropbox", () => {
         const targetEmbed = medialinks.nth(1);
         await targetEmbed.click();
         const videoEmbed = targetEmbed.locator("div.media video");
+        await videoEmbed.scrollIntoViewIfNeeded();
         await expect(videoEmbed).toBeInViewport({ ratio: 0.1 });
         expect(await videoEmbed.getAttribute("src")).toMatch(
             "https://www.dropbox.com/s/8qk8lfwwtaubk44/20200512_193538.mp4?raw=1"
@@ -163,6 +173,7 @@ test("Giphy video", async ({ page }) => {
     const targetEmbed = medialinks.nth(0);
     await targetEmbed.click();
     const videoEmbed = targetEmbed.locator("div.media video");
+    await videoEmbed.scrollIntoViewIfNeeded();
     await expect(videoEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await videoEmbed.getAttribute("src")).toMatch("https://media0.giphy.com/media/YlRpYzrkHbtSYDAlaE/giphy.mp4");
 });
@@ -173,6 +184,7 @@ test("Tenor image", async ({ page }) => {
     const targetEmbed = medialinks.nth(0);
     await targetEmbed.click();
     const imageEmbed = targetEmbed.locator("div.media img");
+    await imageEmbed.scrollIntoViewIfNeeded();
     await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await imageEmbed.getAttribute("src")).toMatch(
         "https://media1.tenor.com/images/383abee6c9e5f68c6b7ca5b3102f91ca/tenor.gif?itemid=5103046"
@@ -185,6 +197,7 @@ test("Twimg image", async ({ page }) => {
     const targetEmbed = medialinks.nth(0);
     await targetEmbed.click();
     const imageEmbed = targetEmbed.locator("div.media img");
+    await imageEmbed.scrollIntoViewIfNeeded();
     await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await imageEmbed.getAttribute("src")).toMatch("https://pbs.twimg.com/media/F8mjw1aWwAA7Wfr.jpg");
 });
@@ -192,9 +205,10 @@ test("Twimg image", async ({ page }) => {
 test("Gstatic image", async ({ page }) => {
     const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=42133811#item_42133811");
 
-    const targetEmbed = medialinks.nth(0);
+    const targetEmbed = medialinks.nth(1);
     await targetEmbed.click();
     const imageEmbed = targetEmbed.locator("div.media img");
+    await imageEmbed.scrollIntoViewIfNeeded();
     await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await imageEmbed.getAttribute("src")).toMatch(
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2dGlhF4jRBG7_ZuQvNgPyMU4ePky65bUCgg&usqp=CAU"

@@ -16,17 +16,6 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
         { o: _opts, d: _data }
     );
 };
-export const navWithExtDefaults = async (
-    page: Page,
-    options: {
-        url: string;
-        opts?: any;
-        data?: any;
-    }
-) => {
-    await page.goto(options.url);
-    await loadExtensionDefaults(page, options?.opts, options?.data);
-};
 export const setTestCookie = async (context: BrowserContext) => {
     await context.addCookies([
         {
@@ -40,7 +29,8 @@ export const setTestCookie = async (context: BrowserContext) => {
 };
 export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: any }, context?: BrowserContext) => {
     const { o, d } = opts || {};
-    await navWithExtDefaults(page, { url, opts: o, data: d });
+    await page.goto(url);
+    if (opts) await loadExtensionDefaults(page, opts.o, opts.d);
     if (context) await setTestCookie(context);
     await page.reload();
 };
