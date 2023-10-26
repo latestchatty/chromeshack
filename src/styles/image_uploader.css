@@ -162,10 +162,16 @@ input[type="url"]#urlinput::placeholder {
     font-style: italic;
     color: var(--postbox-fg);
 }
+input[type="url"]#urlinput:not(:focus):valid,
+input[type="url"]#urlinput:focus:valid,
 input[type="url"]#urlinput:valid {
+    border-color: var(--postbox-vurl);
     outline-color: var(--postbox-vurl);
 }
+input[type="url"]#urlinput:not(:focus):invalid,
+input[type="url"]#urlinput:focus:invalid,
 input[type="url"]#urlinput:invalid {
+    border-color: var(--postbox-ivurl);
     outline-color: var(--postbox-ivurl);
 }
 
