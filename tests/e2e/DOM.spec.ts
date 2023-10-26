@@ -1,6 +1,5 @@
 import { test, expect, navigate, type Page, BrowserContext } from "../fixtures";
 
-
 test("user flairs enabled", async ({ page }) => {
     await navigate(page, "https://www.shacknews.com/chatty?id=40040034#item_40040034");
 
@@ -48,7 +47,7 @@ test("shame switchers enabled", async ({ page }) => {
     await expect(page.locator("li li.sel span.user")).toHaveText(/\w+ - \(\w+\)/);
 });
 
-test("chatty-news enabled", async ({ page }) => {
+test.only("chatty-news enabled", async ({ page }) => {
     await navigate(page, "https://www.shacknews.com/chatty?id=40049762#item_40049762", {
         d: { enabled_scripts: ["chatty_news"] },
     });
@@ -58,6 +57,14 @@ test("chatty-news enabled", async ({ page }) => {
     expect(newsItems).toBeGreaterThan(0);
     const articleLinks = await page.locator(".chatty-news a[title]").count();
     expect(articleLinks).toBeGreaterThan(0);
+
+    // test that the alignment helper classes get loaded on the main Chatty
+    await navigate(page, "https://www.shacknews.com/chatty", {
+        d: { enabled_scripts: ["thread_pane", "chatty_news"] },
+    });
+    const articleContent = page.locator("div.article-content");
+    await expect(articleContent).toHaveClass(/thread__pane__enabled/);
+    await expect(articleContent).toHaveClass(/chatty__news__enabled/);
 });
 
 test("CustomUserFilter on author in single-thread mode", async ({ page }) => {

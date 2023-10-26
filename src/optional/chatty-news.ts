@@ -60,8 +60,6 @@ export const ChattyNews = {
         // move all non-media elements into an alignment container for better responsiveness
         const alignmentBox = document.createElement("div");
         const subAlignmentBox = document.createElement("div");
-        // double check this is the full chatty page
-        const is_chatty = document.getElementById("newcommentbutton");
         alignmentBox.setAttribute("id", "chattynews__aligner");
         subAlignmentBox.setAttribute("id", "links__aligner");
 
@@ -87,6 +85,8 @@ export const ChattyNews = {
         alignmentBox?.append(newsBox);
         const articleBox = document.querySelector(".article-content") as HTMLElement;
         articleBox?.append(alignmentBox);
+        // double check this is the full chatty page
+        const is_chatty = document.getElementById("newcommentbutton");
         // mark the article box so we know to align for ThreadPane width
         if (tp_enabled && is_chatty) articleBox?.classList?.add("thread__pane__enabled");
         articleBox?.classList?.add("chatty__news__enabled");
