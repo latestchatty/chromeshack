@@ -87,7 +87,14 @@ const DropArea = (props: ImageUploaderComponentProps) => {
 const UrlInput = (props: ImageUploaderComponentProps) => {
     const { state, disabled, dispatch } = props || {};
     const [url, setUrl] = useState("");
-    const useDebouncedUrl = useRef(debounce((val) => dispatch({ type: "LOAD_URL", payload: val }), 500));
+    const urlValidatePattern = "https?:\/\/.+?\\..+?\/.+";
+    const urlValidateRegExp = new RegExp(urlValidatePattern);
+
+    const useDebouncedUrl = useRef(debounce((val: string) => {
+        const match = val?.match(urlValidateRegExp);
+        if (match) dispatch({ type: "LOAD_URL", payload: val });
+        else dispatch({ type: "LOAD_INVALID_URL" });
+    }, 500));
     const onInput = (e: React.ChangeEvent) => {
         const _this = e?.target as HTMLInputElement;
         const val = _this?.value;
@@ -104,7 +111,7 @@ const UrlInput = (props: ImageUploaderComponentProps) => {
             className={classes}
             minLength={7}
             maxLength={2048}
-            pattern="https?://.+?\..+?/.+"
+            pattern={urlValidatePattern}
             value={url}
             onChange={onInput}
             readOnly={disabled}

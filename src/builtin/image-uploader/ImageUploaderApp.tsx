@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
 import { useUploaderStore } from "./uploaderStore";
-import { useImageUploader } from "./useImageUploader";
+import { useImageUploader, validTabs } from "./useImageUploader";
 
 const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
     const { postboxEl } = props || {};
@@ -20,11 +20,6 @@ const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
         onStatusAnimEnd,
     } = useImageUploader(parentRef.current, state, dispatch);
 
-    /// tabs are defined by id and label
-    const tabs = [
-        { id: "imgurTab", label: "Imgur" },
-    ];
-
     return (
         <ToggleChildren
             id="uploader-toggle"
@@ -34,7 +29,7 @@ const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
             clickHandler={onClickToggle}
         >
             <div id="tab-container">
-                {tabs.map((tab) => {
+                {validTabs.map((tab) => {
                     return (
                         <Tab
                             key={tab.id}

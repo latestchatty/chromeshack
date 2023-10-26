@@ -1,23 +1,26 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { handleImgurUpload } from "../../core/api/imgur";
 import { arrHas } from "../../core/common/common";
 import { appendLinksToField } from "../../core/common/dom";
 import { getSetting, setSetting } from "../../core/settings";
 
+/// tabs are defined by id and label
+export const validTabs = [{ id: "imgurTab", label: "Imgur" }];
+
 const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch: React.Dispatch<UploaderAction>) => {
     const fileChooserRef = useRef(null);
 
     const doSelectTab = useCallback(
-        (nextTabName: string, prevTabName?: string) => {
-            const nPrevTabName = prevTabName?.toUpperCase() as TAB_NAMES;
-            const nNextTabName = nextTabName.toUpperCase() as TAB_NAMES;
+        (nextTabName?: string, prevTabName?: string) => {
+            const nPrevTabName: TAB_NAMES = (prevTabName?.toUpperCase() || validTabs[0].id.toUpperCase()) as TAB_NAMES;
+            const nNextTabName: TAB_NAMES = (nextTabName?.toUpperCase() || validTabs[0].id.toUpperCase()) as TAB_NAMES;
             // save our selected tab between sessions
             (async () => {
                 await setSetting("selected_upload_tab", nNextTabName);
             })();
             dispatch({ type: "LOAD_TAB", payload: { to: nNextTabName, from: nPrevTabName } });
         },
-        [dispatch],
+        [dispatch]
     );
 
     const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -53,7 +56,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
             doSelectTab(state.selectedTab);
             fileChooserRef.current.value = null;
         },
-        [state.selectedTab, dispatch, doSelectTab, fileChooserRef],
+        [state.selectedTab, dispatch, doSelectTab, fileChooserRef]
     );
     /// hide the statusline once the transition animation ends
     const onStatusAnimEnd = () => dispatch({ type: "UPDATE_STATUS", payload: "" });
@@ -69,14 +72,17 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
     }, [state.response, dispatch, parentRef, onClickCancelBtn]);
 
     // restore our saved hoster tab
-    useLayoutEffect(() => {
+    useEffect(() => {
         (async () => {
             const tab = await getSetting("selected_upload_tab");
-            if (tab) doSelectTab(tab);
+            const matches = tab! && validTabs.find((t) => t.id.toUpperCase() === tab.toUpperCase());
+            // if we get an invalid tab name just default to our first choice
+            if (tab && matches) doSelectTab(tab);
+            else doSelectTab(tab?.[0]?.id);
         })();
     }, [doSelectTab]);
     // track whether the uploader container is visible on start
-    useLayoutEffect(() => {
+    useEffect(() => {
         (async () => {
             const is_toggled = (await getSetting("image_uploader_toggled", true)) as boolean;
             dispatch({ type: "TOGGLE_UPLOADER", payload: is_toggled });

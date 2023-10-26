@@ -10,6 +10,7 @@ declare global {
         | LOAD_FILES_ACTION
         | LOAD_TAB_ACTION
         | LOAD_URL_ACTION
+        | LOAD_INVALID_URL_ACTION
         | TOGGLE_UPLOADER_ACTION
         | UPDATE_STATUS_ACTION
         | UPLOAD_CANCEL_ACTION
