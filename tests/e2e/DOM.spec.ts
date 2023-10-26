@@ -47,7 +47,7 @@ test("shame switchers enabled", async ({ page }) => {
     await expect(page.locator("li li.sel span.user")).toHaveText(/\w+ - \(\w+\)/);
 });
 
-test.only("chatty-news enabled", async ({ page }) => {
+test("chatty-news enabled", async ({ page }) => {
     await navigate(page, "https://www.shacknews.com/chatty?id=40049762#item_40049762", {
         d: { enabled_scripts: ["chatty_news"] },
     });
