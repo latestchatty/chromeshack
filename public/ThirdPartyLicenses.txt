@@ -790,7 +790,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/dompurify@3.0.3
+Package: @types/dompurify@3.0.4
 License: MIT
 
     MIT License
@@ -816,7 +816,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/jquery@3.5.22
+Package: @types/jquery@3.5.25
 License: MIT
 
     MIT License
@@ -842,7 +842,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/node@20.8.4
+Package: @types/node@20.8.9
 License: MIT
 
     MIT License
@@ -868,7 +868,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/react-dom@18.2.12
+Package: @types/react-dom@18.2.14
 License: MIT
 
     MIT License
@@ -894,7 +894,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/react@18.2.27
+Package: @types/react@18.2.33
 License: MIT
 
     MIT License
@@ -920,7 +920,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/webextension-polyfill@0.10.4
+Package: @types/webextension-polyfill@0.10.5
 License: MIT
 
     MIT License
@@ -1595,6 +1595,34 @@ Exhibit B - “Incompatible With Secondary Licenses” Notice
 
 
 
+Package: dotenv@16.3.1
+License: BSD-2-Clause
+
+Copyright (c) 2015, Scott Motte
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
 Package: embla-carousel-react@8.0.0-rc14
 License: MIT
 
@@ -1748,7 +1776,7 @@ License: MIT
 </p>
 
 
-Package: html-react-parser@4.2.2
+Package: html-react-parser@4.2.9
 License: MIT
 
 The MIT License
@@ -2060,7 +2088,7 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
 END OF TERMS AND CONDITIONS
 
 
-Package: vite@4.4.11
+Package: vite@4.5.0
 License: MIT
 
 # Vite core license
