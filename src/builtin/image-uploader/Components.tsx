@@ -1,6 +1,6 @@
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common/common";
 
@@ -36,25 +36,25 @@ const Tab = memo((props: ImageUploaderComponentProps) => {
 const DropArea = memo((props: ImageUploaderComponentProps) => {
     const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
     const showWarning = fileData.length > 1 && !multifile;
-    const override = (e: React.DragEvent<HTMLElement>) => {
+    const override = useCallback((e: React.DragEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
-    };
-    const onDropHandler = (e: React.DragEvent<HTMLElement>) => {
+    }, []);
+    const onDropHandler = useCallback((e: React.DragEvent<HTMLElement>) => {
         override(e);
         const data = e.dataTransfer.files;
         if (data && data.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
-    };
-    const handleFileChooser = (e: React.ChangeEvent<HTMLInputElement>) => {
+    }, []);
+    const handleFileChooser = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const data = (e.target as HTMLInputElement).files;
         if (data?.length > 0) dispatch({ type: "LOAD_FILES", payload: data });
-    };
-    const onClickLabelHandler = (e: React.MouseEvent) => {
+    }, []);
+    const onClickLabelHandler = useCallback((e: React.MouseEvent) => {
         const thisElem = e.target as HTMLSpanElement;
         const thisArea = thisElem?.closest("#dropArea") as HTMLElement;
         const chooser = thisArea?.querySelector("#fileChooser") as HTMLElement;
         if (!disabled && chooser) chooser.click();
-    };
+    }, []);
     return (
         <div
             id="dropArea"

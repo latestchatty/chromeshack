@@ -19,7 +19,7 @@ const UserPopupApp = memo((props: { username: string; isLoggedInUser: boolean; i
             userPopupEvent.raise({ root: parentRoot });
             root.parentNode.removeChild(root);
         }
-    }, [parentRoot]);
+    }, [parentRoot, rootRef]);
     
     useEffect(() => {
         document.addEventListener("click", popupClickHandler);

@@ -112,12 +112,12 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
         else if (_btn?.matches("#del__btn"))
             setTemplates(templates.length > 1 ? templates.filter((_, i) => i !== _idx) : [""]);
         else if (_btn?.matches("#add__btn") && _hasBody) setTemplates([...templates, _val]);
-    }, []);
+    }, [inputBox, templates]);
 
     useEffect(() => {
         const height = popupRef?.current?.clientHeight;
         if (height) popupRef.current.setAttribute("style", `top: -${height * 0.5}px;`);
-    }, [popupVisible]);
+    }, [popupVisible, popupRef]);
     useEffect(() => {
         saveTemplatesToStore();
     }, [saveTemplatesToStore]);

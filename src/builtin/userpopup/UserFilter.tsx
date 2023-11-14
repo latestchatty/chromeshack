@@ -15,7 +15,7 @@ const UserFilter = memo((props: { username: string; isLoggedInUser: boolean }) =
             else await addFilter(username);
             setIsFilter(!isFilter);
         })();
-    }, [username]);
+    }, [username, isFilter]);
 
     useEffect(() => {
         (async () => {

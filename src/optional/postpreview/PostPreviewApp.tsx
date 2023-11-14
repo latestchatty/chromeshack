@@ -14,11 +14,11 @@ const PostPreviewApp = memo((props: { postboxElem: HTMLElement; paneMountElem: H
     const paneMountRef = useRef(paneMountElem).current;
     const fullpostRef = useRef(null);
 
-    const _generatePreview = useCallback((input: string) => {
+    const _generatePreview = (input: string) => {
         // generatePreview sanitizes input to conform to the shacktag schema
         const preview = input ? generatePreview(input) : "";
         if ((preview as string)?.length >= 0) setInput(preview);
-    }, []);
+    };
 
     const debouncedInputRef = useRef(
         debounce((e: KeyboardEvent | HTMLInputElement) => {
