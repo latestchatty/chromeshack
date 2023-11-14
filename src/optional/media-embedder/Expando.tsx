@@ -38,7 +38,6 @@ const Expando = memo((props: ExpandoProps) => {
             if (__type) setType(__type);
         })();
     }, [response, options]);
-
     const handleToggleClick = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e.preventDefault();
@@ -46,9 +45,9 @@ const Expando = memo((props: ExpandoProps) => {
             const _mediaParent = type === "image" && elemMatches(_this, "img");
             const _expando = !_this?.closest("div.media") && _this?.closest("div.medialink");
             // only clickTogglesVisible on media when an image or expando link
-            if ((_mediaParent && type === "image") || _expando) setToggled(!toggled);
+            if ((_mediaParent && type === "image" && toggled) || _expando) setToggled(!toggled);
         },
-        [toggled, type],
+        [type, toggled]
     );
     const handleNewClick = useCallback(
         (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -56,9 +55,8 @@ const Expando = memo((props: ExpandoProps) => {
             const newWindow = window.open(newTabHref?.current, "_blank", "noopener,noreferrer");
             if (newWindow) newWindow.opener = null;
         },
-        [newTabHref],
+        [newTabHref]
     );
-
     const handleRefreshClick = useCallback(() => {
         // less graceful reload method
         setHasLoaded(false);
@@ -70,6 +68,7 @@ const Expando = memo((props: ExpandoProps) => {
             if (children) setToggled(true);
         }, 100);
     }, []);
+
     useEffect(() => {
         if (toggled) loadChildren();
     }, [toggled, loadChildren]);
