@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { arrHas } from "../../core/common/common";
 import {
     addHighlightUser,
@@ -8,7 +8,7 @@ import {
     removeHighlightUser,
 } from "../../core/settings";
 
-const HighlightFilter = (props: { username: string; groupName: string; isContained: boolean }) => {
+const HighlightFilter = memo((props: { username: string; groupName: string; isContained: boolean }) => {
     const { username, groupName, isContained: _isContained } = props || {};
     const [isHighlight, setIsHighlight] = useState(_isContained);
     const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -27,9 +27,9 @@ const HighlightFilter = (props: { username: string; groupName: string; isContain
             } Highlights Group: ${groupName}`}</span>
         </div>
     );
-};
+});
 
-const HighlightFilters = (props: { username: string }) => {
+const HighlightFilters = memo((props: { username: string }) => {
     const { username } = props || {};
     const [isEnabled, setIsEnabled] = useState(false);
     const [children, setChildren] = useState(null as JSX.Element[]);
@@ -61,6 +61,6 @@ const HighlightFilters = (props: { username: string }) => {
             {children}
         </>
     ) : null;
-};
+});
 
 export { HighlightFilters };

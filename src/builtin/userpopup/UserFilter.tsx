@@ -1,21 +1,21 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { addFilter, enabledContains, filtersContains, removeFilter } from "../../core/settings";
 
-const UserFilter = (props: { username: string; isLoggedInUser: boolean }) => {
+const UserFilter = memo((props: { username: string; isLoggedInUser: boolean }) => {
     const { username } = props || {};
 
     const [isEnabled, setIsEnabled] = useState(false);
     const [isFilter, setIsFilter] = useState(false);
 
-    const handleFilterClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    const handleFilterClick = useCallback((e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         e.preventDefault();
         (async () => {
             if (isFilter) await removeFilter(username);
             else await addFilter(username);
             setIsFilter(!isFilter);
         })();
-    };
+    }, [username]);
 
     useEffect(() => {
         (async () => {
@@ -33,6 +33,6 @@ const UserFilter = (props: { username: string; isLoggedInUser: boolean }) => {
             </div>
         </>
     ) : null;
-};
+});
 
 export { UserFilter };

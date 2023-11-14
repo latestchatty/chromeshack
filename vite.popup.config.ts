@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import preact from '@preact/preset-vite'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [preact()],
   build: {
     emptyOutDir: false,
     sourcemap: process.env.NODE_ENV === 'development' ? true : false,

@@ -1,9 +1,9 @@
-import React, { useRef, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 import { getState } from "./actions";
 import { copyToClipboard, exportSettings, importSettings } from "./helpers";
 import { usePopupStore } from "./popupStore";
 
-const ImportExport = () => {
+const ImportExport = memo(() => {
     const { useStoreDispatch } = usePopupStore;
     const dispatch = useStoreDispatch();
 
@@ -66,6 +66,6 @@ const ImportExport = () => {
             </button>
         </>
     );
-};
+});
 
 export { ImportExport };

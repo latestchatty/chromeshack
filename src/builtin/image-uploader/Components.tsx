@@ -1,14 +1,14 @@
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common/common";
 
-const ExclamationCircleIcon = ({ className, title }: { className: string; title: string }) => (
+const ExclamationCircleIcon = memo(({ className, title }: { className: string; title: string }) => (
     <FontAwesomeIcon className={className} title={title} icon={faExclamationCircle} />
-);
+));
 
-const ToggleChildren = (props: ImageUploaderComponentProps) => {
+const ToggleChildren = memo((props: ImageUploaderComponentProps) => {
     const { id, childId, label, visible, clickHandler, children } = props || {};
     const childClasses = classNames({ hidden: !visible });
     return (
@@ -21,9 +21,9 @@ const ToggleChildren = (props: ImageUploaderComponentProps) => {
             </div>
         </div>
     );
-};
+});
 
-const Tab = (props: ImageUploaderComponentProps) => {
+const Tab = memo((props: ImageUploaderComponentProps) => {
     const { id, label, selected, clickHandler } = props || {};
     const classes = classNames("tab", { active: selected }, { inactive: !selected });
     return (
@@ -31,9 +31,9 @@ const Tab = (props: ImageUploaderComponentProps) => {
             {label}
         </div>
     );
-};
+});
 
-const DropArea = (props: ImageUploaderComponentProps) => {
+const DropArea = memo((props: ImageUploaderComponentProps) => {
     const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
     const showWarning = fileData.length > 1 && !multifile;
     const override = (e: React.DragEvent<HTMLElement>) => {
@@ -82,9 +82,9 @@ const DropArea = (props: ImageUploaderComponentProps) => {
             />
         </div>
     );
-};
+});
 
-const UrlInput = (props: ImageUploaderComponentProps) => {
+const UrlInput = memo((props: ImageUploaderComponentProps) => {
     const { state, disabled, dispatch } = props || {};
     const [url, setUrl] = useState("");
     const urlValidatePattern = "https?:\/\/.+?\\..+?\/.+";
@@ -120,18 +120,18 @@ const UrlInput = (props: ImageUploaderComponentProps) => {
             placeholder="https://media.site/image-or-video"
         />
     );
-};
+});
 
-const Button = (props: ImageUploaderComponentProps) => {
+const Button = memo((props: ImageUploaderComponentProps) => {
     const { id, disabled, clickHandler, label } = props || {};
     return (
         <button id={id} disabled={disabled} onClick={clickHandler}>
             {label}
         </button>
     );
-};
+});
 
-const StatusLine = (props: ImageUploaderComponentProps) => {
+const StatusLine = memo((props: ImageUploaderComponentProps) => {
     const { status, error, isPending, animationEnd } = props || {};
     const statusClasses = classNames({
         fadeout: !isPending,
@@ -148,6 +148,6 @@ const StatusLine = (props: ImageUploaderComponentProps) => {
             </span>
         </div>
     );
-};
+});
 
 export { StatusLine, Button, UrlInput, DropArea, Tab, ToggleChildren };

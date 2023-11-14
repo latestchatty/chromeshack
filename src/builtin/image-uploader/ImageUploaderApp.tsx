@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
 import { useUploaderStore } from "./uploaderStore";
 import { useImageUploader, validTabs } from "./useImageUploader";
 
-const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
+const ImageUploaderApp = memo((props: { postboxEl: HTMLElement }) => {
     const { postboxEl } = props || {};
     const parentRef = useRef(postboxEl);
 
@@ -74,6 +74,6 @@ const ImageUploaderApp = (props: { postboxEl: HTMLElement }) => {
             </div>
         </ToggleChildren>
     );
-};
+});
 
 export { ImageUploaderApp };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useCallback, useEffect, useRef } from "react";
 import { elemMatches } from "../../core/common/dom";
 import { HighlightFilters } from "./HighlightFilters";
 import { LOLList } from "./LOLList";
@@ -6,21 +6,22 @@ import { UserFilter } from "./UserFilter";
 import { type Root } from "react-dom/client";
 import { userPopupEvent } from "../../core/events";
 
-const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean; parentRoot: Root }) => {
+const UserPopupApp = memo((props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean; parentRoot: Root }) => {
     const { username, isLoggedInUser, isUserBadge, parentRoot } = props || {};
     const rootRef = useRef(null);
 
+    const popupClickHandler = useCallback((e: MouseEvent) => {
+        const _this = e.target as HTMLElement;
+        const root = rootRef?.current?.parentNode as HTMLElement;
+        const is_lol_elem = elemMatches(_this, ".userDropdown span");
+        if (!is_lol_elem && root) {
+            // forcefully unmount our popup when clicking outside
+            userPopupEvent.raise({ root: parentRoot });
+            root.parentNode.removeChild(root);
+        }
+    }, [parentRoot]);
+    
     useEffect(() => {
-        const popupClickHandler = (e: MouseEvent) => {
-            const _this = e.target as HTMLElement;
-            const root = rootRef?.current?.parentNode as HTMLElement;
-            const is_lol_elem = elemMatches(_this, ".userDropdown span");
-            if (!is_lol_elem && root) {
-                // forcefully unmount our popup when clicking outside
-                userPopupEvent.raise({ root: parentRoot });
-                root.parentNode.removeChild(root);
-            }
-        };
         document.addEventListener("click", popupClickHandler);
         return () => document.removeEventListener("click", popupClickHandler);
     }, []);
@@ -36,6 +37,6 @@ const UserPopupApp = (props: { username: string; isLoggedInUser: boolean; isUser
             )}
         </div>
     );
-};
+});
 
 export { UserPopupApp };

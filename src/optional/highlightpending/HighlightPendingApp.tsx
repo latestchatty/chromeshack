@@ -1,6 +1,6 @@
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { arrHas, classNames } from "../../core/common/common";
 import { useHeaderObserver } from "./useHeaderObserver";
 import { usePendingPosts } from "./usePendingPosts";
@@ -8,7 +8,7 @@ import { usePendingPosts } from "./usePendingPosts";
 const ChevronLeft = () => <FontAwesomeIcon className="hpnp__prev__icon" icon={faChevronLeft} />;
 const ChevronRight = () => <FontAwesomeIcon className="hpnp__next__icon" icon={faChevronRight} />;
 
-const HighlightPendingApp = (props: { threaded: boolean; elRef: HTMLElement }) => {
+const HighlightPendingApp = memo((props: { threaded: boolean; elRef: HTMLElement }) => {
     const { threaded, elRef } = props || {};
     const headerRef = useRef(document.querySelector("header")).current;
 
@@ -50,6 +50,6 @@ const HighlightPendingApp = (props: { threaded: boolean; elRef: HTMLElement }) =
             )}
         </div>
     ) : null;
-};
+});
 
 export { HighlightPendingApp };

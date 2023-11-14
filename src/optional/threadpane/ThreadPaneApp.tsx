@@ -1,7 +1,7 @@
 import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import parse from "html-react-parser";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { arrHas, classNames } from "../../core/common/common";
 import { scrollParentToChild } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
@@ -9,10 +9,10 @@ import { RefreshIcon } from "../media-embedder/Expando";
 import { parseRoot } from "./helpers";
 import { useThreadPaneCard } from "./useThreadPaneCard";
 
-const StepForwardIcon = () => <FontAwesomeIcon icon={faAngleDoubleRight} />;
-const CommentDotsIcon = () => <FontAwesomeIcon icon={faCommentDots} />;
+const StepForwardIcon = memo(() => <FontAwesomeIcon icon={faAngleDoubleRight} />);
+const CommentDotsIcon = memo(() => <FontAwesomeIcon icon={faCommentDots} />);
 
-const ThreadPaneReply = (props: { recent: ParsedReply; mostRecent?: boolean }) => {
+const ThreadPaneReply = memo((props: { recent: ParsedReply; mostRecent?: boolean }) => {
     const { recent, mostRecent } = props || {};
     const { authorid, author, body, mod, op } = recent || {};
 
@@ -24,9 +24,9 @@ const ThreadPaneReply = (props: { recent: ParsedReply; mostRecent?: boolean }) =
             <div className={classNames(`cs_thread_pane_reply_author replyid_${authorid}`, { op })}>{author}</div>
         </div>
     );
-};
+});
 
-const ThreadPaneReplies = (props: { recents: Recents }) => {
+const ThreadPaneReplies = memo((props: { recents: Recents }) => {
     const { recents: parents } = props || {};
     const { recentTree: recents } = parents || {};
 
@@ -37,9 +37,9 @@ const ThreadPaneReplies = (props: { recents: Recents }) => {
             })}
         </div>
     ) : null;
-};
+});
 
-const ThreadPaneCard = (props: { post: ParsedPost }) => {
+const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
     const { post } = props || {};
     const {
         collapsed,
@@ -81,7 +81,7 @@ const ThreadPaneCard = (props: { post: ParsedPost }) => {
             {!collapsed && <ThreadPaneReplies recents={localRecents} />}
         </div>
     ) : null;
-};
+});
 
 const ThreadPaneJumpToTop = () => {
     const handleJumpToTop = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -97,7 +97,7 @@ const ThreadPaneJumpToTop = () => {
     );
 };
 
-const ThreadPaneApp = () => {
+const ThreadPaneApp = memo(() => {
     const [parsed, setParsed] = useState([] as ParsedPost[]);
 
     useEffect(() => {
@@ -123,6 +123,6 @@ const ThreadPaneApp = () => {
             {parsed?.length > 0 && <ThreadPaneJumpToTop />}
         </div>
     ) : null;
-};
+});
 
 export { ThreadPaneApp };

@@ -22,10 +22,10 @@ NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (
 
 NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated when `pnpm generate-licenses` is run for detailed licensing information.
 
+-   [Preact](https://github.com/preactjs/preact)
 -   [Embla](https://github.com/davidcetinkaya/embla-carousel)
 -   [jQuery](https://github.com/jquery/jquery)
 -   [DOMPurify](https://github.com/cure53/DOMPurify)
--   [React](https://github.com/facebook/react)
 -   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
 -   [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
 -   [text-field-edit](https://github.com/fregante/text-field-edit)

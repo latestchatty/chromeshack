@@ -1,20 +1,20 @@
-import React from "react";
+import React, { memo, useCallback } from "react";
 import { openAsWindow } from "../../core/common/dom";
 
-const LOLListItem = (props: { href: string; text: string }) => {
+const LOLListItem = memo((props: { href: string; text: string }) => {
     const { href, text } = props || {};
-    const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const handleClick = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         if (href) openAsWindow(href);
-    };
+    }, [href]);
     return (
         <div className="dropdown__item" onClick={handleClick}>
             <span>{text}</span>
         </div>
     );
-};
+});
 
-const LOLList = (props: { username: string; isLoggedInUser: boolean }) => {
+const LOLList = memo((props: { username: string; isLoggedInUser: boolean }) => {
     const { username, isLoggedInUser } = props || {};
 
     return (
@@ -57,6 +57,6 @@ const LOLList = (props: { username: string; isLoggedInUser: boolean }) => {
             />
         </>
     );
-};
+});
 
 export { LOLList };

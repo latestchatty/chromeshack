@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, useCallback, useEffect, useRef, useState } from "react";
+import React, { isValidElement, memo, useCallback, useEffect, useRef, useState } from "react";
 import { classNames, getLinkType } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { resolveChildren } from "../../core/useResolvedLinks";
@@ -12,7 +12,7 @@ export const RefreshIcon = ({ classes }: { classes: string }) => (
     <FontAwesomeIcon className={classes} icon={faRedoAlt} />
 );
 
-const Expando = (props: ExpandoProps) => {
+const Expando = memo((props: ExpandoProps) => {
     const { response, options } = props || {};
     const { href, src, type: _type } = response || {};
     const { openByDefault } = options || {};
@@ -59,7 +59,7 @@ const Expando = (props: ExpandoProps) => {
         [newTabHref],
     );
 
-    const handleRefreshClick = () => {
+    const handleRefreshClick = useCallback(() => {
         // less graceful reload method
         setHasLoaded(false);
         setChildren(null as JSX.Element);
@@ -69,7 +69,7 @@ const Expando = (props: ExpandoProps) => {
             // should be visible?
             if (children) setToggled(true);
         }, 100);
-    };
+    }, []);
     useEffect(() => {
         if (toggled) loadChildren();
     }, [toggled, loadChildren]);
@@ -93,6 +93,6 @@ const Expando = (props: ExpandoProps) => {
             </div>
         </div>
     );
-};
+});
 
 export { Expando };

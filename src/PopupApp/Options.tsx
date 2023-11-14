@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
 import { usePopupStore } from "./popupStore";
@@ -21,7 +21,7 @@ const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions;
     return { isChecked, setChecked };
 };
 
-const OptionButton = (props: {
+const OptionButton = memo((props: {
     id: string;
     classes?: string;
     label?: string;
@@ -44,9 +44,9 @@ const OptionButton = (props: {
             </button>
         </div>
     );
-};
+});
 
-const Suboption = (props: {
+const Suboption = memo((props: {
     label: string;
     optionid: EnabledSuboptions;
     id?: string;
@@ -74,9 +74,9 @@ const Suboption = (props: {
             {children}
         </div>
     );
-};
+});
 
-const Option = (props: {
+const Option = memo((props: {
     id: EnabledOptions | EnabledSuboptions;
     label: string;
     classes?: string;
@@ -102,9 +102,9 @@ const Option = (props: {
             {children}
         </div>
     );
-};
+});
 
-const OptionGroup = (props: {
+const OptionGroup = memo((props: {
     label: string;
     id?: EnabledOptions | EnabledSuboptions;
     classes?: string;
@@ -127,6 +127,6 @@ const OptionGroup = (props: {
             {children}
         </div>
     );
-};
+});
 
 export { Option, OptionButton, Suboption, OptionGroup };

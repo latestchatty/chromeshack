@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { arrHas } from "../core/common/common";
 import { superTrim } from "../core/common/dom";
 import { highlightGroupsEqual } from "../core/settings";
@@ -7,7 +7,7 @@ import { FilterBox } from "./FilterBox";
 import { insertGroupCSS, randomHsl, trimName } from "./helpers";
 import { usePopupStore } from "./popupStore";
 
-const HighlightGroup = (props: { name: string }) => {
+const HighlightGroup = memo((props: { name: string }) => {
     const { name } = props || {};
 
     const { useStoreState, useStoreDispatch } = usePopupStore;
@@ -108,9 +108,9 @@ const HighlightGroup = (props: { name: string }) => {
             </div>
         </div>
     );
-};
+});
 
-const HighlightGroups = () => {
+const HighlightGroups = memo(() => {
     const { useStoreState, useStoreDispatch } = usePopupStore;
     const state = useStoreState() as PopupState;
     const dispatch = useStoreDispatch();
@@ -126,6 +126,6 @@ const HighlightGroups = () => {
             </button>
         </div>
     );
-};
+});
 
 export { HighlightGroups };

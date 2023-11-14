@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { elemMatches, generatePreview, scrollToElement } from "../../core/common/dom";
 import { classNames } from "../../core/common/common";
@@ -6,7 +6,7 @@ import { replyFieldEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
 import { PostPreviewPane } from "./PostPreviewPane";
 
-const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLElement }) => {
+const PostPreviewApp = memo((props: { postboxElem: HTMLElement; paneMountElem: HTMLElement }) => {
     const { postboxElem, paneMountElem } = props || {};
     const [toggled, setToggled] = useState(false);
     const [input, setInput] = useState("");
@@ -14,11 +14,11 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
     const paneMountRef = useRef(paneMountElem).current;
     const fullpostRef = useRef(null);
 
-    const _generatePreview = (input: string) => {
+    const _generatePreview = useCallback((input: string) => {
         // generatePreview sanitizes input to conform to the shacktag schema
         const preview = input ? generatePreview(input) : "";
         if ((preview as string)?.length >= 0) setInput(preview);
-    };
+    }, []);
 
     const debouncedInputRef = useRef(
         debounce((e: KeyboardEvent | HTMLInputElement) => {
@@ -35,12 +35,12 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
         },
         [toggled, debouncedInputRef],
     );
-    const handleToggleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleToggleClick = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         const inputArea = postboxRef.querySelector("#frm_body") as HTMLInputElement;
         if (inputArea.value.length > 0) debouncedInputRef(inputArea);
         setToggled((p) => !p);
-    };
+    }, [postboxRef]);
 
     useEffect(() => {
         (async () => {
@@ -94,5 +94,5 @@ const PostPreviewApp = (props: { postboxElem: HTMLElement; paneMountElem: HTMLEl
             </button>
         </>
     );
-};
+});
 export { PostPreviewApp };

@@ -1,6 +1,6 @@
 import { faCheck, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { arrHas, classNames, compressString, decompressString } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { replyFieldEvent } from "../../core/events";
@@ -10,7 +10,7 @@ const SaveIcon = () => <FontAwesomeIcon className="templates__icon save--icon" i
 const DelIcon = () => <FontAwesomeIcon className="templates__icon del--icon" icon={faTimes} />;
 const AddIcon = () => <FontAwesomeIcon className="templates__icon add--icon" icon={faPlus} />;
 
-const TemplateItem = (props: { idx: number; body: string; onClick: any }) => {
+const TemplateItem = memo((props: { idx: number; body: string; onClick: any }) => {
     const { idx, body, onClick } = props || {};
     const hasBody = body?.length > 0;
     const isDefaultArr = !hasBody && idx === 0;
@@ -47,9 +47,9 @@ const TemplateItem = (props: { idx: number; body: string; onClick: any }) => {
             </button>
         </div>
     );
-};
+});
 
-const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
+const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
     const { inputBox } = props || {};
 
     const [templates, setTemplates] = useState([] as string[]);
@@ -79,11 +79,11 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
         })();
     }, [templates]);
 
-    const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleBtnClick = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         setPopupVisible(!popupVisible);
-    };
-    const handlePopupClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    }, [popupVisible]);
+    const handlePopupClick = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         const _this = e.target as HTMLElement;
         const _itemNode = _this.closest(".template__item");
@@ -112,7 +112,7 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
         else if (_btn?.matches("#del__btn"))
             setTemplates(templates.length > 1 ? templates.filter((_, i) => i !== _idx) : [""]);
         else if (_btn?.matches("#add__btn") && _hasBody) setTemplates([...templates, _val]);
-    };
+    }, []);
 
     useEffect(() => {
         const height = popupRef?.current?.clientHeight;
@@ -145,6 +145,6 @@ const TemplatesApp = (props: { inputBox: HTMLInputElement }) => {
             </div>
         </>
     );
-};
+});
 
 export { TemplatesApp };

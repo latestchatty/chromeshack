@@ -1,5 +1,5 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { resetSettings } from "../core/settings";
 import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";
@@ -9,7 +9,7 @@ import { Option, OptionButton, OptionGroup, Suboption } from "./Options";
 import { usePopupStore } from "./popupStore";
 import { Tabs } from "./Tabs";
 
-const PopupApp = () => {
+const PopupApp = memo(() => {
     const { useStoreState, useStoreDispatch } = usePopupStore;
     const state = useStoreState() as PopupState;
     const dispatch = useStoreDispatch();
@@ -238,6 +238,6 @@ const PopupApp = () => {
             </div>
         </Tabs>
     );
-};
+});
 
 export { PopupApp };

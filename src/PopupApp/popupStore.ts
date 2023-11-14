@@ -1,4 +1,4 @@
-import { createStore } from "../core/createStore";
+import { useStore } from "../core/createStore";
 
 const initialState: PopupState = {
     options: [],
@@ -35,4 +35,4 @@ const PopupReducer = (state: PopupState, action: PopupAction) => {
     }
 };
 
-export const usePopupStore = createStore(PopupReducer, initialState);
+export const usePopupStore = useStore(PopupReducer, initialState);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { classNames } from "../core/common/common";
 import { getSetting, setSetting } from "../core/settings";
 
@@ -7,7 +7,7 @@ const isChromeBrowser = !window.browser ? true : false;
 const storeActiveTab = async (idx: number) => await setSetting("selected_popup_tab", idx);
 const getActiveTabFromStore = async () => await getSetting("selected_popup_tab", 0);
 
-const Tabs = (props: { children?: JSX.Element[] }) => {
+const Tabs = memo((props: { children?: JSX.Element[] }) => {
     const { children } = props || {};
     const bodyRef = useRef(null);
     const classDefaults = useRef({
@@ -64,6 +64,6 @@ const Tabs = (props: { children?: JSX.Element[] }) => {
             </div>
         </div>
     );
-};
+});
 
 export { Tabs };

@@ -1,9 +1,9 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import preact from "@preact/preset-vite"
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [preact()],
   define: {
     "process.env": `(${JSON.stringify(process.env)})`
   },

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 import { classNames } from "../../core/common/common";
 import { useDrafts } from "./useDrafts";
 
-const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
+const DraftsApp = memo((props: { postid: number; inputBox: HTMLInputElement }) => {
     const { postid, inputBox } = props || {};
     const valid = useDrafts(postid, inputBox);
 
@@ -12,6 +12,6 @@ const DraftsApp = (props: { postid: number; inputBox: HTMLInputElement }) => {
             title={valid ? "This post has been saved to drafts" : "This post is not saved to drafts"}
         />
     );
-};
+});
 
 export { DraftsApp };

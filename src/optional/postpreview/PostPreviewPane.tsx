@@ -1,9 +1,9 @@
 import parse, { domToReact, Element } from "html-react-parser";
-import React from "react";
+import React, { memo } from "react";
 import { createPortal } from "react-dom";
 import { classNames } from "../../core/common/common";
 
-const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: string }) => {
+const PostPreviewPane = memo((props: { target: HTMLElement; toggled: boolean; input: string }) => {
     const { target, toggled, input } = props || {};
     const onSpoilerClick = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         const _this = e.target as HTMLElement;
@@ -26,6 +26,6 @@ const PostPreviewPane = (props: { target: HTMLElement; toggled: boolean; input: 
         </div>,
         target,
     );
-};
+});
 
 export { PostPreviewPane };

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
 import { usePopupStore } from "./popupStore";
 
-const FilterBox = (props: {
+const FilterBox = memo((props: {
     id: string;
     type: FilterTypes | "UPDATE_HIGHLIGHTGROUP";
     classes?: string;
@@ -112,6 +112,6 @@ const FilterBox = (props: {
             </div>
         </div>
     );
-};
+});
 
 export { FilterBox };

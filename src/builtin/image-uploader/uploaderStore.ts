@@ -1,5 +1,5 @@
 import { arrHas, packValidTypes } from "../../core/common/common";
-import { createStore } from "../../core/createStore";
+import { useStore } from "../../core/createStore";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
 export const videoFormats =
@@ -149,4 +149,4 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
 };
 
 /// expose a custom hook for ease of use
-export const useUploaderStore = createStore(UploaderReducer, initialState);
+export const useUploaderStore = useStore(UploaderReducer, initialState);

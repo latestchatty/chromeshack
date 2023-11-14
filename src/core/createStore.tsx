@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react";
 
 /// provide an HOC for ease-of-use in creating multi-context state stores
-export const createStore = (reducer: StoreReducer, initialState: ReducerState) => {
+export const useStore = (reducer: StoreReducer, initialState: ReducerState) => {
     const stateContext = createContext<ReducerState>({});
     const dispatchContext = createContext<React.Dispatch<ReducerAction>>(() => null);
     const Provider = ({ children }: ProviderChildProps) => {

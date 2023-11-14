@@ -23,22 +23,22 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
         [dispatch]
     );
 
-    const onClickToggle = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    const onClickToggle = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         const visibility = !state.visible;
         (async () => {
             await setSetting("image_uploader_toggled", visibility);
         })();
         dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
-    };
-    const onClickTab = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    }, [state.visible]);
+    const onClickTab = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         e.preventDefault();
         const this_node = e.target as HTMLDivElement;
         const thisTab = this_node?.id.toUpperCase();
         const prevTab = state.selectedTab.toUpperCase();
         doSelectTab(thisTab, prevTab);
-    };
-    const onClickUploadBtn = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    }, [state.selectedTab]);
+    const onClickUploadBtn = useCallback((e: React.MouseEvent<HTMLElement, MouseEvent>) => {
         (async () => {
             e.preventDefault();
             if (!(e?.target as HTMLButtonElement).disabled) {
@@ -48,7 +48,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
                 if (_tabName === "IMGURTAB") await handleImgurUpload(data, dispatch);
             }
         })();
-    };
+    }, [state.fileData, state.urlData, state.selectedTab, state.urlDisabled]);
     const onClickCancelBtn = useCallback(
         (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
             e?.preventDefault();
