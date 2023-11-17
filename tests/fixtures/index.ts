@@ -40,7 +40,7 @@ export const test = base.extend<{
     extensionId: string;
 }>({
     context: async ({}, use) => {
-        const pathToExtension = path.resolve("./dist-chrome");
+        const pathToExtension = path.resolve("./dist");
         const context = await chromium.launchPersistentContext("", {
             headless: false,
             args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`],
