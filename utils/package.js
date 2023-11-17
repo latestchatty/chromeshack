@@ -26,5 +26,5 @@ async function createZipArchive(outputName, sourceDir, outputDir) {
   }
 }
 
-createZipArchive("chromeshack-chrome", "./dist-chrome", "./artifacts");
+createZipArchive("chromeshack-chrome", "./dist", "./artifacts");
 createZipArchive("chromeshack-firefox", "./dist-firefox", "./artifacts");

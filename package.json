@@ -16,15 +16,14 @@
         "cleanall": "rm -rf dist/ dist-firefox/ dist-chrome/",
         "mvsrc:chrome": "rm -rf dist-chrome/ && mv -f dist dist-chrome",
         "mvsrc:firefox": "rm -rf dist-firefox/ && mv -f dist dist-firefox",
-        "manifest:clean": "rm -f dist/manifest.sm.json dist/manifestv3.ffx.json",
-        "manifest:dev": "mv dist/manifest.sm.json dist/manifest.json && rm -f dist/manifestv3.ffx.json",
-        "manifest:firefox": "mv dist/manifestv3.ffx.json dist/manifest.json && rm -f dist/manifest.sm.json",
-        "dev": "NODE_ENV=development run-s clean build:js manifest:dev mvsrc:chrome",
-        "dev:firefox": "NODE_ENV=development run-s clean build:js manifest:firefox mvsrc:firefox",
-        "dev:all": "tsc && run-s cleanall dev dev:firefox",
-        "build": "NODE_ENV=production run-s clean build:js manifest:clean mvsrc:chrome",
-        "build:firefox": "NODE_ENV=production run-s clean build:js manifest:firefox mvsrc:firefox",
-        "build:pkg": "tsc && run-s cleanall build build:firefox pkgsrc",
+        "manifest:firefox": "cp -f utils/manifestv3.ffx.json dist/manifest.json",
+        "dev:crxjs": "vite dev",
+        "dev:firefoxjs": "NODE_ENV=development run-s clean build:js manifest:firefox mvsrc:firefox",
+        "dev": "tsc && run-s dev:firefoxjs clean dev:crxjs",
+        "build:crxjs": "vite build",
+        "build:ffxcrxjs": "FIREFOX=1 vite build",
+        "build": "tsc && run-s cleanall build:ffxcrxjs mvsrc:firefox build:crxjs",
+        "build:pkg": "run-s build pkgsrc",
         "test": "playwright test"
     },
     "dependencies": {
@@ -44,6 +43,7 @@
         "xss": "^1.0.14"
     },
     "devDependencies": {
+        "@crxjs/vite-plugin": "^2.0.0-beta.21",
         "@playwright/test": "^1.39.0",
         "@preact/preset-vite": "^2.6.0",
         "@types/chrome": "^0.0.246",
