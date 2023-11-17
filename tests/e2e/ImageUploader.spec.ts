@@ -21,10 +21,12 @@ test.describe("Image Uploader", () => {
         await expect(uploader).toBeVisible();
     });
     test("url detection and input state transition", async ({ page, context }) => {
-        await navigate(page, url, { d: { image_uploader_toggled: true } }, context);
+        await navigate(page, url, undefined, context);
 
         const replyBtn = page.locator("li.sel div.reply>a");
         await replyBtn.click();
+        const uploaderToggleBtn = page.locator("div#uploader-toggle");
+        await uploaderToggleBtn.click();
         const urlInput = page.locator("li.sel input#urlinput");
         // test invalid url detection
         const invalidInput = "https://localhost/test.jpeg";
@@ -51,10 +53,12 @@ test.describe("Image Uploader", () => {
         await replyBtn.click({ clickCount: 2, delay: 250 });
     });
     test("file drop input and state transitions", async ({ page, context }) => {
-        await navigate(page, url, { d: { image_uploader_toggled: true } }, context);
+        await navigate(page, url, undefined, context);
 
         const replyBtn = page.locator("li.sel div.reply>a");
         await replyBtn.click();
+        const uploaderToggleBtn = page.locator("div#uploader-toggle");
+        await uploaderToggleBtn.click();
         const fileInput = page.locator("li.sel input#fileChooser");
         await fileInput.setInputFiles([
             path.resolve("./tests/fixtures/arcade1.jpg"),

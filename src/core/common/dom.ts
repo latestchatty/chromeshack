@@ -275,11 +275,7 @@ export const locatePostRefs = (postElem: HTMLElement) => {
 
 export const disableTwitch = () => {
     const twitch = document.querySelector(".featured-article-content iframe");
-    const _p = twitch?.closest("p");
-    if (twitch) {
-        twitch.parentNode.removeChild(twitch);
-        _p?.parentNode?.removeChild(_p);
-    }
+    twitch?.parentElement?.removeChild(twitch);
 };
 
 export const parseToElement = (html: string) => {

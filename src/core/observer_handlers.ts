@@ -153,6 +153,8 @@ export const handleRefreshClick = async (e: MouseEvent) => {
 
 export const contentScriptLoaded = async () => {
     await mergeTransientSettings();
+    // disable article Twitch player if we're running Cypress tests for a speed boost
+    if (await getEnabledSuboption("testing_mode")) disableTwitch();
     // open a message channel for WinChatty events
     TabMessenger.connect();
     // try to fix incorrect positioning in single-thread mode
@@ -164,8 +166,6 @@ export const contentScriptLoaded = async () => {
     if (loggedInUsername) await setUsername(loggedInUsername);
     // monkey patch chat_onkeypress to fix busted a/z buttons on nuLOL enabled chatty
     chrome.runtime.sendMessage({ name: "scrollByKeyFix" }).catch(console.error);
-    // disable article Twitch player if we're running Cypress tests for a speed boost
-    if (await getEnabledSuboption("testing_mode")) disableTwitch();
 
     document.addEventListener("click", handleRefreshClick);
     processReplyEvent.addHandler(handleReplyAdded);

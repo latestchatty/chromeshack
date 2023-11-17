@@ -400,7 +400,7 @@ export const mergeTransientSettings = async () => {
 
         const transientOpts = localTransientOpts && JSON.parse(localTransientOpts);
         const transientData = localTransientData && JSON.parse(localTransientData);
-        if (transientData) {
+        if (objHas(transientData)) {
             const merged = await mergeTransients(transientData, transientOpts);
             const newSettings = await resetSettings(merged);
             console.log("mergeTransientSettings merged:", newSettings);

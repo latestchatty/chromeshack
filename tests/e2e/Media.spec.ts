@@ -14,8 +14,9 @@ test.describe("Imgur", () => {
         await targetEmbed.click();
         await expect(targetEmbed).toHaveClass("medialink toggled");
         const firstEmbed = targetEmbed.locator("div.media img").nth(0);
+        await expect(firstEmbed).toBeVisible();
         expect(await firstEmbed.getAttribute("src")).toMatch("https://i.imgur.com/MS5SyIu.png");
-        // clicking on media removes embed medialink child
+        // clicking on image removes medialink child
         await firstEmbed.click();
         await expect(firstEmbed).not.toBeVisible();
     });

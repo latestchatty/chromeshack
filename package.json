@@ -19,13 +19,13 @@
         "manifest:clean": "rm -f dist/manifest.sm.json dist/manifestv3.ffx.json",
         "manifest:dev": "mv dist/manifest.sm.json dist/manifest.json && rm -f dist/manifestv3.ffx.json",
         "manifest:firefox": "mv dist/manifestv3.ffx.json dist/manifest.json && rm -f dist/manifest.sm.json",
-        "dev": "tsc && NODE_ENV=development run-s clean build:js manifest:dev mvsrc:chrome",
-        "dev:firefox": "tsc && NODE_ENV=development run-s clean build:js manifest:firefox mvsrc:firefox",
-        "dev:all": "run-s cleanall dev dev:firefox",
-        "build": "tsc && NODE_ENV=production run-s clean build:js manifest:clean mvsrc:chrome",
-        "build:firefox": "tsc && NODE_ENV=production run-s clean build:js manifest:firefox mvsrc:firefox",
-        "build:pkg": "run-s cleanall build build:firefox pkgsrc",
-        "test": "playwright test --retries=3"
+        "dev": "NODE_ENV=development run-s clean build:js manifest:dev mvsrc:chrome",
+        "dev:firefox": "NODE_ENV=development run-s clean build:js manifest:firefox mvsrc:firefox",
+        "dev:all": "tsc && run-s cleanall dev dev:firefox",
+        "build": "NODE_ENV=production run-s clean build:js manifest:clean mvsrc:chrome",
+        "build:firefox": "NODE_ENV=production run-s clean build:js manifest:firefox mvsrc:firefox",
+        "build:pkg": "tsc && run-s cleanall build build:firefox pkgsrc",
+        "test": "playwright test"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.4.2",

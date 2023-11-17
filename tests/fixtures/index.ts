@@ -6,8 +6,8 @@ import path from "path";
 import shackli from "./_shack_li_.json" assert { type: "json" };
 
 export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) => {
-    const _opts = Object.assign({}, { defaults: true }, opts || {});
-    const _data = Object.assign({}, { enabled_suboptions: ["testing_mode"] }, data || {});
+    const _data = { enabled_suboptions: ["testing_mode"], ...data };
+    const _opts = { defaults: true, ...opts };
     await page.evaluate(
         ({ o, d }) => {
             window.localStorage.setItem("transient-opts", JSON.stringify(o));
@@ -30,7 +30,7 @@ export const setTestCookie = async (context: BrowserContext) => {
 export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: any }, context?: BrowserContext) => {
     const { o, d } = opts || {};
     await page.goto(url);
-    if (opts) await loadExtensionDefaults(page, opts.o, opts.d);
+    if (opts) await loadExtensionDefaults(page, o, d);
     if (context) await setTestCookie(context);
     await page.reload();
 };
