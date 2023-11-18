@@ -32,7 +32,7 @@ const PopupApp = memo(() => {
             (async () => {
                 try {
                     await setSettingsState(state);
-                    console.log("PopupApp state update:", JSON.stringify(state).length);
+                    // console.log("PopupApp state update:", JSON.stringify(state).length);
                 } catch (e) {
                     console.error(e);
                 }
