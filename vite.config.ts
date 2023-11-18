@@ -5,21 +5,28 @@ import { name, description, version } from "./package.json";
 
 const isFirefox = process.env.FIREFOX ? "firefox" : "chrome";
 
-const browserMixin = isFirefox === "firefox"
-    ? {
-          background: {
-              scripts: ["src/serviceWorker.ts"],
-          },
-          content_security_policy: {
-              extension_pages: "script-src 'self'; object-src 'self'",
-          },
-      }
-    : {
-          background: {
-              service_worker: "src/serviceWorker.ts",
-              type: "module",
-          },
-      };
+const browserMixin =
+    isFirefox === "firefox"
+        ? {
+              browser_specific_settings: {
+                  gecko: {
+                      id: "chromeshack@github.com",
+                      strict_min_version: "42.0",
+                  },
+              },
+              background: {
+                  scripts: ["src/serviceWorker.ts"],
+              },
+              content_security_policy: {
+                  extension_pages: "script-src 'self'; object-src 'self'",
+              },
+          }
+        : {
+              background: {
+                  service_worker: "src/serviceWorker.ts",
+                  type: "module",
+              },
+          };
 
 const crxConfig = {
     manifest_version: 3,
