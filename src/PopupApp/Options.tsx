@@ -104,7 +104,7 @@ const Option = memo((props: {
     );
 });
 
-const OptionGroup = memo((props: {
+const OptionGroup = (props: {
     label: string;
     id?: EnabledOptions | EnabledSuboptions;
     classes?: string;
@@ -127,6 +127,6 @@ const OptionGroup = memo((props: {
             {children}
         </div>
     );
-});
+};
 
 export { Option, OptionButton, Suboption, OptionGroup };
