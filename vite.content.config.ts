@@ -2,6 +2,9 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import preact from "@preact/preset-vite"
 
+const devMode = process.env.NODE_ENV === 'development';
+const watcherOpts = devMode ? {} : undefined;
+
 export default defineConfig({
   plugins: [preact()],
   define: {
@@ -9,9 +12,10 @@ export default defineConfig({
   },
   build: {
     emptyOutDir: false,
-    outDir: 'dist',
+    outDir: 'dist-firefox',
     minify: false,
-    sourcemap: process.env.NODE_ENV === 'development' ? true : false,
+    sourcemap: devMode,
+    watch: watcherOpts,
     lib: {
       formats: ['iife'],
       entry: resolve(__dirname, './src/content.ts'),
