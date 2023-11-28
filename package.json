@@ -7,7 +7,7 @@
   "scripts": {
     "generate-licenses": "node utils/generateLicenses.js",
     "generate-cookie": "node utils/testlogin.js",
-    "pkgsrc": "node utils/package.js",
+    "pkgsrc": "node utils/package.js && cp -rf dist dist-firefox artifacts/",
     "build:serviceWorker": "vite build --config vite.serviceWorker.config.ts",
     "build:content": "vite build --config vite.content.config.ts",
     "build:popup": "vite build --config vite.popup.config.ts",
