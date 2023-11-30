@@ -1,41 +1,41 @@
 #post_sub_container.hidden {
-    display: none !important;
+  display: none !important;
 }
 #post_sub_container {
-    /* postbox alignment container */
-    display: flex !important;
-    width: 100%;
-    margin: 0;
-    padding: 0;
+  /* postbox alignment container */
+  display: flex !important;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 div#shacktags_legend {
-    display: flex !important;
-    flex-direction: column;
-    top: 0;
-    left: -1px;
+  display: flex !important;
+  flex-direction: column;
+  top: 0;
+  left: -1px;
 }
 a#shacktags_legend_toggle {
-    display: flex !important;
-    justify-content: center !important;
-    width: 100% !important;
-    max-width: 194px !important;
-    margin: 0 0 0.25em 0 !important;
-    padding: 0.25em !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 194px !important;
+  margin: 0 0 0.25em 0 !important;
+  padding: 0.25em !important;
 }
 
 table#shacktags_legend_table.hidden {
-    display: none !important;
+  display: none !important;
 }
 table#shacktags_legend_table {
-    display: table !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  display: table !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 table#shacktags_legend_table td > span,
 table#shacktags_legend_table td > a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

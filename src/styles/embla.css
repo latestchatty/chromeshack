@@ -1,86 +1,88 @@
 :root {
-    --arrow-outline: rgba(60, 60, 60, 0.6);
-    --arrow-button-fg: rgba(27, 202, 205, 0.8);
+  --arrow-outline: rgba(60, 60, 60, 0.6);
+  --arrow-button-fg: rgba(27, 202, 205, 0.8);
 }
 
 .embla {
-    position: relative;
-    max-width: var(--max-media-item-width) !important;
+  position: relative;
+  max-width: var(--max-media-item-width) !important;
 }
 .embla__button {
-    position: absolute;
-    height: 100%;
-    width: 7%;
-    background-color: transparent;
-    touch-action: manipulation;
-    cursor: pointer;
-    top: 50%;
-    outline: 0;
-    border: 0;
-    padding: 0;
-    margin: 0 auto;
-    z-index: 1;
-    transform: translateY(-50%);
-    transition: 0.2s;
-    opacity: 0.5;
+  position: absolute;
+  height: 100%;
+  width: 7%;
+  background-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+  top: 50%;
+  outline: 0;
+  border: 0;
+  padding: 0;
+  margin: 0 auto;
+  z-index: 1;
+  transform: translateY(-50%);
+  transition: 0.2s;
+  opacity: 0.5;
 }
 .embla__button:hover:not(:disabled) {
-    filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
-        drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
-    opacity: 1;
+  filter: drop-shadow(1px 2px 1px var(--arrow-outline))
+    drop-shadow(-1px 1px 1px var(--arrow-outline))
+    drop-shadow(2px -1px 1px var(--arrow-outline))
+    drop-shadow(-1px -1px 1px var(--arrow-outline));
+  opacity: 1;
 }
 .embla__button:disabled {
-    cursor: default;
-    opacity: 0.2;
+  cursor: default;
+  opacity: 0.2;
 }
 .embla__button--prev {
-    left: -2px;
+  left: -2px;
 }
 .embla__button--next {
-    right: -2px;
+  right: -2px;
 }
 .embla__button__svg {
-    height: 24px !important;
-    width: 24px !important;
-    color: var(--arrow-button-fg);
+  height: 24px !important;
+  width: 24px !important;
+  color: var(--arrow-button-fg);
 }
 
 .embla__viewport {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-    transition: height 25ms;
-    will-change: transform;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  transition: height 25ms;
+  will-change: transform;
 }
 .embla__viewport.is-draggable {
-    cursor: move;
-    cursor: grab;
+  cursor: move;
+  cursor: grab;
 }
 .embla__viewport.is-dragging {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 .embla__container {
-    display: flex !important;
-    user-select: none;
+  display: flex !important;
+  user-select: none;
 }
 
 .embla__slide {
-    position: relative;
-    min-width: 100%;
+  position: relative;
+  min-width: 100%;
 }
 .embla__slide__inner {
-    display: flex;
-    position: relative;
-    overflow: hidden;
+  display: flex;
+  position: relative;
+  overflow: hidden;
 }
 .embla__slide__inner > .media__boundary {
-    position: absolute;
-    display: block;
-    min-height: 100%;
-    min-width: 100%;
+  position: absolute;
+  display: block;
+  min-height: 100%;
+  min-width: 100%;
 }
 .embla__slide__inner > img {
-    margin: 0 auto;
-    object-fit: contain;
-    max-height: var(--max-media-item-height);
+  margin: 0 auto;
+  object-fit: contain;
+  max-height: var(--max-media-item-height);
 }

@@ -6,37 +6,47 @@ import { UserFilter } from "./UserFilter";
 import { type Root } from "react-dom/client";
 import { userPopupEvent } from "../../core/events";
 
-const UserPopupApp = memo((props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean; parentRoot: Root }) => {
+const UserPopupApp = memo(
+  (props: {
+    username: string;
+    isLoggedInUser: boolean;
+    isUserBadge: boolean;
+    parentRoot: Root;
+  }) => {
     const { username, isLoggedInUser, isUserBadge, parentRoot } = props || {};
     const rootRef = useRef(null);
 
-    const popupClickHandler = useCallback((e: MouseEvent) => {
+    const popupClickHandler = useCallback(
+      (e: MouseEvent) => {
         const _this = e.target as HTMLElement;
         const root = rootRef?.current?.parentNode as HTMLElement;
         const is_lol_elem = elemMatches(_this, ".userDropdown span");
         if (!is_lol_elem && root) {
-            // forcefully unmount our popup when clicking outside
-            userPopupEvent.raise({ root: parentRoot });
-            root.parentNode.removeChild(root);
+          // forcefully unmount our popup when clicking outside
+          userPopupEvent.raise({ root: parentRoot });
+          root.parentNode.removeChild(root);
         }
-    }, [parentRoot, rootRef]);
-    
+      },
+      [parentRoot, rootRef]
+    );
+
     useEffect(() => {
-        document.addEventListener("click", popupClickHandler);
-        return () => document.removeEventListener("click", popupClickHandler);
-    }, []);
+      document.addEventListener("click", popupClickHandler);
+      return () => document.removeEventListener("click", popupClickHandler);
+    }, [popupClickHandler]);
 
     return (
-        <div className="dropdown__container" ref={rootRef}>
-            <LOLList username={username} isLoggedInUser={isLoggedInUser} />
-            {isUserBadge && (
-                <>
-                    <UserFilter username={username} isLoggedInUser={isLoggedInUser} />
-                    <HighlightFilters username={username} />
-                </>
-            )}
-        </div>
+      <div className="dropdown__container" ref={rootRef}>
+        <LOLList username={username} isLoggedInUser={isLoggedInUser} />
+        {isUserBadge && (
+          <>
+            <UserFilter username={username} isLoggedInUser={isLoggedInUser} />
+            <HighlightFilters username={username} />
+          </>
+        )}
+      </div>
     );
-});
+  }
+);
 
 export { UserPopupApp };

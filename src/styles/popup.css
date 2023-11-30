@@ -1,245 +1,245 @@
 :root {
-    --font-family: arial, helvetica, clean, sans-serif;
-    --font-size: 13px;
-    --border-color: rgb(86, 86, 86);
-    --border-style: 1px solid var(--border-color);
+  --font-family: arial, helvetica, clean, sans-serif;
+  --font-size: 13px;
+  --border-color: rgb(86, 86, 86);
+  --border-style: 1px solid var(--border-color);
 }
 
 body {
-    width: 500px;
-    height: 500px;
-    padding: 0;
-    margin: 0;
-    font-family: var(--font-family);
-    font-size: var(--font-size);
-    overflow-x: hidden;
+  width: 500px;
+  height: 500px;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  overflow-x: hidden;
 }
 h2 {
-    width: 100%;
-    background-color: #f0f7f9;
-    font-size: 14pt;
-    padding: 2px;
+  width: 100%;
+  background-color: #f0f7f9;
+  font-size: 14pt;
+  padding: 2px;
 }
 textarea {
-    width: 250;
+  width: 250;
 }
 input {
-    outline: none;
+  outline: none;
 }
 
 a.remove {
-    font-size: 12px;
+  font-size: 12px;
 }
 input.name {
-    width: 50px;
+  width: 50px;
 }
 input.color {
-    width: 50px;
+  width: 50px;
 }
 
 div.firefox__padding {
-    margin: 0 0.75em 1.25em 0.5em;
+  margin: 0 0.75em 1.25em 0.5em;
 }
 div.firefox__padding.long {
-    margin: 0 1.85em 1.25em 0.5em !important;
+  margin: 0 1.85em 1.25em 0.5em !important;
 }
 div.chrome__padding {
-    margin: -0.75em 0.75em 0.5em 0.5em;
+  margin: -0.75em 0.75em 0.5em 0.5em;
 }
 
 div[id$="_settings"].hidden {
-    display: none !important;
+  display: none !important;
 }
 
 div.tabs {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    margin: 1.25em 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 1.25em 0 0 0;
 }
 div.tabs > button.tab__btn {
-    flex: 1;
-    display: block;
-    margin: 0 0 0.25em 0;
-    background-color: transparent;
-    outline: none;
-    font-size: 14px !important;
-    color: rgb(110, 110, 110);
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border: var(--border-style) var(--border-style) 0 var(--border-style);
-    font-weight: normal;
+  flex: 1;
+  display: block;
+  margin: 0 0 0.25em 0;
+  background-color: transparent;
+  outline: none;
+  font-size: 14px !important;
+  color: rgb(110, 110, 110);
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border: var(--border-style) var(--border-style) 0 var(--border-style);
+  font-weight: normal;
 }
 button.tab__btn.active {
-    color: black !important;
-    font-weight: bold !important;
+  color: black !important;
+  font-weight: bold !important;
 }
 div.tab-indicator__container {
-    display: flex;
+  display: flex;
 }
 div.tab-indicator {
-    height: 3px;
-    background: black;
-    transition: transform 0.2s;
+  height: 3px;
+  background: black;
+  transition: transform 0.2s;
 }
 div.tabs-body {
-    margin: -0.75em 0;
+  margin: -0.75em 0;
 }
 
 div.suboption {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 div.option__group div.suboption {
-    margin: -5px 0 0.65em -3px;
+  margin: -5px 0 0.65em -3px;
 }
 div.suboption.indent {
-    margin: 0 0 0.75em 1.6em !important;
+  margin: 0 0 0.75em 1.6em !important;
 }
 div.option__group > h2 > input[type="checkbox"] {
-    margin: 3px 6px 3px 3px;
+  margin: 3px 6px 3px 3px;
 }
 div.option__group input[type="checkbox"] {
-    margin: 3px 6px;
+  margin: 3px 6px;
 }
 div.suboption > input[type="checkbox"].suboption {
-    margin: 3px 7px 3px 8px;
+  margin: 3px 7px 3px 8px;
 }
 div.option > p {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 /* highlight users styling */
 #highlight_groups {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-    width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 90%;
 }
 #add_highlight_group {
-    width: 100%;
+  width: 100%;
 }
 #highlight_group {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 #highlight_group:not(:last-child) {
-    margin-bottom: 0.5em;
+  margin-bottom: 0.5em;
 }
 .group_header {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    margin-bottom: 0.25em;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 0.25em;
 }
 .group_label {
-    display: flex;
-    padding: 3px;
-    width: 100%;
+  display: flex;
+  padding: 3px;
+  width: 100%;
 }
 #highlight_group input[type="text"]:read-only {
-    cursor: default;
+  cursor: default;
 }
 
 .group_css {
-    display: flex;
-    max-width: 100%;
+  display: flex;
+  max-width: 100%;
 }
 .group_css textarea {
-    flex: 1 auto;
-    width: 100%;
-    min-height: 45px;
-    min-width: 300px;
-    max-height: 750px;
-    padding: 4px;
-    margin: 0 0.15em 0.5em 0;
-    outline: none;
+  flex: 1 auto;
+  width: 100%;
+  min-height: 45px;
+  min-width: 300px;
+  max-height: 750px;
+  padding: 4px;
+  margin: 0 0.15em 0.5em 0;
+  outline: none;
 }
 /* styling for CSS test splotch */
 .test_css {
-    display: flex;
-    background-color: #121212 !important;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-    margin: 0;
-    padding: 0 2px;
-    max-height: 36px;
-    width: 36px;
+  display: flex;
+  background-color: #121212 !important;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  margin: 0;
+  padding: 0 2px;
+  max-height: 36px;
+  width: 36px;
 }
 .test_css span {
-    font-family: var(--font-family);
-    font-size: 26px;
-    color: #f3e7b5;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
+  font-family: var(--font-family);
+  font-size: 26px;
+  color: #f3e7b5;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 div#image_loader_settings,
 div#video_loader_settings {
-    margin-left: 25px;
+  margin-left: 25px;
 }
 
 p.info {
-    font-style: italic;
-    color: #808080;
+  font-style: italic;
+  color: #808080;
 }
 p.indent {
-    margin-left: 25px;
+  margin-left: 25px;
 }
 
 .import_export_area {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 150px;
-    margin: 0.25em 0.1em;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 150px;
+  margin: 0.25em 0.1em;
 }
 textarea#import_export_field {
-    flex: 1 auto;
-    word-break: break-all;
-    resize: none;
-    outline: none;
+  flex: 1 auto;
+  word-break: break-all;
+  resize: none;
+  outline: none;
 }
 
 /* general styling rules for filter boxes */
 div.filter_box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 div.filter_box select {
-    width: 100%;
-    height: 125px;
-    padding: 6px;
-    outline: none;
+  width: 100%;
+  height: 125px;
+  padding: 6px;
+  outline: none;
 }
 div.filter_box_inputs {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    margin: 0.25em 0 0.25em;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin: 0.25em 0 0.25em;
 }
 div.filter_box_inputs input {
-    width: 100%;
-    outline: none;
+  width: 100%;
+  outline: none;
 }
 div.option__group > div.filter_box {
-    margin: 0 0.33em;
+  margin: 0 0.33em;
 }
 div.filter_box > p {
-    align-self: flex-start;
-    margin: 0 0 0.66em 0.2em;
+  align-self: flex-start;
+  margin: 0 0 0.66em 0.2em;
 }
 
 #match_notifications_select_box {
-    height: 333px;
+  height: 333px;
 }

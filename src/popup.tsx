@@ -8,7 +8,7 @@ const { Provider } = usePopupStore;
 const rootNode = document.getElementById("content");
 const root = createRoot(rootNode);
 root.render(
-    <Provider>
-        <PopupApp />
-    </Provider>
+  <Provider>
+    <PopupApp />
+  </Provider>
 );

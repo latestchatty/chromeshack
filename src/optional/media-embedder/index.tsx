@@ -9,42 +9,49 @@ import "../../styles/media.css";
 import { Expando } from "./Expando";
 
 export const MediaEmbedder = {
-    cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement,
 
-    install() {
-        MediaEmbedder.cacheInjectables();
-        processPostEvent.addHandler(MediaEmbedder.processPost);
-        processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
-    },
+  install() {
+    MediaEmbedder.cacheInjectables();
+    processPostEvent.addHandler(MediaEmbedder.processPost);
+    processPostRefreshEvent.addHandler(MediaEmbedder.processPost);
+  },
 
-    cacheInjectables() {
-        const container = parseToElement(`<div id="react-media-element" />`);
-        MediaEmbedder.cachedEl = container as HTMLElement;
-    },
+  cacheInjectables() {
+    const container = parseToElement(`<div id="react-media-element" />`);
+    MediaEmbedder.cachedEl = container as HTMLElement;
+  },
 
-    async processPost(args: PostEventArgs) {
-        const { post } = args || {};
-        // don't do processing if we don't need to
-        const is_enabled = await enabledContains(["media_loader", "getpost"]);
-        if (!is_enabled) return;
-        // render inside a hidden container in each fullpost
-        const postbody = post?.querySelector(".sel > .fullpost > .postbody");
-        const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
-        const openByDefault = await enabledContains(["auto_open_embeds"]);
-        const rendered = [...post?.querySelectorAll("div#react-media-element")];
-        if (rendered.length === 0 && arrHas(links)) {
-            const process = async (l: HTMLAnchorElement) => {
-                const childOfComic = l.closest("div.panel");
-                const detected = await detectMediaLink(l.href);
-                if (childOfComic || !detected) return;
-                const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
-                // the container needs to remain in the DOM for events to work
-                postbody.append(container);
-                const root = createRoot(container!);
-                l.parentNode.replaceChild(container, l);
-                root.render(<Expando response={detected} options={{ openByDefault }} />);
-            };
-            await Promise.all(links.map(process));
-        }
-    },
+  async processPost(args: PostEventArgs) {
+    const { post } = args || {};
+    // don't do processing if we don't need to
+    const is_enabled = await enabledContains(["media_loader", "getpost"]);
+    if (!is_enabled) return;
+    // render inside a hidden container in each fullpost
+    const postbody = post?.querySelector(".sel > .fullpost > .postbody");
+    const links =
+      postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
+    const openByDefault = await enabledContains(["auto_open_embeds"]);
+    const rendered = [
+      ...(post?.querySelectorAll("div#react-media-element") ?? []),
+    ];
+    if (rendered.length === 0 && arrHas(links)) {
+      const process = async (l: HTMLAnchorElement) => {
+        const childOfComic = l.closest("div.panel");
+        const detected = await detectMediaLink(l.href);
+        if (childOfComic || !detected) return;
+        const container = MediaEmbedder.cachedEl.cloneNode(
+          false
+        ) as HTMLElement;
+        // the container needs to remain in the DOM for events to work
+        postbody.append(container);
+        const root = createRoot(container!);
+        l.parentNode.replaceChild(container, l);
+        root.render(
+          <Expando response={detected} options={{ openByDefault }} />
+        );
+      };
+      await Promise.all(links.map(process));
+    }
+  },
 };

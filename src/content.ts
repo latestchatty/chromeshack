@@ -27,35 +27,35 @@ import "./styles/chromeshack.css";
 import "./styles/comic_scripts.css";
 
 (async () => {
-    try {
-        await contentScriptLoaded();
-        // ^ make sure this is first
-        await ChattyNews.install();
-        await Collapse.install();
-        await CommentTags.install();
-        await CustomUserFilters.install();
-        await DinoGegtik.install();
-        await HighlightPendingPosts.install();
-        await HighlightUsers.install();
-        await NewCommentHighlighter.install();
-        await PostStyling.install();
-        await SparklyComic.install();
-        await Switchers.install();
-        await TwitchAutoplay.install();
-        await ThreadPane.install();
-        Drafts.install();
-        EmojiPoster.install();
-        ImageUploader.install();
-        LocalTimeStamp.install();
-        MediaEmbedder.install();
-        ModBanners.install();
-        PostLengthCounter.install();
-        PostPreview.install();
-        Templates.install();
-        UserPopup.install();
-        // always make sure the ChromeShack observer is last
-        ChromeShack.install();
-    } catch (e) {
-        console.error(e);
-    }
+  try {
+    await contentScriptLoaded();
+    // ^ make sure this is first
+    await ChattyNews.install();
+    await Collapse.install();
+    await CommentTags.install();
+    await CustomUserFilters.install();
+    await DinoGegtik.install();
+    await HighlightPendingPosts.install();
+    await HighlightUsers.install();
+    await NewCommentHighlighter.install();
+    await PostStyling.install();
+    await SparklyComic.install();
+    await Switchers.install();
+    await TwitchAutoplay.install();
+    await ThreadPane.install();
+    Drafts.install();
+    EmojiPoster.install();
+    ImageUploader.install();
+    LocalTimeStamp.install();
+    MediaEmbedder.install();
+    ModBanners.install();
+    PostLengthCounter.install();
+    PostPreview.install();
+    Templates.install();
+    UserPopup.install();
+    // always make sure the ChromeShack observer is last
+    ChromeShack.install();
+  } catch (e) {
+    console.error(e);
+  }
 })();
