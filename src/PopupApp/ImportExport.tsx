@@ -1,11 +1,11 @@
 import React, { memo, useRef, useState } from "react";
 import { getState } from "./actions";
 import { copyToClipboard, exportSettings, importSettings } from "./helpers";
-import { usePopupStore } from "./popupStore";
+import { useStore } from "./popupStore";
 
 const ImportExport = memo(() => {
-  const { useStoreDispatch } = usePopupStore;
-  const dispatch = useStoreDispatch();
+  const store = useStore() as PopupState;
+  const dispatch = store.dispatch;
 
   const [fieldBox, setFieldBox] = useState("");
   const [importing, setImporting] = useState(false);

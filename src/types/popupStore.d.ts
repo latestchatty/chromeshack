@@ -7,6 +7,7 @@ declare global {
     notifications: string[];
     filters: string[];
     highlightgroups: HighlightGroup[];
+    dispatch?: (action: PopupAction) => void;
   }
 
   export type OptionsTypes = "SET_OPTIONS" | "SET_SUBOPTIONS";

@@ -10,7 +10,7 @@ export const validTabs = [{ id: "imgurTab", label: "Imgur" }];
 const useImageUploader = (
   parentRef: HTMLElement,
   state: UploaderState,
-  dispatch: React.Dispatch<UploaderAction>
+  dispatch: (action: UploaderAction) => void
 ) => {
   const fileChooserRef = useRef(null);
 

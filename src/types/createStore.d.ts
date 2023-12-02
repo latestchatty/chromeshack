@@ -8,6 +8,7 @@ declare global {
   }
   export interface ReducerState {
     [key: string]: BaseTypes;
+    dispatch: (args: ReducerAction) => any;
   }
   type StoreReducer =
     | React.ReducerWithoutAction<ReducerState>

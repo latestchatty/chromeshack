@@ -2,7 +2,7 @@
 import React, { memo, useEffect, useRef, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
-import { usePopupStore } from "./popupStore";
+import { useStore } from "./popupStore";
 
 const FilterBox = memo(
   (props: {
@@ -31,8 +31,8 @@ const FilterBox = memo(
     const [selected, setSelected] = useState([] as string[]);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const { useStoreDispatch } = usePopupStore;
-    const dispatch = useStoreDispatch();
+    const state = useStore() as PopupState;
+    const dispatch = state.dispatch;
 
     const selectId = `${id}_select_box`;
     const boxId = `${id}_text_box`;

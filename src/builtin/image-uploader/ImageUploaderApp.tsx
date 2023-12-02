@@ -7,19 +7,15 @@ import {
   ToggleChildren,
   UrlInput,
 } from "./Components";
-import { useUploaderStore } from "./uploaderStore";
+import { useStore } from "./uploaderStore";
 import { useImageUploader, validTabs } from "./useImageUploader";
 
 const ImageUploaderApp = memo((props: { postboxEl: HTMLElement }) => {
   const { postboxEl } = props || {};
   const parentRef = useRef(postboxEl);
 
-  const {
-    useStoreState: useUploaderState,
-    useStoreDispatch: useUploaderDispatch,
-  } = useUploaderStore;
-  const state = useUploaderState() as UploaderState;
-  const dispatch = useUploaderDispatch() as React.Dispatch<UploaderAction>;
+  const state = useStore() as UploaderState;
+  const dispatch = state.dispatch;
 
   const {
     fileChooserRef,

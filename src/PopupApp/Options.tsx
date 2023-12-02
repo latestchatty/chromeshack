@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
-import { usePopupStore } from "./popupStore";
+import { useStore } from "./popupStore";
 
 const useOption = (opts: {
   key: string;
@@ -9,9 +9,8 @@ const useOption = (opts: {
   type: OptionsTypes;
 }) => {
   const { key, val, type } = opts || {};
-  const { useStoreState, useStoreDispatch } = usePopupStore;
-  const state = useStoreState() as PopupState;
-  const dispatch = useStoreDispatch();
+  const state = useStore() as PopupState;
+  const dispatch = state.dispatch;
 
   const [options, setOptions] = useState(state[key] as string[]);
 

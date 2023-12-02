@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["tests/**/*.ts"],
   "env": {
     "browser": true,
     "es2022": true
@@ -29,6 +30,7 @@
     "no-unused-vars": "off",
     "no-useless-escape": "off",
     "no-use-before-define": "off",
+    "eol-last": ["error", "always"],
     "@typescript-eslint/no-unused-vars": ["off"],
     "@typescript-eslint/no-use-before-define": ["error"],
     "@typescript-eslint/no-explicit-any": ["off"],

@@ -6,13 +6,12 @@ import { FilterBox } from "./FilterBox";
 import { HighlightGroups } from "./HighlightGroups";
 import { ImportExport } from "./ImportExport";
 import { Option, OptionButton, OptionGroup, Suboption } from "./Options";
-import { usePopupStore } from "./popupStore";
+import { useStore } from "./popupStore";
 import { Tabs } from "./Tabs";
 
 const PopupApp = memo(() => {
-  const { useStoreState, useStoreDispatch } = usePopupStore;
-  const state = useStoreState() as PopupState;
-  const dispatch = useStoreDispatch();
+  const state = useStore() as PopupState;
+  const dispatch = state.dispatch;
 
   const handleResetBtn = () => {
     (async () => {

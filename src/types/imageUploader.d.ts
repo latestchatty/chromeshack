@@ -16,7 +16,7 @@ declare global {
     fileData?: File[];
     formats?: string;
     disabled?: boolean;
-    dispatch?: React.Dispatch<UploaderAction>;
+    dispatch?: (action: UploaderAction) => void;
     state?: UploaderState | string;
     status?: string;
     error?: any;

@@ -1,4 +1,4 @@
-import { useStore } from "../core/createStore";
+import { create } from "zustand";
 
 const initialState: PopupState = {
   options: [],
@@ -8,7 +8,7 @@ const initialState: PopupState = {
   highlightgroups: [],
 };
 
-const PopupReducer = (state: PopupState, action: PopupAction) => {
+const popupReducer = (state: PopupState, action: PopupAction) => {
   switch (action.type) {
     case "INIT":
       return action.payload;
@@ -37,5 +37,8 @@ const PopupReducer = (state: PopupState, action: PopupAction) => {
   }
 };
 
-// eslint-disable-next-line react-hooks/rules-of-hooks
-export const usePopupStore = useStore(PopupReducer, initialState);
+export const useStore = create((set) => ({
+  ...initialState,
+  dispatch: (action: PopupAction) =>
+    set((state: PopupState) => popupReducer(state, action)),
+}));

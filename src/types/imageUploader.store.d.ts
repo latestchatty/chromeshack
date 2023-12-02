@@ -36,5 +36,6 @@ declare global {
       code: number;
       msg: string;
     };
+    dispatch?: (action: UploaderAction) => void;
   }
 }

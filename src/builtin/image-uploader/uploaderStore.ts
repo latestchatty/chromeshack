@@ -1,5 +1,6 @@
+import { create } from "zustand";
+
 import { arrHas, packValidTypes } from "../../core/common/common";
-import { useStore } from "../../core/createStore";
 
 export const imageFormats = "image/jpeg,image/png,image/gif,image/webp";
 export const videoFormats =
@@ -105,7 +106,7 @@ const tabReducer = (state: UploaderState, action: UploaderAction) => {
   }
 };
 
-const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
+const uploaderReducer = (state: UploaderState, action: UploaderAction) => {
   switch (action.type) {
     case "LOAD_TAB":
       return tabReducer(state, action);
@@ -167,6 +168,9 @@ const UploaderReducer = (state: UploaderState, action: UploaderAction) => {
   }
 };
 
-/// expose a custom hook for ease of use
-// eslint-disable-next-line react-hooks/rules-of-hooks
-export const useUploaderStore = useStore(UploaderReducer, initialState);
+/// expose some custom hooks for ease of use
+export const useStore = create((set) => ({
+  ...initialState,
+  dispatch: (action: UploaderAction) =>
+    set((state: UploaderState) => uploaderReducer(state, action)),
+}));

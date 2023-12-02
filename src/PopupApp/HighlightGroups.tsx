@@ -5,14 +5,13 @@ import { highlightGroupsEqual } from "../core/settings";
 import { addHighlightGroup, delHighlightGroup } from "./actions";
 import { FilterBox } from "./FilterBox";
 import { insertGroupCSS, randomHsl, trimName } from "./helpers";
-import { usePopupStore } from "./popupStore";
+import { useStore } from "./popupStore";
 
 const HighlightGroup = memo((props: { name: string }) => {
   const { name } = props || {};
 
-  const { useStoreState, useStoreDispatch } = usePopupStore;
-  const state = useStoreState() as PopupState;
-  const dispatch = useStoreDispatch();
+  const state = useStore() as PopupState;
+  const dispatch = state.dispatch;
 
   const [localGroup, setLocalGroup] = useState<HighlightGroup>(
     state.highlightgroups?.find(
@@ -145,9 +144,8 @@ const HighlightGroup = memo((props: { name: string }) => {
 });
 
 const HighlightGroups = memo(() => {
-  const { useStoreState, useStoreDispatch } = usePopupStore;
-  const state = useStoreState() as PopupState;
-  const dispatch = useStoreDispatch();
+  const state = useStore() as PopupState;
+  const dispatch = state.dispatch;
 
   const handleAddGroup = () =>
     addHighlightGroup(state.highlightgroups, {}, dispatch);
