@@ -1,5 +1,4 @@
 {
-  "ignorePatterns": ["tests/**/*.ts"],
   "env": {
     "browser": true,
     "es2022": true

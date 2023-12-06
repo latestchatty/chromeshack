@@ -9,8 +9,8 @@
   "include": [
     "package.json",
     "vite.config.ts",
-    "vite.popup.config.ts",
     "vite.content.config.ts",
-    "vite.serviceWorker.config.ts"
+    "vite.popup.config.ts",
+    "vite.serviceWorker.config.ts",
   ]
 }

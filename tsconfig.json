@@ -17,7 +17,6 @@
     "jsx": "react-jsx",
     "types": ["node", "chrome", "./src/types"],
   },
-  "include": ["src"],
-  "exclude": ["tests"],
+  "include": ["src", "tests"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
