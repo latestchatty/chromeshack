@@ -46,7 +46,7 @@ export const toggleOption = (
   options: string[],
   val: string,
   type: OptionsTypes,
-  dispatch: React.Dispatch<PopupAction>
+  dispatch: (action: PopupAction) => void
 ) => {
   // works with enabled_scripts and enabled_suboptions
   const foundIdx = options?.findIndex(
@@ -65,7 +65,7 @@ export const addFilter = (
   filters: string[],
   val: string,
   type: FilterTypes | "UPDATE_HIGHLIGHTGROUP",
-  dispatch: React.Dispatch<PopupAction>,
+  dispatch: (action: PopupAction) => void,
   groups?: HighlightGroup[],
   groupName?: string
 ) => {
@@ -88,7 +88,7 @@ export const delFilters = (
   filters: string[],
   options: string[],
   type: FilterTypes | "UPDATE_HIGHLIGHTGROUP",
-  dispatch: React.Dispatch<PopupAction>,
+  dispatch: (action: PopupAction) => void,
   groups?: HighlightGroup[],
   groupName?: string
 ) => {
@@ -127,7 +127,7 @@ const newHighlightGroup = (name?: string, css?: string, username?: string) => {
 export const addHighlightGroup = (
   groups: HighlightGroup[],
   group: { name?: string; css?: string; username?: string },
-  dispatch: React.Dispatch<PopupAction>
+  dispatch: (action: PopupAction) => void
 ) => {
   const { name, css, username } = group || {};
   const newGroup = newHighlightGroup(name, css, username);
@@ -137,7 +137,7 @@ export const addHighlightGroup = (
 export const delHighlightGroup = (
   groups: HighlightGroup[],
   groupName: string,
-  dispatch: React.Dispatch<PopupAction>
+  dispatch: (action: PopupAction) => void
 ) => {
   const newGroups = groups.filter(
     (g) => g.name.toUpperCase() !== groupName.toUpperCase()

@@ -46,7 +46,7 @@ const HighlightGroup = memo((props: { name: string }) => {
   };
   const handleSplotchClick = () => {
     let firstColor: string;
-    const style = styleInput?.replace(/((?:\s*?)color:.+?;)/gim, (m, g1) => {
+    const style = styleInput?.replace(/((?:\s*?)color:.+?;)/gim, (_, g1) => {
       // allow only two color rules, the original and our test rule
       if (!firstColor) {
         firstColor = g1;

@@ -3,13 +3,20 @@ import { test, expect } from "../fixtures";
 test.describe("Settings Popup", () => {
   test.beforeEach(async ({ page, extensionId }) => {
     await page.goto(`chrome-extension://${extensionId}/src/popup.html`);
+    await page.waitForSelector("div#tabs-container.loaded");
   });
 
   test("Toggle persistence", async ({ page }) => {
+    const tabs = page.locator("button.tab__btn");
+    await tabs.nth(0).click();
+
     await expect(page.locator("div.option__group > *")).toHaveCount(6);
-    const options = page.locator("div.options");
-    const autoOpenCheckbox = options.nth(2).locator("input#auto_open_embeds");
+    const autoOpenCheckbox = page.locator("input#auto_open_embeds");
     await autoOpenCheckbox.click();
+    await expect(autoOpenCheckbox).toBeChecked();
+    await tabs.nth(1).click();
+    await tabs.nth(0).click();
+
     await page.reload();
     await expect(autoOpenCheckbox).toBeChecked();
   });
@@ -18,23 +25,32 @@ test.describe("Settings Popup", () => {
     const tabs = page.locator("button.tab__btn");
     // click Notify Tab and enable notify
     await tabs.nth(1).click();
+
     const notifyEnablement = page.locator("input#enable_notifications");
     await notifyEnablement.click();
     await expect(notifyEnablement).toBeChecked();
+
     // click Filters tab confirm highlight groups has default # of children
     await tabs.nth(2).click();
-    await expect(page.locator("div#highlight_groups > *")).toHaveCount(6);
-    // click Notify tab again and disable notify
+
+    const groups = page.locator("div#highlight_groups > *");
+    const activeBtn = page.locator("button.tab__btn.active");
+    await expect(groups).toHaveCount(6);
+
     await tabs.nth(1).click();
+
     await notifyEnablement.click();
     await expect(notifyEnablement).not.toBeChecked();
+
     // swap back to Filters tab and count children
     await tabs.nth(2).click();
-    await expect(page.locator("div#highlight_groups > *")).toHaveCount(6);
-    await page.waitForTimeout(250);
-    // check if tab selection persists across reload
+
+    await expect(groups).toHaveCount(6);
+    await expect(activeBtn).toContainText("Filters");
+
     await page.reload();
-    await expect(page.locator("button.active")).toContainText("Filters");
+    await expect(groups).toHaveCount(6);
+    await expect(activeBtn).toContainText("Filters");
   });
 
   test("Test HGs CSS Interactions", async ({ page }) => {
@@ -87,9 +103,7 @@ test.describe("Settings Popup", () => {
     await friendsOptions.nth(1).click();
     await friendsDelBtn.click();
     await expect(friendsOptions).toHaveCount(2);
-    await page.waitForTimeout(250);
 
-    // check if settings persist across a reload
     await page.reload();
     await expect(friendsOptions).toHaveCount(2);
   });

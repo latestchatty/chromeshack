@@ -1,5 +1,5 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
-import React, { memo, useEffect } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { resetSettings } from "../core/settings";
 import { getState, setSettingsState } from "./actions";
 import { FilterBox } from "./FilterBox";
@@ -16,7 +16,7 @@ const PopupApp = memo(() => {
   const handleResetBtn = () => {
     (async () => {
       const freshSettings = await resetSettings().then(getState);
-      dispatch({ type: "INIT", payload: freshSettings });
+      dispatch({ type: "INIT", payload: { ...freshSettings, loaded: true } });
     })();
   };
   const handleRlsNotesBtn = () => {
@@ -26,26 +26,26 @@ const PopupApp = memo(() => {
   };
 
   useEffect(() => {
-    // debounce our state updates
-    const handler = setTimeout(() => {
-      (async () => {
-        try {
-          await setSettingsState(state);
-          // console.log("PopupApp state update:", JSON.stringify(state).length);
-        } catch (e) {
-          console.error(e);
-        }
-      })();
-    }, 100);
-    return () => clearTimeout(handler);
+    if (state == null || (state && Object.keys(state).length === 0)) return;
+    // sync our local state store with our global state
+    (async () => {
+      try {
+        await setSettingsState(state);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
   }, [state]);
   useEffect(() => {
     // populate our initial state from our local settings store
-    (async () => dispatch({ type: "INIT", payload: await getState() }))();
+    (async () => {
+      const _state = await getState();
+      dispatch({ type: "INIT", payload: { ..._state, loaded: true } });
+    })();
   }, []);
 
   return (
-    <Tabs>
+    <Tabs isLoaded={state.loaded}>
       <div title="Media">
         <OptionGroup
           label="Multimedia Embedding"

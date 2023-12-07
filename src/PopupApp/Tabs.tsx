@@ -1,21 +1,22 @@
 import React, { memo, useEffect, useRef, useState } from "react";
-import { classNames } from "../core/common/common";
+import { classNames, isFirefox } from "../core/common/common";
 import { getSetting, setSetting } from "../core/settings";
 
-const isChromeBrowser = !!window.browser;
+const _isFirefox = isFirefox();
 
 const storeActiveTab = async (idx: number) =>
   await setSetting("selected_popup_tab", idx);
 const getActiveTabFromStore = async () =>
   await getSetting("selected_popup_tab", 0);
 
-const Tabs = memo((props: { children?: JSX.Element[] }) => {
-  const { children } = props || {};
+const Tabs = memo((props: { children?: JSX.Element[], isLoaded: boolean }) => {
+  const { children, isLoaded } = props || {};
   const bodyRef = useRef(null);
   const classDefaults = useRef({
-    firefox__padding: !isChromeBrowser,
-    chrome__padding: isChromeBrowser,
+    firefox__padding: _isFirefox,
+    chrome__padding: !_isFirefox,
     long: false,
+    loaded: false,
   }).current;
 
   const [activeTabIdx, setActiveTabIdx] = useState(0);
@@ -26,8 +27,8 @@ const Tabs = memo((props: { children?: JSX.Element[] }) => {
     const bodyHeight = (bodyRef.current as HTMLElement).offsetHeight;
     if (bodyHeight > 499)
       setClasses(classNames({ ...classDefaults, long: true }));
-    else setClasses(classNames({ ...classDefaults, long: false }));
-  }, [activeTabIdx, classDefaults]);
+    else setClasses(classNames({ ...classDefaults, long: false, loaded: isLoaded }));
+  }, [activeTabIdx, classDefaults, isLoaded]);
   useEffect(() => {
     (async () => {
       const _tabIdx = ((await getActiveTabFromStore()) as number) || 0;
@@ -36,7 +37,7 @@ const Tabs = memo((props: { children?: JSX.Element[] }) => {
   }, []);
 
   return (
-    <div className={classes}>
+    <div id="tabs-container" className={classes}>
       <div className="tabs">
         {children.map((c, i) => {
           return (

@@ -6,6 +6,7 @@ const initialState: PopupState = {
   notifications: [],
   filters: [],
   highlightgroups: [],
+  loaded: false,
 };
 
 const popupReducer = (state: PopupState, action: PopupAction) => {

@@ -7,6 +7,7 @@ declare global {
     notifications: string[];
     filters: string[];
     highlightgroups: HighlightGroup[];
+    loaded: boolean;
     dispatch?: (action: PopupAction) => void;
   }
 
