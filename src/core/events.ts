@@ -1,21 +1,25 @@
 class LiteEvent<T> implements LiteEventInterface<T> {
-  private handlers: { (...args: T[]): void }[] = [];
+	private handlers: { (...args: T[]): void }[] = [];
 
-  addHandler(handler: { (...args: T[]): void }): void {
-    this.handlers.push(handler);
-  }
+	addHandler(handler: { (...args: T[]): void }): void {
+		this.handlers.push(handler);
+	}
 
-  removeHandler(handler: { (...args: T[]): void }): void {
-    this.handlers = this.handlers.filter((h) => h !== handler);
-  }
+	removeHandler(handler: { (...args: T[]): void }): void {
+		this.handlers = this.handlers.filter((h) => h !== handler);
+	}
 
-  raise(...args: T[]) {
-    this.handlers.forEach(async (h: any) => await h(...args));
-  }
+	raise(...args: T[]) {
+		(async () => {
+			for (const handler of this.handlers) {
+				await handler(...args);
+			}
+		})();
+	}
 
-  expose(): LiteEventInterface<T> {
-    return this;
-  }
+	expose(): LiteEventInterface<T> {
+		return this;
+	}
 }
 
 export const fullPostsCompletedEvent = new LiteEvent<void>();

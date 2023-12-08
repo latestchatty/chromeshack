@@ -3,7 +3,7 @@ import { test, expect, navigate } from "../fixtures";
 test("user flairs enabled", async ({ page }) => {
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=40040034#item_40040034"
+    "https://www.shacknews.com/chatty?id=40040034#item_40040034",
   );
 
   const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
@@ -18,7 +18,7 @@ test("user flairs disabled", async ({ page }) => {
     {
       o: { exclude: true },
       d: { enabled_scripts: ["shrink_user_icons", "reduced_color_user_icons"] },
-    }
+    },
   );
 
   const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
@@ -30,7 +30,7 @@ test("user flairs disabled", async ({ page }) => {
 test("lol tags enabled", async ({ page }) => {
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=40046772#item_40046772"
+    "https://www.shacknews.com/chatty?id=40046772#item_40046772",
   );
 
   const tags = page.locator(".fullpost .lol-tags").nth(0);
@@ -44,7 +44,7 @@ test("lol tags disabled", async ({ page }) => {
     "https://www.shacknews.com/chatty?id=40049133#item_40049133",
     {
       d: { enabled_scripts: ["hide_tagging_buttons", "hide_tag_counts"] },
-    }
+    },
   );
 
   const tag = page.locator(".fullpost .lol-tags").nth(0);
@@ -59,7 +59,7 @@ test("shame switchers enabled", async ({ page }) => {
     "https://www.shacknews.com/chatty?id=40049133#item_40049133",
     {
       d: { enabled_scripts: ["switchers"] },
-    }
+    },
   );
 
   await expect(page.locator("li li.sel span.user")).toHaveText(/\w+ - \(\w+\)/);
@@ -71,7 +71,7 @@ test("chatty-news enabled", async ({ page }) => {
     "https://www.shacknews.com/chatty?id=40049762#item_40049762",
     {
       d: { enabled_scripts: ["chatty_news"] },
-    }
+    },
   );
   await page.waitForSelector("div.chatty__news__enabled");
 
@@ -97,7 +97,7 @@ test("CustomUserFilter on author in single-thread mode", async ({ page }) => {
     "https://www.shacknews.com/chatty?id=40049762#item_40049762",
     {
       d: { user_filters: ["ForcedEvolutionaryVirus"] },
-    }
+    },
   );
 
   const fullpost = page.locator("li .fullpost");
@@ -111,7 +111,7 @@ test("CustomUserFilter on replies in single-thread mode", async ({ page }) => {
     "https://www.shacknews.com/chatty?id=40049762#item_40049762",
     {
       d: { user_filters: ["Milleh"] },
-    }
+    },
   );
 
   const onelines = await page.locator(".oneline_user").allInnerTexts();
@@ -137,7 +137,7 @@ test("HighlightUser highlighting", async ({ page }) => {
           },
         ],
       },
-    }
+    },
   );
 
   // check for 'color' 'yellow'
@@ -158,7 +158,7 @@ test("NewCommentHighlighter highlighting", async ({ page }) => {
     {
       o: { append: true },
       d: { new_comment_highlighter_last_id: 40107615 },
-    }
+    },
   );
 
   const highlights = page.locator(".newcommenthighlighter");
