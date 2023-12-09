@@ -3,36 +3,31 @@ import path from "path";
 import licenseChecker from "license-checker";
 
 licenseChecker.init({ start: "./", json: true }, (err, packages) => {
-	if (err) {
-		console.error(err);
-		return;
-	}
+  if (err) {
+    console.error(err);
+    return;
+  }
 
-	let licenses = "";
-	for (const packageName in packages) {
-		const packageInfo = packages[packageName];
+  let licenses = "";
+  for (const packageName in packages) {
+    const packageInfo = packages[packageName];
 
-		if (packageInfo?.licenseFile) {
-			licenses += `Package: ${packageName}\n`;
-			licenses += `License: ${packageInfo.licenses}\n`;
+    if (packageInfo?.licenseFile) {
+      licenses += `Package: ${packageName}\n`;
+      licenses += `License: ${packageInfo.licenses}\n`;
 
-			try {
-				const licenseContent = fs.readFileSync(
-					path.resolve(packageInfo.licenseFile),
-					"utf8",
-				);
-				licenses += `\n${licenseContent}\n`;
-			} catch (error) {
-				console.error(
-					`Error reading license file for ${packageName}: ${error.message}`,
-				);
-			}
-			licenses += "\n";
-		}
-	}
+      try {
+        const licenseContent = fs.readFileSync(path.resolve(packageInfo.licenseFile), "utf8");
+        licenses += `\n${licenseContent}\n`;
+      } catch (error) {
+        console.error(`Error reading license file for ${packageName}: ${error.message}`);
+      }
+      licenses += "\n";
+    }
+  }
 
-	const outPath = path.join("./public/ThirdPartyLicenses.txt");
-	fs.writeFileSync(outPath, licenses);
+  const outPath = path.join("./public/ThirdPartyLicenses.txt");
+  fs.writeFileSync(outPath, licenses);
 
-	console.log("ThirdPartyLicenses.txt file generated successfully!");
+  console.log("ThirdPartyLicenses.txt file generated successfully!");
 });

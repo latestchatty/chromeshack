@@ -1,7 +1,7 @@
 export {};
 
 declare global {
-	export interface SwitcherMatch extends ResolvedUser {
-		matched: string;
-	}
+  export interface SwitcherMatch extends ResolvedUser {
+    matched: string;
+  }
 }
