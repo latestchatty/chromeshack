@@ -166,7 +166,7 @@ export const enabledContains = async (keys: EnabledOptions[]) => {
 export const highlightsContains = async (username: string): Promise<HighlightGroup[]> => {
   // return all group matches based on username
   return (await getMutableHighlights()).filter((x: HighlightGroup) =>
-    x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase())),
+    x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
   );
 };
 
@@ -237,7 +237,7 @@ export const mergeHighlightGroups = async (newGroups: HighlightGroup[], oldGroup
         else {
           // only allow unique users in a given group (compare ordinal name)
           const uniqueUsers = g.users?.filter(
-            (x, i, s) => s.findIndex((u) => u.toUpperCase() === x.toUpperCase()) === i,
+            (x, i, s) => s.findIndex((u) => u.toUpperCase() === x.toUpperCase()) === i
           );
           if (uniqueUsers) g.users = uniqueUsers;
           // a group name is required to accumulate
@@ -326,7 +326,7 @@ export const migrateSettings = async () => {
     // make sure highlight_groups are up-to-date for 1.74
     const mutatedGroups = await mergeHighlightGroups(
       legacy_settings?.["highlight_groups"],
-      DefaultSettings.highlight_groups,
+      DefaultSettings.highlight_groups
     );
     await setSettings({
       ...legacy_settings,

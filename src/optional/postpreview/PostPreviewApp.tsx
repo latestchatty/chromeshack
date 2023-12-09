@@ -26,14 +26,14 @@ const PostPreviewApp = memo((props: { postboxElem: HTMLElement; paneMountElem: H
         ? (e as HTMLInputElement)?.value
         : ((e as KeyboardEvent).target as HTMLInputElement)?.value;
       _generatePreview(_val);
-    }, 250),
+    }, 250)
   ).current;
 
   const handleInput = useCallback(
     (e: KeyboardEvent) => {
       if (toggled) debouncedInputRef(e);
     },
-    [toggled, debouncedInputRef],
+    [toggled, debouncedInputRef]
   );
   const handleToggleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -42,7 +42,7 @@ const PostPreviewApp = memo((props: { postboxElem: HTMLElement; paneMountElem: H
       if (inputArea.value.length > 0) debouncedInputRef(inputArea);
       setToggled((p) => !p);
     },
-    [debouncedInputRef, postboxRef],
+    [debouncedInputRef, postboxRef]
   );
 
   useEffect(() => {

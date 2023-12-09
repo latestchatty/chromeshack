@@ -8,7 +8,7 @@ const LOLListItem = memo((props: { href: string; text: string }) => {
       e.preventDefault();
       if (href) openAsWindow(href);
     },
-    [href],
+    [href]
   );
   return (
     <div className="dropdown__item" onClick={handleClick}>

@@ -11,7 +11,7 @@ export const SentenceParser = {
     _html = html.replace(link_regex, LINK_PLACEHOLDER);
     // Extract all the spoilers, store them in spoilers[] and replace the spoilers with a %%spoiler%% placeholder in the post
     const spoiler_regex = new RegExp(
-      /<span class="jt_spoiler" onclick="return doSpoiler\( event \);">(|.|\r|\n)*?<\/span>/i,
+      /<span class="jt_spoiler" onclick="return doSpoiler\( event \);">(|.|\r|\n)*?<\/span>/i
     );
     const spoilers = html.match(spoiler_regex);
     _html = html.replace(spoiler_regex, SPOILER_PLACEHOLDER);

@@ -16,7 +16,7 @@ const sanitizeObj = (val: any) => {
         acc[k] = sanitizeObj(val[k]);
         return acc;
       },
-      {} as Record<string | number, any>,
+      {} as Record<string | number, any>
     );
 
   // we only need to sanitize strings here
@@ -122,7 +122,7 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
       .catch((err) => {
         console.error(err);
         return reject(err);
-      }),
+      })
   );
 };
 

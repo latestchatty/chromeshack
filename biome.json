@@ -1,5 +1,8 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+  "files": {
+    "include": ["src", "utils", "public/patches"]
+  },
   "organizeImports": {
     "enabled": true
   },
@@ -16,7 +19,7 @@
       "arrowParentheses": "always",
       "jsxQuoteStyle": "double",
       "semicolons": "always",
-      "trailingComma": "all",
+      "trailingComma": "es5",
       "quoteProperties": "asNeeded",
       "bracketSpacing": true,
       "bracketSameLine": true

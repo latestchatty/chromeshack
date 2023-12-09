@@ -23,7 +23,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
         payload: { to: nNextTabName, from: nPrevTabName },
       });
     },
-    [dispatch],
+    [dispatch]
   );
 
   const onClickToggle = useCallback(
@@ -35,7 +35,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
       })();
       dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
     },
-    [state.visible, dispatch],
+    [state.visible, dispatch]
   );
   const onClickTab = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -45,7 +45,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
       const prevTab = state.selectedTab.toUpperCase();
       doSelectTab(thisTab, prevTab);
     },
-    [state.selectedTab, doSelectTab],
+    [state.selectedTab, doSelectTab]
   );
   const onClickUploadBtn = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -59,7 +59,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
         }
       })();
     },
-    [state, dispatch],
+    [state, dispatch]
   );
   const onClickCancelBtn = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -68,7 +68,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
       doSelectTab(state.selectedTab);
       fileChooserRef.current.value = null;
     },
-    [state.selectedTab, dispatch, doSelectTab],
+    [state.selectedTab, dispatch, doSelectTab]
   );
   /// hide the statusline once the transition animation ends
   const onStatusAnimEnd = () => dispatch({ type: "UPDATE_STATUS", payload: "" });

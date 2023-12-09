@@ -55,7 +55,7 @@ const usePendingPosts = (threaded: boolean) => {
       setPendingIdx((i) => (i > newIdx ? newIdx : i));
       pendingPostsUpdateEvent.raise({ pendings: newPendings });
     },
-    [pendings],
+    [pendings]
   );
   const fetchPendings = useCallback(
     async (resp: NotifyResponse) => {
@@ -75,7 +75,7 @@ const usePendingPosts = (threaded: boolean) => {
           if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
           return acc;
         },
-        [] as PendingPost[],
+        [] as PendingPost[]
       );
       const reducedPendings = reducedPosts.reduce((acc, p) => {
         const found = acc.find((x) => x.threadId === p.threadId);
@@ -88,7 +88,7 @@ const usePendingPosts = (threaded: boolean) => {
       setPendings([...reducedPendings]);
       pendingPostsUpdateEvent.raise({ pendings: reducedPendings });
     },
-    [threaded, pendings],
+    [threaded, pendings]
   );
 
   useEffect(() => {

@@ -62,7 +62,7 @@ const matchNotification = async (nEvent: NotifyEvent) => {
         if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
         return acc;
       },
-      [] as string[],
+      [] as string[]
     );
   if (postEventHasMe) return "Someone mentioned your name.";
   else if (parentAuthorIsMe) return "Someone replied to you.";

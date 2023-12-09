@@ -16,7 +16,7 @@ const UserFilter = memo((props: { username: string; isLoggedInUser: boolean }) =
         setIsFilter(!isFilter);
       })();
     },
-    [username, isFilter],
+    [username, isFilter]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional onMount"

@@ -48,7 +48,7 @@ const OptionButton = memo(
         </button>
       </div>
     );
-  },
+  }
 );
 
 const Suboption = memo(
@@ -74,7 +74,7 @@ const Suboption = memo(
         {children}
       </div>
     );
-  },
+  }
 );
 
 const Option = memo(
@@ -107,7 +107,7 @@ const Option = memo(
         {children}
       </div>
     );
-  },
+  }
 );
 
 const OptionGroup = (props: {

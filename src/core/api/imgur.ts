@@ -51,7 +51,7 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
           const link = resp?.data?.mp4 || resp?.data?.link || null;
           const media = isImage(link) || isVideo(link) ? [link] : null;
           return album || media || null;
-        }),
+        })
       )
     ).find((t) => !!t);
     if (arrHas(task)) return task;
@@ -72,7 +72,7 @@ export const getImgur = async (...args: any[]) => {
           acc.push({ src: m, type });
           return acc;
         },
-        [] as ImgurSource[],
+        [] as ImgurSource[]
       )
     : [];
 };
@@ -86,7 +86,7 @@ const parseLink = (href: string) => {
   // matches an image nonce (fallthrough from the two previous types)
   // [1] = direct match, [2] = gallery direct match, [3] = indirect match, plus the albumMatch[2] above
   const imageMatch = /https?:\/\/(?:.+?\.)?imgur\.(?:com|io)\/(?:i\/(\w+)|r\/\w+\/(\w+)|(\w+)\?(i|r)|(\w+))$/i.exec(
-    href,
+    href
   );
 
   const albumId = albumMatch ? albumMatch[1] : null;

@@ -46,14 +46,14 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
       const data = e.dataTransfer.files;
       if (data && data.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
     },
-    [override, disabled, dispatch],
+    [override, disabled, dispatch]
   );
   const handleFileChooser = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const data = (e.target as HTMLInputElement).files;
       if (data?.length > 0) dispatch({ type: "LOAD_FILES", payload: data });
     },
-    [dispatch],
+    [dispatch]
   );
   const onClickLabelHandler = useCallback(
     (e: React.MouseEvent) => {
@@ -62,7 +62,7 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
       const chooser = thisArea?.querySelector("#fileChooser") as HTMLElement;
       if (!disabled && chooser) chooser.click();
     },
-    [disabled],
+    [disabled]
   );
   return (
     <div
@@ -103,7 +103,7 @@ const UrlInput = memo((props: ImageUploaderComponentProps) => {
       const match = val?.match(urlValidateRegExp);
       if (match) dispatch({ type: "LOAD_URL", payload: val });
       else dispatch({ type: "LOAD_INVALID_URL" });
-    }, 500),
+    }, 500)
   );
   const onInput = (e: React.ChangeEvent) => {
     const _this = e?.target as HTMLInputElement;

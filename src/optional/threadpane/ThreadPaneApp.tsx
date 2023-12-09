@@ -112,7 +112,7 @@ const ThreadPaneApp = memo(() => {
           if (_parsed != null) acc.push(_parsed);
           return acc;
         },
-        [] as ParsedPost[],
+        [] as ParsedPost[]
       );
       if (parsedRoots.length > 0) setParsed(parsedRoots);
     };

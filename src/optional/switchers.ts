@@ -46,7 +46,7 @@ export const Switchers = {
             });
           return acc;
         },
-        [] as SwitcherMatch[],
+        [] as SwitcherMatch[]
       );
       Switchers.resolved = resolved;
       return resolved;

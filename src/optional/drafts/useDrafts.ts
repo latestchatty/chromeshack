@@ -57,13 +57,13 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
         setValid(arrHas(foundRecord));
       })();
     },
-    [postid],
+    [postid]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: "update on postid"
   const debouncedSave = useCallback(
     debounce((d: Draft[]) => saveDraftsToStore(d), 750),
-    [saveDraftsToStore],
+    [saveDraftsToStore]
   );
   const _debouncedSave = useRef(debouncedSave).current;
 
@@ -85,7 +85,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setDrafts(_drafts);
       _debouncedSave(_drafts);
     },
-    [drafts, postid, _debouncedSave],
+    [drafts, postid, _debouncedSave]
   );
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: "avoid circular"
@@ -103,7 +103,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
         }
       })();
     },
-    [saveDraftsToStore],
+    [saveDraftsToStore]
   );
 
   const handleInput = useCallback(
@@ -113,7 +113,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setInputVal(_val);
       saveToDraft(_val);
     },
-    [saveToDraft],
+    [saveToDraft]
   );
 
   const handleExternalInput = useCallback((el: HTMLInputElement) => handleInput(el), [handleInput]);

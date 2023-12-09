@@ -51,7 +51,7 @@ export const copyToClipboard = async (textArea: HTMLTextAreaElement, exportable:
       },
       () => {
         return false;
-      },
+      }
     );
   }
   return false;
@@ -115,7 +115,7 @@ export const exportSettings = async () => {
       else if (g.name) acc.push(g);
       return acc;
     },
-    [] as HighlightGroup[],
+    [] as HighlightGroup[]
   );
   const allowedSettings = objConditionalFilter(disallowed, settings);
   const allowedSuboptions = disallowedOptions.reduce(
@@ -124,7 +124,7 @@ export const exportSettings = async () => {
       if (foundIdx !== -1) acc.splice(foundIdx);
       return acc;
     },
-    settings.enabled_suboptions as string[],
+    settings.enabled_suboptions as string[]
   );
   const mutated = {
     ...allowedSettings,

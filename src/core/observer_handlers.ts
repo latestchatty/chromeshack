@@ -47,7 +47,7 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
           if (withData) acc.push(withData);
           return acc;
         },
-        [] as HTMLElement[],
+        [] as HTMLElement[]
       );
 
     return [];
