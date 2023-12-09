@@ -22,9 +22,10 @@
     "build": "tsc && run-s clean && run-p build:ffxcrxjs build:crxjs",
     "build:pkg": "run-s build pkgsrc",
     "test": "playwright test",
-    "lint": "biome lint ./src ./utils ./public/patches",
-    "lint:fix": "biome check --apply ./src ./utils ./public/patches",
-    "format": "biome format --write ./src ./utils ./public/patches"
+    "pretty": "prettier -w ./src/*.html ./src/styles/*.css ./public/*.html",
+    "lint": "biome lint .",
+    "lint:fix": "biome check --apply .",
+    "format": "run-s pretty && biome format --write ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",

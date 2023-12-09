@@ -25,10 +25,8 @@
   opacity: 0.5;
 }
 .embla__button:hover:not(:disabled) {
-  filter: drop-shadow(1px 2px 1px var(--arrow-outline))
-    drop-shadow(-1px 1px 1px var(--arrow-outline))
-    drop-shadow(2px -1px 1px var(--arrow-outline))
-    drop-shadow(-1px -1px 1px var(--arrow-outline));
+  filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
+    drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
   opacity: 1;
 }
 .embla__button:disabled {

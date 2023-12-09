@@ -4,12 +4,8 @@
   --thread-pane-horizontal-margin: 10px;
   --thread-pane-card-padding: 10px;
   --thread-pane-card-spacing: 10px;
-  --thread-pane-card-outer-width: calc(
-    var(--thread-pane-width) - 2 * var(--thread-pane-horizontal-margin)
-  );
-  --thread-pane-card-inner-width: calc(
-    var(--thread-pane-card-outer-width) - 2 * var(--thread-pane-card-padding)
-  );
+  --thread-pane-card-outer-width: calc(var(--thread-pane-width) - 2 * var(--thread-pane-horizontal-margin));
+  --thread-pane-card-inner-width: calc(var(--thread-pane-card-outer-width) - 2 * var(--thread-pane-card-padding));
   --thread-pane-reply-preview-max-width: 200px;
   --thread-pane-reply-author-max-width: 100px;
   --thread-pane-reply-indent: 10px;
@@ -18,18 +14,12 @@
 }
 
 body.cs_thread_pane_enable {
-  margin-left: calc(
-    var(--thread-pane-width) + var(--thread-pane-scrollbar-width)
-  );
+  margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
 }
 
 body.cs_thread_pane_enable header {
-  margin-left: calc(
-    var(--thread-pane-width) + var(--thread-pane-scrollbar-width)
-  );
-  width: calc(
-    100% - var(--thread-pane-width) - var(--thread-pane-scrollbar-width)
-  ) !important;
+  margin-left: calc(var(--thread-pane-width) + var(--thread-pane-scrollbar-width));
+  width: calc(100% - var(--thread-pane-width) - var(--thread-pane-scrollbar-width)) !important;
 }
 
 div#cs_thread_pane {

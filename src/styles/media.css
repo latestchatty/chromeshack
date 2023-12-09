@@ -6,8 +6,7 @@
   --max-media-item-width: 854px;
   --min-media-row-size: 200px;
   --max-media-row-size: 640px;
-  --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
+  --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* General Media Embedder */
@@ -131,9 +130,7 @@ svg.mute__icon {
   color: white;
   height: 26px !important;
   width: 26px !important;
-  filter: drop-shadow(1px 2px 1px var(--arrow-outline))
-    drop-shadow(-1px 1px 1px var(--arrow-outline))
-    drop-shadow(2px -1px 1px var(--arrow-outline))
-    drop-shadow(-1px -1px 1px var(--arrow-outline));
+  filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
+    drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
 }
 /* End Media Embedder */

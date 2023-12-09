@@ -1,703 +1,669 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>Chrome Shack Release Notes</title>
-        <style>
-            body {
-                font-family: helvetica, arial, sans-serif;
-                font-size: 16px;
-                margin: 1.5em;
-            }
+  <head>
+    <title>Chrome Shack Release Notes</title>
+    <style>
+      body {
+        font-family: helvetica, arial, sans-serif;
+        font-size: 16px;
+        margin: 1.5em;
+      }
 
-            li {
-                line-height: 150%;
-            }
-        </style>
-    </head>
+      li {
+        line-height: 150%;
+      }
+    </style>
+  </head>
 
-    <body>
-        <h1>Chrome Shack Release Notes</h1>
-        <h2>Version 1.74</h2>
-        <ul>
-            <li><b>NOTE: This release formally supports Manifest v3, as a result some features may have slightly different behavior or have been deprecated:</b></li>
-            <li><b>Important for Firefox: You need to toggle optional permissions (under 'Manage Extension') and disable 'Enhanced Tracking Protection' on the Chatty for full functionality.</b></li>
-            <li>Changed: "Chat-View Scroll Fix" and "Scroll-by-Key Fix" core scripts now only function under Firefox due to Manifest v3 (WombatFromHell)</li>
-            <li>Changed: "Notifications" and "Highlight Pending Posts" polling interval is now fixed at once per minute due to Manifest v3 (WombatFromHell)</li>
-            <li>Changed: "Embed Media" and "Image-Uploader" deprecated Chattypics support due to broken host (WombatFromHell)</li>
-            <li>Changed: "Embed Media" and "Image-Uploader" deprecated Gfycat support due to broken host (WombatFromHell)</li>
-            <li>Added: "Embed Media" Imgur.io and GStatic link support (WombatFromHell)</li>
-            <li>Removed: "NWS Incognito" due to brokenness from transition to Manifest v3 (WombatFromHell)</li>
-            <li>Removed: "Embed Social Media" due to broken Twitter and Instagram support (WombatFromHell)</li></li>
-            <li>Fixed: "Shrink User Icons" squishing icons horizontally (WombatFromHell)</li>
-            <li>Fixed: "Post Preview" buggy behavior when toggling the postbox (WombatFromHell)</li>
-            <li>Fixed: "Drafts" not saving drafts (WombatFromHell)</li>
-            <li>Updated: "Highlight Users" user list (WombatFromHell) </li>
-            <li>Updated: "Shame Switchers" user list (WombatFromHell) </li>
-        </ul>
-        <h2>Version 1.73</h2>
-        <ul>
-            <li>Re-added: "Sparkly Comic" and "Dino-Gegtik" (WombatFromHell)</li>
-            <li>Fixed: "Local Timestamp" fixed 'Invalid date' error when opening replies (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" not properly detecting some valid Imgur links (WombatFromHell)</li>
-            <li>Fixed: "User Popup" toggling when clicking LOL tag line elements (WombatFromHell)</li>
-            <li>Fixed: "Post Preview" not appearing when clicking 'New Comment' button (WombatFromHell)</li>
-            <li>Fixed: "Notifications" an invalid conditional causing busted notifications (WombatFromHell)</li>
-            <li>Fixed: "Post Preview" URLs not being detected properly (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.72</h2>
-        <ul>
-            <li>
-                Added: "Hide Gamification Notices" to allow for hiding gamification popups when interacting with posts
-                (WombatFromHell)
-            </li>
-            <li>Added: "Imgflip" image and video support to "Media Embedder" (WombatFromHell)</li>
-            <li>Added: "Settings Menu" is now grouped into tabs (WombatFromHell)</li>
-            <li>Added: "Templates" to allow for saving unfinished replies for later use (WombatFromHell)</li>
-            <li>Added: "Drafts" to automatically save/load unfinished replies for posts (WombatFromHell)</li>
-            <li>
-                Added: "Single Thread Fix" ensures post is visible when opening Chatty in single-thread mode
-                (WombatFromHell)
-            </li>
-            <li>Added: "UserPopup" now has a "Settings" option in the Account menu when logged in (WombatFromHell)</li>
-            <li>Added: "nuLOL Refresh Fix" has been readded with an improved implementation (WombatFromHell)</li>
-            <li>Removed: "Dino-Gegtik" and "Sparkly Comic" have been deprecated (WombatFromHell)</li>
-            <li>Changed: "Chatty News" article links now open in a new window/tab (WombatFromHell)</li>
-            <li>Changed: "Collapse" now has an 18hr limit on remembering collapsed threads (WombatFromHell)</li>
-            <li>Improved: "CommentTags" now remembers the state of the tags legend (WombatFromHell)</li>
-            <li>
-                Improved: "Highlight Pending New Posts" now tracks pending posts in both single and multi-thread mode
-                (WombatFromHell)
-            </li>
-            <li>Improved: "Highlight Pending New Posts" pending now has forward and back buttons (WombatFromHell)</li>
-            <li>Improved: "Two-Panel Layout" now shows a blue icon for threads you've replied to (WombatFromHell)</li>
-            <li>Improved: "Two-Panel Layout" cards now have a jump-to-thread and refresh button (WombatFromHell)</li>
-            <li>Improved: "Two-Panel Layout" now applies Highlight Users rules to its cards (WombatFromHell)</li>
-            <li>
-                Improved: "Two-Panel Layout" now has a "jump-to-top" button at the bottom of the card list
-                (WombatFromHell)
-            </li>
-            <li>Improved: "Two-Panel Layout" now responds to collapse/uncollapse of threads (WombatFromHell)</li>
-            <li>
-                Improved: "Two-Panel Layout", "Highlight Pending New Posts", and "Post Preview" have been rewritten
-                (WombatFromHell)
-            </li>
-            <li>Fixed: "Media Embedder" chattypost embed formatting breaking inside sample tags (WombatFromHell)</li>
-            <li>
-                Fixed: "Media Embedder" not exposing the right media URLs on Expando/New-Tab buttons (WombatFromHell)
-            </li>
-            <li>Fixed: "UserPopup" triggering popup inside Chatty hamburger menu (WombatFromHell)</li>
-            <li>Fixed: "Scroll By Key Fix" now behaves properly in single-thread and reply modes (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" not detecting some valid Giphy links (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" user tagline showing up in single-thread chattypost embeds (WombatFromHell)</li>
-            <li>Fixed: "Local Timestamp" localization performance issues (WombatFromHell)</li>
-            <li>Fixed: "Settings Panel" CSS was not being accurately reflected on test splotches (WombatFromHell)</li>
-            <li>
-                Fixed: "Custom User Filter" and "Two-Panel Layout" not accurately reflecting filtered posts
-                (WombatFromHell)
-            </li>
-            <li>Fixed: "Post Length Counter" was totally busted (WombatFromHell)</li>
-            <li>Fixed: "Collapse" was broken with new settings system (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" YT channel links being embedded by mistake (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" unclickable elements in Twitter/Instagram embeds (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" videos not auto-pausing/playing when visible on Firefox (WombatFromHell)</li>
-            <li>Fixed: reply box responsiveness at smaller browser widths (WombatFromHell)</li>
-            <li>Fixed: several cases causing the codeblock tag to break formatting (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.71</h2>
-        <p>Special thanks to: jamesray, and TroZ for helping with bug testing.</p>
-        <ul>
-            <li>Added: "Media Embedder" open-by-default option in settings panel (WombatFromHell)</li>
-            <li>Added: "Media Embedder" now has a reload button for embedded media (WombatFromHell)</li>
-            <li>Improved: "Notifications" are now more customizable in the settings panel (WombatFromHell)</li>
-            <li>Improved: "Settings Panel" exported settings now include built-in highlight groups (WombatFromHell)</li>
-            <li>Improved: "Settings Panel" and "UserPopup" have been rewritten (WombatFromHell)</li>
-            <li>Fixed: incorrect line-height for codeblock tags (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" not detecting some valid Youtube playlist links (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" embedded chattyposts inject nuLOL tags on the main chatty (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" expando icon does nothing when clicked (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" elements in embedded chattyposts do nothing when clicked (WombatFromHell)</li>
-            <li>Fixed: "Two-Pane Mode" shows long-form media urls in cards for embedded links (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.70</h2>
-        <ul>
-            <li>Added: workaround for Who-Tag'd popup on oneliners not resizing to username (WombatFromHell)</li>
-            <li>
-                Improved: "Chatty News" is now a little smarter about responsiveness on single threads (WombatFromHell)
-            </li>
-            <li>Improved: "Media Embedder" now waits until a link is toggled before fetching embed (WombatFromHell)</li>
-            <li>
-                Fixed: "Highlight New Posts" inline mod flag icons being cut off by new post indicator (WombatFromHell)
-            </li>
-            <li>Fixed: "Notifications" not detecting username when mentioned in a post (WombatFromHell)</li>
-            <li>Fixed: "Settings Panel" not saving out a config version when exporting (WombatFromHell)</li>
-            <li>Fixed: "Settings Panel" display bug causing User Filters to not show up (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" not properly detecting named galleries (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" not detecting some valid Youtube links (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" CSS bugs in Instagram container (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" should no longer clobber NWS embeds (WombatFromHell)</li>
-            <li>Fixed: "Media Embedder" Instagram embeds now preserve their formatting (WombatFromHell)</li>
-            <li>Fixed: "Image Uploader" CSS styling inconsistencies and regressions (WombatFromHell)</li>
-            <li>Fixed: "Image Uploader" Gfycat host erroneously showing as multi-file enabled (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.69</h2>
-        <ul>
-            <li>
-                Added: "Twitch Auto" toggle for controlling autoplay on Chatty's Twitch player (WombatFromHell, Conan)
-            </li>
-            <li>Added: "Media Embedder" a New Tab button is now shown next to all embedded links (WombatFromHell)</li>
-            <li>Fixed: "Two-Pane Layout" not correcting the Chatty background offset when enabled (WombatFromHell)</li>
-            <li>Fixed: "Local Timestamp" throwing exceptions in some cases (WombatFromHell)</li>
-            <li>Fixed: "Image Loader" not correctly detecting some valid media links (WombatFromHell)</li>
-            <li>Fixed: "Post Preview" code blocks now respect newlines (WombatFromHell)</li>
-            <li>Fixed: "Highlight Pending Posts" event fetching regression (WombatFromHell)</li>
-            <li>Changed: "GetPost" now strips banners from embedded Chatty posts (WombatFromHell)</li>
-            <li>Changed: "Media Embedder" functionality has been rewritten (WombatFromHell)</li>
-            <li>Changed: "Image Uploader" functionality has been rewritten (WombatFromHell)</li>
-            <li>Improved: "Comment Tags" and "Image Uploader" now preserve the undo/redo buffer (WombatFromHell)</li>
-            <li>Improved: "Chatty-News" reponsiveness and positioning in article box (WombatFromHell)</li>
-            <li>
-                Improved: "Image Uploader" Imgur tab will now create an anonymous album for multi-file uploads
-                (WombatFromHell)
-            </li>
-            <li>Improved: "Image Loader" now enforces SSL on Chattypics media links (WombatFromHell)</li>
-            <li>
-                Improved: "Push Notifications" and "Highlight Pending Posts" no longer require a browser restart
-                (WombatFromHell, electroly)
-            </li>
-            <li>
-                Removed: "Lightbox" functionality has been deprecated in favor of link-specific New Tab button
-                (WombatFromHell)
-            </li>
-            <li>Removed: "NuLOL Refresh Fix" has been deprecated (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.68</h2>
-        <ul>
-            <li>Updated: all third-party libraries have been updated for security (and AMO) reasons</li>
-            <li>Fixed: "Thread Pane" no longer explodes when encountering a blank root post (WombatFromHell)</li>
-            <li>
-                Fixed: "Video Loader" styling issues when embedding iframes on very large screen sizes (WombatFromHell)
-            </li>
-            <li>Changed: "Image Loader" now enforces HTTPS links for Chattypics (WombatFromHell)</li>
-            <li>Changed: Simplified notifications support (electroly)</li>
-        </ul>
-        <h2>Version 1.67</h2>
-        <ul>
-            <li>Fixed: "Custom User Filter" not removing subreplies of matched posts (WombatFromHell)</li>
-            <li>Fixed: "Video Loader" Streamable.com links broken due to CORB errors (WombatFromHell)</li>
-            <li>Fixed: "Local Timestamp" reporting wrong timezone when replying (WombatFromHell)</li>
-            <li>Improved: "Image Loader" now supports Tenor media links (WombatFromHell)</li>
-            <li>Changed: "Image Uploader" now defaults to Imgur (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.66</h2>
-        <ul>
-            <li>Fixed: "Image Upload" no longer scrolls when toggling the upload box (WombatFromHell)</li>
-            <li>
-                Fixed: "Highlight Users" not correctly highlighting users due to mismatched userid's (WombatFromHell)
-            </li>
-            <li>Fixed: "New Comment Highlighter" failing to highlight in some circumstances (WombatFromHell)</li>
-            <li>
-                Fixed: "Embed Posts" embeddable links not functioning correctly inside an embedded post (WombatFromHell)
-            </li>
-            <li>Fixed: "Embed Posts" spoiler tagged text not reacting to clicks (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" failing on some CDN links ending with an underscore (WombatFromHell)</li>
-            <li>
-                Fixed: exceptions being thrown when navigating posts after the Reply box has been opened
-                (WombatFromHell)
-            </li>
-            <li>
-                Changed: "New Comment Highlighter" only highlight new posts that are less than 2 hours old
-                (WombatFromHell)
-            </li>
-            <li>Improved: nuLOL workaround has been extended to refreshing and uncollapsing posts (WombatFromHell)</li>
-            <li>
-                Improved: "Embed Socials" added an option for toggling Twitter thread loading behavior (WombatFromHell)
-            </li>
-            <li>
-                Added: "Custom User Filter" now has an option to hide root posts authored by a matched user
-                (WombatFromHell)
-            </li>
-            <li>Added: "Highlight Users" now has a test splotch to preview and try new color rules (WombatFromHell)</li>
-            <li>Added: Import/Export Chrome Shack settings via the options panel (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.65</h2>
-        <ul>
-            <li>Fixed: Replies not being focused properly when refreshed by the nuLOL workaround (WombatFromHell)</li>
-            <li>Fixed: Media embeds not working with links inside shacktags (WombatFromHell)</li>
-            <li>Fixed: Settings being overwritten with defaults if previously migrated (WombatFromHell)</li>
-            <li>Fixed: "Embed Video" not embedding Youtube shortlinks and incorrect iframe sizing (WombatFromHell)</li>
-            <li>Changed: "Media Lightbox" now allows vertical scrolling for very tall images (WombatFromHell)</li>
-            <li>
-                Changed: "New Comment Highlighter" only highlights posts if less than 6 hours have passed
-                (WombatFromHell)
-            </li>
-            <li>
-                Changed: nuLOL reply workaround should now work on individual and chatty thread pages (WombatFromHell)
-            </li>
-        </ul>
-        <h2>Version 1.64</h2>
-        <h4>
-            NOTE: This version will wipe legacy settings preserving only Push Notification and Custom User Filters
-            state.
-        </h4>
-        <ul>
-            <li>Added: "Chatty News" adds a recent articles box at the top of the Chatty (TroZ, WombatFromHell)</li>
-            <li>Added: A workaround for nuLOL tags not loading when replying to a post (WombatFromHell)</li>
-            <li>Fixed: Embeddable links not working properly inside shack tags (WombatFromHell)</li>
-            <li>Fixed: "Custom User Filters" no longer removes root posts of a filtered user (WombatFromHell)</li>
-            <li>Fixed: Incorrect carousel heights for some media embed containers (WombatFromHell)</li>
-            <li>Fixed: "Embed Socials" Instagrams failing to render when caption is empty (WombatFromHell)</li>
-            <li>Improved: "Highlight Users" now refreshes CSS styling when refreshing posts (WombatFromHell)</li>
-            <li>
-                Improved: "Embed Socials" Twitter embedder now better supports Tweet mention threads (WombatFromHell)
-            </li>
-            <li>Improved: "Highlight New Posts" now refreshes locally when a thread is refreshed (WombatFromHell)</li>
-            <li>Improved: "Embed Socials" Twitter embeds now handle GIFs properly (WombatFromHell)</li>
-            <li>Improved: "Embed Video" now supports Mixer and Facebook Video links (WombatFromHell)</li>
-            <li>Improved: "Highlight Pending Posts" now cycles through posts more reliably (WombatFromHell)</li>
-            <li>Improved: "Shame Switchers" has been updated for the nuLOL Chatty (WombatFromHell)</li>
-            <li>Improved: "Custom User Filters" is now integrated into the userpopup menu (TroZ, WombatFromHell)</li>
-            <li>Improved: "Highlight Users" is now integrated into the userpopup menu (TroZ, WombatFromHell)</li>
-            <li>Improved: User popup menu is now hidden when clicking anywhere outside it (WombatFromHell)</li>
-            <li>Improved: "Embed Images" now detects more common video links (WombatFromHell)</li>
-            <li>Improved: "Custom User Filters" performance now scales better (WombatFromHell)</li>
-            <li>Improved: "Highlight Users" rewritten to resolve users by name (WombatFromHell)</li>
-            <li>Changed: "Embed Video" embeds are now always HD sized (WombatFromHell)</li>
-            <li>Changed: Enabled script defaults are now more sensible (WombatFromHell)</li>
-            <li>Changed: ChromeShack settings are no longer reset when clearing browser data (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.63</h2>
-        <ul>
-            <li>Fixed: "Post Preview" not being updated when clicking legend tags (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" Imgur links causing blank embeds on 404's (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" not detecting some obvious Imgur links (WombatFromHell)</li>
-            <li>Fixed: "Embed Videos" not detecting some Youtube links properly (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.62</h2>
-        <ul>
-            <li>Added: Emojis can now be posted! (WombatFromHell, TroZ)</li>
-            <li>Re-added: "Post Preview" is now fixed and should behave properly again (WombatFromHell)</li>
-            <li>Re-added: "Embed Socials" script with support for Instagram and Twitter links (WombatFromHell)</li>
-            <li>Removed: "Expiration Watcher" has been deprecated (WombatFromHell)</li>
-            <li>Removed: "Embed Images" formal support for Fukung has been deprecated (WombatFromHell)</li>
-            <li>Removed: "Embed Images" formal support for Twitpic has been deprecated (WombatFromHell)</li>
-            <li>Removed: "Embed Images" formal support for YFrog has been deprecated (WombatFromHell)</li>
-            <li>Removed: "Embed Images" formal support for Picasa has been deprecated (WombatFromHell)</li>
-            <li>Removed: "Embed Images" formal support for Pichars has been deprecated (WombatFromHell)</li>
-            <li>Changed: All embedding scripts now use strong sanitization for improved security (WombatFromHell)</li>
-            <li>Changed: "Post Preview" live preview is now enabled by default (WombatFromHell)</li>
-            <li>Changed: Shack message envelope icon is no longer hidden (WombatFromHell)</li>
-            <li>Improved: "Middle-click Lightbox" behavior has been improved for videos (WombatFromHell)</li>
-            <li>Improved: "Embed Images" can now detect more modern image and video URLs (WombatFromHell)</li>
-            <li>Fixed: "Two Pane" spams errors and doesn't work when not logged in (WombatFromHell)</li>
-            <li>Fixed: "Post Preview" fixed a performance regression in the live preview (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" should now properly auto-resize carousel containers (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" various bugs and styling issues (WombatFromHell)</li>
-            <li>Fixed: "Two Pane" causing embeds to play/appear twice (WombatFromHell)</li>
-            <li>Fixed: "Highlight Pending Posts" pending posts button responsiveness (WombatFromHell)</li>
-            <li>Fixed: "Highlight Pending Posts" getting stuck scrolling to visible posts (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.61</h2>
-        <ul>
-            <li>Removed: "Post Preview" feature -- this will return in a future release (electroly)</li>
-        </ul>
-        <h2>Version 1.60</h2>
-        <ul>
-            <li>Removed: "Infinite Scrolling" feature (electroly)</li>
-            <li>Removed: "Get Post Count" feature (electroly)</li>
-            <li>Removed: "Embed Socials" feature (electroly)</li>
-            <li>Changed: All remote HTML is now sanitized before being used (WombatFromHell)</li>
-            <li>Fixed: A/Z buttons not refreshing LOL data when opening posts (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" failing on some Gfycat links in Firefox (WombatFromHell)</li>
-            <li>Fixed: "NWS Incognito" showing expando buttons when enabled (WombatFromHell)</li>
-            <li>Fixed: "NWS Incognito" now tells the user about permissions behavior in Firefox (WombatFromHell)</li>
-            <li>Fixed: The [lol] links in the user popup menu are back (electroly)</li>
-            <li>Fixed: Two-pane mode occasionally showed extra text in the author username (electroly)</li>
-        </ul>
-        <h2>Version 1.59</h2>
-        <ul>
-            <li>Fixed: [lol] tag button is no longer eaten (electroly)</li>
-            <li>New: [lol] tags and user icons can be tweaked in the options (electroly)</li>
-            <li>Improved: The options screen has been simplified (electroly)</li>
-        </ul>
-        <h2>Version 1.58</h2>
-        <ul>
-            <li>Fixed: a regression causing broken Instagram post embedding (WombatFromHell)</li>
-            <li>Fixed: Imgur links that use subreddit syntax not being embedded properly (WombatFromHell)</li>
-            <li>Removed: LOL script (electroly)</li>
-            <li>Removed: WinChatty NuSearch script (electroly)</li>
-            <li>New: Some temporary visual tweaks to clean up the new chatty design (electroly)</li>
-        </ul>
-        <h2>Version 1.57</h2>
-        <ul>
-            <li>Fixed: Chrome Shack will now activate on the bare "shacknews.com" domain (electroly)</li>
-        </ul>
-        <h2>Version 1.56</h2>
-        <ul>
-            <li>Updated: "Shame Switchers" has been updated (thanks to wtigert)</li>
-            <li>Fixed: clicked posts not focusing properly on some machines (WombatFromHell)</li>
-            <li>Fixed: "New Comment Highlighter" breaking the Chatty Filters panel (WombatFromHell)</li>
-            <li>Fixed: "Embed Images" detection of some Gfycat/Giphy links (WombatFromHell)</li>
-            <li>Fixed: "Embed Social Links" cutting off large media items (WombatFromHell)</li>
-            <li>Fixed: "Scrolling performance hack" breaks crxMouse gestures (WombatFromHell)</li>
-            <li>Fixed: duplicate thread id error when re-tagging a tagged post (WombatFromHell)</li>
-            <li>
-                Fixed: Imgur resolver getting confused when an image and an album have the same shortcode
-                (WombatFromHell)
-            </li>
-            <li>Fixed: "Infinite Scrolling" script breaking clicked posts on appended pages (WombatFromHell)</li>
-            <li>
-                New: An option has been added to allow inlining embeddables near their associated link (WombatFromHell)
-            </li>
-            <li>
-                Deprecated: "Auto focus post" has been removed due to a better fix being implemented (WombatFromHell)
-            </li>
-            <li>Improved: "Two-Pane" mode now has improved post focusing if a post would fit (WombatFromHell)</li>
-            <li>
-                Improved: "Middle-click to open in new tab" embedded media now opens links as an overlay
-                (WombatFromHell)
-            </li>
-            <li>
-                Improved: "Embed Social Links" and "Embed Images" now support multi-item sources via Carousel
-                (WombatFromHell)
-            </li>
-            <li>
-                Improved: smarter responsive sizing for embedded media containers when in unified container mode
-                (WombatFromHell)
-            </li>
-        </ul>
-        <h2>Version 1.55</h2>
-        <ul>
-            <li>Fixed: Tagging posts did not work unless the post already had tags (boarder2)</li>
-        </ul>
-        <h2>Version 1.54</h2>
-        <ul>
-            <li>
-                New: "Embed Socials" embeds Twitter and Instagram posts inline when links are clicked (WombatFromHell)
-            </li>
-            <li>
-                WIP: Embedded elements are now responsive and resize appropriately on larger screens (WombatFromHell)
-            </li>
-            <li>Fixed: "Embed Post" not properly parsing modern chatty permalinks (WombatFromHell)</li>
-            <li>
-                Fixed: Reintroduced "Comment Tags" script to address the broken Shacktags Legend box (WombatFromHell)
-            </li>
-            <li>Improved: LOL script now allows untagging a previously tagged post (WombatFromHell)</li>
-            <li>
-                Improved: Thanks to ThomW's API changes, the LOL'ers button now toggles all tagger buttons
-                (WombatFromHell)
-            </li>
-            <li>
-                Improved: Added additional performance hacks for Webkit to the scrolling performance hack script
-                (WombatFromHell)
-            </li>
-            <li>
-                Improved: All scripts that embed media now show an expando button next to handled links (WombatFromHell)
-            </li>
-            <li>Improved: "Embed Images" script now supports a wider array of image hoster links (WombatFromHell)</li>
-            <li>
-                Improved: "Embed Images" now provides an option to open images in a new tab when middle-clicked
-                (WombatFromHell)
-            </li>
-            <li>Improved: "Embed Videos" now supports Streamable.com and XboxDVR.com (WombatFromHell)</li>
-            <li>Improved: "Embed Videos" now handles all common Youtube and Twitch.tv links (WombatFromHell)</li>
-            <li>Deprecated: Vimeo and Vine support has been deprecated in favor of other hosters (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.53</h2>
-        <ul>
-            <li>Fixed: Don't enable "Two-Pane Layout" when clicking a post (electroly)</li>
-        </ul>
-        <h2>Version 1.52</h2>
-        <ul>
-            <li>New: "Two-Pane Layout" script shows a thread list to the left of the chatty (electroly)</li>
-            <li>New: Added the ability to see what users tagged a post (boarder2)</li>
-            <li>Fixed: "Embed Posts" script works again (WombatFromHell)</li>
-            <li>Fixed: "Shame Switchers" script works again (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.51</h2>
-        <ul>
-            <li>Fixed: Moderation banners are no longer painted repeatedly behind post bodies (WombatFromHell)</li>
-            <li>Fixed: The "pending new posts" counter no longer obscures the top navigation bar (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.50</h2>
-        <ul>
-            <li>New: Chrome Shack now runs on Firefox! (WombatFromHell)</li>
-            <li>New: "Auto Scroll" option to scroll to posts when selecting them (WombatFromHell)</li>
-            <li>New: Added support for Gfycat to the Image Uploader script (WombatFromHell)</li>
-            <li>New: Quick link to the options dialog near the "New Comment" button and in the post box (electroly)</li>
-            <li>New: Quick toggle for post/preview button order in the post box (electroly)</li>
-            <li>
-                New: "Post Length Counter" script, showing a live count of characters left before the post preview gets
-                truncated (electroly)
-            </li>
-            <li>Improved: Faster script injection (WombatFromHell)</li>
-            <li>Improved: Simpler options dialog styling (WombatFromHell)</li>
-            <li>Fixed: The "Custom User Filters" script works again (electroly)</li>
-            <li>Fixed: Chrome Shack can now be used when logged out of Shacknews (electroly)</li>
-            <li>Fixed: Custom LOL tags that contain ampersands now work properly (electroly)</li>
-            <li>Fixed: Updated the performance hack script (WombatFromHell)</li>
-        </ul>
-        <h2>Version 1.49</h2>
-        <ul>
-            <li><strong>More 2018 Shacknews Redesign Fixes</strong></li>
-            <li>Fix infinite scrolling script (electroly)</li>
-            <li>Highlight pending new posts: fix positioning of new post count in header bar (electroly)</li>
-            <li>Image upload: fix layout issues in post box (electroly)</li>
-            <li>Post preview: Set default button location to 'right' so tab-space works out of the box (electroly)</li>
-            <li>Use a less intrusive set of default scripts (electroly)</li>
-            <li>
-                Remove Safe For Work script. Instead, please use the
-                <a href="https://userstyles.org/styles/163724/shack-white-and-blue-2">Shack White and Blue 2</a> theme
-                for
-                <a href="https://chrome.google.com/webstore/detail/osprey/ekjapccimkannnfgcnnoajhfdglobgak?hl=en"
-                    >Osprey</a
-                >. (electroly)
-            </li>
-            <li>Fix "Get Post Count" in user menu (electroly)</li>
-            <li>New moderation banners and LOL link image (mn3m0n1c)</li>
-        </ul>
-        <h2>Version 1.48</h2>
-        <ul>
-            <li><strong>2018 Shacknews Redesign Fixes</strong></li>
-            <li>lol: Refactored lol page button, and updated script to use https (ThomW)</li>
-            <li>User Popup: 'My Stuff' menu moved under the Account button in the header (ThomW)</li>
-            <li>Remove link hashtags script (electroly)</li>
-            <li>Add scrolling performance hack script (electroly)</li>
-        </ul>
-        <h2>Version 1.47</h2>
-        <ul>
-            <li>Fixes for saving user filters (electroly)</li>
-            <li>Fixes for image loading (yehmuthah)</li>
-            <li>Updated mod/staff list (Haxim)</li>
-        </ul>
-        <h2>Version 1.46</h2>
-        <ul>
-            <li>Added support for embedded Tweets in a new social loader. (king_darius)</li>
-            <li>Added support for Vine to video loader. (king_darius)</li>
-            <li>Updated mod/staff list. (Haxim)</li>
-            <li>Chrome Shack settings window will now auto-save, can be reset to defaults. (king_darius)</li>
-            <li>Fixes for Apr 2015 layout changes (ThomW)</li>
-        </ul>
-        <h2>Version 1.45</h2>
-        <ul>
-            <li>Filtered posts are removed instead of hidden. (king_darius)</li>
-            <li>Videos linked from Twitch.tv will now embed in posts. (king_darius)</li>
-            <li>Layout on the main page is fixed. User popup on non-chatty pages is fixed. (electroly)</li>
-            <li>Search result readability improved. (king_darius)</li>
-            <li>Fixed Chromeshack errors outside of the chatty. (king_darius)</li>
-            <li>Live post preview option added, all previews are more accurate. (king_darius)</li>
-        </ul>
-        <h2>Version 1.44</h2>
-        <ul>
-            <li>Support filtering posts by username. (electroly)</li>
-            <li>Highlight thread refresh button when new posts are available. (electroly)</li>
-            <li>Show user dropdown in collapsed header. (electroly)</li>
-            <li>Support using WinChatty NuSearch instead of Shacknews comment search. (electroly)</li>
-            <li>Redesigned options interface. (electroly)</li>
-            <li>Show fullscreen button in inline YouTube videos.</li>
-            <li>Fix some dropbox image links in image loader.</li>
-        </ul>
-        <h2>Version 1.43</h2>
-        <ul>
-            <li>Fix css junk (ThomW/electroly)</li>
-        </ul>
-        <h2>Version 1.42</h2>
-        <ul>
-            <li>Fix notification bug (boarder2)</li>
-            <li>Move gfycat/gifv support back to Image Loader</li>
-            <li>Better gfycat support for non-zippy videos</li>
-            <li>Better detect imgur gif links with wrong extension</li>
-            <li>CSS changes (Ashun)</li>
-        </ul>
-        <h2>Version 1.41</h2>
-        <ul>
-            <li>Fix header layout bug.</li>
-        </ul>
-        <h2>Version 1.40</h2>
-        <ul>
-            <li>Shacknews redesign update</li>
-            <li>Support imgur gifv in video loader</li>
-            <li>Move gfycat support to video loader</li>
-            <li>Update YouTube embed to iframe api</li>
-        </ul>
+  <body>
+    <h1>Chrome Shack Release Notes</h1>
+    <h2>Version 1.74</h2>
+    <ul>
+      <li>
+        <b
+          >NOTE: This release formally supports Manifest v3, as a result some features may have slightly different
+          behavior or have been deprecated:</b
+        >
+      </li>
+      <li>
+        <b
+          >Important for Firefox: You need to toggle optional permissions (under 'Manage Extension') and disable
+          'Enhanced Tracking Protection' on the Chatty for full functionality.</b
+        >
+      </li>
+      <li>
+        Changed: "Chat-View Scroll Fix" and "Scroll-by-Key Fix" core scripts now only function under Firefox due to
+        Manifest v3 (WombatFromHell)
+      </li>
+      <li>
+        Changed: "Notifications" and "Highlight Pending Posts" polling interval is now fixed at once per minute due to
+        Manifest v3 (WombatFromHell)
+      </li>
+      <li>
+        Changed: "Embed Media" and "Image-Uploader" deprecated Chattypics support due to broken host (WombatFromHell)
+      </li>
+      <li>Changed: "Embed Media" and "Image-Uploader" deprecated Gfycat support due to broken host (WombatFromHell)</li>
+      <li>Added: "Embed Media" Imgur.io and GStatic link support (WombatFromHell)</li>
+      <li>Removed: "NWS Incognito" due to brokenness from transition to Manifest v3 (WombatFromHell)</li>
+      <li>Removed: "Embed Social Media" due to broken Twitter and Instagram support (WombatFromHell)</li>
+      <li>Fixed: "Shrink User Icons" squishing icons horizontally (WombatFromHell)</li>
+      <li>Fixed: "Post Preview" buggy behavior when toggling the postbox (WombatFromHell)</li>
+      <li>Fixed: "Drafts" not saving drafts (WombatFromHell)</li>
+      <li>Updated: "Highlight Users" user list (WombatFromHell)</li>
+      <li>Updated: "Shame Switchers" user list (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.73</h2>
+    <ul>
+      <li>Re-added: "Sparkly Comic" and "Dino-Gegtik" (WombatFromHell)</li>
+      <li>Fixed: "Local Timestamp" fixed 'Invalid date' error when opening replies (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not properly detecting some valid Imgur links (WombatFromHell)</li>
+      <li>Fixed: "User Popup" toggling when clicking LOL tag line elements (WombatFromHell)</li>
+      <li>Fixed: "Post Preview" not appearing when clicking 'New Comment' button (WombatFromHell)</li>
+      <li>Fixed: "Notifications" an invalid conditional causing busted notifications (WombatFromHell)</li>
+      <li>Fixed: "Post Preview" URLs not being detected properly (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.72</h2>
+    <ul>
+      <li>
+        Added: "Hide Gamification Notices" to allow for hiding gamification popups when interacting with posts
+        (WombatFromHell)
+      </li>
+      <li>Added: "Imgflip" image and video support to "Media Embedder" (WombatFromHell)</li>
+      <li>Added: "Settings Menu" is now grouped into tabs (WombatFromHell)</li>
+      <li>Added: "Templates" to allow for saving unfinished replies for later use (WombatFromHell)</li>
+      <li>Added: "Drafts" to automatically save/load unfinished replies for posts (WombatFromHell)</li>
+      <li>
+        Added: "Single Thread Fix" ensures post is visible when opening Chatty in single-thread mode (WombatFromHell)
+      </li>
+      <li>Added: "UserPopup" now has a "Settings" option in the Account menu when logged in (WombatFromHell)</li>
+      <li>Added: "nuLOL Refresh Fix" has been readded with an improved implementation (WombatFromHell)</li>
+      <li>Removed: "Dino-Gegtik" and "Sparkly Comic" have been deprecated (WombatFromHell)</li>
+      <li>Changed: "Chatty News" article links now open in a new window/tab (WombatFromHell)</li>
+      <li>Changed: "Collapse" now has an 18hr limit on remembering collapsed threads (WombatFromHell)</li>
+      <li>Improved: "CommentTags" now remembers the state of the tags legend (WombatFromHell)</li>
+      <li>
+        Improved: "Highlight Pending New Posts" now tracks pending posts in both single and multi-thread mode
+        (WombatFromHell)
+      </li>
+      <li>Improved: "Highlight Pending New Posts" pending now has forward and back buttons (WombatFromHell)</li>
+      <li>Improved: "Two-Panel Layout" now shows a blue icon for threads you've replied to (WombatFromHell)</li>
+      <li>Improved: "Two-Panel Layout" cards now have a jump-to-thread and refresh button (WombatFromHell)</li>
+      <li>Improved: "Two-Panel Layout" now applies Highlight Users rules to its cards (WombatFromHell)</li>
+      <li>
+        Improved: "Two-Panel Layout" now has a "jump-to-top" button at the bottom of the card list (WombatFromHell)
+      </li>
+      <li>Improved: "Two-Panel Layout" now responds to collapse/uncollapse of threads (WombatFromHell)</li>
+      <li>
+        Improved: "Two-Panel Layout", "Highlight Pending New Posts", and "Post Preview" have been rewritten
+        (WombatFromHell)
+      </li>
+      <li>Fixed: "Media Embedder" chattypost embed formatting breaking inside sample tags (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not exposing the right media URLs on Expando/New-Tab buttons (WombatFromHell)</li>
+      <li>Fixed: "UserPopup" triggering popup inside Chatty hamburger menu (WombatFromHell)</li>
+      <li>Fixed: "Scroll By Key Fix" now behaves properly in single-thread and reply modes (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not detecting some valid Giphy links (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" user tagline showing up in single-thread chattypost embeds (WombatFromHell)</li>
+      <li>Fixed: "Local Timestamp" localization performance issues (WombatFromHell)</li>
+      <li>Fixed: "Settings Panel" CSS was not being accurately reflected on test splotches (WombatFromHell)</li>
+      <li>
+        Fixed: "Custom User Filter" and "Two-Panel Layout" not accurately reflecting filtered posts (WombatFromHell)
+      </li>
+      <li>Fixed: "Post Length Counter" was totally busted (WombatFromHell)</li>
+      <li>Fixed: "Collapse" was broken with new settings system (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" YT channel links being embedded by mistake (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" unclickable elements in Twitter/Instagram embeds (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" videos not auto-pausing/playing when visible on Firefox (WombatFromHell)</li>
+      <li>Fixed: reply box responsiveness at smaller browser widths (WombatFromHell)</li>
+      <li>Fixed: several cases causing the codeblock tag to break formatting (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.71</h2>
+    <p>Special thanks to: jamesray, and TroZ for helping with bug testing.</p>
+    <ul>
+      <li>Added: "Media Embedder" open-by-default option in settings panel (WombatFromHell)</li>
+      <li>Added: "Media Embedder" now has a reload button for embedded media (WombatFromHell)</li>
+      <li>Improved: "Notifications" are now more customizable in the settings panel (WombatFromHell)</li>
+      <li>Improved: "Settings Panel" exported settings now include built-in highlight groups (WombatFromHell)</li>
+      <li>Improved: "Settings Panel" and "UserPopup" have been rewritten (WombatFromHell)</li>
+      <li>Fixed: incorrect line-height for codeblock tags (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not detecting some valid Youtube playlist links (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" embedded chattyposts inject nuLOL tags on the main chatty (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" expando icon does nothing when clicked (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" elements in embedded chattyposts do nothing when clicked (WombatFromHell)</li>
+      <li>Fixed: "Two-Pane Mode" shows long-form media urls in cards for embedded links (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.70</h2>
+    <ul>
+      <li>Added: workaround for Who-Tag'd popup on oneliners not resizing to username (WombatFromHell)</li>
+      <li>Improved: "Chatty News" is now a little smarter about responsiveness on single threads (WombatFromHell)</li>
+      <li>Improved: "Media Embedder" now waits until a link is toggled before fetching embed (WombatFromHell)</li>
+      <li>Fixed: "Highlight New Posts" inline mod flag icons being cut off by new post indicator (WombatFromHell)</li>
+      <li>Fixed: "Notifications" not detecting username when mentioned in a post (WombatFromHell)</li>
+      <li>Fixed: "Settings Panel" not saving out a config version when exporting (WombatFromHell)</li>
+      <li>Fixed: "Settings Panel" display bug causing User Filters to not show up (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not properly detecting named galleries (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not detecting some valid Youtube links (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" CSS bugs in Instagram container (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" should no longer clobber NWS embeds (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" Instagram embeds now preserve their formatting (WombatFromHell)</li>
+      <li>Fixed: "Image Uploader" CSS styling inconsistencies and regressions (WombatFromHell)</li>
+      <li>Fixed: "Image Uploader" Gfycat host erroneously showing as multi-file enabled (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.69</h2>
+    <ul>
+      <li>Added: "Twitch Auto" toggle for controlling autoplay on Chatty's Twitch player (WombatFromHell, Conan)</li>
+      <li>Added: "Media Embedder" a New Tab button is now shown next to all embedded links (WombatFromHell)</li>
+      <li>Fixed: "Two-Pane Layout" not correcting the Chatty background offset when enabled (WombatFromHell)</li>
+      <li>Fixed: "Local Timestamp" throwing exceptions in some cases (WombatFromHell)</li>
+      <li>Fixed: "Image Loader" not correctly detecting some valid media links (WombatFromHell)</li>
+      <li>Fixed: "Post Preview" code blocks now respect newlines (WombatFromHell)</li>
+      <li>Fixed: "Highlight Pending Posts" event fetching regression (WombatFromHell)</li>
+      <li>Changed: "GetPost" now strips banners from embedded Chatty posts (WombatFromHell)</li>
+      <li>Changed: "Media Embedder" functionality has been rewritten (WombatFromHell)</li>
+      <li>Changed: "Image Uploader" functionality has been rewritten (WombatFromHell)</li>
+      <li>Improved: "Comment Tags" and "Image Uploader" now preserve the undo/redo buffer (WombatFromHell)</li>
+      <li>Improved: "Chatty-News" reponsiveness and positioning in article box (WombatFromHell)</li>
+      <li>
+        Improved: "Image Uploader" Imgur tab will now create an anonymous album for multi-file uploads (WombatFromHell)
+      </li>
+      <li>Improved: "Image Loader" now enforces SSL on Chattypics media links (WombatFromHell)</li>
+      <li>
+        Improved: "Push Notifications" and "Highlight Pending Posts" no longer require a browser restart
+        (WombatFromHell, electroly)
+      </li>
+      <li>
+        Removed: "Lightbox" functionality has been deprecated in favor of link-specific New Tab button (WombatFromHell)
+      </li>
+      <li>Removed: "NuLOL Refresh Fix" has been deprecated (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.68</h2>
+    <ul>
+      <li>Updated: all third-party libraries have been updated for security (and AMO) reasons</li>
+      <li>Fixed: "Thread Pane" no longer explodes when encountering a blank root post (WombatFromHell)</li>
+      <li>Fixed: "Video Loader" styling issues when embedding iframes on very large screen sizes (WombatFromHell)</li>
+      <li>Changed: "Image Loader" now enforces HTTPS links for Chattypics (WombatFromHell)</li>
+      <li>Changed: Simplified notifications support (electroly)</li>
+    </ul>
+    <h2>Version 1.67</h2>
+    <ul>
+      <li>Fixed: "Custom User Filter" not removing subreplies of matched posts (WombatFromHell)</li>
+      <li>Fixed: "Video Loader" Streamable.com links broken due to CORB errors (WombatFromHell)</li>
+      <li>Fixed: "Local Timestamp" reporting wrong timezone when replying (WombatFromHell)</li>
+      <li>Improved: "Image Loader" now supports Tenor media links (WombatFromHell)</li>
+      <li>Changed: "Image Uploader" now defaults to Imgur (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.66</h2>
+    <ul>
+      <li>Fixed: "Image Upload" no longer scrolls when toggling the upload box (WombatFromHell)</li>
+      <li>Fixed: "Highlight Users" not correctly highlighting users due to mismatched userid's (WombatFromHell)</li>
+      <li>Fixed: "New Comment Highlighter" failing to highlight in some circumstances (WombatFromHell)</li>
+      <li>Fixed: "Embed Posts" embeddable links not functioning correctly inside an embedded post (WombatFromHell)</li>
+      <li>Fixed: "Embed Posts" spoiler tagged text not reacting to clicks (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" failing on some CDN links ending with an underscore (WombatFromHell)</li>
+      <li>Fixed: exceptions being thrown when navigating posts after the Reply box has been opened (WombatFromHell)</li>
+      <li>
+        Changed: "New Comment Highlighter" only highlight new posts that are less than 2 hours old (WombatFromHell)
+      </li>
+      <li>Improved: nuLOL workaround has been extended to refreshing and uncollapsing posts (WombatFromHell)</li>
+      <li>Improved: "Embed Socials" added an option for toggling Twitter thread loading behavior (WombatFromHell)</li>
+      <li>
+        Added: "Custom User Filter" now has an option to hide root posts authored by a matched user (WombatFromHell)
+      </li>
+      <li>Added: "Highlight Users" now has a test splotch to preview and try new color rules (WombatFromHell)</li>
+      <li>Added: Import/Export Chrome Shack settings via the options panel (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.65</h2>
+    <ul>
+      <li>Fixed: Replies not being focused properly when refreshed by the nuLOL workaround (WombatFromHell)</li>
+      <li>Fixed: Media embeds not working with links inside shacktags (WombatFromHell)</li>
+      <li>Fixed: Settings being overwritten with defaults if previously migrated (WombatFromHell)</li>
+      <li>Fixed: "Embed Video" not embedding Youtube shortlinks and incorrect iframe sizing (WombatFromHell)</li>
+      <li>Changed: "Media Lightbox" now allows vertical scrolling for very tall images (WombatFromHell)</li>
+      <li>
+        Changed: "New Comment Highlighter" only highlights posts if less than 6 hours have passed (WombatFromHell)
+      </li>
+      <li>Changed: nuLOL reply workaround should now work on individual and chatty thread pages (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.64</h2>
+    <h4>
+      NOTE: This version will wipe legacy settings preserving only Push Notification and Custom User Filters state.
+    </h4>
+    <ul>
+      <li>Added: "Chatty News" adds a recent articles box at the top of the Chatty (TroZ, WombatFromHell)</li>
+      <li>Added: A workaround for nuLOL tags not loading when replying to a post (WombatFromHell)</li>
+      <li>Fixed: Embeddable links not working properly inside shack tags (WombatFromHell)</li>
+      <li>Fixed: "Custom User Filters" no longer removes root posts of a filtered user (WombatFromHell)</li>
+      <li>Fixed: Incorrect carousel heights for some media embed containers (WombatFromHell)</li>
+      <li>Fixed: "Embed Socials" Instagrams failing to render when caption is empty (WombatFromHell)</li>
+      <li>Improved: "Highlight Users" now refreshes CSS styling when refreshing posts (WombatFromHell)</li>
+      <li>Improved: "Embed Socials" Twitter embedder now better supports Tweet mention threads (WombatFromHell)</li>
+      <li>Improved: "Highlight New Posts" now refreshes locally when a thread is refreshed (WombatFromHell)</li>
+      <li>Improved: "Embed Socials" Twitter embeds now handle GIFs properly (WombatFromHell)</li>
+      <li>Improved: "Embed Video" now supports Mixer and Facebook Video links (WombatFromHell)</li>
+      <li>Improved: "Highlight Pending Posts" now cycles through posts more reliably (WombatFromHell)</li>
+      <li>Improved: "Shame Switchers" has been updated for the nuLOL Chatty (WombatFromHell)</li>
+      <li>Improved: "Custom User Filters" is now integrated into the userpopup menu (TroZ, WombatFromHell)</li>
+      <li>Improved: "Highlight Users" is now integrated into the userpopup menu (TroZ, WombatFromHell)</li>
+      <li>Improved: User popup menu is now hidden when clicking anywhere outside it (WombatFromHell)</li>
+      <li>Improved: "Embed Images" now detects more common video links (WombatFromHell)</li>
+      <li>Improved: "Custom User Filters" performance now scales better (WombatFromHell)</li>
+      <li>Improved: "Highlight Users" rewritten to resolve users by name (WombatFromHell)</li>
+      <li>Changed: "Embed Video" embeds are now always HD sized (WombatFromHell)</li>
+      <li>Changed: Enabled script defaults are now more sensible (WombatFromHell)</li>
+      <li>Changed: ChromeShack settings are no longer reset when clearing browser data (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.63</h2>
+    <ul>
+      <li>Fixed: "Post Preview" not being updated when clicking legend tags (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" Imgur links causing blank embeds on 404's (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" not detecting some obvious Imgur links (WombatFromHell)</li>
+      <li>Fixed: "Embed Videos" not detecting some Youtube links properly (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.62</h2>
+    <ul>
+      <li>Added: Emojis can now be posted! (WombatFromHell, TroZ)</li>
+      <li>Re-added: "Post Preview" is now fixed and should behave properly again (WombatFromHell)</li>
+      <li>Re-added: "Embed Socials" script with support for Instagram and Twitter links (WombatFromHell)</li>
+      <li>Removed: "Expiration Watcher" has been deprecated (WombatFromHell)</li>
+      <li>Removed: "Embed Images" formal support for Fukung has been deprecated (WombatFromHell)</li>
+      <li>Removed: "Embed Images" formal support for Twitpic has been deprecated (WombatFromHell)</li>
+      <li>Removed: "Embed Images" formal support for YFrog has been deprecated (WombatFromHell)</li>
+      <li>Removed: "Embed Images" formal support for Picasa has been deprecated (WombatFromHell)</li>
+      <li>Removed: "Embed Images" formal support for Pichars has been deprecated (WombatFromHell)</li>
+      <li>Changed: All embedding scripts now use strong sanitization for improved security (WombatFromHell)</li>
+      <li>Changed: "Post Preview" live preview is now enabled by default (WombatFromHell)</li>
+      <li>Changed: Shack message envelope icon is no longer hidden (WombatFromHell)</li>
+      <li>Improved: "Middle-click Lightbox" behavior has been improved for videos (WombatFromHell)</li>
+      <li>Improved: "Embed Images" can now detect more modern image and video URLs (WombatFromHell)</li>
+      <li>Fixed: "Two Pane" spams errors and doesn't work when not logged in (WombatFromHell)</li>
+      <li>Fixed: "Post Preview" fixed a performance regression in the live preview (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" should now properly auto-resize carousel containers (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" various bugs and styling issues (WombatFromHell)</li>
+      <li>Fixed: "Two Pane" causing embeds to play/appear twice (WombatFromHell)</li>
+      <li>Fixed: "Highlight Pending Posts" pending posts button responsiveness (WombatFromHell)</li>
+      <li>Fixed: "Highlight Pending Posts" getting stuck scrolling to visible posts (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.61</h2>
+    <ul>
+      <li>Removed: "Post Preview" feature -- this will return in a future release (electroly)</li>
+    </ul>
+    <h2>Version 1.60</h2>
+    <ul>
+      <li>Removed: "Infinite Scrolling" feature (electroly)</li>
+      <li>Removed: "Get Post Count" feature (electroly)</li>
+      <li>Removed: "Embed Socials" feature (electroly)</li>
+      <li>Changed: All remote HTML is now sanitized before being used (WombatFromHell)</li>
+      <li>Fixed: A/Z buttons not refreshing LOL data when opening posts (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" failing on some Gfycat links in Firefox (WombatFromHell)</li>
+      <li>Fixed: "NWS Incognito" showing expando buttons when enabled (WombatFromHell)</li>
+      <li>Fixed: "NWS Incognito" now tells the user about permissions behavior in Firefox (WombatFromHell)</li>
+      <li>Fixed: The [lol] links in the user popup menu are back (electroly)</li>
+      <li>Fixed: Two-pane mode occasionally showed extra text in the author username (electroly)</li>
+    </ul>
+    <h2>Version 1.59</h2>
+    <ul>
+      <li>Fixed: [lol] tag button is no longer eaten (electroly)</li>
+      <li>New: [lol] tags and user icons can be tweaked in the options (electroly)</li>
+      <li>Improved: The options screen has been simplified (electroly)</li>
+    </ul>
+    <h2>Version 1.58</h2>
+    <ul>
+      <li>Fixed: a regression causing broken Instagram post embedding (WombatFromHell)</li>
+      <li>Fixed: Imgur links that use subreddit syntax not being embedded properly (WombatFromHell)</li>
+      <li>Removed: LOL script (electroly)</li>
+      <li>Removed: WinChatty NuSearch script (electroly)</li>
+      <li>New: Some temporary visual tweaks to clean up the new chatty design (electroly)</li>
+    </ul>
+    <h2>Version 1.57</h2>
+    <ul>
+      <li>Fixed: Chrome Shack will now activate on the bare "shacknews.com" domain (electroly)</li>
+    </ul>
+    <h2>Version 1.56</h2>
+    <ul>
+      <li>Updated: "Shame Switchers" has been updated (thanks to wtigert)</li>
+      <li>Fixed: clicked posts not focusing properly on some machines (WombatFromHell)</li>
+      <li>Fixed: "New Comment Highlighter" breaking the Chatty Filters panel (WombatFromHell)</li>
+      <li>Fixed: "Embed Images" detection of some Gfycat/Giphy links (WombatFromHell)</li>
+      <li>Fixed: "Embed Social Links" cutting off large media items (WombatFromHell)</li>
+      <li>Fixed: "Scrolling performance hack" breaks crxMouse gestures (WombatFromHell)</li>
+      <li>Fixed: duplicate thread id error when re-tagging a tagged post (WombatFromHell)</li>
+      <li>
+        Fixed: Imgur resolver getting confused when an image and an album have the same shortcode (WombatFromHell)
+      </li>
+      <li>Fixed: "Infinite Scrolling" script breaking clicked posts on appended pages (WombatFromHell)</li>
+      <li>New: An option has been added to allow inlining embeddables near their associated link (WombatFromHell)</li>
+      <li>Deprecated: "Auto focus post" has been removed due to a better fix being implemented (WombatFromHell)</li>
+      <li>Improved: "Two-Pane" mode now has improved post focusing if a post would fit (WombatFromHell)</li>
+      <li>Improved: "Middle-click to open in new tab" embedded media now opens links as an overlay (WombatFromHell)</li>
+      <li>
+        Improved: "Embed Social Links" and "Embed Images" now support multi-item sources via Carousel (WombatFromHell)
+      </li>
+      <li>
+        Improved: smarter responsive sizing for embedded media containers when in unified container mode
+        (WombatFromHell)
+      </li>
+    </ul>
+    <h2>Version 1.55</h2>
+    <ul>
+      <li>Fixed: Tagging posts did not work unless the post already had tags (boarder2)</li>
+    </ul>
+    <h2>Version 1.54</h2>
+    <ul>
+      <li>New: "Embed Socials" embeds Twitter and Instagram posts inline when links are clicked (WombatFromHell)</li>
+      <li>WIP: Embedded elements are now responsive and resize appropriately on larger screens (WombatFromHell)</li>
+      <li>Fixed: "Embed Post" not properly parsing modern chatty permalinks (WombatFromHell)</li>
+      <li>Fixed: Reintroduced "Comment Tags" script to address the broken Shacktags Legend box (WombatFromHell)</li>
+      <li>Improved: LOL script now allows untagging a previously tagged post (WombatFromHell)</li>
+      <li>
+        Improved: Thanks to ThomW's API changes, the LOL'ers button now toggles all tagger buttons (WombatFromHell)
+      </li>
+      <li>
+        Improved: Added additional performance hacks for Webkit to the scrolling performance hack script
+        (WombatFromHell)
+      </li>
+      <li>Improved: All scripts that embed media now show an expando button next to handled links (WombatFromHell)</li>
+      <li>Improved: "Embed Images" script now supports a wider array of image hoster links (WombatFromHell)</li>
+      <li>
+        Improved: "Embed Images" now provides an option to open images in a new tab when middle-clicked (WombatFromHell)
+      </li>
+      <li>Improved: "Embed Videos" now supports Streamable.com and XboxDVR.com (WombatFromHell)</li>
+      <li>Improved: "Embed Videos" now handles all common Youtube and Twitch.tv links (WombatFromHell)</li>
+      <li>Deprecated: Vimeo and Vine support has been deprecated in favor of other hosters (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.53</h2>
+    <ul>
+      <li>Fixed: Don't enable "Two-Pane Layout" when clicking a post (electroly)</li>
+    </ul>
+    <h2>Version 1.52</h2>
+    <ul>
+      <li>New: "Two-Pane Layout" script shows a thread list to the left of the chatty (electroly)</li>
+      <li>New: Added the ability to see what users tagged a post (boarder2)</li>
+      <li>Fixed: "Embed Posts" script works again (WombatFromHell)</li>
+      <li>Fixed: "Shame Switchers" script works again (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.51</h2>
+    <ul>
+      <li>Fixed: Moderation banners are no longer painted repeatedly behind post bodies (WombatFromHell)</li>
+      <li>Fixed: The "pending new posts" counter no longer obscures the top navigation bar (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.50</h2>
+    <ul>
+      <li>New: Chrome Shack now runs on Firefox! (WombatFromHell)</li>
+      <li>New: "Auto Scroll" option to scroll to posts when selecting them (WombatFromHell)</li>
+      <li>New: Added support for Gfycat to the Image Uploader script (WombatFromHell)</li>
+      <li>New: Quick link to the options dialog near the "New Comment" button and in the post box (electroly)</li>
+      <li>New: Quick toggle for post/preview button order in the post box (electroly)</li>
+      <li>
+        New: "Post Length Counter" script, showing a live count of characters left before the post preview gets
+        truncated (electroly)
+      </li>
+      <li>Improved: Faster script injection (WombatFromHell)</li>
+      <li>Improved: Simpler options dialog styling (WombatFromHell)</li>
+      <li>Fixed: The "Custom User Filters" script works again (electroly)</li>
+      <li>Fixed: Chrome Shack can now be used when logged out of Shacknews (electroly)</li>
+      <li>Fixed: Custom LOL tags that contain ampersands now work properly (electroly)</li>
+      <li>Fixed: Updated the performance hack script (WombatFromHell)</li>
+    </ul>
+    <h2>Version 1.49</h2>
+    <ul>
+      <li><strong>More 2018 Shacknews Redesign Fixes</strong></li>
+      <li>Fix infinite scrolling script (electroly)</li>
+      <li>Highlight pending new posts: fix positioning of new post count in header bar (electroly)</li>
+      <li>Image upload: fix layout issues in post box (electroly)</li>
+      <li>Post preview: Set default button location to 'right' so tab-space works out of the box (electroly)</li>
+      <li>Use a less intrusive set of default scripts (electroly)</li>
+      <li>
+        Remove Safe For Work script. Instead, please use the
+        <a href="https://userstyles.org/styles/163724/shack-white-and-blue-2">Shack White and Blue 2</a>
+        theme for
+        <a href="https://chrome.google.com/webstore/detail/osprey/ekjapccimkannnfgcnnoajhfdglobgak?hl=en">Osprey</a>.
+        (electroly)
+      </li>
+      <li>Fix "Get Post Count" in user menu (electroly)</li>
+      <li>New moderation banners and LOL link image (mn3m0n1c)</li>
+    </ul>
+    <h2>Version 1.48</h2>
+    <ul>
+      <li><strong>2018 Shacknews Redesign Fixes</strong></li>
+      <li>lol: Refactored lol page button, and updated script to use https (ThomW)</li>
+      <li>User Popup: 'My Stuff' menu moved under the Account button in the header (ThomW)</li>
+      <li>Remove link hashtags script (electroly)</li>
+      <li>Add scrolling performance hack script (electroly)</li>
+    </ul>
+    <h2>Version 1.47</h2>
+    <ul>
+      <li>Fixes for saving user filters (electroly)</li>
+      <li>Fixes for image loading (yehmuthah)</li>
+      <li>Updated mod/staff list (Haxim)</li>
+    </ul>
+    <h2>Version 1.46</h2>
+    <ul>
+      <li>Added support for embedded Tweets in a new social loader. (king_darius)</li>
+      <li>Added support for Vine to video loader. (king_darius)</li>
+      <li>Updated mod/staff list. (Haxim)</li>
+      <li>Chrome Shack settings window will now auto-save, can be reset to defaults. (king_darius)</li>
+      <li>Fixes for Apr 2015 layout changes (ThomW)</li>
+    </ul>
+    <h2>Version 1.45</h2>
+    <ul>
+      <li>Filtered posts are removed instead of hidden. (king_darius)</li>
+      <li>Videos linked from Twitch.tv will now embed in posts. (king_darius)</li>
+      <li>Layout on the main page is fixed. User popup on non-chatty pages is fixed. (electroly)</li>
+      <li>Search result readability improved. (king_darius)</li>
+      <li>Fixed Chromeshack errors outside of the chatty. (king_darius)</li>
+      <li>Live post preview option added, all previews are more accurate. (king_darius)</li>
+    </ul>
+    <h2>Version 1.44</h2>
+    <ul>
+      <li>Support filtering posts by username. (electroly)</li>
+      <li>Highlight thread refresh button when new posts are available. (electroly)</li>
+      <li>Show user dropdown in collapsed header. (electroly)</li>
+      <li>Support using WinChatty NuSearch instead of Shacknews comment search. (electroly)</li>
+      <li>Redesigned options interface. (electroly)</li>
+      <li>Show fullscreen button in inline YouTube videos.</li>
+      <li>Fix some dropbox image links in image loader.</li>
+    </ul>
+    <h2>Version 1.43</h2>
+    <ul>
+      <li>Fix css junk (ThomW/electroly)</li>
+    </ul>
+    <h2>Version 1.42</h2>
+    <ul>
+      <li>Fix notification bug (boarder2)</li>
+      <li>Move gfycat/gifv support back to Image Loader</li>
+      <li>Better gfycat support for non-zippy videos</li>
+      <li>Better detect imgur gif links with wrong extension</li>
+      <li>CSS changes (Ashun)</li>
+    </ul>
+    <h2>Version 1.41</h2>
+    <ul>
+      <li>Fix header layout bug.</li>
+    </ul>
+    <h2>Version 1.40</h2>
+    <ul>
+      <li>Shacknews redesign update</li>
+      <li>Support imgur gifv in video loader</li>
+      <li>Move gfycat support to video loader</li>
+      <li>Update YouTube embed to iframe api</li>
+    </ul>
 
-        <h2>Version 1.39</h2>
+    <h2>Version 1.39</h2>
+    <ul>
+      <li>Winchatty desktop notifications (electroly/Boarder2)</li>
+      <li>Updated new comment highlighter style so it plays nice with Ashun's stylish theme (Boarder2)</li>
+    </ul>
+    <h2>Version 1.38</h2>
+    <ul>
+      <li>lol: Fix for usernames with spaces</li>
+      <li>User popup menus fixed to work with Shacknews redesign</li>
+    </ul>
+    <h2>Version 1.37</h2>
+    <ul>
+      <li>Fix for changes to lols (POST instead of GET).</li>
+      <li>Determine current username in more compatible way.</li>
+      <li>Fix nws enhancements when opening all links to new incognito window</li>
+      <li>Disable broken cloud pinning.</li>
+    </ul>
+    <h2>Version 1.36</h2>
+    <ul>
+      <li>Support gfycat in image loader script.</li>
+    </ul>
+    <h2>Versions 1.32 - 1.35</h2>
+    <ul>
+      <li>Add ability to un-lol posts after lol'ing them (only when it says '* T A G ' D *')</li>
+      <li>Added the hashtag script</li>
+      <li>
+        Added name switcher shaming. Users who had switched to a new name but reverted back for whatever reason will
+        have their lightning bolt removed and what name they switched from displayed. (Boarder2)
+      </li>
+      <li>
+        Removed candy striping style from expiration bar when the thread is fully expired. Makes it easier to tell when
+        it's done and not just close. (Boarder2)
+      </li>
+      <li>
+        NWS Enhancements (Boarder2)
         <ul>
-            <li>Winchatty desktop notifications (electroly/Boarder2)</li>
-            <li>Updated new comment highlighter style so it plays nice with Ashun's stylish theme (Boarder2)</li>
+          <li>
+            Links in NWS posts will be opened in a new Incognito window (or in an existing window, without giving it
+            focus).
+          </li>
+          <li>
+            Posts tagged as NWS with more than one link in them will have a new link to open all links in that post in
+            an Incognito window following the same rules as above.
+          </li>
         </ul>
-        <h2>Version 1.38</h2>
-        <ul>
-            <li>lol: Fix for usernames with spaces</li>
-            <li>User popup menus fixed to work with Shacknews redesign</li>
-        </ul>
-        <h2>Version 1.37</h2>
-        <ul>
-            <li>Fix for changes to lols (POST instead of GET).</li>
-            <li>Determine current username in more compatible way.</li>
-            <li>Fix nws enhancements when opening all links to new incognito window</li>
-            <li>Disable broken cloud pinning.</li>
-        </ul>
-        <h2>Version 1.36</h2>
-        <ul>
-            <li>Support gfycat in image loader script.</li>
-        </ul>
-        <h2>Versions 1.32 - 1.35</h2>
-        <ul>
-            <li>Add ability to un-lol posts after lol'ing them (only when it says '* T A G ' D *')</li>
-            <li>Added the hashtag script</li>
-            <li>
-                Added name switcher shaming. Users who had switched to a new name but reverted back for whatever reason
-                will have their lightning bolt removed and what name they switched from displayed. (Boarder2)
-            </li>
-            <li>
-                Removed candy striping style from expiration bar when the thread is fully expired. Makes it easier to
-                tell when it's done and not just close. (Boarder2)
-            </li>
-            <li>
-                NWS Enhancements (Boarder2)
-                <ul>
-                    <li>
-                        Links in NWS posts will be opened in a new Incognito window (or in an existing window, without
-                        giving it focus).
-                    </li>
-                    <li>
-                        Posts tagged as NWS with more than one link in them will have a new link to open all links in
-                        that post in an Incognito window following the same rules as above.
-                    </li>
-                </ul>
-            </li>
-            <li>Image uploader will be hidden until the user wants to use it. (Boarder2)</li>
-            <li>Remove posts from pinned list that have been nuked <b>or filtered</b>. (Boarder2)</li>
-            <li>Fixed coloring of post preview custom tags. (ThomW)</li>
-            <li>Implemented count-only lol count displays. (ThomW based on freakynipples69's idea)</li>
-        </ul>
-        <h2>Version 1.31</h2>
-        <ul>
-            <li>Fixed bugs related to new user login HTML in cloud pinning. (Boarder2)</li>
-            <li>
-                Pinned posts loading indicator will no longer display if you're not logged in but have pinning enabled.
-                (Boarder2)
-            </li>
-            <li>Fixed issue with pinned posts section CSS that occurred during merging. (Boarder2)</li>
-        </ul>
-        <h2>Version 1.30</h2>
-        <ul>
-            <li>Fixed bugs related to new user login HTML in lol and user-popup (ThomW)</li>
-        </ul>
-        <h2>Version 1.29</h2>
-        <ul>
-            <li>Fix "elder scroll" from hanging the browser.</li>
-            <li>Fix missing header in options</li>
-        </ul>
-        <h2>Version 1.28</h2>
-        <ul>
-            <li>Cloud pinning because boarder2 is awesome.</li>
-            <li>Image uploading because clay is awesome.</li>
-            <li>Show custom tags on root posts, if enabled.</li>
-            <li>Fix viewing ugh-collapsed threads.</li>
-        </ul>
-        <h2>Version 1.27</h2>
-        <ul>
-            <li>Fixed [ugh] threshold bug</li>
-        </ul>
-        <h2>Version 1.26</h2>
-        <ul>
-            <li>Update mod/developers list (Haxim)</li>
-            <li>Update lol script [ugh] tag handling (ThomW)</li>
-            <li>Update to manifest version 2 (DrWaffles)</li>
-        </ul>
-        <h2>Version 1.25</h2>
-        <ul>
-            <li>Possibly really fixed feedback when lol-ing (thanks to DrWaffles)</li>
-        </ul>
-        <h2>Version 1.24</h2>
-        <ul>
-            <li>Possibly fixed feedback when lol-ing (thanks to DrWaffles)</li>
-            <li>Fix linking new stupid dropbox image links.</li>
-        </ul>
-        <h2>Version 1.23</h2>
-        <ul>
-            <li>Moved Chrome Shack to the Chrome Web Store.</li>
-        </ul>
-        <h2>Version 1.22</h2>
-        <ul>
-            <li>
-                Shacklol: lol counts can now be configured to show None, Limited or All. All and None are obvious, but
-                Limited will only show you counts for tags you have in your own arsenal.
-            </li>
-        </ul>
-        <h2>Version 1.21</h2>
-        <ul>
-            <li>User Dropdown: Added links for users' chattyprofil.es</li>
-        </ul>
-        <h2>Version 1.20</h2>
-        <ul>
-            <li>ThomW fixed some things.</li>
-        </ul>
-        <h2>Version 1.19</h2>
-        <ul>
-            <li>User Popup: Fixed search sorting</li>
-            <li>User Popup: Now works on all pages</li>
-            <li>Expiration Watcher: Renamed Wolf3D to Doom</li>
-            <li>Expiration Watcher: Fixed padding next to Doom guy</li>
-            <li>Fixed settings for chrome dev channel</li>
-        </ul>
-        <h2>Version 1.18</h2>
-        <ul>
-            <li>Fix crash caused by changes in Chrome 14.0.814.0.</li>
-            <li>Fix timezone issues in expiration watcher (thanks to filthysock).</li>
-            <li>Replace shackpics links with chattypics.</li>
-            <li>Add Get Post script (thanks to DrWaffles).</li>
-            <li>"Ported" ThomW's user popup script.</li>
-        </ul>
-        <h2>Version 1.17</h2>
-        <ul>
-            <li>Made lolcounts optional (off by default)</li>
-            <li>Fixed Expiration Watcher colors.</li>
-        </ul>
-        <h2>Version 1.16</h2>
-        <ul>
-            <li>Added lolcounts</li>
-            <li>Change Expiration Watcher script to 18 hours, and added fancy bar styling.</li>
-            <li>Added Wolf3D meter option to expiration watcher script.</li>
-            <li>Disabled winchatty search stuff.</li>
-        </ul>
-        <h2>Version 1.15</h2>
-        <ul>
-            <li>Add Expiration Watcher script (enabled by default)</li>
-            <li>
-                Remove some CSS that couldn't be disabled. Use a
-                <a href="http://userstyles.org/styles/44570">stylish script</a> if you want it back.
-            </li>
-            <li>Move LOL'D button further to left side so it doesn't overlap page numbers.</li>
-        </ul>
-        <h2>Version 1.14</h2>
-        <ul>
-            <li>Move LOL'D button to left side so it doesn't overlap links.</li>
-            <li>Fix user highliting since usernames aren't links anymore.</li>
-            <li>Add 'Shacknews' to employee list, and highlight new article comment threads.</li>
-            <li>Fix duplicated comment tag legend.</li>
-            <li>Replace useless searchbox with winchatty search.</li>
-            <li>Add vanity search link to logged in username at top of page.</li>
-            <li>Change white header/footer to blank.</li>
-            <li>Change original poster default highlight color with yellow.</li>
-            <li>Add local timezone conversion script from TroZ.</li>
-        </ul>
-        <h2>Version 1.13</h2>
-        <ul>
-            <li>Run on http://new.shacknews.com</li>
-        </ul>
-        <h2>Version 1.12</h2>
-        <ul>
-            <li>Fixed for New Shacknews</li>
-            <li>Remove 'tabs' permission (warned users that Chrome Shack had access to its browsing history).</li>
-        </ul>
-        <h2>Version 1.11</h2>
-        <ul>
-            <li>Support pichars.org in the image loader</li>
-            <li>Update employee and game developer list</li>
-            <li>Fix some highlighting problems in new comment marker script</li>
-            <li>add permission to http//*.shacknews.com/* to workaround dev channel regression</li>
-        </ul>
-    </body>
+      </li>
+      <li>Image uploader will be hidden until the user wants to use it. (Boarder2)</li>
+      <li>Remove posts from pinned list that have been nuked <b>or filtered</b>. (Boarder2)</li>
+      <li>Fixed coloring of post preview custom tags. (ThomW)</li>
+      <li>Implemented count-only lol count displays. (ThomW based on freakynipples69's idea)</li>
+    </ul>
+    <h2>Version 1.31</h2>
+    <ul>
+      <li>Fixed bugs related to new user login HTML in cloud pinning. (Boarder2)</li>
+      <li>
+        Pinned posts loading indicator will no longer display if you're not logged in but have pinning enabled.
+        (Boarder2)
+      </li>
+      <li>Fixed issue with pinned posts section CSS that occurred during merging. (Boarder2)</li>
+    </ul>
+    <h2>Version 1.30</h2>
+    <ul>
+      <li>Fixed bugs related to new user login HTML in lol and user-popup (ThomW)</li>
+    </ul>
+    <h2>Version 1.29</h2>
+    <ul>
+      <li>Fix "elder scroll" from hanging the browser.</li>
+      <li>Fix missing header in options</li>
+    </ul>
+    <h2>Version 1.28</h2>
+    <ul>
+      <li>Cloud pinning because boarder2 is awesome.</li>
+      <li>Image uploading because clay is awesome.</li>
+      <li>Show custom tags on root posts, if enabled.</li>
+      <li>Fix viewing ugh-collapsed threads.</li>
+    </ul>
+    <h2>Version 1.27</h2>
+    <ul>
+      <li>Fixed [ugh] threshold bug</li>
+    </ul>
+    <h2>Version 1.26</h2>
+    <ul>
+      <li>Update mod/developers list (Haxim)</li>
+      <li>Update lol script [ugh] tag handling (ThomW)</li>
+      <li>Update to manifest version 2 (DrWaffles)</li>
+    </ul>
+    <h2>Version 1.25</h2>
+    <ul>
+      <li>Possibly really fixed feedback when lol-ing (thanks to DrWaffles)</li>
+    </ul>
+    <h2>Version 1.24</h2>
+    <ul>
+      <li>Possibly fixed feedback when lol-ing (thanks to DrWaffles)</li>
+      <li>Fix linking new stupid dropbox image links.</li>
+    </ul>
+    <h2>Version 1.23</h2>
+    <ul>
+      <li>Moved Chrome Shack to the Chrome Web Store.</li>
+    </ul>
+    <h2>Version 1.22</h2>
+    <ul>
+      <li>
+        Shacklol: lol counts can now be configured to show None, Limited or All. All and None are obvious, but Limited
+        will only show you counts for tags you have in your own arsenal.
+      </li>
+    </ul>
+    <h2>Version 1.21</h2>
+    <ul>
+      <li>User Dropdown: Added links for users' chattyprofil.es</li>
+    </ul>
+    <h2>Version 1.20</h2>
+    <ul>
+      <li>ThomW fixed some things.</li>
+    </ul>
+    <h2>Version 1.19</h2>
+    <ul>
+      <li>User Popup: Fixed search sorting</li>
+      <li>User Popup: Now works on all pages</li>
+      <li>Expiration Watcher: Renamed Wolf3D to Doom</li>
+      <li>Expiration Watcher: Fixed padding next to Doom guy</li>
+      <li>Fixed settings for chrome dev channel</li>
+    </ul>
+    <h2>Version 1.18</h2>
+    <ul>
+      <li>Fix crash caused by changes in Chrome 14.0.814.0.</li>
+      <li>Fix timezone issues in expiration watcher (thanks to filthysock).</li>
+      <li>Replace shackpics links with chattypics.</li>
+      <li>Add Get Post script (thanks to DrWaffles).</li>
+      <li>"Ported" ThomW's user popup script.</li>
+    </ul>
+    <h2>Version 1.17</h2>
+    <ul>
+      <li>Made lolcounts optional (off by default)</li>
+      <li>Fixed Expiration Watcher colors.</li>
+    </ul>
+    <h2>Version 1.16</h2>
+    <ul>
+      <li>Added lolcounts</li>
+      <li>Change Expiration Watcher script to 18 hours, and added fancy bar styling.</li>
+      <li>Added Wolf3D meter option to expiration watcher script.</li>
+      <li>Disabled winchatty search stuff.</li>
+    </ul>
+    <h2>Version 1.15</h2>
+    <ul>
+      <li>Add Expiration Watcher script (enabled by default)</li>
+      <li>
+        Remove some CSS that couldn't be disabled. Use a
+        <a href="http://userstyles.org/styles/44570">stylish script</a> if you want it back.
+      </li>
+      <li>Move LOL'D button further to left side so it doesn't overlap page numbers.</li>
+    </ul>
+    <h2>Version 1.14</h2>
+    <ul>
+      <li>Move LOL'D button to left side so it doesn't overlap links.</li>
+      <li>Fix user highliting since usernames aren't links anymore.</li>
+      <li>Add 'Shacknews' to employee list, and highlight new article comment threads.</li>
+      <li>Fix duplicated comment tag legend.</li>
+      <li>Replace useless searchbox with winchatty search.</li>
+      <li>Add vanity search link to logged in username at top of page.</li>
+      <li>Change white header/footer to blank.</li>
+      <li>Change original poster default highlight color with yellow.</li>
+      <li>Add local timezone conversion script from TroZ.</li>
+    </ul>
+    <h2>Version 1.13</h2>
+    <ul>
+      <li>Run on http://new.shacknews.com</li>
+    </ul>
+    <h2>Version 1.12</h2>
+    <ul>
+      <li>Fixed for New Shacknews</li>
+      <li>Remove 'tabs' permission (warned users that Chrome Shack had access to its browsing history).</li>
+    </ul>
+    <h2>Version 1.11</h2>
+    <ul>
+      <li>Support pichars.org in the image loader</li>
+      <li>Update employee and game developer list</li>
+      <li>Fix some highlighting problems in new comment marker script</li>
+      <li>add permission to http//*.shacknews.com/* to workaround dev channel regression</li>
+    </ul>
+  </body>
 </html>
