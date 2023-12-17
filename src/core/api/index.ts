@@ -6,6 +6,7 @@ import { isDirectMedia } from "./directmedia";
 import { isDropbox } from "./dropbox";
 import { isGiphy } from "./giphy";
 import { isGstatic } from "./gstatic";
+import { isTumblr } from "./tumblr";
 import { isImgflip } from "./imgflip";
 /// resolvable media embeds
 import { isImgur } from "./imgur";
@@ -34,8 +35,9 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
     const giphy = isGiphy(href);
     const imgflip = isImgflip(href);
     const gstatic = isGstatic(href);
+    const tumblr = isTumblr(href);
     const directmedia = isDirectMedia(href);
-    const normalMedia = dropbox || twimg || giphy || imgflip || gstatic || directmedia;
+    const normalMedia = dropbox || twimg || giphy || imgflip || gstatic || tumblr || directmedia;
     if (objHas(normalMedia)) return normalMedia;
 
     const imgur = isImgur(href);
