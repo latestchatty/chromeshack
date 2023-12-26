@@ -57,13 +57,12 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
         setValid(arrHas(foundRecord));
       })();
     },
-    [postid]
+    [postid],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "update on postid"
   const debouncedSave = useCallback(
     debounce((d: Draft[]) => saveDraftsToStore(d), 750),
-    [saveDraftsToStore]
+    [],
   );
   const _debouncedSave = useRef(debouncedSave).current;
 
@@ -85,26 +84,27 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setDrafts(_drafts);
       _debouncedSave(_drafts);
     },
-    [drafts, postid, _debouncedSave]
+    [drafts, postid, _debouncedSave],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "avoid circular"
-  const handleSubmit = useCallback(
-    (e: Event) => {
-      e.preventDefault();
-      (async () => {
-        const _this = e.target as HTMLButtonElement;
-        if (elemMatches(_this, "#frm_submit")) {
+  function handleSubmit() {
+    return useCallback(
+      (e: Event) => {
+        e.preventDefault();
+        (async () => {
+          const _this = e.target as HTMLButtonElement;
+          if (!elemMatches(_this, "#frm_submit")) return;
+
           const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
           const filtered = _drafts.filter((d) => d.postid !== postid);
           saveDraftsToStore(filtered);
           // avoid duplicate handlers when replybox closes
           submitFormEvent.removeHandler(handleSubmit);
-        }
-      })();
-    },
-    [saveDraftsToStore]
-  );
+        })();
+      },
+      [postid],
+    );
+  }
 
   const handleInput = useCallback(
     (e: Event | HTMLInputElement) => {
@@ -113,7 +113,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setInputVal(_val);
       saveToDraft(_val);
     },
-    [saveToDraft]
+    [saveToDraft],
   );
 
   const handleExternalInput = useCallback((el: HTMLInputElement) => handleInput(el), [handleInput]);
@@ -132,7 +132,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       replyFieldEvent.removeHandler(handleExternalInput);
       submitFormEvent.removeHandler(handleSubmit);
     };
-  }, [inputBox, handleInput, handleExternalInput, handleSubmit]);
+  }, [inputBox, handleInput, handleExternalInput]);
   useEffect(() => {
     loadDraftsFromStore();
   }, [loadDraftsFromStore]);

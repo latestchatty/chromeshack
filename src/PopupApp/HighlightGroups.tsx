@@ -14,7 +14,7 @@ const HighlightGroup = memo((props: { name: string }) => {
   const dispatch = state.dispatch;
 
   const [localGroup, setLocalGroup] = useState<HighlightGroup>(
-    state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase())
+    state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase()),
   );
   const [nameInput, setNameInput] = useState(localGroup.name);
   const [styleInput, setStyleInput] = useState(localGroup.css);
@@ -68,7 +68,6 @@ const HighlightGroup = memo((props: { name: string }) => {
         });
     }, 500);
     return () => clearTimeout(handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, localGroup, name, dispatch]);
   useEffect(() => {
     insertGroupCSS(state.highlightgroups);

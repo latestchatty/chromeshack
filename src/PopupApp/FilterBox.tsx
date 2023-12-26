@@ -1,5 +1,5 @@
 /* eslint-disable react/no-danger */
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
 import { useStore } from "./popupStore";
@@ -25,10 +25,10 @@ const FilterBox = memo(
     const state = useStore() as PopupState;
     const dispatch = state.dispatch;
 
-    const selectId = `${id}_select_box`;
-    const boxId = `${id}_text_box`;
-    const addBtnId = `${id}_add_btn`;
-    const removeBtnId = `${id}_remove_btn`;
+    const selectId = useMemo(() => `${id}_select_box`, [id]);
+    const boxId = useMemo(() => `${id}_text_box`, [id]);
+    const addBtnId = useMemo(() => `${id}_add_btn`, [id]);
+    const removeBtnId = useMemo(() => `${id}_remove_btn`, [id]);
 
     const handleSelectClick = (e: React.MouseEvent<HTMLSelectElement, MouseEvent>) => {
       const _this = e.target as HTMLSelectElement;
@@ -72,10 +72,9 @@ const FilterBox = memo(
       if (e.key === "Delete" || e.key === "Backspace") handleFiltersDelBtn();
     };
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: "update on groups/selected"
     useEffect(() => {
       setOptionVals(options);
-    }, [options, groups, selected]);
+    }, [options]);
 
     return (
       <div className={classNames("filter_box", classes)}>
@@ -88,7 +87,8 @@ const FilterBox = memo(
           onChange={handleSelectChange}
           onClick={handleSelectClick}
           onKeyUp={handleDelOnSelect}
-          multiple={true}>
+          multiple={true}
+        >
           {optionVals?.map((o, i) => {
             const innerText = o.replace(/[\s]+/gm, "&nbsp;");
             // force options to show trailing spaces if present in state
@@ -114,7 +114,7 @@ const FilterBox = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export { FilterBox };

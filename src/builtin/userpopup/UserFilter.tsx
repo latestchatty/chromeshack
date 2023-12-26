@@ -16,17 +16,16 @@ const UserFilter = memo((props: { username: string; isLoggedInUser: boolean }) =
         setIsFilter(!isFilter);
       })();
     },
-    [username, isFilter]
+    [username, isFilter],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional onMount"
   useEffect(() => {
     (async () => {
       setIsEnabled(await enabledContains(["custom_user_filters"]));
       const _isfilter = await filtersContains(username);
       setIsFilter(!!_isfilter);
     })();
-  }, []);
+  }, [username]);
 
   return isEnabled ? (
     <>

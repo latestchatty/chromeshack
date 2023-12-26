@@ -45,7 +45,6 @@ const Image = (props: MediaProps) => {
   // click-to-toggle enabled by default
   const { clickTogglesVisible = true } = options || {};
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "update on isSlide"
   useEffect(() => {
     const img = imageRef.current;
     const _isSlide = img?.closest(".embla__slide__inner");
@@ -54,7 +53,7 @@ const Image = (props: MediaProps) => {
       // disable click-to-toggle pointer if we're a child of a slide
       setClasses(classNames(_classes));
     } else if (img) setClasses(classNames(_classes, { canToggle: clickTogglesVisible }));
-  }, [isSlide, _classes, clickTogglesVisible]);
+  }, [_classes, clickTogglesVisible]);
 
   return <img className={classes} src={src} alt="" ref={imageRef} />;
 };
