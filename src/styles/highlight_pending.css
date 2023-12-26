@@ -56,6 +56,11 @@
   opacity: 0.33;
   transition: opacity 0.2s ease;
 }
+/* narrow & scrolled (no header) */
+#hpnp__app__container.narrow.scrolled:not(.header-shown) {
+  left: 2rem;
+  top: 0.2rem;
+}
 
 #hpnp__container {
   display: flex;
