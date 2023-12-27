@@ -8,25 +8,25 @@ const isFirefox = process.env.FIREFOX ? "firefox" : "chrome";
 const browserMixin =
   isFirefox === "firefox"
     ? {
-      browser_specific_settings: {
-        gecko: {
-          id: "chromeshack@github.com",
-          strict_min_version: "42.0",
+        browser_specific_settings: {
+          gecko: {
+            id: "chromeshack@github.com",
+            strict_min_version: "42.0",
+          },
         },
-      },
-      background: {
-        scripts: ["src/serviceWorker.ts"],
-      },
-      content_security_policy: {
-        extension_pages: "script-src 'self'; object-src 'self'",
-      },
-    }
+        background: {
+          scripts: ["src/serviceWorker.ts"],
+        },
+        content_security_policy: {
+          extension_pages: "script-src 'self'; object-src 'self'",
+        },
+      }
     : {
-      background: {
-        service_worker: "src/serviceWorker.ts",
-        type: "module",
-      },
-    };
+        background: {
+          service_worker: "src/serviceWorker.ts",
+          type: "module",
+        },
+      };
 
 const crxConfig = {
   manifest_version: 3,
@@ -55,16 +55,7 @@ const crxConfig = {
     },
   ],
   permissions: ["tabs", "storage", "scripting", "notifications", "alarms"],
-  host_permissions: [
-    "https://api.imgur.com/3/*",
-    "https://api.gfycat.com/v1/gfycats/*",
-    "https://filedrop.gfycat.com/*",
-    "https://chattypics.com/*",
-    "https://winchatty.com/v2/*",
-    "https://*.youtube.com/embed/*",
-    "https://api.streamable.com/videos/*",
-    "https://www.shacknews.com/chatty*",
-  ],
+  host_permissions: ["https://api.imgur.com/3/*", "https://winchatty.com/v2/*", "https://www.shacknews.com/chatty*"],
   web_accessible_resources: [
     {
       matches: ["*://*/*"],

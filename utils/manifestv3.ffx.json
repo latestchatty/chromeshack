@@ -37,16 +37,7 @@
     }
   ],
   "permissions": ["tabs", "storage", "scripting", "notifications", "alarms"],
-  "host_permissions": [
-    "https://www.shacknews.com/chatty*",
-    "https://api.imgur.com/3/*",
-    "https://api.gfycat.com/v1/gfycats/*",
-    "https://filedrop.gfycat.com/*",
-    "https://chattypics.com/*",
-    "https://winchatty.com/v2/*",
-    "https://*.youtube.com/embed/*",
-    "https://api.streamable.com/videos/*"
-  ],
+  "host_permissions": ["https://api.imgur.com/3/*", "https://winchatty.com/v2/*", "https://www.shacknews.com/chatty*"],
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],
