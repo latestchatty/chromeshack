@@ -24,10 +24,12 @@ const PostPreview = {
   async apply(args: PostboxEventArgs) {
     const { postbox } = args || {};
     const is_enabled = await enabledContains(["post_preview"]);
-    const positionElem = postbox?.querySelector("div.csubmit");
+    if (!is_enabled || !postbox) return;
+
+    const positionElem = postbox.querySelector("div.csubmit");
     const container = postbox.querySelector("#post__preview__app");
     const altPositionElem = postbox?.querySelector("#frm_body");
-    if (is_enabled && !container && positionElem) {
+    if (!container && positionElem) {
       const clonedAppEl = PostPreview.cachedAppEl.cloneNode(false) as HTMLElement;
       const clonedPaneEl = PostPreview.cachedPaneEl.cloneNode(false) as HTMLElement;
 
