@@ -34,19 +34,19 @@ export const ChattyNews = {
 
     const newsBox = container?.querySelector("#recent-articles") as HTMLElement;
     for (const item of rss || []) {
-      const newsItemFragment = parseToElement(/*html*/ `
-                <li>
-                    <a
-                        class="truncated"
-                        rel="noopener"
-                        target="_blank"
-                        href="${item.link}"
-                        title="${item.content}"
-                    >
-                        <span>${item.title}</span>
-                    </a>
-                </li>
-            `);
+      const newsItemFragment = parseToElement(`
+        <li>
+          <a
+            class="truncated"
+            rel="noopener"
+            target="_blank"
+            href="${item.link}"
+            title="${item.content}"
+          >
+            <span>${item.title}</span>
+          </a>
+        </li>
+      `);
       newsBox?.append(newsItemFragment);
     }
     return container;
@@ -64,13 +64,13 @@ export const ChattyNews = {
     alignmentBox.setAttribute("id", "chattynews__aligner");
     subAlignmentBox.setAttribute("id", "links__aligner");
 
-    const newsBoxFragment = parseToElement(/*html*/ `
-            <div class="chatty-news">
-                <h2>Recent Articles</h2>
-                <hr class="chatty-news-sep" />
-                <div><ul id="recent-articles"></ul></div>
-            </div>
-        `);
+    const newsBoxFragment = parseToElement(`
+      <div class="chatty-news">
+        <h2>Recent Articles</h2>
+        <hr class="chatty-news-sep" />
+        <div><ul id="recent-articles"></ul></div>
+      </div>
+    `);
 
     // populate the newly created newsBox from the Chatty RSS server's articles
     const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);

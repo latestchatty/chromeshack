@@ -37,18 +37,18 @@ export const DinoGegtik = {
         const lines = SentenceParser.parseIntoLines(postBodyClone?.innerHTML);
         const image = chrome.runtime.getURL("images/dinogegtik.png");
         const comic_height = lines.length <= 3 ? "244px" : "487px";
-        const comic_div = parseToElement(/*html*/ `
-                    <div id="${comic_id}" class="dinogegtik" style="height: ${comic_height}; background-image: url(${image});" />
-                `) as HTMLDivElement;
+        const comic_div = parseToElement(`
+          <div id="${comic_id}" class="dinogegtik" style="height: ${comic_height}; background-image: url(${image});" />
+        `) as HTMLDivElement;
 
         const max = lines.length > DinoGegtik.panels.length ? DinoGegtik.panels.length : lines.length;
         for (let i = 0; i < max; i++) {
           const this_panel = DinoGegtik.panels[i];
-          const parsedPanel = parseToElement(/*html*/ `
-                        <div class="panel" style="left: ${this_panel.x}px; top: ${this_panel.y}px; width: ${this_panel.width}px; height: ${this_panel.height}px;">
-                            ${lines[i]}
-                        </div>
-                    `) as HTMLDivElement;
+          const parsedPanel = parseToElement(`
+            <div class="panel" style="left: ${this_panel.x}px; top: ${this_panel.y}px; width: ${this_panel.width}px; height: ${this_panel.height}px;">
+              ${lines[i]}
+            </div>
+          `) as HTMLDivElement;
           comic_div.appendChild(parsedPanel);
           DinoGegtik.resizePanelText(parsedPanel);
         }

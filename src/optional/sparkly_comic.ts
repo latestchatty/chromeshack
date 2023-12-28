@@ -26,16 +26,16 @@ export const SparklyComic = {
         const postBody = fullpost?.querySelector("div.postbody") as HTMLElement;
         const postBodyClone = postBody?.cloneNode(true) as HTMLElement;
         const lines = SentenceParser.parseIntoLines(postBodyClone?.innerHTML);
-        const comic_div = parseToElement(/*html*/ `<div id="${comic_id}" class="sparklycomic" />`);
+        const comic_div = parseToElement(`<div id="${comic_id}" class="sparklycomic" />`);
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
           const image = chrome.runtime.getURL(`images/${SparklyComic.getImage(line, i, lines.length)}`);
-          const panel = parseToElement(/*html*/ `
-                        <div class="panel" style="background-image: url(${image});">
-                            <span>${line}</span>
-                        </div>
-                    `);
+          const panel = parseToElement(`
+            <div class="panel" style="background-image: url(${image});">
+              <span>${line}</span>
+            </div>
+          `);
           comic_div.appendChild(panel);
         }
 

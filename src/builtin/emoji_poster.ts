@@ -18,11 +18,11 @@ export const EmojiPoster = {
   },
 
   cacheInjectables() {
-    const el = parseToElement(/*html*/ `
-            <div class="emoji-tagline">
-                <span class="tagline-sep">▪</span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
-            </div>
-        `);
+    const el = parseToElement(`
+      <div class="emoji-tagline">
+        <span class="tagline-sep">▪</span>Use <span>Win + ;</span> (Windows) or <span>Cmd + Ctrl + Space</span> (MacOS) to bring up the OS Emoji Picker.
+      </div>
+    `);
     EmojiPoster.cachedEl = el as HTMLElement;
   },
 

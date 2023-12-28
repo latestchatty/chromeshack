@@ -118,7 +118,7 @@ export const generatePreview = (postText: string) => {
 
 export function scrollToElement(
   elem: JQuery<HTMLElement> | HTMLElement,
-  opts?: { offset?: number; smooth?: boolean; toFit?: boolean }
+  opts?: { offset?: number; smooth?: boolean; toFit?: boolean },
 ) {
   let _elem = elem;
   const { offset, smooth, toFit } = opts || {};
@@ -293,7 +293,7 @@ export const parseToElement = (html: string) => {
 
 export const decodeHTML = (text: string) => {
   // decode unicode entities from text by reading off an element
-  const p = parseToElement(/*html*/ `<p>${text}</p>`);
+  const p = parseToElement(`<p>${text}</p>`);
   return p.textContent || "";
 };
 
