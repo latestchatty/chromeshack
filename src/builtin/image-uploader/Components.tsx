@@ -1,6 +1,6 @@
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { classNames, getFileCount } from "../../core/common/common";
 
@@ -36,54 +36,42 @@ const Tab = memo((props: ImageUploaderComponentProps) => {
 const DropArea = memo((props: ImageUploaderComponentProps) => {
   const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
   const showWarning = fileData.length > 1 && !multifile;
-  const override = useCallback((e: React.DragEvent<HTMLElement>) => {
+
+  const override = (e: React.DragEvent | React.ChangeEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  }, []);
-  const onDropHandler = useCallback(
-    (e: React.DragEvent<HTMLElement>) => {
-      override(e);
-      const data = e.dataTransfer.files;
-      if (data && data.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
-    },
-    [override, disabled, dispatch]
-  );
+  };
   const handleFileChooser = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const data = (e.target as HTMLInputElement).files;
-      if (data?.length > 0) dispatch({ type: "LOAD_FILES", payload: data });
+    (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLElement>) => {
+      override(e);
+      const dropData = (e as React.DragEvent<HTMLElement>)?.dataTransfer?.files;
+      const chooserData = (e as React.ChangeEvent<HTMLInputElement>)?.target?.files;
+      const data = dropData ?? chooserData;
+      if (data?.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
     },
-    [dispatch]
+    [override, disabled, dispatch],
   );
-  const onClickLabelHandler = useCallback(
-    (e: React.MouseEvent) => {
-      const thisElem = e.target as HTMLSpanElement;
-      const thisArea = thisElem?.closest("#dropArea") as HTMLElement;
-      const chooser = thisArea?.querySelector("#fileChooser") as HTMLElement;
-      if (!disabled && chooser) chooser.click();
-    },
-    [disabled]
-  );
+
   return (
     <div
       id="dropArea"
       className={classNames({ disabled, active: fileData.length > 0 })}
-      onDrop={onDropHandler}
+      onDrop={handleFileChooser}
       onDragOver={override}
       onDragEnter={override}
-      onDragExit={override}>
-      <input
-        ref={fcRef}
-        type="file"
-        id="fileChooser"
-        className="hidden"
-        multiple={multifile}
-        accept={formats}
-        onChange={handleFileChooser}
-      />
-      <span onClick={onClickLabelHandler}>
+      onDragExit={override}
+    >
+      <label id="fileChooserLabel" htmlFor="fileChooser">
         {getFileCount(fileData) || `Drop or select ${multifile ? "files" : "file"} here...`}
-      </span>
+        <input
+          ref={fcRef}
+          type="file"
+          id="fileChooser"
+          multiple={multifile}
+          accept={formats}
+          onChange={handleFileChooser}
+        />
+      </label>
       <ExclamationCircleIcon
         title="Warning: single file host - only first file will be sent!"
         className={classNames("drop__area--icon", { hidden: !showWarning })}
@@ -103,7 +91,7 @@ const UrlInput = memo((props: ImageUploaderComponentProps) => {
       const match = val?.match(urlValidateRegExp);
       if (match) dispatch({ type: "LOAD_URL", payload: val });
       else dispatch({ type: "LOAD_INVALID_URL" });
-    }, 500)
+    }, 500),
   );
   const onInput = (e: React.ChangeEvent) => {
     const _this = e?.target as HTMLInputElement;

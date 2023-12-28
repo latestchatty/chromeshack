@@ -192,3 +192,8 @@ div.csubmit {
 div.csubmit > button#frm_submit {
   min-width: 175px !important;
 }
+
+/* helper aligning container for postbox */
+#postform #postform_aligner {
+  display: flex;
+}

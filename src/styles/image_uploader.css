@@ -124,20 +124,24 @@ span#toggleLabel:hover {
 #dropArea.active {
   border: 2px dotted var(--postbox-btnfg);
 }
+
+#dropArea #fileChooser {
+  display: none;
+}
 #dropArea.disabled,
-#dropArea.disabled > span {
+#dropArea.disabled #fileChooserLabel {
   color: var(--postbox-abg);
   border: none;
-  cursor: default;
 }
-#dropArea > span {
+#dropArea #fileChooserLabel {
+  display: inline-block;
   font-size: 16px;
   font-style: italic;
   color: var(--postbox-afgh);
+  text-transform: unset !important;
   padding: 0.25em;
-}
-#dropArea:not(.disabled) > span:hover {
-  color: var(--postbox-afgh);
+  user-select: none;
+  text-decoration: underline;
   cursor: pointer;
 }
 #dropArea.disabled svg.drop__area--icon {

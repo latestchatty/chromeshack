@@ -49,23 +49,23 @@ export const CommentTags = {
 
   async cacheInjectables() {
     const setToggled = (await getSetting("tags_legend_toggled", false)) as boolean;
-    const table = parseToElement(/*html*/ `
-            <div id="post_sub_container">
-                <div id="shacktags_legend">
-                    <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
-                    <table id="shacktags_legend_table" class="${!setToggled ? "hidden" : ""}">
-                        <tbody id="shacktags_legend_table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-        `) as HTMLElement;
+    const table = parseToElement(`
+      <div id="comment_tags_container">
+        <div id="shacktags_legend">
+          <a href="#" id="shacktags_legend_toggle">Shack Tags Legend</a>
+          <table id="shacktags_legend_table" class="${!setToggled ? "hidden" : ""}">
+            <tbody id="shacktags_legend_table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    `) as HTMLElement;
     const tbody = table.querySelector("#shacktags_legend_table-body");
     for (const tr of CommentTags.tags) {
       const row = tbody.appendChild(document.createElement("tr"));
       for (const tag of tr) {
         const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
         const name_td = row.appendChild(document.createElement("td"));
-        const span = parseToElement(/*html*/ `<span class="${class_name}">${name}</span>`);
+        const span = parseToElement(`<span class="${class_name}">${name}</span>`);
         name_td.appendChild(span);
         if (clickFuncAsString?.length > 0) name_td.setAttribute("onclick", clickFuncAsString);
         const code_td = row.appendChild(document.createElement("td"));
@@ -83,13 +83,14 @@ export const CommentTags = {
   },
 
   async installCommentTags(args: PostboxEventArgs) {
-    if (!args) return;
     const { postbox } = args || {};
-    const postForm = postbox.querySelector("#postform");
+    if (!postbox) return;
+
+    const postForm = postbox.querySelector("#postform_aligner");
     // remove the pre-existing legend box
-    const ogLegend = postForm?.querySelector("fieldset > #shacktags_legend");
-    ogLegend.parentElement.removeChild(ogLegend);
-    const legend = postForm?.querySelector("#post_sub_container");
+    const ogLegend = postbox.querySelector("fieldset > #shacktags_legend");
+    ogLegend?.parentElement.removeChild(ogLegend);
+    const legend = postForm?.querySelector("#comment_tags_container");
     const cachedLegend = CommentTags.cachedEl;
     if (!legend) postForm.append(cachedLegend);
   },

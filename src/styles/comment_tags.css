@@ -1,12 +1,9 @@
-#post_sub_container.hidden {
+#comment_tags_container.hidden {
   display: none !important;
 }
-#post_sub_container {
+#comment_tags_container {
   /* postbox alignment container */
-  display: flex !important;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+  display: inline-block;
 }
 
 div#shacktags_legend {
