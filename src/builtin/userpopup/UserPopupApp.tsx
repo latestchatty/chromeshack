@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { type Root } from "react-dom/client";
 import { elemMatches } from "../../core/common/dom";
 import { userPopupEvent } from "../../core/events";
@@ -7,12 +7,7 @@ import { LOLList } from "./LOLList";
 import { UserFilter } from "./UserFilter";
 
 const UserPopupApp = memo(
-  (props: {
-    username: string;
-    isLoggedInUser: boolean;
-    isUserBadge: boolean;
-    parentRoot: Root;
-  }) => {
+  (props: { username: string; isLoggedInUser: boolean; isUserBadge: boolean; parentRoot: Root }) => {
     const { username, isLoggedInUser, isUserBadge, parentRoot } = props || {};
     const rootRef = useRef(null);
 
@@ -27,7 +22,7 @@ const UserPopupApp = memo(
           root.parentNode.removeChild(root);
         }
       },
-      [parentRoot]
+      [parentRoot],
     );
 
     useEffect(() => {
@@ -46,7 +41,7 @@ const UserPopupApp = memo(
         )}
       </div>
     );
-  }
+  },
 );
 
 export { UserPopupApp };

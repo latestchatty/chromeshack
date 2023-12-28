@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { arrHas } from "../core/common/common";
 import { superTrim } from "../core/common/dom";
 import { highlightGroupsEqual } from "../core/settings";

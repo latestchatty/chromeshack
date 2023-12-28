@@ -1,10 +1,8 @@
-import React from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
 import "../../styles/post_preview.css";
-import { Templates } from "../templates";
 import { PostPreviewApp } from "./PostPreviewApp";
 
 const PostPreview = {

@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { enabledContains } from "../../core/settings";

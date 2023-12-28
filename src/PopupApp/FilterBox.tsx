@@ -1,5 +1,4 @@
-/* eslint-disable react/no-danger */
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
 import { useStore } from "./popupStore";

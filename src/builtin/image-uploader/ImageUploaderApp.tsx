@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import { memo, useRef } from "react";
 import { Button, DropArea, StatusLine, Tab, ToggleChildren, UrlInput } from "./Components";
 import { useStore } from "./uploaderStore";
 import { useImageUploader, validTabs } from "./useImageUploader";
@@ -19,7 +19,8 @@ const ImageUploaderApp = memo((props: { postboxEl: HTMLElement }) => {
       childId="uploader-container"
       label="Image Uploader"
       visible={state.visible}
-      clickHandler={onClickToggle}>
+      clickHandler={onClickToggle}
+    >
       <div id="tab-container">
         {validTabs.map((tab) => {
           return (

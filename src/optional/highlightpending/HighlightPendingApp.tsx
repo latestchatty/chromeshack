@@ -1,6 +1,6 @@
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { memo, useEffect, useRef } from "react";
+import { memo, useEffect, useRef } from "react";
 import { arrHas, classNames } from "../../core/common/common";
 import { useHeaderObserver } from "./useHeaderObserver";
 import { usePendingPosts } from "./usePendingPosts";

@@ -1,4 +1,3 @@
-import React from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";

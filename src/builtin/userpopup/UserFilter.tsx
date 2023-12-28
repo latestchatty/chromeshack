@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { addFilter, enabledContains, filtersContains, removeFilter } from "../../core/settings";
 
 const UserFilter = memo((props: { username: string; isLoggedInUser: boolean }) => {

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { classNames, isFirefox } from "../core/common/common";
 import { getSetting, setSetting } from "../core/settings";
 
@@ -44,7 +44,8 @@ const Tabs = memo((props: { children?: JSX.Element[]; isLoaded: boolean }) => {
               onClick={() => {
                 setActiveTabIdx(i);
                 storeActiveTab(i);
-              }}>
+              }}
+            >
               {c.props.title}
             </button>
           );

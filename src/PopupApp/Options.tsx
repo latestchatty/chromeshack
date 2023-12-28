@@ -1,13 +1,9 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
 import { useStore } from "./popupStore";
 
-const useOption = (opts: {
-  key: string;
-  val: EnabledOptions | EnabledSuboptions;
-  type: OptionsTypes;
-}) => {
+const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions; type: OptionsTypes }) => {
   const { key, val, type } = opts || {};
   const state = useStore() as PopupState;
   const dispatch = state.dispatch;
@@ -48,7 +44,7 @@ const OptionButton = memo(
         </button>
       </div>
     );
-  }
+  },
 );
 
 const Suboption = memo(
@@ -74,7 +70,7 @@ const Suboption = memo(
         {children}
       </div>
     );
-  }
+  },
 );
 
 const Option = memo(
@@ -107,7 +103,7 @@ const Option = memo(
         {children}
       </div>
     );
-  }
+  },
 );
 
 const OptionGroup = (props: {

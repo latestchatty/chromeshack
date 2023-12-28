@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { getState } from "./actions";
 import { copyToClipboard, exportSettings, importSettings } from "./helpers";
 import { useStore } from "./popupStore";

@@ -1,7 +1,7 @@
 import { scrollToUncappedPostFix } from "../patches/scrollToPostFix";
 import { singleThreadFix } from "../patches/singleThreadFix";
 import { arrHas } from "./common/common";
-import { disableTwitch, elemMatches, locatePostRefs, scrollToElement } from "./common/dom";
+import { disableTwitch, elemMatches, locatePostRefs, parseToElement, scrollToElement } from "./common/dom";
 import {
   fullPostsCompletedEvent,
   processEmptyTagsLoadedEvent,
@@ -41,14 +41,11 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
       ...(p?.querySelectorAll(".fullpost > .postmeta .lol-tags > .tag-container") ?? []),
     ] as HTMLElement[];
     if (postTags.length > 0)
-      return postTags.reduce(
-        (acc, t: HTMLElement) => {
-          const withData = t.matches(".nonzero") && t;
-          if (withData) acc.push(withData);
-          return acc;
-        },
-        [] as HTMLElement[]
-      );
+      return postTags.reduce((acc, t: HTMLElement) => {
+        const withData = t.matches(".nonzero") && t;
+        if (withData) acc.push(withData);
+        return acc;
+      }, [] as HTMLElement[]);
 
     return [];
   };
@@ -191,7 +188,16 @@ export const processFullPosts = () => {
   fullPostsCompletedEvent.raise();
 };
 export const processPostBox = (postbox: HTMLElement) => {
-  if (postbox) processPostBoxEvent.raise({ postbox });
+  if (!postbox) return;
+
+  // try to ensure the postbox aligner is present before raising
+  const postform = postbox.querySelector("#postform");
+  if (!postform?.querySelector("#postform #postform_aligner")) {
+    const aligner = parseToElement(`<div id="postform_aligner" />`);
+    postform.appendChild(aligner);
+  }
+
+  processPostBoxEvent.raise({ postbox });
 };
 export const processUncapThread = (args: UncapThreadEventArgs) => {
   processUncapThreadEvent.raise(args);

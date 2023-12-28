@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { elemMatches, parseToElement } from "../../core/common/dom";
 import { userPopupEvent } from "../../core/events";
@@ -52,7 +51,7 @@ export const UserPopup = {
             isLoggedInUser={isLoggedInUser}
             isUserBadge={!!userLink}
             parentRoot={root}
-          />
+          />,
         );
       }
     }

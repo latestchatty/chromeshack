@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { detectMediaLink } from "../../core/api";
 import { arrHas } from "../../core/common/common";

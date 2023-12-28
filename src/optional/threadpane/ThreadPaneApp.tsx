@@ -1,7 +1,7 @@
 import { faAngleDoubleRight, faCommentDots } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import parse from "html-react-parser";
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { arrHas, classNames } from "../../core/common/common";
 import { scrollParentToChild } from "../../core/common/dom";
 import { getUsername } from "../../core/notifications";
@@ -20,7 +20,8 @@ const ThreadPaneReply = memo((props: { recent: ParsedReply; mostRecent?: boolean
     <div
       className={classNames("cs_thread_pane_reply", {
         reply_most_recent: mostRecent,
-      })}>
+      })}
+    >
       <div className={classNames("cs_thread_pane_reply_arrow", `${mod}`)}>↪</div>
       <div className="cs_thread_pane_reply_preview">{body}</div>
       <div className="cs_thread_pane_reply_divider">:</div>
@@ -63,7 +64,8 @@ const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
         collapsed,
       })}
       id={`item_${rootid.toString()}`}
-      onClick={handleCardClick}>
+      onClick={handleCardClick}
+    >
       <div className="cs_thread_pane_card_header">
         <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
         {contained && (
@@ -106,14 +108,11 @@ const ThreadPaneApp = memo(() => {
     const initPane = async () => {
       const loggedUser = await getUsername();
       const roots = [...document.querySelectorAll("div.root")] as HTMLElement[];
-      const parsedRoots = roots.reduce(
-        (acc, r) => {
-          const _parsed = parseRoot(r, loggedUser);
-          if (_parsed != null) acc.push(_parsed);
-          return acc;
-        },
-        [] as ParsedPost[]
-      );
+      const parsedRoots = roots.reduce((acc, r) => {
+        const _parsed = parseRoot(r, loggedUser);
+        if (_parsed != null) acc.push(_parsed);
+        return acc;
+      }, [] as ParsedPost[]);
       if (parsedRoots.length > 0) setParsed(parsedRoots);
     };
 

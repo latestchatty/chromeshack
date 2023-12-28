@@ -1,6 +1,5 @@
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
-import React from "react";
 import { LocalTimeStamp } from "../../builtin/local_timestamp";
 import { objHas } from "../common/common";
 import { elemMatches, openAsWindow } from "../common/dom";
@@ -78,7 +77,8 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
               rel="nofollow noreferrer"
               href={`/user/${saneAuthor}/posts`}
               title={`${author}'s comments`}
-              onClick={handleClick}>
+              onClick={handleClick}
+            >
               {author}
             </a>
           </span>
@@ -88,7 +88,8 @@ const Chattypost = (props: { parsed: ParsedChattyPost }) => {
           href={`/messages?method=compose&to=${saneAuthor}`}
           className="shackmsg"
           title={`Shack message ${author}`}
-          onClick={handleClick}>
+          onClick={handleClick}
+        >
           <img src="/images/envelope.gif" alt="shackmsg this person" />
         </a>
         {icons?.map((icon, i) => {

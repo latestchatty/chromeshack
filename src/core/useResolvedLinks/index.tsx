@@ -1,4 +1,4 @@
-import React, { isValidElement, useEffect, useState } from "react";
+import { isValidElement, useEffect, useState } from "react";
 import { detectMediaLink } from "../api";
 import { arrHas } from "../common/common";
 import { Carousel } from "./Carousel";

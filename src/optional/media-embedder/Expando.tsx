@@ -1,6 +1,6 @@
 import { faCompressAlt, faExpandAlt, faExternalLinkAlt, faRedoAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { isValidElement, memo, useCallback, useEffect, useRef, useState } from "react";
+import { isValidElement, memo, useCallback, useEffect, useRef, useState } from "react";
 import { classNames, getLinkType } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { resolveChildren } from "../../core/useResolvedLinks";
@@ -47,7 +47,7 @@ const Expando = memo((props: ExpandoProps) => {
       // only clickTogglesVisible on media when an image or expando link
       if ((_mediaParent && type === "image" && toggled) || _expando) setToggled(!toggled);
     },
-    [type, toggled]
+    [type, toggled],
   );
   const handleNewClick = useCallback((e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();

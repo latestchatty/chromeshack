@@ -1,5 +1,5 @@
 /* eslint react-hooks/exhaustive-deps: 0 */
-import React, { memo, useCallback, useEffect } from "react";
+import { memo, useEffect } from "react";
 import { resetSettings } from "../core/settings";
 import { FilterBox } from "./FilterBox";
 import { HighlightGroups } from "./HighlightGroups";
@@ -78,7 +78,8 @@ const PopupApp = memo(() => {
           id="enable_notifications"
           classes="notifications__group"
           label="Push Notifications"
-          infolabel="Enables push notifications (via WinChatty API) on new Chatty posts.">
+          infolabel="Enables push notifications (via WinChatty API) on new Chatty posts."
+        >
           <FilterBox
             id="match_notifications"
             infolabel="Manage custom phrases to watch for (case insensitive):"
@@ -110,7 +111,8 @@ const PopupApp = memo(() => {
             label="Highlight users"
             descriptions={[
               "Highlight usernames in various colors to indicate their membership in user-specified groups.",
-            ]}>
+            ]}
+          >
             <HighlightGroups />
           </Option>
         </OptionGroup>
@@ -118,7 +120,8 @@ const PopupApp = memo(() => {
         <OptionGroup
           id="custom_user_filters"
           label="Custom User Filters"
-          infolabel="Removes posts/replies authored by matched users.">
+          infolabel="Removes posts/replies authored by matched users."
+        >
           <Suboption
             id="custom_user_filters_settings"
             label="Hide matching threads in threaded mode"

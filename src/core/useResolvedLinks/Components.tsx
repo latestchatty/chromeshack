@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { classNames, isIframe } from "../common/common";
 
 const Iframe = (props: MediaProps) => {

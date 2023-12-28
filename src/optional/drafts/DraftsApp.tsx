@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { classNames } from "../../core/common/common";
 import { useDrafts } from "./useDrafts";
 

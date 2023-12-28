@@ -1,6 +1,6 @@
 import { faCheck, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { arrHas, classNames, compressString, decompressString } from "../../core/common/common";
 import { elemMatches } from "../../core/common/dom";
 import { replyFieldEvent } from "../../core/events";
