@@ -1,19 +1,22 @@
 {
-    "compilerOptions": {
-        "target": "es2018",
-        "lib": ["ESNext.Array", "ES2020.String", "ES2018", "DOM", "DOM.Iterable"],
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "alwaysStrict": true,
-        "noImplicitAny": true,
-        "sourceMap": true,
-        "incremental": true,
-        "declaration": false,
-        "noEmit": true,
-        "jsx": "react",
-        "types": ["node", "./src/types"]
-    },
-    "include": ["./src/**/*.ts", "./src/**/*.tsx"],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": ["node", "chrome", "./src/types"],
+  },
+  "include": ["src", "tests"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

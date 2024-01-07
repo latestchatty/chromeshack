@@ -2,6 +2,8 @@
 node_modules
 coverage-ts
 dist
+dist-chrome
+dist-firefox
 artifacts
 # make sure to use --id option when signing!
 .web-extension-id
@@ -14,3 +16,10 @@ mochawesome-report
 /cypress/fixtures/_shack_li_.txt
 debug.log
 .DS_Store
+.envrc
+.env
+.direnv
+/test-results/
+/playwright-report/
+/playwright/.cache/
+_shack_li_.json

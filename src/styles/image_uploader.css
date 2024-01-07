@@ -1,255 +1,266 @@
 :root {
-    --chatty-bg: rgba(20, 20, 20, 1);
-    --chatty-la: rgba(65, 170, 170, 1);
+  --chatty-bg: rgba(20, 20, 20, 1);
+  --chatty-la: rgba(65, 170, 170, 1);
 
-    --postbox-abg: rgba(100, 100, 100, 0.75);
-    --postbox-bg: rgba(34, 34, 34, 1);
-    --postbox-afg: rgba(255, 255, 255, 1);
-    --postbox-fg: rgba(255, 255, 255, 0.33);
-    --postbox-afgh: rgba(255, 255, 255, 0.66);
+  --postbox-abg: rgba(100, 100, 100, 0.75);
+  --postbox-bg: rgba(34, 34, 34, 1);
+  --postbox-afg: rgba(255, 255, 255, 1);
+  --postbox-fg: rgba(255, 255, 255, 0.33);
+  --postbox-afgh: rgba(255, 255, 255, 0.66);
 
-    --postbox-brd: rgba(68, 68, 68, 0.65);
-    --postbox-abrd: rgba(68, 68, 68, 1);
+  --postbox-brd: rgba(68, 68, 68, 0.65);
+  --postbox-abrd: rgba(68, 68, 68, 1);
 
-    --postbox-btnfg: rgba(85, 85, 85, 1);
-    --postbox-btnpbg: rgba(233, 233, 222, 1);
-    --postbox-btnsbg: rgba(165, 165, 156, 1);
-    --postbox-btnsbrd: rgba(181, 181, 172, 1);
+  --postbox-btnfg: rgba(85, 85, 85, 1);
+  --postbox-btnpbg: rgba(233, 233, 222, 1);
+  --postbox-btnsbg: rgba(165, 165, 156, 1);
+  --postbox-btnsbrd: rgba(181, 181, 172, 1);
 
-    --postbox-btnbg: rgba(233, 233, 222, 0.2);
-    --postbox-btnabg: rgba(233, 233, 222, 0.75);
-    --postbox-btnaclick: rgba(128, 128, 128, 0.85);
+  --postbox-btnbg: rgba(233, 233, 222, 0.2);
+  --postbox-btnabg: rgba(233, 233, 222, 0.75);
+  --postbox-btnaclick: rgba(128, 128, 128, 0.85);
 
-    --postbox-vurl: rgba(0, 255, 0, 0.39);
-    --postbox-ivurl: rgba(255, 0, 0, 0.39);
-    --postbox-error: rgba(255, 0, 0, 0.75);
+  --postbox-vurl: rgba(0, 255, 0, 0.39);
+  --postbox-ivurl: rgba(255, 0, 0, 0.39);
+  --postbox-error: rgba(255, 0, 0, 0.75);
 }
 
 #image__uploader__container {
-    margin: 0 2px auto auto;
-    max-width: 400px;
-    min-width: 250px;
-    width: 100%;
+  margin: 0 2px auto auto;
+  max-width: 400px;
+  min-width: 250px;
+  width: 100%;
 }
 #uploader-toggle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 span#toggleLabel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 22px;
-    background-color: black;
-    color: var(--postbox-afg);
-    width: calc(100% + 3px);
-    cursor: pointer;
-    margin: 0 0 0.25em 0;
-    user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 22px;
+  background-color: black;
+  color: var(--postbox-afg);
+  width: calc(100% + 3px);
+  cursor: pointer;
+  margin: 0 0 0.25em 0;
+  user-select: none;
 }
 span#toggleLabel:hover {
-    color: var(--chatty-la);
-    text-decoration: underline;
+  color: var(--chatty-la);
+  text-decoration: underline;
 }
 
 #uploader-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-self: center;
-    border-radius: 6px;
-    background-color: var(--chatty-bg);
-    border: 1px solid var(--postbox-brd);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-self: center;
+  border-radius: 6px;
+  background-color: var(--chatty-bg);
+  border: 1px solid var(--postbox-brd);
 }
 
 #tab-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 #tab-container .tab {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    border-radius: 6px;
-    margin: 0;
-    padding: 5px;
-    width: 100%;
-    cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  border-radius: 6px;
+  margin: 0;
+  padding: 5px;
+  width: 100%;
+  cursor: pointer;
 }
 #tab-container .active {
-    background-color: var(--postbox-abg);
-    color: var(--postbox-afg);
+  background-color: var(--postbox-abg);
+  color: var(--postbox-afg);
 }
 #tab-container .active:first-child,
 #tab-container .inactive:first-child {
-    border-radius: 6px 0 0 0;
+  border-radius: 6px 0 0 0;
 }
 #tab-container .active:last-child,
 #tab-container .inactive:last-child {
-    border-radius: 0 6px 0 0;
+  /*border-radius: 0 6px 0 0;*/
+  border-radius: 6px 6px 0 0;
 }
 #tab-container .active:not(:first-child):not(:last-child),
 #tab-container .inactive:not(:first-child):not(:last-child) {
-    border-radius: 0;
+  border-radius: 0;
 }
 #tab-container .inactive {
-    border-radius: 0;
-    background-color: var(--postbox-bg);
-    color: var(--postbox-fg);
+  border-radius: 0;
+  background-color: var(--postbox-bg);
+  color: var(--postbox-fg);
 }
 
 #uploader-body {
-    display: flex;
-    flex-direction: column;
-    align-content: space-between;
-    padding: 4px 4px 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-content: space-between;
+  padding: 4px 4px 6px 4px;
 }
 #uploader-body > *:not(:first-child) {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 #dropArea {
-    display: flex;
-    align-self: center;
-    justify-self: center;
-    justify-content: center;
-    align-items: center;
-    width: 99%;
-    height: 75px;
-    border: 2px dotted var(--postbox-brd);
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  justify-content: center;
+  align-items: center;
+  width: 99%;
+  height: 75px;
+  border: 2px dotted var(--postbox-brd);
 }
 #dropArea.active {
-    border: 2px dotted var(--postbox-btnfg);
+  border: 2px dotted var(--postbox-btnfg);
+}
+
+#dropArea #fileChooser {
+  display: none;
 }
 #dropArea.disabled,
-#dropArea.disabled > span {
-    color: var(--postbox-abg);
-    border: none;
-    cursor: default;
+#dropArea.disabled #fileChooserLabel {
+  color: var(--postbox-abg);
+  border: none;
 }
-#dropArea > span {
-    font-size: 16px;
-    font-style: italic;
-    color: var(--postbox-afgh);
-    padding: 0.25em;
-}
-#dropArea:not(.disabled) > span:hover {
-    color: var(--postbox-afgh);
-    cursor: pointer;
+#dropArea #fileChooserLabel {
+  display: inline-block;
+  font-size: 16px;
+  font-style: italic;
+  color: var(--postbox-afgh);
+  text-transform: unset !important;
+  padding: 0.25em;
+  user-select: none;
+  text-decoration: underline;
+  cursor: pointer;
 }
 #dropArea.disabled svg.drop__area--icon {
-    height: 18px;
-    width: 18px;
-    color: var(--postbox-afgh);
-    margin-left: 0.5em;
-    opacity: 0.75;
+  height: 18px;
+  width: 18px;
+  color: var(--postbox-afgh);
+  margin-left: 0.5em;
+  opacity: 0.75;
 }
 
 input[type="url"]#urlinput {
-    display: flex;
-    justify-self: center;
-    background-color: var(--postbox-bg);
-    color: var(--postbox-afg);
-    box-shadow: unset !important;
-    border: 1px solid var(--postbox-abrd);
-    border-radius: 3px;
-    width: 97%;
-    padding: 5px;
+  display: flex;
+  justify-self: center;
+  background-color: var(--postbox-bg);
+  color: var(--postbox-afg);
+  box-shadow: unset !important;
+  border: 1px solid var(--postbox-abrd);
+  border-radius: 3px;
+  width: 97%;
+  padding: 5px;
 }
 input[type="url"]#urlinput::placeholder {
-    font-style: italic;
-    color: var(--postbox-fg);
+  font-style: italic;
+  color: var(--postbox-fg);
 }
+input[type="url"]#urlinput:not(:focus):valid,
+input[type="url"]#urlinput:focus:valid,
 input[type="url"]#urlinput:valid {
-    outline-color: var(--postbox-vurl);
+  border-color: var(--postbox-vurl);
+  outline-color: var(--postbox-vurl);
 }
+input[type="url"]#urlinput:not(:focus):invalid,
+input[type="url"]#urlinput:focus:invalid,
 input[type="url"]#urlinput:invalid {
-    outline-color: var(--postbox-ivurl);
+  border-color: var(--postbox-ivurl);
+  outline-color: var(--postbox-ivurl);
 }
 
 #uploader-btns {
-    display: flex;
-    align-self: center;
-    justify-self: center;
-    width: 100%;
-    margin-bottom: 2px;
+  display: flex;
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  margin-bottom: 2px;
 }
 #uploader-btns button {
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    margin: 0 0.25em;
-    border: none;
-    background-color: var(--postbox-btnpbg);
-    color: var(--postbox-btnfg);
-    font-size: 13px;
-    font-weight: bold;
-    outline: none;
-    padding: 5px;
-    width: 100%;
-    cursor: pointer;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  margin: 0 0.25em;
+  border: none;
+  background-color: var(--postbox-btnpbg);
+  color: var(--postbox-btnfg);
+  font-size: 13px;
+  font-weight: bold;
+  outline: none;
+  padding: 5px;
+  width: 100%;
+  cursor: pointer;
 }
 #uploader-btns:first-child {
-    margin: 0 0.25em 0 0 !important;
+  margin: 0 0.25em 0 0 !important;
 }
 #uploader-btns:last-child {
-    margin: 0 0 0 0.25em !important;
+  margin: 0 0 0 0.25em !important;
 }
 #uploader-btns button:not(:disabled):hover {
-    background: var(--postbox-btnpbg) !important;
+  background: var(--postbox-btnpbg) !important;
 }
 #uploader-btns button:active {
-    background-color: var(--postbox-btnaclick) !important;
-    color: black !important;
+  background-color: var(--postbox-btnaclick) !important;
+  color: black !important;
 }
 #uploader-btns button:disabled {
-    background-color: var(--postbox-btnbg);
-    color: var(--postbox-btnfg);
-    cursor: default;
+  background-color: var(--postbox-btnbg);
+  color: var(--postbox-btnfg);
+  cursor: default;
 }
 #uploader-btns #cancel-btn:not(:disabled) {
-    background-color: var(--postbox-btnsbg);
+  background-color: var(--postbox-btnsbg);
 }
 
 #uploader-container #status {
-    display: flex;
-    align-items: baseline;
-    color: var(--postbox-afg);
-    text-decoration: none;
-    min-width: 0;
-    max-width: 100%;
-    padding: 0 0.15em;
+  display: flex;
+  align-items: baseline;
+  color: var(--postbox-afg);
+  text-decoration: none;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0 0.15em;
 }
 #status span:first-child {
-    font-size: 14px;
-    margin-right: 0.5em;
+  font-size: 14px;
+  margin-right: 0.5em;
 }
 #status #statusmsg {
-    font-size: 13px;
+  font-size: 13px;
 }
 span.error {
-    color: var(--postbox-error);
-    font-style: italic;
+  color: var(--postbox-error);
+  font-style: italic;
 }
 span.truncate {
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 /* fade out effect*/
 #uploader-container .fadeout {
-    animation: fadeOut 1s forwards;
-    animation-delay: 5s;
+  animation: fadeOut 1s forwards;
+  animation-delay: 5s;
 }
 @keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

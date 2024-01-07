@@ -1,18 +1,18 @@
 div#drafts__app {
-    display: inline-block;
+  display: inline-block;
 }
 div.drafts__dot {
-    position: relative;
-    top: 3px;
-    height: 14px !important;
-    width: 14px !important;
-    margin: 0 0.5em 0 0;
-    border-radius: 50%;
-    transition: background-color 0.33s ease;
+  position: relative;
+  top: 3px;
+  height: 14px !important;
+  width: 14px !important;
+  margin: 0 0.5em 0 0;
+  border-radius: 50%;
+  transition: background-color 0.33s ease;
 }
 .drafts__dot.valid {
-    background-color: rgb(65, 209, 103);
+  background-color: rgb(65, 209, 103);
 }
 .drafts__dot.invalid {
-    background-color: rgb(212, 180, 55);
+  background-color: rgb(212, 180, 55);
 }

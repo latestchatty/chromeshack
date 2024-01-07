@@ -1,37 +1,37 @@
 /* basic rules for styling media/socials children */
 :root {
-    --min-media-item-height: 200px;
-    --max-media-item-height: 720px;
-    --min-media-item-width: 300px;
-    --max-media-item-width: 854px;
-    --min-media-row-size: 200px;
-    --max-media-row-size: 640px;
-    --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --min-media-item-height: 200px;
+  --max-media-item-height: 720px;
+  --min-media-item-width: 300px;
+  --max-media-item-width: 854px;
+  --min-media-row-size: 200px;
+  --max-media-row-size: 640px;
+  --common-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* General Media Embedder */
 div#react-media-manager {
-    display: none !important;
+  display: none !important;
 }
 div.media {
-    position: relative;
-    /* enforce block for everything but image/video */
-    display: block !important;
+  position: relative;
+  /* enforce block for everything but image/video */
+  display: block !important;
 }
 div.media.hidden,
 div.media .hidden {
-    display: none;
+  display: none;
 }
 div.medialink {
-    display: inline-block;
+  display: inline-block;
 }
 div.medialink.toggled {
-    /* reposition when expanded to avoid mangling formatting */
-    display: block !important;
+  /* reposition when expanded to avoid mangling formatting */
+  display: block !important;
 }
 div.medialink > .expandalt {
-    display: inline-block;
-    margin: 0 0.25em 0 0.2em;
+  display: inline-block;
+  margin: 0 0.25em 0 0.2em;
 }
 
 /*
@@ -39,98 +39,98 @@ div.media > .media__boundary > img,
 div.media > .media__boundary > video */
 div.media > img,
 div.media > .media__boundary > video {
-    display: block;
-    object-fit: scale-down;
-    outline: none;
-    /* only enforce a max height */
-    max-height: var(--max-media-item-height);
-    /* prevent larger-than-post width */
-    max-width: 100%;
+  display: block;
+  object-fit: scale-down;
+  outline: none;
+  /* only enforce a max height */
+  max-height: var(--max-media-item-height);
+  /* prevent larger-than-post width */
+  max-width: 100%;
 }
 div.media.canToggle {
-    /* workaround for image/video container stretching issue */
-    display: table !important;
+  /* workaround for image/video container stretching issue */
+  display: table !important;
 }
 div.media .canToggle,
 div.media.canToggle,
 div.medialink > .expandalt {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 div.expando {
-    display: inline-block;
-    margin: 0 0.33em;
+  display: inline-block;
+  margin: 0 0.33em;
 }
 svg.expand__icon,
 svg.compress__icon,
 svg.external__icon,
 svg.refresh__icon {
-    fill: "white";
-    height: 12px !important;
-    width: 12px !important;
+  fill: "white";
+  height: 12px !important;
+  width: 12px !important;
 }
 a.reloadbtn,
 a.expandbtn {
-    margin: 0 0.5em 0 0 !important;
+  margin: 0 0.5em 0 0 !important;
 }
 /* expando reload button suspense animation */
 svg.refresh__icon.loading {
-    animation: rotate 0.33s linear 1;
+  animation: rotate 0.33s linear 1;
 }
 @keyframes rotate {
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .iframe__boundary {
-    /* enforce maximum iframe dimensions */
-    max-width: 854px !important;
-    max-height: 480px !important;
+  /* enforce maximum iframe dimensions */
+  max-width: 854px !important;
+  max-height: 480px !important;
 }
 /* allow only for scaling down the iframe player */
 .iframe-container,
 .twitch-container,
 .yt-container {
-    position: relative;
-    overflow: hidden;
-    padding-top: 56.25%;
+  position: relative;
+  overflow: hidden;
+  padding-top: 56.25%;
 }
 .iframe-container iframe,
 .twitch-container iframe,
 .yt-container iframe {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .media > .media__boundary {
-    display: inline-block;
-    position: relative;
+  display: inline-block;
+  position: relative;
 }
 .mute__overlay__container {
-    display: block;
-    position: absolute;
-    z-index: 3;
-    top: 10px;
-    right: 10px;
-    opacity: 0.3;
-    transition: 0.2s;
-    cursor: pointer;
+  display: block;
+  position: absolute;
+  z-index: 3;
+  top: 10px;
+  right: 10px;
+  opacity: 0.3;
+  transition: 0.2s;
+  cursor: pointer;
 }
 .mute__overlay__container:hover {
-    opacity: 1;
+  opacity: 1;
 }
 svg.unmute__icon,
 svg.mute__icon {
-    color: white;
-    height: 26px !important;
-    width: 26px !important;
-    filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
-        drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
+  color: white;
+  height: 26px !important;
+  width: 26px !important;
+  filter: drop-shadow(1px 2px 1px var(--arrow-outline)) drop-shadow(-1px 1px 1px var(--arrow-outline))
+    drop-shadow(2px -1px 1px var(--arrow-outline)) drop-shadow(-1px -1px 1px var(--arrow-outline));
 }
 /* End Media Embedder */
