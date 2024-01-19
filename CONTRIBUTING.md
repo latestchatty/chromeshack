@@ -58,9 +58,8 @@ The E2E integration test suite requires a login cookie fixture in order to run a
 
 ## Release procedure
 
-- Update the version in `package.json` and `src/assets/release_notes.html` (`manifest.json` is updated from `package.json` for Webkit automatically, but Firefox's `manifestv3.ffx.json` file must be manually changed).
-- To use the Docker build environment for packaging to `artifacts/` simply run `build.sh` in the project root. The rest
-  of these steps assume you're not using the Docker method.
+- Update the version in `package.json` and `src/assets/release_notes.html` (`manifest.json` is updated from `package.json` for Webkit automatically, but Firefox's `manifestv3.ffx.json` file in `utils/` must be manually changed).
+- To use the Docker build environment for packaging to `artifacts/` simply run `build.sh` in the project root. Note that `build.sh` artifacts will have UTC timestamps. The rest of these steps assume you're not using the Docker method.
 - Install prerequisites with: `pnpm install` or `npm install`
 - Use `pnpm build:pkg` or `npm run build:pkg` to generate deployables in the `artifacts/` folder when uploading to AMO or the Chrome addon store.
 - Tag a release on GitHub.
