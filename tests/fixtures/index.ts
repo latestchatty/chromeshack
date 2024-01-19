@@ -8,7 +8,8 @@ import {
 } from "@playwright/test";
 import path from "path";
 
-import shackli from "./_shack_li_.json" assert { type: "json" };
+// @ts-ignore
+import cookieFixture from "./_shack_li_.json" assert { type: "json" };
 
 export const loadExtensionDefaults = async (
 	page: Page,
@@ -26,10 +27,13 @@ export const loadExtensionDefaults = async (
 	);
 };
 export const setTestCookie = async (context: BrowserContext) => {
+  if (cookieFixture == null) return;
+  const shackli: any = Object.values(cookieFixture);
+
 	await context.addCookies([
 		{
 			name: "_shack_li_",
-			value: Object.values(shackli)[2]._shack_li_ as string,
+			value: shackli[2]?._shack_li_ as string,
 			domain: ".shacknews.com",
 			path: "/",
 		},

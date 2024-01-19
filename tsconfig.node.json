@@ -8,6 +8,6 @@
   },
   "include": [
     "package.json",
-    "**/vite.*config.ts",
+    "**/vite.*config.ts"
   ]
 }
