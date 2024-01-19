@@ -74,12 +74,12 @@ async function createZipArchive(outputName, sourceDir, outputDir) {
   }
 }
 
-async function buildSrcArchive(includes, tempDir) {
+async function buildSrcArchive(includes, tempDir, excludes) {
   await rmDir(tempDir);
   await fs.mkdir(path.resolve(tempDir), { recursive: true, force: true });
 
   for (const src of includes) {
-    const files = glob.sync(src);
+    const files = glob.sync(src, { ignore: excludes });
     for (const file of files) {
       const dest = path.join(tempDir, path.basename(file));
       const stats = await fs.stat(file);
@@ -101,8 +101,9 @@ async function buildSrcArchive(includes, tempDir) {
 
   // compile an archive with source code able to reproduce the preceeding artifacts
   await buildSrcArchive(
-    ["./README.md", "./*.json", "./pnpm-lock.yaml", "./*.config.ts", "./src", "./utils", "./public"],
+    ["./*.md", "./*.json", "./pnpm-lock.yaml", "./*.config.ts", "./src", "./utils", "./public"],
     "./artifacts/srctemp",
+    "_shack_li_.json"
   );
   await createZipArchive("chromeshack-src", "./artifacts/srctemp", "./artifacts");
 })();
