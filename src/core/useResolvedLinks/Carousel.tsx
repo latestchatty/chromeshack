@@ -1,4 +1,5 @@
-import useEmblaCarousel, { EmblaOptionsType } from "embla-carousel-react";
+import { EmblaOptionsType } from "embla-carousel";
+import useEmblaCarousel from "embla-carousel-react";
 import { useCallback, useEffect, useState } from "react";
 import "../../styles/embla.css";
 import { arrHas } from "../common/common";
@@ -20,7 +21,7 @@ const EmblaSlides = (props: { slides: React.ReactNode[] }) => {
 
 const Carousel = (props: { slides: React.ReactNode[] }) => {
   const { slides } = props || {};
-  const options = { speed: 30 } as EmblaOptionsType;
+  const options: any = { speed: 30 } as EmblaOptionsType;
 
   const [viewportRef, embla] = useEmblaCarousel(options);
   const [viewportHeight, setViewportHeight] = useState(0);
