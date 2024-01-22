@@ -1,178 +1,199 @@
 /* moderator tags */
 div.fpmod_offtopic {
-    background-position: right top;
-    background-repeat: no-repeat;
-    border-top: 1px solid #7d7d7d !important;
+  background-position: right top;
+  background-repeat: no-repeat;
+  border-top: 1px solid #7d7d7d !important;
 }
+
 div.fpmod_political {
-    background-position: right top;
-    background-repeat: no-repeat;
-    border-top: 1px solid #f8a500 !important;
+  background-position: right top;
+  background-repeat: no-repeat;
+  border-top: 1px solid #f8a500 !important;
 }
+
 div.fpmod_stupid {
-    background-position: right top;
-    background-repeat: no-repeat;
-    border-top: 1px solid #379700 !important;
+  background-position: right top;
+  background-repeat: no-repeat;
+  border-top: 1px solid #379700 !important;
 }
+
 div.fpmod_informative {
-    background-position: right top;
-    background-repeat: no-repeat;
-    border-top: 1px solid #00bff3 !important;
+  background-position: right top;
+  background-repeat: no-repeat;
+  border-top: 1px solid #00bff3 !important;
 }
 
 /* new comment highlighter */
 span.oneline_body {
-    /* avoid moving horizontally when not marked */
-    border-left-color: rgba(0, 153, 255, 0);
-    padding-left: 3px;
+  /* avoid moving horizontally when not marked */
+  border-left-color: rgba(0, 153, 255, 0);
+  padding-left: 3px;
 }
+
 span.newcommenthighlighter {
-    border-left-color: rgba(0, 153, 255, 1);
-    border-left-width: 1px;
-    border-left-style: solid;
-    padding-left: 2px !important;
+  border-left-color: rgba(0, 153, 255, 1);
+  border-left-width: 1px;
+  border-left-style: solid;
+  padding-left: 2px !important;
 }
+
 div.oneline.olmod_informative span.newcommenthighlighter,
 div.oneline.olmod_nws span.newcommenthighlighter {
-    /* leave room for left-justified inline icons */
-    padding-left: 22px !important;
+  /* leave room for left-justified inline icons */
+  padding-left: 22px !important;
 }
 
 /* fix for shack legends being cut off */
 p.rules {
-    margin: 3px;
+  margin: 3px;
 }
 
 /* make it easier to see what button is highlighted, give them some space */
 
 button {
-    margin-right: 2px !important;
-    margin-left: 2px !important;
-    color: #555555 !important;
+  margin-right: 2px !important;
+  margin-left: 2px !important;
+  color: #555555 !important;
 }
 
 button:focus {
-    color: #000000 !important;
+  color: #000000 !important;
 }
 
 div#postbox fieldset {
-    /* workaround for responsiveness at small widths */
-    max-width: calc(100% - 1px) !important;
-    min-width: 0 !important;
+  /* workaround for responsiveness at small widths */
+  max-width: calc(100% - 1px) !important;
+  min-width: 0 !important;
 }
 
 span.postbox_rules_divider {
-    padding-left: 8px;
-    padding-right: 8px;
-    color: #41a9a9;
+  padding-left: 8px;
+  padding-right: 8px;
+  color: #41a9a9;
 }
 
 p.rules {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px !important;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px !important;
+  white-space: nowrap;
 }
+
 /* emoji tagline on the postbox form */
 p.rules > a {
-    display: inline-flex;
-    justify-content: right;
+  display: inline-flex;
+  justify-content: right;
 }
+
 p.rules div.emoji-tagline {
-    overflow: hidden !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    text-align: center;
-    font-size: 12px;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+  text-align: center;
+  font-size: 12px;
 }
+
 .emoji-tagline > span {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .emoji-tagline > span.tagline-sep {
-    margin: 0 0.75em;
+  margin: 0 0.75em;
 }
 
 div.ctextarea {
-    margin-bottom: -10px !important;
+  margin-bottom: -10px !important;
 }
+
 div#post_length_counter_text {
-    display: inline-flex;
-    align-items: center;
-    font-size: 10px;
-    color: #c0c0c0;
-    margin-top: -10px;
-    width: 190px !important;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  color: #c0c0c0;
+  margin-top: -10px;
+  width: 190px !important;
 }
 
 /* various hacks */
 
 /* ensure the pop-in of the lol tags doesn't cause the post to get taller */
 div.fullpost .lol-tags {
-    height: 18px !important;
-    margin-top: -5px !important;
+  height: 18px !important;
+  margin-top: -5px !important;
 }
+
 body.hide_tagging_buttons .lol-tags,
 body.hide_tag_counts div.read-only-tags,
 body.hide_gamification_notices div.gamification-notifcation {
-    display: none !important;
+  display: none !important;
 }
+
 /* inverted selector logic so that it defaults to shrinking before the javascript runs. the javascript
 will un-shrink it if the shrink setting is not enabled */
 body:not(.do_not_shrink_user_icons) img.chatty-user-icons {
-    opacity: 0.75;
-    width: 10px;
-    height: 10px;
-    vertical-align: text-top;
+  opacity: 0.75;
+  width: 10px !important;
+  height: 10px !important;
+  vertical-align: text-top;
 }
+
 /* ditto for reduced color. before javascript runs, the user icons will be dimmed and they'll light up
 only for users who want to see bright colors. */
 body:not(.do_not_reduce_color_user_icons) img.chatty-user-icons {
-    filter: grayscale(75%);
+  filter: grayscale(75%);
 }
 
 a:hover > img.chatty-user-icons {
-    opacity: 1;
-    filter: none;
+  opacity: 1;
+  filter: none;
 }
 
 /* don't let the lol counts cause the oneline to get taller */
 div.read-only-tags {
-    height: 1px;
+  height: 1px;
 }
 
 /* switchers: hide offenders' chatty-icons */
 img.chatty-user-icons.hidden {
-    display: none !important;
+  display: none !important;
 }
 
 /* put some spacing between the user icons, label and tagline */
 span.lol-tags:not(.read-only-tags) {
-    margin-left: 0.25rem !important;
+  margin-left: 0.25rem !important;
 }
+
 span.author > img.chatty-user-icons:nth-child(2),
 span.user > img.chatty-user-icons:nth-child(1) {
-    margin-left: 0.33rem !important;
+  margin-left: 0.33rem !important;
 }
 
 /* fix oneliner who-tag'd popup width */
 #page.theme2 ul.interacted-user-list {
-    width: unset !important;
-    white-space: nowrap;
+  width: unset !important;
+  white-space: nowrap;
 }
+
 #page.theme2 ul.interacted-user-list li {
-    position: relative;
-    width: 100% !important;
+  position: relative;
+  width: 100% !important;
 }
 
 /* fix spacing and responsiveness of submit-line buttons */
 div.csubmit {
-    clear: none !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
+  clear: none !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
+
 div.csubmit > button#frm_submit {
-    min-width: 175px !important;
+  min-width: 175px !important;
+}
+
+/* helper aligning container for postbox */
+#postform #postform_aligner {
+  display: flex;
 }

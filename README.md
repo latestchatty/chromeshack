@@ -4,36 +4,32 @@ Collection of scripts for the [Shacknews Chatty](https://www.shacknews.com/chatt
 
 Links:
 
--   [Chrome Shack website](http://adam.hughes.cc/shack/chromeshack/)
--   [Install Chrome Shack in Chrome](https://chrome.google.com/webstore/detail/chrome-shack/mcnpepegfcikofcogenpncheiohblnpp?hl=en)
--   [Install Chrome Shack in Firefox](https://addons.mozilla.org/en-US/firefox/addon/chromeshack/)
+- [Chrome Shack website](http://adam.hughes.cc/shack/chromeshack/)
+- [Install Chrome Shack in Chrome](https://chrome.google.com/webstore/detail/chrome-shack/mcnpepegfcikofcogenpncheiohblnpp?hl=en)
+- [Install Chrome Shack in Firefox](https://addons.mozilla.org/en-US/firefox/addon/chromeshack/)
 
 ## How to build
 
-NodeJS 12.x+ and NPM 6.x+ are required. Use `npm install` for dependencies.
+NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (8.x+ recommended). Use `pnpm i` for installing dependencies.
 
--   Development mode (`npm run build:dev`) includes full source mapping, and runs an extension reloader plugin through webpack that will reload Chrome/Firefox when files are changed. If you wish to test via a disposable Firefox profile then use `npm run webext` separate from `npm run build:dev`.
+- (`pnpm dev` or `npm run dev`) includes full source mapping and a WebKit/Firefox manifest in the `dist/` and `dist-firefox/` folders respectively.
 
--   Production code is generated in the `dist/` folder by running `npm run build:prod`.
+- (`pnpm build` or `npm run build`) builds production code for WebKit/Firefox manifest in the `dist/` and `dist-firefox/` folders respectively.
 
--   Deployment packages can be generated with `npm run build:pack`. This results in two uploadable archives: one for code review, and one as a minified bundle, found in the `artifacts/` folder.
+- (`pnpm build:pkg` or `npm run build:pkg`) builds production code for WebKit/Firefox and places zipped archives in `artifacts/` for upload to AMO and CWS.
 
--   The full E2E test suite can be run with `npm run mocha` which produces a report found in `mochawesome-report/` (_look in `CONTRIBUTING.md` for critical information_).
+## Dependencies used in this project
 
--   The Cypress GUI can be opened with `npm run cypress` to run individual tests or to debug a test spec.
+NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated when `pnpm generate-licenses` is run for detailed licensing information.
 
-#### Dependencies used in this project
-
-NOTE: See the `ThirdPartyLicenses.txt` in the `dist/` folder that is generated when `npm run build:prod` is used for licensing information.
-
--   [Embla](https://github.com/davidcetinkaya/embla-carousel)
--   [jQuery](https://github.com/jquery/jquery)
--   [DOMPurify](https://github.com/cure53/DOMPurify)
--   [WebExtension-Polyfill](https://github.com/mozilla/webextension-polyfill)
--   [React](https://github.com/facebook/react)
--   [ts-debounce](https://github.com/chodorowicz/ts-debounce)
--   [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
--   [text-field-edit](https://github.com/fregante/text-field-edit)
--   [lz-string](https://github.com/pieroxy/lz-string)
--   [html-react-parser](https://github.com/remarkablemark/html-react-parser)
--   [fastdom](https://github.com/wilsonpage/fastdom)
+- [Preact](https://github.com/preactjs/preact)
+- [Embla](https://github.com/davidcetinkaya/embla-carousel)
+- [jQuery](https://github.com/jquery/jquery)
+- [DOMPurify](https://github.com/cure53/DOMPurify)
+- [ts-debounce](https://github.com/chodorowicz/ts-debounce)
+- [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
+- [text-field-edit](https://github.com/fregante/text-field-edit)
+- [lz-string](https://github.com/pieroxy/lz-string)
+- [html-react-parser](https://github.com/remarkablemark/html-react-parser)
+- [js-xss](https://github.com/leizongmin/js-xss)
+- [zustand](https://github.com/pmndrs/zustand)
