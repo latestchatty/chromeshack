@@ -1,6 +1,6 @@
 {
   "name": "chromeshack",
-  "version": "1.74.0",
+  "version": "1.75.0",
   "description": "Collection of scripts for Shacknews.",
   "repository": "https://github.com/latestchatty/chromeshack",
   "type": "module",

@@ -7,6 +7,8 @@ import { fullPostsCompletedEvent } from "../core/events";
 export const singleThreadFix = () => {
   const fix = () => {
     const urlRgx = window.location.href.match(/id=(\d+)(?:#item_(\d+))?/);
+    if (!urlRgx) return;
+
     const rootid = parseInt(urlRgx?.[1], 10);
     const postid = parseInt(urlRgx?.[2], 10);
     const post = (rootid === postid || rootid) && document.getElementById(`item_${postid || rootid}`);
