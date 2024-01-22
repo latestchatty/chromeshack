@@ -6,6 +6,6 @@ IMAGE_NAME="chromeshack"
 mkdir -p artifacts
 
 docker build -t $IMAGE_NAME .
-docker run --rm --tty -i \
+docker run --rm -i \
 	-v "./artifacts:/code/artifacts" \
 	--name $IMAGE_NAME $IMAGE_NAME
