@@ -58,12 +58,11 @@ The E2E integration test suite requires a login cookie fixture in order to run a
 
 ## Release procedure
 
-- Update the version in `package.json` and `src/assets/release_notes.html` (`manifest.json` is updated from `package.json` for Webkit automatically, but Firefox's `manifestv3.ffx.json` file in `utils/` must be manually changed).
-- To use the Docker build environment for packaging to `artifacts/` simply run `build.sh` in the project root. Note that `build.sh` artifacts will have UTC timestamps. The rest of these steps assume you're not using the Docker method.
-- Install prerequisites with: `pnpm install` or `npm install`
-- Use `pnpm build:pkg` or `npm run build:pkg` to generate deployables in the `artifacts/` folder when uploading to AMO or the Chrome addon store.
+- Update the version in `package.json`, `public/release_notes.html`, and `utils/manifestv3.ffs.json`. (`manifest.json` is updated from `package.json` for Webkit automatically, but Firefox's `manifestv3.ffx.json` file in `utils/` must be manually changed).
+- Commit and push to GitHub.
 - Tag a release on GitHub.
-- Add the zip to the release.
+- Wait for GitHub Actions to build. Download the artifacts from the completed CI job.
+- Add the zips to the release.
 - Release to the Firefox Add-ons site.
   - Log into the [Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/).
   - Click "Edit Product Page" under "Chrome Shack" under "My Add-ons"
