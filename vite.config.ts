@@ -50,7 +50,7 @@ const crxConfig = {
     {
       js: ["src/content.ts"],
       all_frames: false,
-      run_at: "document_start",
+      run_at: "document_end",
       matches: ["https://www.shacknews.com/chatty*", "https://www.shacknews.com/tags-*"],
     },
   ],
