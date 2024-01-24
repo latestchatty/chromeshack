@@ -5,8 +5,8 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
 export const NewCommentHighlighter = {
-  // 1 hour threshold
-  timeout: 1000 * 60 * 60 * 1,
+  // 3 hour timeout threshold
+  timeout: 1000 * 60 * 60 * 3,
 
   async install() {
     await NewCommentHighlighter.highlight();
@@ -19,8 +19,9 @@ export const NewCommentHighlighter = {
     if (is_enabled) {
       const last_id = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
       const overTimeout = await NewCommentHighlighter.checkTime(NewCommentHighlighter.timeout);
-      let new_last_id: number;
-      if (!overTimeout) new_last_id = NewCommentHighlighter.findLastID(root);
+      // start with our previous last_id for safety
+      let new_last_id: number = last_id;
+      if (overTimeout || last_id == -1) new_last_id = NewCommentHighlighter.findLastID(root);
       if (last_id > -1 && new_last_id >= last_id) await NewCommentHighlighter.highlightPostsAfter(last_id, root);
       await NewCommentHighlighter.updateLastId(new_last_id);
     }
@@ -32,13 +33,12 @@ export const NewCommentHighlighter = {
   },
 
   async checkTime(delayInMs: number, reset?: boolean) {
+    // reset = true, last_highlight_time > timeout = true, last_highlight_time < timeout = false
     const now = Date.now();
     const lastHighlightTime = (await getSetting("last_highlight_time", now)) as number;
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : now;
-    if (reset || overThresh) {
-      await setSetting("last_highlight_time", now);
-      return true;
-    }
+    if (reset || overThresh) return true;
+    await setSetting("last_highlight_time", now);
     return false;
   },
 
@@ -68,8 +68,7 @@ export const NewCommentHighlighter = {
 
   findLastID(root: HTMLElement) {
     // 'oneline0' is applied to highlight the most recent post in each thread
-    // we only want the first one, since the top post will contain the most recent
-    // reply.
+    // we only want the first one, since the top post will contain the most recent reply
     const mostRecent = (root || document).querySelector("div.oneline0") as HTMLElement;
     const recentid = parseInt(mostRecent?.parentElement?.id?.substring(5), 10);
     return recentid > -1 ? recentid : null;
