@@ -18,25 +18,20 @@ export const CustomUserFilters = {
     for (const post of postElems || []) {
       const ol = post?.matches(".oneline") && (post as HTMLElement);
       const fp = hideFPs && post?.matches(".fullpost") && post;
-      // biome-ignore lint/complexity/useOptionalChain: "necessary for op filter"
-      const root = fp && fp.closest(".root");
+      const root = fp?.closest ? fp.closest(".root") : false;
       if (ol?.parentElement?.matches("li")) {
         // remove all matching subreplies
         const matchedNode = ol?.parentNode;
         const children = matchedNode?.childNodes;
         let lastChild = children?.[children.length - 1] as HTMLElement;
-        let lastChildIsRoot =
-          // biome-ignore lint/complexity/useOptionalChain: "necessary for op filter"
-          lastChild?.matches && lastChild.matches(".root>ul>li>.fullpost");
+        let lastChildIsRoot = lastChild?.matches ? lastChild.matches(".root>ul>li>.fullpost") : false;
         for (let i = children.length - 1; i > 0 && lastChild; i--) {
           // don't remove the root fullpost in single-thread mode
           if ((hideFPs && !isChatty && !lastChildIsRoot) || (!lastChildIsRoot && lastChild))
             matchedNode.removeChild(lastChild);
 
           lastChild = children[i - 1] as HTMLElement;
-          lastChildIsRoot =
-            // biome-ignore lint/complexity/useOptionalChain: "necessary for op filter"
-            lastChild?.matches && lastChild.matches(".root>ul>li>.fullpost");
+          lastChildIsRoot = lastChild?.matches ? lastChild.matches(".root>ul>li>.fullpost") : false;
         }
       } else if (isChatty && fp && root)
         // only remove root if we're in thread mode
