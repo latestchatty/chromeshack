@@ -10,8 +10,8 @@ const browserMixin =
     ? {
         browser_specific_settings: {
           gecko: {
-            id: "chromeshack@github.com",
-            strict_min_version: "42.0",
+            "id": "{33a5e61a-ec1e-4761-9515-e7ab23a8b679}",
+            "strict_min_version": "109.0",
           },
         },
         background: {
@@ -51,11 +51,11 @@ const crxConfig = {
       js: ["src/content.ts"],
       all_frames: false,
       run_at: "document_end",
-      matches: ["https://www.shacknews.com/chatty*", "https://www.shacknews.com/tags-*"],
+      matches: ["https://www.shacknews.com/chatty*"],
     },
   ],
   permissions: ["tabs", "storage", "scripting", "notifications", "alarms"],
-  host_permissions: ["https://api.imgur.com/3/*", "https://winchatty.com/v2/*", "https://www.shacknews.com/chatty*"],
+  host_permissions: ["https://www.shacknews.com/chatty*"],
   web_accessible_resources: [
     {
       matches: ["*://*/*"],
