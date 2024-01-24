@@ -1,0 +1,30 @@
+div.postdate div.progress.gauge_blue {
+    background: linear-gradient(to bottom,#40a0ff,#204080) !important;
+}
+div.postdate div.progress.gauge_cyan {
+    background: linear-gradient(to bottom,#40ffff,#008080) !important;
+}
+div.postdate div.progress.gauge_green {
+    background: linear-gradient(to bottom,#00b300,#008000) !important;
+}
+div.postdate div.progress.gauge_lime {
+    background: linear-gradient(to bottom,#ccff40,#80a000) !important;
+}
+div.postdate div.progress.gauge_yellow {
+    background: linear-gradient(to bottom,#fff000,#888000) !important;
+}
+div.postdate div.progress.gauge_orange {
+    background: linear-gradient(to bottom,#ff9900,#885000) !important;
+}
+div.postdate div.progress.gauge_red {
+    background: linear-gradient(to bottom,#ff0000,#800000) !important;
+}
+div.postdate div.progress.gauge_redder {
+    background: linear-gradient(to bottom,#ff0080,#a00000) !important;
+}
+div.postdate div.progress.gauge_reddest {
+    background: linear-gradient(to bottom,#ff00c0,#a00000) !important;
+}
+div.postdate div.progress.gauge_dead {
+    background: linear-gradient(to bottom,#000000,#800000) !important;
+}
