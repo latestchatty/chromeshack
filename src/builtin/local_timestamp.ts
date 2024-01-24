@@ -9,6 +9,7 @@ export const LocalTimeStamp = {
     hour: "numeric",
     minute: "numeric",
     timeZoneName: "short",
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   } as Intl.DateTimeFormatOptions,
 
   install() {
@@ -23,7 +24,6 @@ export const LocalTimeStamp = {
     try {
       const fixAMPM = rawDateStr.replace(/(am\s|pm\s)/, (m1) => ` ${m1.toUpperCase()}`);
       LocalTimeStamp.date.setTime(Date.parse(fixAMPM));
-      // use native JS to format a date string
       const toStr = LocalTimeStamp.date.toLocaleDateString("en", LocalTimeStamp.dateOpts);
       return toStr ? toStr : rawDateStr;
     } catch (e) {
@@ -43,6 +43,7 @@ export const LocalTimeStamp = {
     const fixedTime = dateStr && LocalTimeStamp.fixTime(dateStr);
     const is_corrected = post?.classList?.contains("timestamp_corrected");
     if (fixedTime && !is_corrected) {
+      post.setAttribute("title", post.innerText);
       LocalTimeStamp.replaceTime(fixedTime, post);
       post.classList?.add("timestamp_corrected");
     }
