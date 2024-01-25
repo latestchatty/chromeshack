@@ -21,6 +21,9 @@
     "default_title": "Chrome Shack",
     "default_popup": "src/popup.html"
   },
+  "options_ui": {
+    "page": "permissions.html"
+  },
   "background": {
     "scripts": ["background.global.js"]
   },
@@ -37,7 +40,6 @@
     }
   ],
   "permissions": ["tabs", "storage", "scripting", "notifications", "alarms"],
-  "host_permissions": ["https://www.shacknews.com/chatty*"],
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],

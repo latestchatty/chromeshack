@@ -4,6 +4,8 @@ import { fetchSafe } from "./core/common/fetch";
 import { alarmNotifications, notificationClicked, setInitialNotificationsEventId } from "./core/notifications";
 import { migrateSettings } from "./core/settings";
 
+const requiredOrigin = "https://www.shacknews.com/chatty*";
+
 // use non-async response here due to: https://bugs.chromium.org/p/chromium/issues/detail?id=1185241
 chrome.runtime.onMessage.addListener(
   (request: OnMessageRequest, _: chrome.runtime.MessageSender, sendResponse: any) => {
@@ -68,3 +70,26 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     periodInMinutes: 1,
   });
 })();
+
+chrome.runtime.onInstalled.addListener((details) => {
+  // only show the Preferences->Permissions panel if we're in Firefox
+  if (isFirefox && details.reason === "install") {
+    console.log("serviceWorker caught an permissions.onInstalled message!");
+    chrome.runtime.openOptionsPage();
+  } else if (isFirefox && details.reason === "update") {
+    console.log("serviceWorker caught a permissions.onRemoved message!");
+    chrome.runtime.openOptionsPage();
+  }
+});
+chrome.permissions.onAdded.addListener(async (permissions) => {
+  const isGranted = permissions.origins.includes(requiredOrigin);
+  console.log("permission.onAdded:", isGranted);
+  chrome.runtime.sendMessage({ type: "permissions_granted", permissions: permissions });
+});
+chrome.permissions.onRemoved.addListener(async (permissions) => {
+  if (!isFirefox) return;
+
+  const isGranted = permissions.origins.includes(requiredOrigin);
+  console.log("permission.onRemoved:", isGranted);
+  chrome.runtime.sendMessage({ type: "permissions_removed", permissions: permissions });
+});

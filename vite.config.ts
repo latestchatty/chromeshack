@@ -10,8 +10,8 @@ const browserMixin =
     ? {
         browser_specific_settings: {
           gecko: {
-            "id": "{33a5e61a-ec1e-4761-9515-e7ab23a8b679}",
-            "strict_min_version": "109.0",
+            id: "{33a5e61a-ec1e-4761-9515-e7ab23a8b679}",
+            strict_min_version: "109.0",
           },
         },
         background: {
@@ -26,6 +26,7 @@ const browserMixin =
           service_worker: "src/serviceWorker.ts",
           type: "module",
         },
+        minimum_chrome_version: "105.0",
       };
 
 const crxConfig = {

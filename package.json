@@ -12,7 +12,7 @@
     "build:content": "vite build --config vite.content.config.ts",
     "build:popup": "vite build --config vite.popup.config.ts",
     "build:js": "run-p build:serviceWorker build:content build:popup",
-    "manifest:firefox": "mkdir -p dist-firefox && cp -f utils/manifestv3.ffx.json dist-firefox/manifest.json",
+    "manifest:firefox": "mkdir -p dist-firefox && cp -f src/manifestv3.ffx.json dist-firefox/manifest.json",
     "clean": "rm -rf dist-firefox/ dist/ artifacts/dist artifacts/dist-firefox",
     "dev:crxjs": "vite dev",
     "dev:firefoxjs": "NODE_ENV=development run-p build:js manifest:firefox",

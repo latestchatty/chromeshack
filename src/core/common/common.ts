@@ -109,6 +109,6 @@ export const getCurrentTabId = async () => {
 };
 
 export const isFirefox = () => {
-  // @ts-expect-error InstallTrigger will be deprecated soon
-  return typeof InstallTrigger !== "undefined";
+  const userAgent = navigator.userAgent;
+  return userAgent.includes("Firefox");
 };
