@@ -1,4 +1,6 @@
-const requiredOrigin = "https://www.shacknews.com/chatty*";
+import { isFirefox } from "./core/common/common";
+
+export const requiredOrigin = "https://www.shacknews.com/chatty*";
 
 const requestPermissions = async () => {
   return new Promise((resolve, reject) =>
@@ -58,4 +60,8 @@ const initialize = async () => {
     console.error(e);
   }
 };
-initialize();
+
+(async () => {
+  // only allow Firefox useragent's to use the permissions panel
+  if (isFirefox()) await initialize();
+})();

@@ -22,7 +22,7 @@
     "default_popup": "src/popup.html"
   },
   "options_ui": {
-    "page": "permissions.html"
+    "page": "src/permissions.html"
   },
   "background": {
     "scripts": ["background.global.js"]

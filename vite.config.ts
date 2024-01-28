@@ -15,7 +15,10 @@ const browserMixin =
           },
         },
         background: {
-          scripts: ["src/serviceWorker.ts"],
+          scripts: ["src/serviceWorker.firefox.ts"],
+        },
+        options_ui: {
+          page: "src/permissions.html",
         },
         content_security_policy: {
           extension_pages: "script-src 'self'; object-src 'self'",
@@ -23,7 +26,7 @@ const browserMixin =
       }
     : {
         background: {
-          service_worker: "src/serviceWorker.ts",
+          service_worker: "src/serviceWorker.chrome.ts",
           type: "module",
         },
         minimum_chrome_version: "105.0",

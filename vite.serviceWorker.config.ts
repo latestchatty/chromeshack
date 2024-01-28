@@ -9,20 +9,20 @@ export default defineConfig({
   plugins: [preact()],
   build: {
     emptyOutDir: false,
-    outDir: 'dist-firefox',
+    outDir: "dist-firefox",
     minify: false,
     watch: watcherOpts,
     sourcemap: devMode,
     lib: {
-      formats: ['iife'],
-      entry: resolve(__dirname, './src/serviceWorker.ts'),
+      formats: ["iife"],
+      entry: resolve(__dirname, "./src/serviceWorker.firefox.ts"),
       name: "background scripts",
     },
     rollupOptions: {
       output: {
-        entryFileNames: 'background.global.js',
+        entryFileNames: "background.global.js",
         extend: true,
-      }
+      },
     },
-  }
-})
+  },
+});
