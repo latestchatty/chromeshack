@@ -23,6 +23,8 @@ const ImportExport = memo(() => {
         setFieldBox("");
         setImporting(false);
         alert("Successfully imported settings");
+        // force the browser to reload the extension
+        chrome.runtime.reload();
       } else console.error("Something went wrong parsing settings import:", value);
     })();
   };
