@@ -1,29 +1,29 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/permissions.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/permissions.css" />
     <title>Chrome Shack Permission Request</title>
-</head>
-<body data-pane="settings">
+  </head>
+  <body data-pane="settings">
     <section data-pane="settings">
-        <div class="firstRun">
-            <div class="header">
-                <img src="/images/icon48.png" alt="" />
-                <h2>Chrome Shack Permissions</h2>
-                <img src="/images/icon48.png" alt="" />
-            </div>
-            <p>Chrome Shack on Firefox 109+ requires access to the Chatty page on Shacknews.com to function correctly.</p>
-            <br />
-            <p id="granted" class="hide">Chrome Shack Chatty permissions have been granted!</p>
-            <div id="prompt">
-                <p>Please click the following button to enable access:</p>
-                <button id="permissionBtn"></button>
-            </div>
+      <div class="firstRun">
+        <div class="header">
+          <img src="/images/icon48.png" alt="" />
+          <h2>Chrome Shack Permissions</h2>
+          <img src="/images/icon48.png" alt="" />
         </div>
+        <p>Chrome Shack on Firefox 109+ requires access to the Chatty page on Shacknews.com to function correctly.</p>
+        <br />
+        <p id="granted" class="hide">Chrome Shack Chatty permissions have been granted!</p>
+        <div id="prompt">
+          <p>Please click the following button to enable access:</p>
+          <button id="permissionBtn"></button>
+        </div>
+      </div>
     </section>
 
     <script defer src="permissions.ts" type="module"></script>
-</body>
+  </body>
 </html>

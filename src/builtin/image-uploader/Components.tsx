@@ -49,7 +49,7 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
       const data = dropData ?? chooserData;
       if (data?.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
     },
-    [override, disabled, dispatch],
+    [override, disabled, dispatch]
   );
 
   return (
@@ -59,8 +59,7 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
       onDrop={handleFileChooser}
       onDragOver={override}
       onDragEnter={override}
-      onDragExit={override}
-    >
+      onDragExit={override}>
       <label id="fileChooserLabel" htmlFor="fileChooser">
         {getFileCount(fileData) || `Drop or select ${multifile ? "files" : "file"} here...`}
         <input
@@ -91,7 +90,7 @@ const UrlInput = memo((props: ImageUploaderComponentProps) => {
       const match = val?.match(urlValidateRegExp);
       if (match) dispatch({ type: "LOAD_URL", payload: val });
       else dispatch({ type: "LOAD_INVALID_URL" });
-    }, 500),
+    }, 500)
   );
   const onInput = (e: React.ChangeEvent) => {
     const _this = e?.target as HTMLInputElement;

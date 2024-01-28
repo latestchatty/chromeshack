@@ -1,8 +1,8 @@
-import { resolve } from 'path'
-import { defineConfig } from 'vite'
-import preact from '@preact/preset-vite'
+import { resolve } from "path";
+import { defineConfig } from "vite";
+import preact from "@preact/preset-vite";
 
-const devMode = process.env.NODE_ENV === 'development';
+const devMode = process.env.NODE_ENV === "development";
 const watcherOpts = devMode ? {} : undefined;
 
 export default defineConfig({

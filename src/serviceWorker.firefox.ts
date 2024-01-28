@@ -19,4 +19,3 @@ initPermissionsListeners();
 (async () => {
   await init();
 })();
-

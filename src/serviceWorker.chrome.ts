@@ -16,4 +16,3 @@ chrome.runtime.onMessage.addListener(
 (async () => {
   await init();
 })();
-

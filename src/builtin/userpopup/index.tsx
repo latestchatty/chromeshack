@@ -51,7 +51,7 @@ export const UserPopup = {
             isLoggedInUser={isLoggedInUser}
             isUserBadge={!!userLink}
             parentRoot={root}
-          />,
+          />
         );
       }
     }

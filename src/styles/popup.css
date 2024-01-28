@@ -5,14 +5,14 @@
   --border-style: 1px solid var(--border-color);
   --background-color-light: #ffffff;
   --text-color-light: #000000;
-  --background-color-dark: #23222B;
+  --background-color-dark: #23222b;
   --tab-btn-color-light: rgb(110, 110, 110);
   --tab-bg-color-dark: var(--background-color-dark);
   --hdr-bg-color-light: linear-gradient(to right, #f0f7f9, #ffffff);
-  --hdr-bg-color-dark: linear-gradient(to right, #3A3944, var(--background-color-dark));
-  --btn-active-color-dark: #5A5A5A;
+  --hdr-bg-color-dark: linear-gradient(to right, #3a3944, var(--background-color-dark));
+  --btn-active-color-dark: #5a5a5a;
   --info-color-light: #808080;
-  --info-color-dark: #BBBBBB;
+  --info-color-dark: #bbbbbb;
   --border-color-dark: #999999;
   --text-color-dark: #ffffff;
 }
@@ -264,14 +264,17 @@ div.filter_box > p {
     background-color: var(--background-color-dark);
     color: var(--text-color-dark);
   }
-  button, textarea, select,
+  button,
+  textarea,
+  select,
   input[type="text"],
   input[type="checkbox"] {
     background-color: var(--background-color-dark);
     color: var(--text-color-dark);
     border: 1px solid var(--border-color-dark);
   }
-  textarea, input[type="text"] {
+  textarea,
+  input[type="text"] {
     caret-color: var(--text-color-dark);
   }
   button {

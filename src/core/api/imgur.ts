@@ -66,14 +66,11 @@ export const getImgur = async (...args: any[]) => {
   const [imageId, albumId, galleryId] = args || [];
   const resolved = await doResolveImgur({ imageId, albumId, galleryId });
   return arrHas(resolved)
-    ? resolved.reduce(
-        (acc, m) => {
-          const type = isImage(m) ? "image" : isVideo(m) ? "video" : null;
-          acc.push({ src: m, type });
-          return acc;
-        },
-        [] as ImgurSource[]
-      )
+    ? resolved.reduce((acc, m) => {
+        const type = isImage(m) ? "image" : isVideo(m) ? "video" : null;
+        acc.push({ src: m, type });
+        return acc;
+      }, [] as ImgurSource[])
     : [];
 };
 

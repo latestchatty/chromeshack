@@ -54,16 +54,13 @@ const matchNotification = async (nEvent: NotifyEvent) => {
   const postAuthorIsMe = postAuthor === loggedInUsername;
   const postEventHasMatches =
     postEventBody &&
-    matches?.reduce(
-      (acc, m) => {
-        const mToLower = m.toLowerCase();
-        const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
-        // trim extra trailing space from phrase matches for posterity
-        if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
-        return acc;
-      },
-      [] as string[]
-    );
+    matches?.reduce((acc, m) => {
+      const mToLower = m.toLowerCase();
+      const wasAdded = acc.find((x) => x.toLowerCase() === mToLower.trim());
+      // trim extra trailing space from phrase matches for posterity
+      if (postEventBody.indexOf(mToLower) > -1 && !wasAdded) acc.push(m.trim());
+      return acc;
+    }, [] as string[]);
   if (postEventHasMe) return "Someone mentioned your name.";
   else if (parentAuthorIsMe) return "Someone replied to you.";
   else if (!postAuthorIsMe && arrHas(postEventHasMatches as string[])) {

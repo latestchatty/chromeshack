@@ -19,8 +19,7 @@ const ImageUploaderApp = memo((props: { postboxEl: HTMLElement }) => {
       childId="uploader-container"
       label="Image Uploader"
       visible={state.visible}
-      clickHandler={onClickToggle}
-    >
+      clickHandler={onClickToggle}>
       <div id="tab-container">
         {validTabs.map((tab) => {
           return (

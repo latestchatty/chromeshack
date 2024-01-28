@@ -103,29 +103,23 @@ export const exportSettings = async () => {
   ];
   const disallowedOptions = ["show_rls_notes", "imported"];
   // leave out users array from builtin groups to save space
-  const exportedGroups = settings.highlight_groups.reduce(
-    (acc, g) => {
-      if (g.built_in)
-        acc.push({
-          built_in: g.built_in,
-          enabled: g.enabled,
-          name: g.name,
-          css: g.css,
-        });
-      else if (g.name) acc.push(g);
-      return acc;
-    },
-    [] as HighlightGroup[]
-  );
+  const exportedGroups = settings.highlight_groups.reduce((acc, g) => {
+    if (g.built_in)
+      acc.push({
+        built_in: g.built_in,
+        enabled: g.enabled,
+        name: g.name,
+        css: g.css,
+      });
+    else if (g.name) acc.push(g);
+    return acc;
+  }, [] as HighlightGroup[]);
   const allowedSettings = objConditionalFilter(disallowed, settings);
-  const allowedSuboptions = disallowedOptions.reduce(
-    (acc, so) => {
-      const foundIdx = acc.findIndex((x) => x.toUpperCase() === so.toUpperCase());
-      if (foundIdx !== -1) acc.splice(foundIdx);
-      return acc;
-    },
-    settings.enabled_suboptions as string[]
-  );
+  const allowedSuboptions = disallowedOptions.reduce((acc, so) => {
+    const foundIdx = acc.findIndex((x) => x.toUpperCase() === so.toUpperCase());
+    if (foundIdx !== -1) acc.splice(foundIdx);
+    return acc;
+  }, settings.enabled_suboptions as string[]);
   const mutated = {
     ...allowedSettings,
     enabled_suboptions: allowedSuboptions,

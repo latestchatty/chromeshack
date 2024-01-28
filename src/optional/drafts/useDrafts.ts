@@ -57,12 +57,12 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
         setValid(arrHas(foundRecord));
       })();
     },
-    [postid],
+    [postid]
   );
 
   const debouncedSave = useCallback(
     debounce((d: Draft[]) => saveDraftsToStore(d), 750),
-    [],
+    []
   );
   const _debouncedSave = useRef(debouncedSave).current;
 
@@ -84,7 +84,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setDrafts(_drafts);
       _debouncedSave(_drafts);
     },
-    [drafts, postid, _debouncedSave],
+    [drafts, postid, _debouncedSave]
   );
 
   function handleSubmit() {
@@ -102,7 +102,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
           submitFormEvent.removeHandler(handleSubmit);
         })();
       },
-      [postid],
+      [postid]
     );
   }
 
@@ -113,7 +113,7 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
       setInputVal(_val);
       saveToDraft(_val);
     },
-    [saveToDraft],
+    [saveToDraft]
   );
 
   const handleExternalInput = useCallback((el: HTMLInputElement) => handleInput(el), [handleInput]);

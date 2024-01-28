@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import preact from '@preact/preset-vite'
+import { defineConfig } from "vite";
+import preact from "@preact/preset-vite";
 
-const devMode = process.env.NODE_ENV === 'development';
+const devMode = process.env.NODE_ENV === "development";
 const watcherOpts = devMode ? {} : undefined;
 
 export default defineConfig({
@@ -9,12 +9,12 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     sourcemap: devMode,
-    outDir: 'dist-firefox',
+    outDir: "dist-firefox",
     watch: watcherOpts,
     rollupOptions: {
       input: {
-        popup: new URL('./src/popup.html', import.meta.url).pathname
-      }
+        popup: new URL("./src/popup.html", import.meta.url).pathname,
+      },
     },
-  }
-})
+  },
+});
