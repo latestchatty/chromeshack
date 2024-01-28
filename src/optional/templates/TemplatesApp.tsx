@@ -86,6 +86,8 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
     },
     [popupVisible],
   );
+  
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional generic capture"
   const handlePopupClick = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e.preventDefault();

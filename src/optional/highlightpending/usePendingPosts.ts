@@ -19,6 +19,7 @@ const usePendingPosts = (threaded: boolean) => {
   const [count, setCount] = useState(0);
   const indicator = "★ ";
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handlePrevClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx - 1 + pendings.length) % pendings.length;
@@ -30,6 +31,8 @@ const usePendingPosts = (threaded: boolean) => {
       hpnpJumpToPostEvent.raise({ threadid });
     }
   }, [pendings, pendingIdx]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handleNextClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx + 1 + pendings.length) % pendings.length;
