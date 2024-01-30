@@ -114,15 +114,61 @@ test("HighlightUser highlighting", async ({ page }) => {
   }
 });
 
-test("NewCommentHighlighter highlighting", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40106135#item_40106135", {
+test("NewCommentHighlighter - highlighting", async ({ page }) => {
+  // test with fresh config state
+  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544");
+  const highlights = page.locator(".newcommenthighlighter");
+  await expect(highlights).toHaveCount(0);
+
+  // test with test id
+  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
     o: { append: true },
-    d: { new_comment_highlighter_last_id: 40107615 },
+    d: { new_comment_highlighter_last_id: 42277695, last_highlight_time: -1 },
+  });
+  await expect(highlights).toHaveCount(6);
+
+  // test the refresh button after a fresh highlight
+  const refreshBtn = page.locator("div.refresh > a");
+  await refreshBtn.click();
+
+  await expect(highlights).toHaveCount(0);
+});
+test("NewCommentHighlighter highlighting - time validation", async ({ page }) => {
+  const now = Date.now();
+  // checkStaleIdTime() is set for 1 hour by default so test 2 hours
+  const staleTime = now + (1000 * 60 * 60 * 2);
+
+  // first we test the fresh case
+  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
+    o: { append: true },
+    d: { new_comment_highlighter_last_id: 42277727, last_highlight_time: now },
   });
 
   const highlights = page.locator(".newcommenthighlighter");
-  await highlights.waitFor({ state: "attached" });
-  expect(await highlights.count()).toBeGreaterThan(0);
+  await expect(highlights).toHaveCount(0);
+
+  // then the stale case
+  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
+    o: { append: true },
+    d: { new_comment_highlighter_last_id: 42277726, last_highlight_time: staleTime },
+  });
+
+  await expect(highlights).toHaveCount(1);
+});
+
+test("ColorGauge - post load and refresh", async ({ page }) => {
+  await navigate(page, "https://www.shacknews.com/chatty?id=42278065#item_42278065");
+
+  const gauge = page.locator("div.guage");
+  const colorClass = gauge.locator("div.progress");
+  await expect(gauge).toHaveAttribute("title");
+  await expect(colorClass).toHaveClass(/gauge_/);
+
+  // test the refresh button event
+  const refreshBtn = page.locator("div.refresh > a");
+  await refreshBtn.click();
+  await expect(gauge).toHaveAttribute("title");
+  await expect(colorClass).toHaveClass(/gauge_/);
 });
 
 test("scrollToPost disabled on Chatty", async ({ page }) => {
