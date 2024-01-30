@@ -45,7 +45,7 @@ export const test = base.extend<{
 }>({
   // biome-ignore lint/correctness/noEmptyPattern: "blame the official docs"
   context: async ({}, use) => {
-    const pathToExtension = path.resolve("./dist");
+    const pathToExtension = path.resolve("./artifacts/dist") || path.resolve("./dist");
     const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`],
