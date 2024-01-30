@@ -1,6 +1,6 @@
 // credit for Color Gauges script goes to: TroZ (brian dot risinger at gmail dot com)
 
-import { fullPostsCompletedEvent } from "../core/events";
+import { fullPostsCompletedEvent, processPostRefreshEvent } from "../core/events";
 import "../styles/color_gauge.css";
 
 export const ColorGauge = {
@@ -33,13 +33,11 @@ export const ColorGauge = {
 
       let text = "";
       if (hour > 1) {
-        text = `About ${hour} hour${hour > 1 ? "s" : ""} and ${
-          minutes ? (minutes > 1 ? `${minutes} minutes` : "1 minute") : "0 minutes"
-        } remaining`;
+        text = `About ${hour} hour${hour > 1 ? "s" : ""} and ${minutes ? (minutes > 1 ? `${minutes} minutes` : "1 minute") : "0 minutes"
+          } remaining`;
       } else if (hour === 1) {
-        text = `About 1 hour and ${
-          minutes ? (minutes > 1 ? `${minutes} minutes` : "1 minute") : "0 minutes"
-        } remaining`;
+        text = `About 1 hour and ${minutes ? (minutes > 1 ? `${minutes} minutes` : "1 minute") : "0 minutes"
+          } remaining`;
       } else if (minutes > 1) {
         text = `About ${minutes} minutes remaining`;
       } else if (minutes === 0) {
@@ -55,5 +53,6 @@ export const ColorGauge = {
 
   install() {
     fullPostsCompletedEvent.addHandler(ColorGauge.processGauges);
+    processPostRefreshEvent.addHandler(ColorGauge.processGauges);
   },
 };
