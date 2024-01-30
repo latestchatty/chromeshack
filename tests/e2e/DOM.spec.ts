@@ -114,44 +114,44 @@ test("HighlightUser highlighting", async ({ page }) => {
   }
 });
 
-test("NewCommentHighlighter - highlighting", async ({ page }) => {
+test("NewCommentHighlighter - highlighting", async ({ page, context }) => {
   // test with fresh config state
-  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544");
+  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {}, context);
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
   // test with test id
-  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
+  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
     o: { append: true },
-    d: { new_comment_highlighter_last_id: 42277695, last_highlight_time: -1 },
-  });
-  await expect(highlights).toHaveCount(6);
+    d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: -1 },
+  }, context);
+  await expect(highlights).toHaveCount(35);
 
   // test the refresh button after a fresh highlight
-  const refreshBtn = page.locator("div.refresh > a");
+  const refreshBtn = page.locator("div.refresh > a").nth(0);
   await refreshBtn.click();
 
   await expect(highlights).toHaveCount(0);
 });
-test("NewCommentHighlighter highlighting - time validation", async ({ page }) => {
+test("NewCommentHighlighter highlighting - time validation", async ({ page, context }) => {
   const now = Date.now();
-  // checkStaleIdTime() is set for 1 hour by default so test 2 hours
-  const staleTime = now + (1000 * 60 * 60 * 2);
+  // checkStaleIdTime() is set for 4 hours by default so test 5 hours
+  const staleTime = now + (1000 * 60 * 60 * 5);
 
   // first we test the fresh case
-  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
+  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
     o: { append: true },
-    d: { new_comment_highlighter_last_id: 42277727, last_highlight_time: now },
-  });
+    d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: now },
+  }, context);
 
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
   // then the stale case
-  await navigate(page, "https://www.shacknews.com/chatty?id=42277544#item_42277544", {
+  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
     o: { append: true },
-    d: { new_comment_highlighter_last_id: 42277726, last_highlight_time: staleTime },
-  });
+    d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: staleTime },
+  }, context);
 
   await expect(highlights).toHaveCount(1);
 });
@@ -165,7 +165,7 @@ test("ColorGauge - post load and refresh", async ({ page }) => {
   await expect(colorClass).toHaveClass(/gauge_/);
 
   // test the refresh button event
-  const refreshBtn = page.locator("div.refresh > a");
+  const refreshBtn = page.locator("div.refresh > a").nth(0);
   await refreshBtn.click();
   await expect(gauge).toHaveAttribute("title");
   await expect(colorClass).toHaveClass(/gauge_/);
