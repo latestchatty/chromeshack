@@ -108,6 +108,15 @@ svg.refresh__icon.loading {
   height: 100%;
 }
 
+.yt-shorts-container iframe {
+  display: inline-block;
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 360px !important;
+  aspect-ratio: 9 / 16;
+}
+
 .media > .media__boundary {
   display: inline-block;
   position: relative;

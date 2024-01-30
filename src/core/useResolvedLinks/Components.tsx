@@ -3,7 +3,7 @@ import { classNames, isIframe } from "../common/common";
 
 const Iframe = (props: MediaProps) => {
   const { src, options } = props || {};
-  const { openByDefault } = options || {};
+  const { openByDefault, isShort = false } = options || {};
 
   const iframeType = isIframe(src);
   const isTwitch = iframeType && iframeType === "twitch";
@@ -12,7 +12,8 @@ const Iframe = (props: MediaProps) => {
   const classes = classNames({
     "iframe-container": isGeneric,
     "twitch-container": isTwitch,
-    "yt-container": isYoutube,
+    "yt-container": isYoutube && !isShort,
+    "yt-shorts-container": isYoutube && isShort,
   });
   const _src =
     isYoutube && openByDefault
@@ -22,7 +23,7 @@ const Iframe = (props: MediaProps) => {
         : src;
 
   return (
-    <div className="iframe__boundary">
+    <div className={!isShort ? "iframe__boundary" : ""}>
       <div className={classes}>
         <iframe
           title={src}

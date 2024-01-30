@@ -40,6 +40,12 @@ test.describe("Youtube", () => {
       "https://www.youtube.com/embed/zXLeJFu57Wg?autoplay=1&list=PL9CBBEA5A85DBCDEF"
     );
   });
+  test("Youtube Short", async ({ page, context }) => {
+    await navigate(page, "https://www.shacknews.com/chatty?id=42278644#item_42278644", {}, context);
+
+    const iframe = await waitForMedialinkIframe(page);
+    expect(await iframe.getAttribute("title")).toMatch("https://www.youtube.com/embed/Cy6Xu2Spb8U?autoplay=1");
+  })
 });
 
 test.describe("Twitch", () => {
