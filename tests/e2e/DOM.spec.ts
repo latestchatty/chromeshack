@@ -121,10 +121,15 @@ test("NewCommentHighlighter - highlighting", async ({ page, context }) => {
   await expect(highlights).toHaveCount(0);
 
   // test with test id
-  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
-    o: { append: true },
-    d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: -1 },
-  }, context);
+  await navigate(
+    page,
+    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    {
+      o: { append: true },
+      d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: -1 },
+    },
+    context
+  );
   await expect(highlights).toHaveCount(35);
 
   // test the refresh button after a fresh highlight
@@ -135,23 +140,34 @@ test("NewCommentHighlighter - highlighting", async ({ page, context }) => {
 });
 test("NewCommentHighlighter highlighting - time validation", async ({ page, context }) => {
   const now = Date.now();
-  // checkStaleIdTime() is set for 4 hours by default so test 5 hours
-  const staleTime = now + (1000 * 60 * 60 * 5);
+  // NCH minimum highlight time threshold is <4 hours
+  const minimumThresh = 1000 * 60 * 60 * 5;
+  const staleTime = now + minimumThresh;
 
   // first we test the fresh case
-  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
-    o: { append: true },
-    d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: now },
-  }, context);
+  await navigate(
+    page,
+    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    {
+      o: { append: true },
+      d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: now },
+    },
+    context
+  );
 
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
   // then the stale case
-  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {
-    o: { append: true },
-    d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: staleTime },
-  }, context);
+  await navigate(
+    page,
+    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    {
+      o: { append: true },
+      d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: staleTime },
+    },
+    context
+  );
 
   await expect(highlights).toHaveCount(1);
 });

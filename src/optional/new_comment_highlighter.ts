@@ -5,8 +5,8 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
 export const NewCommentHighlighter = {
-  // 4 hour stale threshold (1/4 the global age limit)
-  timeout: 1000 * 60 * 60 * 4,
+  // minimum time between refreshes to invalidate lastId
+  timeout: 1000 * 60 * 60 * 4, // 4 hours
 
   async install() {
     processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
@@ -16,20 +16,21 @@ export const NewCommentHighlighter = {
   async highlight(args?: PostEventArgs) {
     const { root } = args || {};
     const isEnabled = await enabledContains(["new_comment_highlighter"]);
-    if (isEnabled) {
-      const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-      const staleIdCheck = await NewCommentHighlighter.checkStaleIdTime(NewCommentHighlighter.timeout);
-      const isChatty = document.getElementById("newcommentbutton");
+    if (!isEnabled) return;
 
-      let newId = -1;
-      if (staleIdCheck || root || !isChatty || lastId === -1)
-        newId = NewCommentHighlighter.findLastID(root);
+    const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
+    const staleIdCheck = await NewCommentHighlighter.checkStaleIdTime(NewCommentHighlighter.timeout);
+    let newId = -1;
 
-      if (newId <= lastId || newId === -1) return;
-
-      await NewCommentHighlighter.highlightPostsAfter(lastId, root);
-      await NewCommentHighlighter.updateLastId(newId);
+    newId = NewCommentHighlighter.findLastID(root);
+    // don't highlight if we don't have valid/fresh new/old ids
+    if (staleIdCheck || lastId === -1 || newId <= lastId || newId === -1) {
+      console.log(`highlight() too fresh: ${staleIdCheck} => ${lastId} => ${newId}`);
+      return;
     }
+
+    await NewCommentHighlighter.highlightPostsAfter(lastId, root);
+    await NewCommentHighlighter.updateLastId(newId);
   },
 
   async updateLastId(newId: number) {
@@ -46,14 +47,15 @@ export const NewCommentHighlighter = {
   },
 
   async checkStaleIdTime(delayInMs: number, reset?: boolean) {
+    // returns true or false based on the time being over a threshold
     const now = Date.now();
     const lastHighlightTime = (await getSetting("last_highlight_time", -1)) as number;
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
-    if (reset || overThresh || lastHighlightTime == -1) {
-      await setSetting("last_highlight_time", now);
-      return true;
-    }
-    return false;
+
+    if (!reset || !overThresh) return false;
+
+    await setSetting("last_highlight_time", now);
+    return true;
   },
 
   async highlightPostsAfter(lastId: number, root?: HTMLElement) {
