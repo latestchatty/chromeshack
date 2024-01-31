@@ -70,9 +70,6 @@ const crxConfig = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  define: {
-    "process.env": `(${JSON.stringify(process.env)})`,
-  },
   plugins: [
     preact(),
     crx({

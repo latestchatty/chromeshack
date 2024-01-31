@@ -13,14 +13,13 @@
     "build:popup": "vite build --config vite.popup.config.ts",
     "build:permissions": "vite build --config vite.permissions.config.ts",
     "build:js": "run-p build:serviceWorker build:content build:popup build:permissions",
-    "manifest:firefox": "mkdir -p dist-firefox && cp -f src/manifestv3.ffx.json dist-firefox/manifest.json",
-    "clean": "rm -rf dist-firefox/ dist/ artifacts/dist/ artifacts/dist-firefox/ playwright-report/ test-results/",
+    "clean": "rm -rf dist-firefox/* dist/* artifacts/dist/* artifacts/dist-firefox/* playwright-report/ test-results/",
     "dev:crxjs": "vite dev",
-    "dev:firefoxjs": "NODE_ENV=development run-p build:js manifest:firefox",
-    "dev": "run-s clean && run-s lint && tsc && run-p dev:crxjs dev:firefoxjs",
+    "dev:firefoxjs": "NODE_ENV=development run-p build:js",
+    "dev": "run-s clean lint && tsc && run-p dev:crxjs dev:firefoxjs",
     "build:crxjs": "vite build",
-    "build:ffxcrxjs": "run-s build:js manifest:firefox",
-    "build": "run-s clean && run-s lint && tsc && run-p build:crxjs build:ffxcrxjs",
+    "build:ffxcrxjs": "run-s build:js",
+    "build": "run-s clean lint && tsc && run-p build:crxjs build:ffxcrxjs",
     "build:pkg": "run-s build pkgsrc",
     "test": "playwright test",
     "pretty": "prettier -w ./src/*.html ./src/styles/*.css ./public/*.html",
@@ -47,7 +46,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "@crxjs/vite-plugin": "2.0.0-beta.21",
+    "@crxjs/vite-plugin": "2.0.0-beta.23",
     "@playwright/test": "1.40.1",
     "@preact/preset-vite": "^2.8.1",
     "@types/chrome": "^0.0.246",
@@ -65,6 +64,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.4",
     "typescript": "^5.3.3",
-    "vite": "^4.5.2"
+    "vite": "^5.0.12"
   }
 }
