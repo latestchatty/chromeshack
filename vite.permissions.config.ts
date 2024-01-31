@@ -17,4 +17,9 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    watch: {
+      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+    },
+  },
 });

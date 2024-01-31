@@ -88,5 +88,8 @@ export default defineConfig({
     hmr: {
       port: 5173,
     },
+    watch: {
+      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+    },
   },
 });
