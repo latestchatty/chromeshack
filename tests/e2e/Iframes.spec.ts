@@ -7,7 +7,7 @@ const waitForMedialinkIframe = async (page: Page) => {
   return iframe;
 };
 
-test.describe.only("Youtube", () => {
+test.describe("Youtube", () => {
   test("Youtube short-url video", async ({ page }) => {
     await navigate(page, "https://www.shacknews.com/chatty?id=39950627#item_39950627");
 

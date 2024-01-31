@@ -186,6 +186,18 @@ test("NewCommentHighlighter - time validated highlighting", async ({ page, conte
   );
   // nothing should highlight here (just as in the fresh state case)
   await expect(highlights).toHaveCount(0);
+
+  // last we test the fresh lastId with stale time case
+  await navigate(
+    page,
+    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    {
+      o: { append: true },
+      d: { new_comment_highlighter_last_id: 39954571, last_highlight_time: -1 },
+    },
+    context,
+  );
+  await expect(highlights).toHaveCount(1);
 });
 
 test("ColorGauge - post load and refresh", async ({ page }) => {

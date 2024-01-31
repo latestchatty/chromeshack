@@ -16,7 +16,7 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
       window.localStorage.setItem("transient-opts", JSON.stringify(o));
       window.localStorage.setItem("transient-data", JSON.stringify(d));
     },
-    { o: _opts, d: _data }
+    { o: _opts, d: _data },
   );
 };
 export const setTestCookie = async (context: BrowserContext) => {
@@ -40,7 +40,7 @@ export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: an
   if (context) await setTestCookie(context);
   await page.reload();
   // for debugging use env var: PWDEBUG=console
-  // page.on('console', msg => console.log(msg.text()));
+  // page.on("console", (msg) => console.log(msg.text()));
 };
 
 export const test = base.extend<{
