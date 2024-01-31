@@ -20,21 +20,18 @@ export const NewCommentHighlighter = {
 
     const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
     const staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
-
     const newId = NewCommentHighlighter.findLastID(root);
     if (staleId) {
       // if our last highlight time exceeds the timeout we just reset until the next newId
-      // console.log("NCH aborting highlighting due to stale lastId: ", lastId);
+      // console.log(`highlight stale: ${lastId} -> ${newId}`);
       await setSetting("new_comment_highlighter_last_id", newId);
       return await NewCommentHighlighter.checkStaleTime(-1, true);
     }
     if (newId <= lastId) return;
 
     const newestId = await NewCommentHighlighter.highlightPostsAfter(lastId, root);
-    if (newestId > -1 && newestId > lastId) {
-      // console.log("NCH updating with newestId: ", newestId, lastId);
-      await setSetting("new_comment_highlighter_last_id", newestId);
-    }
+    // console.log(`highlight updated: ${lastId} -> ${newestId}`);
+    await setSetting("new_comment_highlighter_last_id", newestId);
   },
 
   findLastID(root?: HTMLElement) {
@@ -46,24 +43,29 @@ export const NewCommentHighlighter = {
   },
 
   async checkStaleTime(delayInMs: number, reset?: boolean) {
-    if (reset) return false;
+    const now = Date.now();
+    if (reset) {
+      // console.log("checkStaleTime caught a reset!");
+      await setSetting("last_highlight_time", now);
+      return false;
+    }
 
     // returns true or false based on the time being over a threshold
-    const now = Date.now();
-    const lastHighlightTime = (await getSetting("last_highlight_time", -1)) as number;
+    const lastHighlightTime = (await getSetting("last_highlight_time", now)) as number;
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
-    // console.log(`NCH checkStaletime: ${lastHighlightTime} > ${now + delayInMs} = ${overThresh}`);
 
-    // if (lastHighlightTime === -1) await setSetting("last_highlight_time", now);
-    if (!overThresh) return false;
-
+    if (!overThresh || lastHighlightTime === -1) {
+      // console.log(`checkStaleTime fresh: ${lastHighlightTime + delayInMs} > ${now}`);
+      return false;
+    }
+    // console.log(`checkStaleTime stale: ${now} > ${lastHighlightTime}`);
     await setSetting("last_highlight_time", now);
     return true;
   },
 
   async highlightPostsAfter(lastId: number, root?: HTMLElement) {
-    // abort if last_id is -1, meaning we haven't seen any posts yet
-    if (lastId === -1) return;
+    // abort if lastId is -1, meaning we haven't seen any posts yet
+    if (lastId === -1) return lastId;
 
     // grab all the posts with post ids after the last post id we've seen
     const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
@@ -74,12 +76,11 @@ export const NewCommentHighlighter = {
         if (curId <= lastId) return acc;
         const onelineBody = v?.querySelector(".oneline_body");
         if (onelineBody?.classList?.contains("newcommenthighlighter")) return acc;
-
         onelineBody?.classList?.add("newcommenthighlighter");
         acc.push(curId);
         return acc;
       },
-      [lastId] as number[],
+      [lastId] as number[]
     );
 
     // update our "Comments ..." blurb at the top of the thread list
@@ -89,7 +90,8 @@ export const NewCommentHighlighter = {
     const newComments = commentsCount && `${commentsCount} Comments (${newerPostIds.length - 1} New)`;
     if (newComments) commentDisplay.textContent = newComments;
 
-    // return the newest post id processed
-    return Math.max(...newerPostIds);
+    console.log(`highlightPostsAfter: ${lastId} -> ${newerPostIds}`);
+    const newestId = Math.max(...newerPostIds);
+    return newestId && newestId > -1 ? newestId : lastId;
   },
 };

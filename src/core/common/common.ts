@@ -95,14 +95,9 @@ export const decompressString = (input: string) => {
 };
 
 export const timeOverThresh = (timestamp: number, threshold: number) => {
-  // returns the current time if over a given threshold (in miliseconds)
   const now = Date.now();
-  let elapsed = 0;
-  let delay = 0;
-  if (timestamp > -1) elapsed = now - timestamp;
-  if (threshold > -1) delay = now + threshold;
-  if (elapsed > delay) return true;
-  return false;
+  const elapsed = timestamp > -1 ? Math.abs(now - timestamp) : 0;
+  return elapsed > threshold;
 };
 
 export const getCurrentTabId = async () => {

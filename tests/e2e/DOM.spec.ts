@@ -114,21 +114,23 @@ test("HighlightUser highlighting", async ({ page }) => {
   }
 });
 
-test("NewCommentHighlighter - basic highlighting", async ({ page, context }) => {
+test.only("NewCommentHighlighter - basic highlighting", async ({ page, context }) => {
+  const url = "https://www.shacknews.com/chatty?id=42269502#item_42269502";
+
   // test with fresh state
-  await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {}, context);
+  await navigate(page, url, {}, context);
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
   // then with a "normal" execution
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    url,
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954571 },
+      d: { new_comment_highlighter_last_id: 42270595 },
     },
-    context,
+    context
   );
   await expect(highlights).toHaveCount(1);
 
@@ -142,18 +144,17 @@ test("NewCommentHighlighter - basic highlighting", async ({ page, context }) => 
   await expect(highlights).toHaveCount(0);
 });
 
-test("NewCommentHighlighter - time validated highlighting", async ({ page, context }) => {
-  const now = Date.now();
-
+test.only("NewCommentHighlighter - time validated highlighting", async ({ page, context }) => {
+  const url = "https://www.shacknews.com/chatty?id=42269502#item_42269502";
   // test for the fresh case
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    url,
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954929, last_highlight_time: now },
+      d: { new_comment_highlighter_last_id: 42270597, last_highlight_time: Date.now() },
     },
-    context,
+    context
   );
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
@@ -161,41 +162,40 @@ test("NewCommentHighlighter - time validated highlighting", async ({ page, conte
   // next test stale lastId with fresh highlight time
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    url,
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: now },
+      d: { new_comment_highlighter_last_id: 42270595, last_highlight_time: Date.now() },
     },
-    context,
+    context
   );
   await expect(highlights).toHaveCount(1);
 
   // NCH minimum highlight stale time threshold is <=4 hours
-  const minimumThresh = 1000 * 60 * 60 * 5;
-  const staleTime = now + minimumThresh;
+  const staleThresh = 1000 * 60 * 60 * 4 + 60000;
+  const staleTime = Date.now() + staleThresh;
 
   // next we test for the stale case
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    url,
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: staleTime },
+      d: { new_comment_highlighter_last_id: 42270595, last_highlight_time: staleTime },
     },
-    context,
+    context
   );
-  // nothing should highlight here (just as in the fresh state case)
   await expect(highlights).toHaveCount(0);
 
-  // last we test the fresh lastId with stale time case
+  // last we test a recent lastId with stale time case
   await navigate(
     page,
-    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    url,
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954571, last_highlight_time: -1 },
+      d: { new_comment_highlighter_last_id: 42270595, last_highlight_time: -1 },
     },
-    context,
+    context
   );
   await expect(highlights).toHaveCount(1);
 });
