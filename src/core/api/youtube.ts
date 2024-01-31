@@ -17,16 +17,21 @@ const parseLink = (href: string) => {
   // youtube videos and/or playlists (vid id: $2, playlist id: $3, offset: $1 || $4)
   const isYoutube =
     /https?:\/\/(?:.+\.)?youtube\..+?\/(?:(?:embed\/|watch\?.*?(?:time_continue=(\w+))?[&?]?v=)([\w-]+))(?:.*?[&?]list=([\w-]+))?(?:(?:.*?[&?#]t=|.*?[&?]start=)(\w+))?/i.exec(
-      href
+      href,
     );
+  const isYoutubePlaylist = /https?:\/\/.+?\.youtube\..+?\/playlist\?list=([\w-]+)/i.exec(href);
   // youtu.be videos w/wo offset (video id: $1, offset: $2)
   const isYoutubeShort = /https?:\/\/youtu\.be\/([\w-]+)(?:[&?]?t=(\d+))?/i.exec(href);
   // picks up a youtube shorts video (9/16 aspect ratio only)
-  const isYoutubeShorts = /https?:\/\/youtube\..+?\/shorts\/([\w-]+)/.exec(href);
+  const isYoutubeShorts = /https?:\/\/youtube\..+?\/shorts\/([\w-]+)/i.exec(href);
 
   const short = isYoutubeShorts ? isYoutubeShorts[1] : "";
   const video = isYoutube ? isYoutube[2] : isYoutubeShort ? isYoutubeShort[1] : "";
-  const playlist = isYoutube?.[3] ? `&list=${isYoutube[3]}` : "";
+  const playlist = isYoutube?.[3]
+    ? `&list=${isYoutube[3]}`
+    : isYoutubePlaylist?.[1]
+      ? `&list=${isYoutubePlaylist[1]}`
+      : "";
   const offset = isYoutube ? isYoutube[1] || isYoutube[4] : isYoutubeShort ? isYoutubeShort[2] : "";
   const startAt = offset ? decodeOffset(offset) : "";
 
