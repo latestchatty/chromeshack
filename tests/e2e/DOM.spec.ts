@@ -114,51 +114,67 @@ test("HighlightUser highlighting", async ({ page }) => {
   }
 });
 
-test("NewCommentHighlighter - highlighting", async ({ page, context }) => {
-  // test with fresh config state
+test("NewCommentHighlighter - basic highlighting", async ({ page, context }) => {
+  // test with fresh state
   await navigate(page, "https://www.shacknews.com/chatty?id=39952896#item_39952896", {}, context);
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
-  // test with test id
+  // then with a "normal" execution
   await navigate(
     page,
     "https://www.shacknews.com/chatty?id=39952896#item_39952896",
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: -1 },
+      d: { new_comment_highlighter_last_id: 39954571 },
     },
-    context
+    context,
   );
-  await expect(highlights).toHaveCount(35);
+  await expect(highlights).toHaveCount(1);
 
-  // test the refresh button after a fresh highlight
+  // make sure nothing highlights when root refresh button is clicked
   const refreshBtn = page.locator("div.refresh > a").nth(0);
   await refreshBtn.click();
+  await expect(highlights).toHaveCount(0);
 
+  // check that nothing highlights when refreshing after a normal run
+  await page.reload();
   await expect(highlights).toHaveCount(0);
 });
-test("NewCommentHighlighter highlighting - time validation", async ({ page, context }) => {
-  const now = Date.now();
-  // NCH minimum highlight time threshold is <4 hours
-  const minimumThresh = 1000 * 60 * 60 * 5;
-  const staleTime = now + minimumThresh;
 
-  // first we test the fresh case
+test("NewCommentHighlighter - time validated highlighting", async ({ page, context }) => {
+  const now = Date.now();
+
+  // test for the fresh case
   await navigate(
     page,
     "https://www.shacknews.com/chatty?id=39952896#item_39952896",
     {
       o: { append: true },
-      d: { new_comment_highlighter_last_id: 39954129, last_highlight_time: now },
+      d: { new_comment_highlighter_last_id: 39954929, last_highlight_time: now },
     },
-    context
+    context,
   );
-
   const highlights = page.locator(".newcommenthighlighter");
   await expect(highlights).toHaveCount(0);
 
-  // then the stale case
+  // next test stale lastId with fresh highlight time
+  await navigate(
+    page,
+    "https://www.shacknews.com/chatty?id=39952896#item_39952896",
+    {
+      o: { append: true },
+      d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: now },
+    },
+    context,
+  );
+  await expect(highlights).toHaveCount(1);
+
+  // NCH minimum highlight stale time threshold is <=4 hours
+  const minimumThresh = 1000 * 60 * 60 * 5;
+  const staleTime = now + minimumThresh;
+
+  // next we test for the stale case
   await navigate(
     page,
     "https://www.shacknews.com/chatty?id=39952896#item_39952896",
@@ -166,10 +182,10 @@ test("NewCommentHighlighter highlighting - time validation", async ({ page, cont
       o: { append: true },
       d: { new_comment_highlighter_last_id: 39954928, last_highlight_time: staleTime },
     },
-    context
+    context,
   );
-
-  await expect(highlights).toHaveCount(1);
+  // nothing should highlight here (just as in the fresh state case)
+  await expect(highlights).toHaveCount(0);
 });
 
 test("ColorGauge - post load and refresh", async ({ page }) => {

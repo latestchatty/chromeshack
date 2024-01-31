@@ -1,7 +1,9 @@
 /* eslint import/named: 0 */
 
-import { test as base, chromium, type BrowserContext, type Page } from "@playwright/test";
+import fs from "fs";
 import path from "path";
+
+import { test as base, chromium, type BrowserContext, type Page } from "@playwright/test";
 
 // @ts-ignore
 import cookieFixture from "./_shack_li_.json" assert { type: "json" };
@@ -37,6 +39,8 @@ export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: an
   if (opts) await loadExtensionDefaults(page, o, d);
   if (context) await setTestCookie(context);
   await page.reload();
+  // for debugging use env var: PWDEBUG=console
+  // page.on('console', msg => console.log(msg.text()));
 };
 
 export const test = base.extend<{
@@ -45,7 +49,9 @@ export const test = base.extend<{
 }>({
   // biome-ignore lint/correctness/noEmptyPattern: "blame the official docs"
   context: async ({}, use) => {
-    const pathToExtension = path.resolve("./artifacts/dist") || path.resolve("./dist");
+    const prodPath = path.resolve("./artifacts/dist");
+    const devPath = path.resolve("./dist");
+    const pathToExtension = fs.existsSync(prodPath) ? prodPath : devPath;
     const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`],

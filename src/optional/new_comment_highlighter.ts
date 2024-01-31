@@ -19,23 +19,22 @@ export const NewCommentHighlighter = {
     if (!isEnabled) return;
 
     const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-    const staleIdCheck = await NewCommentHighlighter.checkStaleIdTime(NewCommentHighlighter.timeout);
-    let newId = -1;
-
-    newId = NewCommentHighlighter.findLastID(root);
-    // don't highlight if we don't have valid/fresh new/old ids
-    if (staleIdCheck || lastId === -1 || newId <= lastId || newId === -1) {
-      console.log(`highlight() too fresh: ${staleIdCheck} => ${lastId} => ${newId}`);
-      return;
+    const staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
+    
+    const newId = NewCommentHighlighter.findLastID(root);
+    if (staleId) {
+      // if our last highlight time exceeds the timeout we just reset until the next newId
+      // console.log("NCH aborting highlighting due to stale lastId: ", lastId);
+      await setSetting("new_comment_highlighter_last_id", newId);
+      return await NewCommentHighlighter.checkStaleTime(-1, true);
     }
+    if (newId <= lastId) return;
 
-    await NewCommentHighlighter.highlightPostsAfter(lastId, root);
-    await NewCommentHighlighter.updateLastId(newId);
-  },
-
-  async updateLastId(newId: number) {
-    const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-    if (newId > lastId) await setSetting("new_comment_highlighter_last_id", newId);
+    const newestId = await NewCommentHighlighter.highlightPostsAfter(lastId, root);
+    if (newestId > -1 && newestId > lastId) {
+      // console.log("NCH updating with newestId: ", newestId, lastId);
+      await setSetting("new_comment_highlighter_last_id", newestId);
+    }
   },
 
   findLastID(root?: HTMLElement) {
@@ -46,42 +45,47 @@ export const NewCommentHighlighter = {
     return recentId > -1 ? recentId : -1;
   },
 
-  async checkStaleIdTime(delayInMs: number, reset?: boolean) {
+  async checkStaleTime(delayInMs: number, reset?: boolean) {
+    if (reset) return false;
+
     // returns true or false based on the time being over a threshold
     const now = Date.now();
     const lastHighlightTime = (await getSetting("last_highlight_time", -1)) as number;
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
+    // console.log(`NCH checkStaletime: ${lastHighlightTime} > ${overThresh} = ${overThresh}`);
 
-    if (!reset || !overThresh) return false;
+    if (!overThresh) return false;
 
     await setSetting("last_highlight_time", now);
     return true;
   },
 
   async highlightPostsAfter(lastId: number, root?: HTMLElement) {
-    // grab all the posts with post ids after the last post id we've seen
-    const newer = [] as Element[];
     // abort if last_id is -1, meaning we haven't seen any posts yet
     if (lastId === -1) return;
 
+    // grab all the posts with post ids after the last post id we've seen
     const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
-    const process = async (li: HTMLElement, i: number, arr: any[]) => {
-      const isNewer = parseInt(li?.id?.substring(5), 10) >= lastId;
-      const preview = li.querySelector(".oneline_body");
-      const isHighlighted = preview?.classList?.contains("newcommenthighlighter");
-      if (isNewer && !isHighlighted) {
-        preview?.classList?.add("newcommenthighlighter");
-        newer.push(li);
-      }
-      if (i === arr.length - 1) {
-        // update our "Comments ..." blurb at the top of the thread list
-        let commentDisplay = document.getElementById("chatty_settings");
-        if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
-        const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-        const newComments = commentsCount && `${commentsCount} Comments (${newer.length} New)`;
-        if (newComments) commentDisplay.textContent = newComments;
-      }
-    };
-    await Promise.all(oneliners.map(process));
+    const newerPostIds = oneliners.reduce((acc, v) => {
+      // do some quick sanity checks first
+      const curId = parseInt(v?.id?.substring(5), 10);
+      if (curId <= lastId) return acc;
+      const onelineBody = v?.querySelector(".oneline_body");
+      if (onelineBody?.classList?.contains("newcommenthighlighter")) return acc;
+
+      onelineBody?.classList?.add("newcommenthighlighter");
+      acc.push(curId);
+      return acc;
+    }, [lastId] as number[]);
+
+    // update our "Comments ..." blurb at the top of the thread list
+    let commentDisplay = document.getElementById("chatty_settings");
+    if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
+    const commentsCount = commentDisplay?.textContent?.split(" ")[0];
+    const newComments = commentsCount && `${commentsCount} Comments (${newerPostIds.length-1} New)`;
+    if (newComments) commentDisplay.textContent = newComments;
+
+    // return the newest post id processed
+    return Math.max(...newerPostIds);
   },
 };

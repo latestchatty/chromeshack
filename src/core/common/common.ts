@@ -97,8 +97,9 @@ export const decompressString = (input: string) => {
 export const timeOverThresh = (timestamp: number, threshold: number) => {
   // returns the current time if over a given threshold (in miliseconds)
   const now = Date.now();
-  const diffTime = Math.abs(now - timestamp);
-  if (diffTime > threshold) return now;
+  const elapsed = now - timestamp;
+  const delay = now + threshold;
+  if (elapsed > delay) return true;
   return false;
 };
 
