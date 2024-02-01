@@ -87,23 +87,18 @@ const useDrafts = (postid: number, inputBox: HTMLInputElement) => {
     [drafts, postid, _debouncedSave]
   );
 
-  function handleSubmit() {
-    return useCallback(
-      (e: Event) => {
-        e.preventDefault();
-        (async () => {
-          const _this = e.target as HTMLButtonElement;
-          if (!elemMatches(_this, "#frm_submit")) return;
+  function handleSubmit(e: Event) {
+    e.preventDefault();
+    (async () => {
+      const _this = e.target as HTMLButtonElement;
+      if (!elemMatches(_this, "#frm_submit")) return;
 
-          const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
-          const filtered = _drafts.filter((d) => d.postid !== postid);
-          saveDraftsToStore(filtered);
-          // avoid duplicate handlers when replybox closes
-          submitFormEvent.removeHandler(handleSubmit);
-        })();
-      },
-      [postid]
-    );
+      const _drafts = (await getSetting("saved_drafts", [])) as Draft[];
+      const filtered = _drafts.filter((d) => d.postid !== postid);
+      saveDraftsToStore(filtered);
+      // avoid duplicate handlers when replybox closes
+      submitFormEvent.removeHandler(handleSubmit);
+    })();
   }
 
   const handleInput = useCallback(
