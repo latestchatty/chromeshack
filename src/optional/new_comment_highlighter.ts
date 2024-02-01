@@ -8,6 +8,8 @@ export const NewCommentHighlighter = {
   // minimum time between refreshes to invalidate lastId
   timeout: 1000 * 60 * 60 * 4, // 4 hours
 
+  recentsCache: {} as Record<number, number>,
+
   async install() {
     processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
     fullPostsCompletedEvent.addHandler(NewCommentHighlighter.highlight);
@@ -16,82 +18,123 @@ export const NewCommentHighlighter = {
   async highlight(args?: PostEventArgs) {
     const { root } = args || {};
     const isEnabled = await enabledContains(["new_comment_highlighter"]);
+    const isChatty = !!document.getElementById("newcommentbutton");
     if (!isEnabled) return;
 
-    const lastId = (await getSetting("new_comment_highlighter_last_id", -1)) as number;
-    const staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
-    const newId = NewCommentHighlighter.findLastID(root);
+    const recents = NewCommentHighlighter.getRecentsCache();
+
+    const lastIds = (await getSetting("new_comment_highlighter_last_id", {})) as Record<number, number>;
+    const lastId: number = Object.keys(lastIds).length ? Math.max(...Object.values(lastIds)) : -1;
+    const newId = NewCommentHighlighter.getRecentId(root);
+    let staleId = false;
+
+    console.log(`highlight started with: ${lastId} & ${newId}`);
+    // only bypass stale check if we have a root
+    if (!root) staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
     if (staleId) {
-      // if our last highlight time exceeds the timeout we just reset until the next newId
-      // console.log(`highlight stale: ${lastId} -> ${newId}`);
+      console.log(`highlight stale: ${lastId} -> ${newId}`);
       await setSetting("new_comment_highlighter_last_id", newId);
       return await NewCommentHighlighter.checkStaleTime(-1, true);
     }
     if (newId <= lastId) return;
 
-    const newestId = await NewCommentHighlighter.highlightPostsAfter(lastId, root);
-    // console.log(`highlight updated: ${lastId} -> ${newestId}`);
-    await setSetting("new_comment_highlighter_last_id", newestId);
+    const newestIds = NewCommentHighlighter.highlightPostsAfter(lastId, root);
+    const newestId = Object.keys(newestIds).length ? Math.max(...Object.values(newestIds)) : -1;
+    NewCommentHighlighter.recentsCache = { ...recents, ...newestIds };
+    console.log(`highlight updated: ${lastId} -> ${newestId}`);
+    await setSetting("new_comment_highlighter_last_id", NewCommentHighlighter.recentsCache);
   },
 
-  findLastID(root?: HTMLElement) {
-    // 'oneline0' is applied to highlight the most recent post in each thread
-    // we only want the first one, since the top post will contain the most recent reply
-    const mostRecent = (root || document).querySelector("div.oneline0") as HTMLElement;
-    const recentId = parseInt(mostRecent?.parentElement?.id?.substring(5), 10);
+  getRecentsCache() {
+    const roots = [...document.querySelectorAll("div.root > ul > li")];
+    const recents =
+      roots.length > 0
+        ? roots.reduce(
+            (acc, r) => {
+              const id = parseInt(r.id?.substring(5), 10);
+              const newest = r.querySelector("div.oneline0");
+              const newestId = parseInt(newest?.parentElement.id?.substring(5), 10);
+              acc[id] = newestId;
+              return acc;
+            },
+            {} as Record<number, number>
+          )
+        : {};
+
+    // don't mutate the live cache - just assign it
+    NewCommentHighlighter.recentsCache = { ...NewCommentHighlighter.recentsCache, ...recents };
+    return NewCommentHighlighter.recentsCache;
+  },
+  getRecentId(root?: HTMLElement) {
+    // only return the most recent on the page if we have no root
+    if (!root) return Math.max(...Object.values(NewCommentHighlighter.recentsCache));
+    // otherwise, look it up in the cache
+    const rootId = parseInt(root.id?.substring(5));
+    const recentId = NewCommentHighlighter.recentsCache[rootId];
     return recentId > -1 ? recentId : -1;
+  },
+  filterKeysByNewest(records: Record<number, number>[]): Record<number, number> {
+    const newest = {};
+    const seenKeys = new Set<string>();
+    for (const r of records) {
+      for (const k in r) {
+        if (!seenKeys.has(k) || r[k] > newest[k]) {
+          newest[k] = r[k];
+          seenKeys.add(k);
+        }
+      }
+    }
+    return newest;
   },
 
   async checkStaleTime(delayInMs: number, reset?: boolean) {
     const now = Date.now();
     if (reset) {
-      // console.log("checkStaleTime caught a reset!");
+      console.log("checkStaleTime caught a reset!");
       await setSetting("last_highlight_time", now);
       return false;
     }
-
-    // returns true or false based on the time being over a threshold
-    const lastHighlightTime = (await getSetting("last_highlight_time", now)) as number;
+    const lastHighlightTime = await getSetting("last_highlight_time", now);
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
-
     if (!overThresh || lastHighlightTime === -1) {
-      // console.log(`checkStaleTime fresh: ${lastHighlightTime + delayInMs} > ${now}`);
+      console.log(`checkStaleTime fresh: ${lastHighlightTime + delayInMs} > ${now}`);
       return false;
     }
-    // console.log(`checkStaleTime stale: ${now} > ${lastHighlightTime}`);
+    console.log(`checkStaleTime stale: ${now} > ${lastHighlightTime}`);
     await setSetting("last_highlight_time", now);
     return true;
   },
 
-  async highlightPostsAfter(lastId: number, root?: HTMLElement) {
-    // abort if lastId is -1, meaning we haven't seen any posts yet
-    if (lastId === -1) return lastId;
+  highlightPostsAfter(lastId: number, root?: HTMLElement): Record<number, number> {
+    // abort if lastId is invalid, meaning we haven't seen any posts yet
+    if (Number.isNaN(lastId) || lastId === -1) return {};
 
-    // grab all the posts with post ids after the last post id we've seen
     const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
     const newerPostIds = oneliners.reduce(
       (acc, v) => {
-        // do some quick sanity checks first
+        const _root = v?.closest("div.root > ul > li");
+        const rootId = parseInt(_root?.id?.substring(5), 10);
         const curId = parseInt(v?.id?.substring(5), 10);
         if (curId <= lastId) return acc;
+        // tag these newer oneline spans with a blue bar on the left
         const onelineBody = v?.querySelector(".oneline_body");
         if (onelineBody?.classList?.contains("newcommenthighlighter")) return acc;
         onelineBody?.classList?.add("newcommenthighlighter");
-        acc.push(curId);
+        // add each highlighted post to our accumulator to show the count later
+        acc.push({ [rootId]: curId });
         return acc;
       },
-      [lastId] as number[]
+      [] as Record<number, number>[]
     );
-
-    // update our "Comments ..." blurb at the top of the thread list
     let commentDisplay = document.getElementById("chatty_settings");
     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
     const commentsCount = commentDisplay?.textContent?.split(" ")[0];
     const newComments = commentsCount && `${commentsCount} Comments (${newerPostIds.length - 1} New)`;
     if (newComments) commentDisplay.textContent = newComments;
 
-    console.log(`highlightPostsAfter: ${lastId} -> ${newerPostIds}`);
-    const newestId = Math.max(...newerPostIds);
-    return newestId && newestId > -1 ? newestId : lastId;
+    const filtered = NewCommentHighlighter.filterKeysByNewest(newerPostIds);
+    const newestId = Math.max(...Object.values(filtered));
+    console.log(`highlightPostsAfter returned [${lastId} -> ${newestId}]: ${JSON.stringify(filtered)}`);
+    return filtered;
   },
 };
