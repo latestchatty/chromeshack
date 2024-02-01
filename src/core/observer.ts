@@ -24,9 +24,9 @@ export const ChromeShack = {
             const parent =
               elemMatches(mutated, "li[id^='item_']") ||
               (mutated?.closest && (mutated.closest("li[id^='item_'].sel.last") as HTMLElement));
-            const parentid = parseInt(parent?.id?.substr(5), 10);
+            const parentid = parseInt(parent?.id?.substring(5), 10);
             const root = parent?.closest && (parent.closest("div.root > ul > li") as HTMLElement);
-            const rootid = parseInt(root?.id?.substr(5), 10);
+            const rootid = parseInt(root?.id?.substring(5), 10);
             const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
             // track our reply mutation based on the root thread id (like a refresh)
             if (foundIdx === -1) ChromeShack.refreshing.unshift({ parentid, rootid });
@@ -35,7 +35,7 @@ export const ChromeShack = {
           // check for opening capped root posts
           if (mutation.type === "attributes" && mutation.oldValue?.indexOf("capped") > -1) {
             const root = mutation.target as HTMLElement;
-            const rootid = root != undefined ? parseInt(root.id?.substr(5), 10) : -1;
+            const rootid = root != undefined ? parseInt(root.id?.substring(5), 10) : -1;
             processUncapThread({ root, rootid });
           }
 
@@ -47,7 +47,7 @@ export const ChromeShack = {
             const addedThread = elemMatches(target as HTMLElement, "div.threads") && elemMatches(added, "div.root");
             if (addedThread) {
               // check for a thread replacement (refresh or reply)
-              const rootid = parseInt(addedThread?.id?.substr(5), 10);
+              const rootid = parseInt(addedThread?.id?.substring(5), 10);
               const foundMutation = ChromeShack.refreshing.find((r) => r.rootid === rootid);
               if (foundMutation) handleRootAdded(foundMutation);
             }
