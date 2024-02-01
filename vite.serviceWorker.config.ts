@@ -1,12 +1,10 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
-import preact from "@preact/preset-vite";
 
 const devMode = process.env.NODE_ENV === "development";
 const watcherOpts = devMode ? {} : undefined;
 
 export default defineConfig({
-  plugins: [preact()],
   build: {
     emptyOutDir: false,
     outDir: "dist-firefox",
@@ -27,7 +25,14 @@ export default defineConfig({
   },
   server: {
     watch: {
-      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+      ignored: [
+        "**/node_modules/**",
+        "**/tests/**",
+        "**/dist/**",
+        "**/dist-firefox/**",
+        "**/playwright-report/**",
+        "**/test-results/**",
+      ],
     },
   },
 });

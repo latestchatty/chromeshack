@@ -5,6 +5,7 @@ const devMode = process.env.NODE_ENV === "development";
 const watcherOpts = devMode ? {} : undefined;
 
 export default defineConfig({
+  define: { "process.env": "{}" },
   plugins: [preact()],
   build: {
     emptyOutDir: false,
@@ -19,7 +20,14 @@ export default defineConfig({
   },
   server: {
     watch: {
-      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+      ignored: [
+        "**/node_modules/**",
+        "**/tests/**",
+        "**/dist/**",
+        "**/dist-firefox/**",
+        "**/playwright-report/**",
+        "**/test-results/**",
+      ],
     },
   },
 });

@@ -86,7 +86,14 @@ export default defineConfig({
       port: 5173,
     },
     watch: {
-      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+      ignored: [
+        "**/node_modules/**",
+        "**/tests/**",
+        "**/dist/**",
+        "**/dist-firefox/**",
+        "**/playwright-report/**",
+        "**/test-results/**",
+      ],
     },
   },
 });

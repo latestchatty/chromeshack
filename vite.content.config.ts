@@ -8,17 +8,18 @@ const watcherOpts = devMode ? {} : undefined;
 
 function copyManifestPlugin() {
   return {
-    name: 'copy-manifest',
+    name: "copy-manifest",
     generateBundle(outputOptions, bundle) {
       // Copy manifest.json to dist directory
-      fs.copyFile('src/manifestv3.ffx.json', 'dist-firefox/manifest.json')
-        .then(() => console.log('manifest.json copied to dist-firefox/'))
-        .catch(err => console.error('Error copying manifest.json:', err));
+      fs.copyFile("src/manifestv3.ffx.json", "dist-firefox/manifest.json")
+        .then(() => console.log("manifest.json copied to dist-firefox/"))
+        .catch((err) => console.error("Error copying manifest.json:", err));
     },
   };
 }
 
 export default defineConfig({
+  define: { "process.env": "{}" },
   plugins: [preact(), copyManifestPlugin()],
   build: {
     emptyOutDir: false,
@@ -40,7 +41,14 @@ export default defineConfig({
   },
   server: {
     watch: {
-      ignored: ["**/node_modules/**", "**/tests/**","**/dist/**", "**/dist-firefox/**", "**/playwright-report/**", "**/test-results/**"],
+      ignored: [
+        "**/node_modules/**",
+        "**/tests/**",
+        "**/dist/**",
+        "**/dist-firefox/**",
+        "**/playwright-report/**",
+        "**/test-results/**",
+      ],
     },
   },
 });
