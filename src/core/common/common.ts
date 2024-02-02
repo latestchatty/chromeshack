@@ -78,20 +78,30 @@ export const packValidTypes = (types: string, fileList: File[] | FileList) => {
 };
 
 export const compressString = (input: string) => {
-  try {
-    return compressToUTF16(input);
-  } catch (e) {
-    console.error("Something went wrong when compressing:", e);
-    return "";
+  const hdr = "UTF16C_";
+  if (!input.startsWith(hdr) && input.length) {
+    try {
+      const dataBody = compressToUTF16(input);
+      return hdr + dataBody;
+    } catch (e) {
+      console.error("Something went wrong when compressing:", e, input);
+      return null;
+    }
   }
+  return "";
 };
 export const decompressString = (input: string) => {
-  try {
-    return decompressFromUTF16(input);
-  } catch (e) {
-    console.error("Something went wrong when decompressing:", e, input);
-    return "";
+  const hdr = "UTF16C_";
+  if (input.startsWith(hdr)) {
+    try {
+      const dataBody = input.substring(hdr.length);
+      return decompressFromUTF16(dataBody);
+    } catch (e) {
+      console.error("Something went wrong when decompressing:", e, input);
+      return null;
+    }
   }
+  return null;
 };
 
 export const timeOverThresh = (timestamp: number, threshold: number) => {

@@ -19,7 +19,7 @@ const DefaultSettings: Settings = {
 
   notifications: [],
 
-  saved_drafts: [],
+  saved_drafts: {},
   saved_templates: [],
 
   tags_legend_toggled: false,

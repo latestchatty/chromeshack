@@ -33,3 +33,4 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated
 - [html-react-parser](https://github.com/remarkablemark/html-react-parser)
 - [js-xss](https://github.com/leizongmin/js-xss)
 - [zustand](https://github.com/pmndrs/zustand)
+- [lodash](https://github.com/lodash/lodash)
