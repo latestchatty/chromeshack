@@ -24,7 +24,7 @@ const PostPreviewPane = memo((props: { target: HTMLElement; toggled: boolean; in
     <div id="previewArea" className={classNames({ hidden: !toggled })}>
       {parse(input, { replace: (node: Element) => modifySpoiler(node) })}
     </div>,
-    target,
+    target
   );
 });
 

@@ -20,8 +20,7 @@ const TemplateItem = memo((props: { idx: number; body: string; onClick: any }) =
       <span
         className={classNames({ disabled: isDefaultArr || !hasBody })}
         title={hasBody ? `${body}` : ""}
-        onClick={onClick}
-      >
+        onClick={onClick}>
         {hasBody && idx > -1 ? `${body}` : `Template #${idx + 1}`}
       </span>
       <button id="save__btn" className="template__btn" title="Save to this template slot" onClick={onClick}>
@@ -32,8 +31,7 @@ const TemplateItem = memo((props: { idx: number; body: string; onClick: any }) =
         className="template__btn"
         title={hasBody ? "Remove from this template slot" : ""}
         onClick={onClick}
-        disabled={isDefaultArr}
-      >
+        disabled={isDefaultArr}>
         <DelIcon />
       </button>
       <button
@@ -41,8 +39,7 @@ const TemplateItem = memo((props: { idx: number; body: string; onClick: any }) =
         className="template__btn"
         title={hasBody ? "Add as a new template slot" : ""}
         onClick={onClick}
-        disabled={isDefaultArr || !hasBody}
-      >
+        disabled={isDefaultArr || !hasBody}>
         <AddIcon />
       </button>
     </div>
@@ -84,8 +81,10 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
       e.preventDefault();
       setPopupVisible(!popupVisible);
     },
-    [popupVisible],
+    [popupVisible]
   );
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional generic capture"
   const handlePopupClick = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e.preventDefault();
@@ -111,14 +110,14 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
             let _t = t;
             if (i === _idx) _t = _val;
             return _t;
-          }),
+          })
         );
       else if (_btn?.matches("#save__btn") && !arrHas(templates)) setTemplates([_val]);
       else if (_btn?.matches("#del__btn"))
         setTemplates(templates.length > 1 ? templates.filter((_, i) => i !== _idx) : [""]);
       else if (_btn?.matches("#add__btn") && _hasBody) setTemplates([...templates, _val]);
     },
-    [inputBox, templates],
+    [inputBox, templates]
   );
 
   useEffect(() => {

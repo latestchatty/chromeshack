@@ -73,7 +73,7 @@ declare global {
     new_comment_highlighter_last_id: number;
     notifications: string[];
     post_preview_toggled: boolean;
-    saved_drafts: Record<number, string>;
+    saved_drafts: Record<number, Draft>;
     saved_templates: string[];
     selected_upload_tab: string;
     selected_popup_tab: number;

@@ -2,6 +2,8 @@ import { enabledContains } from "../core/settings";
 
 export const PostStyling = {
   async install() {
+    if (!document?.body?.className) return;
+
     const alterations: string[] = [];
     if (await enabledContains(["hide_tagging_buttons"])) alterations.push("hide_tagging_buttons");
 

@@ -44,8 +44,7 @@ const Tabs = memo((props: { children?: JSX.Element[]; isLoaded: boolean }) => {
               onClick={() => {
                 setActiveTabIdx(i);
                 storeActiveTab(i);
-              }}
-            >
+              }}>
               {c.props.title}
             </button>
           );

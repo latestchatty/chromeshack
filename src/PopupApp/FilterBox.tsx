@@ -86,8 +86,7 @@ const FilterBox = memo(
           onChange={handleSelectChange}
           onClick={handleSelectClick}
           onKeyUp={handleDelOnSelect}
-          multiple={true}
-        >
+          multiple={true}>
           {optionVals?.map((o, i) => {
             const innerText = o.replace(/[\s]+/gm, "&nbsp;");
             // force options to show trailing spaces if present in state
@@ -113,7 +112,7 @@ const FilterBox = memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 export { FilterBox };

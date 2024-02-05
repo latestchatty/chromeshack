@@ -41,7 +41,7 @@ const HighlightFilters = memo((props: { username: string }) => {
       for (const [i, group] of highlightGroups.entries() || []) {
         const groupContainsUser = await highlightGroupContains(group.name, username);
         _children.push(
-          <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />,
+          <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />
         );
       }
       if (arrHas(_children)) setChildren(_children);

@@ -1,8 +1,20 @@
 :root {
-  --font-family: arial, helvetica, clean, sans-serif;
+  --font-family: sans-serif;
   --font-size: 13px;
   --border-color: rgb(86, 86, 86);
   --border-style: 1px solid var(--border-color);
+  --background-color-light: #ffffff;
+  --text-color-light: #000000;
+  --background-color-dark: #23222b;
+  --tab-btn-color-light: rgb(110, 110, 110);
+  --tab-bg-color-dark: var(--background-color-dark);
+  --hdr-bg-color-light: linear-gradient(to right, #f0f7f9, #ffffff);
+  --hdr-bg-color-dark: linear-gradient(to right, #3a3944, var(--background-color-dark));
+  --btn-active-color-dark: #5a5a5a;
+  --info-color-light: #808080;
+  --info-color-dark: #bbbbbb;
+  --border-color-dark: #999999;
+  --text-color-dark: #ffffff;
 }
 
 body {
@@ -13,10 +25,13 @@ body {
   font-family: var(--font-family);
   font-size: var(--font-size);
   overflow-x: hidden;
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
 }
+
 h2 {
   width: 100%;
-  background-color: #f0f7f9;
+  background-image: var(--hdr-bg-color-light);
   font-size: 14pt;
   padding: 2px;
 }
@@ -61,17 +76,17 @@ div.tabs > button.tab__btn {
   flex: 1;
   display: block;
   margin: 0 0 0.25em 0;
-  background-color: transparent;
   outline: none;
   font-size: 14px !important;
-  color: rgb(110, 110, 110);
+  color: var(--tab-btn-color-light);
+  background: transparent;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
   border: var(--border-style) var(--border-style) 0 var(--border-style);
   font-weight: normal;
 }
 button.tab__btn.active {
-  color: black !important;
+  color: var(--text-color-light) !important;
   font-weight: bold !important;
 }
 div.tab-indicator__container {
@@ -79,7 +94,7 @@ div.tab-indicator__container {
 }
 div.tab-indicator {
   height: 3px;
-  background: black;
+  background: var(--text-color-light);
   transition: transform 0.2s;
 }
 div.tabs-body {
@@ -189,7 +204,7 @@ div#video_loader_settings {
 
 p.info {
   font-style: italic;
-  color: #808080;
+  color: var(--info-color-light);
 }
 p.indent {
   margin-left: 25px;
@@ -242,4 +257,53 @@ div.filter_box > p {
 
 #match_notifications_select_box {
   height: 333px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+  }
+  button,
+  textarea,
+  select,
+  input[type="text"],
+  input[type="checkbox"] {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+    border: 1px solid var(--border-color-dark);
+  }
+  textarea,
+  input[type="text"] {
+    caret-color: var(--text-color-dark);
+  }
+  button {
+    border-radius: 2px;
+  }
+  button:active {
+    background-color: var(--btn-active-color-dark);
+  }
+  h2 {
+    background-image: var(--hdr-bg-color-dark);
+  }
+  select option:checked {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+    border: 1px dotted var(--border-color-dark);
+  }
+  select option:active {
+    background-color: transparent;
+  }
+  button.tab__btn {
+    color: var(--text-color-dark);
+  }
+  button.tab__btn.active {
+    color: var(--text-color-dark) !important;
+  }
+  div.tab-indicator {
+    background: var(--text-color-dark);
+  }
+  p.info {
+    color: var(--info-color-dark);
+  }
 }

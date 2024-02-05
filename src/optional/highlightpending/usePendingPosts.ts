@@ -19,6 +19,7 @@ const usePendingPosts = (threaded: boolean) => {
   const [count, setCount] = useState(0);
   const indicator = "★ ";
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handlePrevClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx - 1 + pendings.length) % pendings.length;
@@ -30,6 +31,8 @@ const usePendingPosts = (threaded: boolean) => {
       hpnpJumpToPostEvent.raise({ threadid });
     }
   }, [pendings, pendingIdx]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handleNextClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx + 1 + pendings.length) % pendings.length;
@@ -64,19 +67,16 @@ const usePendingPosts = (threaded: boolean) => {
         : [];
       // build new pendings on top of old ones as long as they're unique threads
       const loggedUser = (await getSetting("username")) as string;
-      const reducedPosts = newPosts.reduce(
-        (acc, p) => {
-          const eventData = p.eventData as NewPostData;
-          const postId = eventData?.postId;
-          const threadId = eventData?.post?.threadId;
-          const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
-          const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
-          // don't grab new posts that contain our logged-in user as the author
-          if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
-          return acc;
-        },
-        [] as PendingPost[]
-      );
+      const reducedPosts = newPosts.reduce((acc, p) => {
+        const eventData = p.eventData as NewPostData;
+        const postId = eventData?.postId;
+        const threadId = eventData?.post?.threadId;
+        const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
+        const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
+        // don't grab new posts that contain our logged-in user as the author
+        if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
+        return acc;
+      }, [] as PendingPost[]);
       const reducedPendings = reducedPosts.reduce((acc, p) => {
         const found = acc.find((x) => x.threadId === p.threadId);
         if (!found) acc.push(p);

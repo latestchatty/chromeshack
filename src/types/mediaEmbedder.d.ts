@@ -21,6 +21,7 @@ declare global {
 
   interface IframeOptionsProps {
     openByDefault?: boolean;
+    isShort?: boolean;
   }
 
   interface ImageOptionsProps {

@@ -11,7 +11,7 @@ function chat_onkeypress(b) {
   const _postid = _url?.split("item_")[1];
   const _item = _postid && document.querySelector(`li#item_${_postid}`);
   const _root = _item?.closest("div.root");
-  const _rootid = _root && parseInt(_root.id.substr(5), 10);
+  const _rootid = _root && parseInt(_root.id.substring(5), 10);
   if (first_load && _rootid && _postid) clickItem(_rootid, _postid);
 
   const is_valid_target = sLastClickedItem !== -1 && sLastClickedRoot !== -1 && check_event_target(b);

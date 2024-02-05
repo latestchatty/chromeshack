@@ -335,6 +335,15 @@ export const migrateSettings = async () => {
     console.log("merged highlight groups:", mutatedGroups);
     migrated = true;
   }
+  if (last_version < 1.75) {
+    // reset NewCommentHighlighter settings
+    await setSetting("new_comment_highlighter_last_id", JSON.stringify({}));
+    await setSetting("last_highlight_time", -1);
+    // reset saved drafts and templates
+    await setSetting("saved_drafts", {});
+    await setSetting("saved_templates", []);
+    migrated = true;
+  }
 
   // pull the latest version data after the migration
   current_version = getManifestVersion();

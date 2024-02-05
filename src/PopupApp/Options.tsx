@@ -16,7 +16,7 @@ const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions;
   useEffect(() => {
     const _options = state[key] as string[];
     setOptions(_options);
-  }, [state, key]);
+  }, [state, key, state[key]]);
   return { isChecked, setChecked };
 };
 
@@ -44,7 +44,7 @@ const OptionButton = memo(
         </button>
       </div>
     );
-  },
+  }
 );
 
 const Suboption = memo(
@@ -70,7 +70,7 @@ const Suboption = memo(
         {children}
       </div>
     );
-  },
+  }
 );
 
 const Option = memo(
@@ -103,9 +103,10 @@ const Option = memo(
         {children}
       </div>
     );
-  },
+  }
 );
 
+// Warning: OptionGroup is sensitive to memo() use!
 const OptionGroup = (props: {
   label: string;
   id?: EnabledOptions | EnabledSuboptions;

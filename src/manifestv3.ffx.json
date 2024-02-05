@@ -21,6 +21,9 @@
     "default_title": "Chrome Shack",
     "default_popup": "src/popup.html"
   },
+  "options_ui": {
+    "page": "src/permissions.html"
+  },
   "background": {
     "scripts": ["background.global.js"]
   },
@@ -33,11 +36,10 @@
       "css": ["style.css"],
       "all_frames": false,
       "run_at": "document_end",
-      "matches": ["https://www.shacknews.com/chatty*", "https://www.shacknews.com/tags-*"]
+      "matches": ["https://www.shacknews.com/chatty*"]
     }
   ],
   "permissions": ["tabs", "storage", "scripting", "notifications", "alarms"],
-  "host_permissions": ["https://api.imgur.com/3/*", "https://winchatty.com/v2/*", "https://www.shacknews.com/chatty*"],
   "web_accessible_resources": [
     {
       "matches": ["*://*/*"],

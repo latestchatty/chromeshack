@@ -78,28 +78,36 @@ export const packValidTypes = (types: string, fileList: File[] | FileList) => {
 };
 
 export const compressString = (input: string) => {
-  try {
-    return compressToUTF16(input);
-  } catch (e) {
-    console.error("Something went wrong when compressing:", e);
-    return "";
+  const hdr = "UTF16C_";
+  if (!input.startsWith(hdr) && input.length) {
+    try {
+      const dataBody = compressToUTF16(input);
+      return hdr + dataBody;
+    } catch (e) {
+      console.error("Something went wrong when compressing:", e, input);
+      return null;
+    }
   }
+  return "";
 };
 export const decompressString = (input: string) => {
-  try {
-    return decompressFromUTF16(input);
-  } catch (e) {
-    console.error("Something went wrong when decompressing:", e, input);
-    return "";
+  const hdr = "UTF16C_";
+  if (input.startsWith(hdr)) {
+    try {
+      const dataBody = input.substring(hdr.length);
+      return decompressFromUTF16(dataBody);
+    } catch (e) {
+      console.error("Something went wrong when decompressing:", e, input);
+      return null;
+    }
   }
+  return null;
 };
 
 export const timeOverThresh = (timestamp: number, threshold: number) => {
-  // returns the current time if over a given threshold (in miliseconds)
   const now = Date.now();
-  const diffTime = Math.abs(now - timestamp);
-  if (diffTime > threshold) return now;
-  return false;
+  const elapsed = timestamp > -1 ? Math.abs(now - timestamp) : 0;
+  return elapsed > threshold;
 };
 
 export const getCurrentTabId = async () => {
@@ -109,6 +117,6 @@ export const getCurrentTabId = async () => {
 };
 
 export const isFirefox = () => {
-  // @ts-expect-error InstallTrigger will be deprecated soon
-  return typeof InstallTrigger !== "undefined";
+  const userAgent = navigator.userAgent;
+  return userAgent.includes("Firefox");
 };

@@ -15,10 +15,18 @@ const loadComponent = (opts: URLProps) => {
   options = { ...options, clickTogglesVisible: type === "image" };
   // special case: normalize gifv to mp4 (imgur directmedia match)
   if (type === "video" && src && /imgur/.test(src)) src = src.replace(".gifv", ".mp4");
+
   // feed 'src' into an embeddable common media component depending on link type
-  if (type === "image") return <Image key={key || src} src={src} options={options} />;
-  else if (type === "video") return <FlexVideo key={key || src} src={src} {...options} />;
-  else if (type === "iframe") return <Iframe key={key || src} src={src} options={options} />;
+  if (type === "image") {
+    return <Image key={key || src} src={src} options={options} />;
+  } else if (type === "video") {
+    return <FlexVideo key={key || src} src={src} {...options} />;
+  } else if (type === "iframe") {
+    return <Iframe key={key || src} src={src} options={options} />;
+  } else if (type === "iframe-short") {
+    return <Iframe key={key || src} src={src} options={{ ...options, isShort: true }} />;
+  }
+
   return null;
 };
 

@@ -17,31 +17,73 @@ test("Shacktags legend interactions", async ({ page, context }) => {
   await expect(table).toBeVisible();
 });
 
-test("Drafts - input and persistence", async ({ page, context }) => {
-  await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
+test.describe("Drafts", () => {
+  const msg = "Aliquam purus sit amet luctus venenatis lectus magna fringilla urna.";
 
-  const replyBtn = page.locator("li li.sel div.reply>a");
-  await replyBtn.click();
-  const draftsDot = page.locator("li li.sel div.drafts__dot");
-  await expect(draftsDot).toBeVisible();
+  test("mounting and serialization", async ({ page, context }) => {
+    await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
 
-  // confirms DraftsApp can serialize and deserialize a draft
-  const msg =
-    "Aliquam purus sit amet luctus venenatis lectus magna fringilla urna. Fames ac turpis egestas maecenas pharetra convallis posuere morbi leo. Nunc mi ipsum faucibus vitae aliquet nec ullamcorper sit amet. 👍🏼";
-  const replyInput = page.locator("li li.sel textarea#frm_body");
-  await replyInput.fill(msg);
-  await expect(replyInput).toHaveValue(msg);
-  await expect(draftsDot).toHaveClass(/valid/);
-  await page.waitForTimeout(1000);
-  await page.locator("li li.sel div.closeform>a").click();
-  await replyBtn.click();
-  await expect(replyInput).toHaveValue(msg);
-  await expect(draftsDot).toHaveClass(/valid/);
-  // test that it works through a page reload
-  await page.reload();
-  await replyBtn.click();
-  await expect(replyInput).toHaveValue(msg);
-  await expect(draftsDot).toHaveClass(/valid/);
+    const replyBtn = page.locator("li li.sel div.reply>a");
+    await replyBtn.click();
+    const draftsDot = page.locator("li li.sel div.drafts__dot");
+    await expect(draftsDot).toBeVisible();
+
+    // confirms DraftsApp can serialize and deserialize a draft
+    const replyInput = page.locator("li li.sel textarea#frm_body");
+    await replyInput.fill(msg);
+    await expect(replyInput).toHaveValue(msg);
+    await expect(draftsDot).toHaveClass(/valid/);
+    await page.waitForTimeout(1000);
+    await page.locator("li li.sel div.closeform>a").click();
+    await replyBtn.click();
+    await expect(replyInput).toHaveValue(msg);
+    await expect(draftsDot).toHaveClass(/valid/);
+    // test that it works through a page reload
+    await page.reload();
+    await replyBtn.click();
+    await expect(replyInput).toHaveValue(msg);
+    await expect(draftsDot).toHaveClass(/valid/);
+  });
+
+  test("survives post navigation", async ({ page, context }) => {
+    await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
+
+    const postA = page.locator("li[id='item_38731437'] span.oneline_body").nth(0);
+    const postB = page.locator("li[id='item_38823880'] span.oneline_body").nth(0);
+    const replyBtn = page.locator("li li.sel div.reply>a");
+    const replyInput = page.locator("li li.sel textarea#frm_body");
+    const draftsDot = page.locator("li li.sel div.drafts__dot");
+    const otherMsg = "some other text";
+
+    const verifyPost = async (m: string) => {
+      await replyBtn.click();
+      await expect(replyInput).toHaveValue(m);
+      await expect(draftsDot).toHaveClass(/valid/);
+      await replyBtn.click();
+    };
+    const fillPost = async (m: string) => {
+      await replyBtn.click();
+      await expect(draftsDot).toBeVisible();
+      await replyInput.fill(m);
+      await expect(replyInput).toHaveValue(m);
+      await expect(draftsDot).toHaveClass(/valid/);
+      await page.waitForTimeout(1000);
+      await replyBtn.click();
+    };
+
+    await fillPost(msg);
+
+    await postB.click();
+    // could be flakey waiting for the page to load
+    await page.waitForTimeout(1000);
+    await fillPost(otherMsg);
+
+    await postA.click();
+    await verifyPost(msg);
+
+    await postB.click();
+    await verifyPost(otherMsg);
+  });
 });
 
 test("Templates - input and persistence", async ({ page, context }) => {

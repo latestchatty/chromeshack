@@ -114,15 +114,113 @@ test("HighlightUser highlighting", async ({ page }) => {
   }
 });
 
-test("NewCommentHighlighter highlighting", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40106135#item_40106135", {
-    o: { append: true },
-    d: { new_comment_highlighter_last_id: 40107615 },
-  });
+test.describe("NewCommentHighlighter", () => {
+  const url = "https://www.shacknews.com/chatty?id=42269502#item_42269502";
 
-  const highlights = page.locator(".newcommenthighlighter");
-  await highlights.waitFor({ state: "attached" });
-  expect(await highlights.count()).toBeGreaterThan(0);
+  test("basic highlighting with fresh state", async ({ page, context }) => {
+    // test with fresh state
+    await navigate(page, url, {}, context);
+    const highlights = page.locator(".newcommenthighlighter");
+    await expect(highlights).toHaveCount(0);
+
+    // check that nothing highlights when refreshing after a normal run
+    await page.reload();
+    await expect(highlights).toHaveCount(0);
+  });
+  test("normal execution", async ({ page, context }) => {
+    await navigate(
+      page,
+      url,
+      {
+        o: { append: true },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270595 } },
+      },
+      context
+    );
+    const highlights = page.locator(".newcommenthighlighter");
+    await expect(highlights).toHaveCount(1);
+
+    // make sure nothing highlights when root refresh button is clicked
+    const refreshBtn = page.locator("div.refresh > a").nth(0);
+    await refreshBtn.click();
+    await expect(highlights).toHaveCount(0);
+  });
+});
+test.describe("NewCommentHighlighter - time validated highlighting", () => {
+  const url = "https://www.shacknews.com/chatty?id=42269502#item_42269502";
+
+  test("fresh state", async ({ page, context }) => {
+    await navigate(
+      page,
+      url,
+      {
+        o: { append: true },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270597 }, last_highlight_time: Date.now() },
+      },
+      context
+    );
+    const highlights = page.locator(".newcommenthighlighter");
+    await expect(highlights).toHaveCount(0);
+  });
+  test("stale id with fresh time", async ({ page, context }) => {
+    await navigate(
+      page,
+      url,
+      {
+        o: { append: true },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270595 }, last_highlight_time: Date.now() },
+      },
+      context
+    );
+    const highlights = page.locator(".newcommenthighlighter");
+    await expect(highlights).toHaveCount(1);
+  });
+  test("stale id with stale time", async ({ page, context }) => {
+    // NCH minimum highlight stale time threshold is <=4 hours
+    const staleThresh = 1000 * 60 * 60 * 4 + 60000;
+    const staleTime = Date.now() + staleThresh;
+
+    await navigate(
+      page,
+      url,
+      {
+        o: { append: true },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270595 }, last_highlight_time: staleTime },
+      },
+      context
+    );
+    const highlights = page.locator(".newcommenthighlighter");
+    // should never highlight here unless we're refreshing via the root-refresh button
+    await expect(highlights).toHaveCount(0);
+  });
+  test("stale id with unset time case", async ({ page, context }) => {
+    await navigate(
+      page,
+      url,
+      {
+        o: { append: true },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270323 }, last_highlight_time: -1 },
+      },
+      context
+    );
+    const highlights = page.locator(".newcommenthighlighter");
+    await expect(highlights).toHaveCount(6);
+  });
+});
+
+test("ColorGauge - post load and refresh", async ({ page }) => {
+  await navigate(page, "https://www.shacknews.com/chatty?id=42278065#item_42278065");
+
+  const gauge = page.locator("div.guage");
+  const colorClass = gauge.locator("div.progress");
+  await expect(gauge).toHaveAttribute("title");
+  await expect(colorClass).toHaveClass(/gauge_/);
+
+  // test the refresh button event
+  const refreshBtn = page.locator("div.refresh > a").nth(0);
+  await refreshBtn.click();
+  await expect(gauge).toHaveAttribute("title");
+  await expect(colorClass).toHaveClass(/gauge_/);
 });
 
 test("scrollToPost disabled on Chatty", async ({ page }) => {

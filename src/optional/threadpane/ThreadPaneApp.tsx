@@ -20,8 +20,7 @@ const ThreadPaneReply = memo((props: { recent: ParsedReply; mostRecent?: boolean
     <div
       className={classNames("cs_thread_pane_reply", {
         reply_most_recent: mostRecent,
-      })}
-    >
+      })}>
       <div className={classNames("cs_thread_pane_reply_arrow", `${mod}`)}>↪</div>
       <div className="cs_thread_pane_reply_preview">{body}</div>
       <div className="cs_thread_pane_reply_divider">:</div>
@@ -64,8 +63,7 @@ const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
         collapsed,
       })}
       id={`item_${rootid.toString()}`}
-      onClick={handleCardClick}
-    >
+      onClick={handleCardClick}>
       <div className="cs_thread_pane_card_header">
         <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
         {contained && (

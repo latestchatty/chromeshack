@@ -118,7 +118,7 @@ export const generatePreview = (postText: string) => {
 
 export function scrollToElement(
   elem: JQuery<HTMLElement> | HTMLElement,
-  opts?: { offset?: number; smooth?: boolean; toFit?: boolean },
+  opts?: { offset?: number; smooth?: boolean; toFit?: boolean }
 ) {
   let _elem = elem;
   const { offset, smooth, toFit } = opts || {};

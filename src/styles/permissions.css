@@ -1,0 +1,45 @@
+:root {
+  --background-color-light: #ffffff;
+  --text-color-light: #000000;
+  --background-color-dark: #23222b;
+  --text-color-dark: #ffffff;
+}
+
+html {
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+body {
+  background-color: var(--background-color-light);
+  color: var(--text-color-light);
+  height: 250px;
+}
+
+body div.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div.header > h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+div.header img:first-child {
+  margin-right: 2.5rem;
+}
+div.header img:last-child {
+  margin-left: 2.5rem;
+}
+
+div.firstRun .hide {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+  }
+}

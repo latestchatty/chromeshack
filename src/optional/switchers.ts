@@ -33,21 +33,18 @@ export const Switchers = {
     if (is_enabled && Switchers.resolved.length === 0) {
       // resolve and cache all offenders on the page once on load
       const resolvedUsers = HighlightUsers.resolveUsers();
-      const resolved = Switchers.offenders.reduce(
-        (acc, offender) => {
-          const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
-          const matchedOld = user && offender.old.toLowerCase() === user.username.toLowerCase();
-          const matchedNew = user && offender.new.toLowerCase() === user.username.toLowerCase();
-          if (matchedOld || matchedNew)
-            acc.push({
-              id: user.id,
-              username: user.username,
-              matched: matchedNew ? offender.old : offender.new,
-            });
-          return acc;
-        },
-        [] as SwitcherMatch[]
-      );
+      const resolved = Switchers.offenders.reduce((acc, offender) => {
+        const user = resolvedUsers[offender.new]?.[0] || resolvedUsers[offender.old]?.[0];
+        const matchedOld = user && offender.old.toLowerCase() === user.username.toLowerCase();
+        const matchedNew = user && offender.new.toLowerCase() === user.username.toLowerCase();
+        if (matchedOld || matchedNew)
+          acc.push({
+            id: user.id,
+            username: user.username,
+            matched: matchedNew ? offender.old : offender.new,
+          });
+        return acc;
+      }, [] as SwitcherMatch[]);
       Switchers.resolved = resolved;
       return resolved;
     }

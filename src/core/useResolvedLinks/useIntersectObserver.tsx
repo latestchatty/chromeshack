@@ -26,7 +26,7 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
     if (observedElem) _observer.observe(observedElem);
     // make sure we clean up after ourselves
     return () => _observer.disconnect();
-  }, [config, configOpts, observedElem, root, threshold]);
+  }, [configOpts, observedElem, root, threshold]);
   // expose an element setter and our boolean visibility state
   return { observedElem, setObservedElem, isVisible };
 };

@@ -1,4 +1,5 @@
 import { Collapse } from "./builtin/collapse";
+import { ColorGauge } from "./builtin/color_gauge";
 import { CommentTags } from "./builtin/comment_tags";
 import { EmojiPoster } from "./builtin/emoji_poster";
 import { ImageUploader } from "./builtin/image-uploader";
@@ -53,6 +54,7 @@ import "./styles/comic_scripts.css";
     PostPreview.install();
     Templates.install();
     UserPopup.install();
+    ColorGauge.install();
     // always make sure the ChromeShack observer is last
     ChromeShack.install();
   } catch (e) {
