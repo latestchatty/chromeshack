@@ -39,13 +39,14 @@ If you're interested in contributing a new content script or feature suggestion:
   - The WinChatty notifications' `processNotifyEvent` exposes the latest event message retrieved from the server (see: [WinChatty API](http://winchatty.com/v2/readme)).
 - Content scripts have to be registered in `content.ts`. Make sure to put event-dependent handlers **_before_** the `ChromeShack.install()` line.
 
-## Running integration tests
+## Running integration tests locally
 
-The E2E integration test suite requires a login cookie fixture in order to run all tests successfully. To setup the local testing environment do the following:
+The E2E integration test suite requires a valid Shacknews login cookie fixture loaded into the environment var `E2E_SHACKLI` in order to run all tests successfully. This variable can be loaded from a `.env` file placed in the project root or exported from your shell. To setup the local testing environment and generate the fixture from scratch do the following:
 
 - If you haven't already, make sure to do: `pnpm install`
+- **STRONGLY RECOMMENDED**: Use the included `test.sh` in the project root to leverage Docker/Podman for containerized testing!
 - Make sure you're running on a supported OS version, see [this doc](https://playwright.dev/docs/intro#system-requirements) for details. Typically Windows, MacOS, or an LTS version of Ubuntu are supported.
-- Verify that Cypress and Chrome are installed and can run: `pnpm exec playwright install --with-deps chromium`
+- Verify that Playwright and Chromium are installed with: `pnpm test:deps`
 - Put your test credentials in an `.env` file in the project root in the following format:
 
   ```text
@@ -53,8 +54,8 @@ The E2E integration test suite requires a login cookie fixture in order to run a
   TESTPW=password
   ```
 
-- Create the login cookie fixture: `pnpm generate-cookie`
-- Run the test suite (NOTE: this can take significant machine resources): `pnpm test`
+- Authenticate your credentials and create the login cookie fixture in `.env`: `pnpm testlogin`
+- Run the test suite (NOTE: this can take significant machine resources): `pnpm build && pnpm test` or `./test.sh` in the project root.
 
 ## Release procedure
 

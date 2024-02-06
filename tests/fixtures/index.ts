@@ -5,9 +5,6 @@ import path from "path";
 
 import { test as base, chromium, type BrowserContext, type Page } from "@playwright/test";
 
-// @ts-ignore
-import cookieFixture from "./_shack_li_.json" assert { type: "json" };
-
 export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) => {
   const _data = { enabled_suboptions: ["testing_mode"], ...data };
   const _opts = { defaults: true, ...opts };
@@ -20,17 +17,20 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
   );
 };
 export const setTestCookie = async (context: BrowserContext) => {
-  if (cookieFixture == null) return;
-  const shackli: any = Object.values(cookieFixture);
-
-  await context.addCookies([
-    {
-      name: "_shack_li_",
-      value: shackli[2]?._shack_li_ as string,
-      domain: ".shacknews.com",
-      path: "/",
-    },
-  ]);
+  // only load secure cookie from a trusted source
+  try {
+    const shackli = JSON.parse(process.env.E2E_SHACKLI) as any;
+    await context.addCookies([
+      {
+        name: "_shack_li_",
+        value: shackli[2]?._shack_li_ as string,
+        domain: ".shacknews.com",
+        path: "/",
+      },
+    ]);
+  } catch (e) {
+    console.error("Failed to parse the secure cookie from E2E_SHACKLI: ", e);
+  }
   return context;
 };
 export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: any }, context?: BrowserContext) => {
@@ -54,7 +54,7 @@ export const test = base.extend<{
     const pathToExtension = fs.existsSync(prodPath) ? prodPath : devPath;
     const context = await chromium.launchPersistentContext("", {
       headless: false,
-      args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`],
+      args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`, "--headless=new"],
     });
     await use(context);
     await context.close();
