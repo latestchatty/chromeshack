@@ -1,0 +1,19 @@
+# Pull the base image
+FROM mcr.microsoft.com/playwright:v1.41.1-jammy
+
+ARG SCOOKIE
+ARG CI
+
+ENV CI=$CI
+ENV E2E_SHACKLI=$SCOOKIE
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+WORKDIR /code/
+COPY . /code/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm test:deps && \
+  pnpm build
+
+CMD ["/bin/bash"]

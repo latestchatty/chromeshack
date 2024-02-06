@@ -17,9 +17,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 0 : 1,
   /* Opt out of parallel tests on CI */
-  workers: process.env.CI ? 1 : 2,
+  workers: process.env.CI ? 1 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["html"], ["list"]],
+  reporter: [
+    ["list", { printSteps: true, outputFolder: "results/reports" }],
+    ["html", { open: "never", outputFolder: "results/reports" }],
+  ],
+  outputDir: "results/tests",
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
@@ -28,6 +32,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
     video: "retain-on-failure",
+    headless: true,
   },
 
   /* Configure projects for major browsers */
