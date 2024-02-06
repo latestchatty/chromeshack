@@ -1,23 +1,24 @@
 name: Playwright Tests
 on:
   push:
-    branches: [master, testing]
-  pull_request:
-    branches: [master, testing]
+    branches: ["master", "testing"]
 
 jobs:
   playwright:
     name: "Playwright Tests"
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.41.1-jammy
+      # make sure to match this version to what's in package.json
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+      - uses: actions/setup-node@v4
         with:
           node-version: 21
-      - name: Install PNPM
-        run: corepack enable
+          cache: 'pnpm'
       - name: Install project dependencies
         run: pnpm install
       - name: Install test dependencies
