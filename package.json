@@ -1,6 +1,6 @@
 {
   "name": "chromeshack",
-  "version": "1.75.0",
+  "version": "1.76.0",
   "description": "Collection of scripts for Shacknews.",
   "repository": "https://github.com/latestchatty/chromeshack",
   "type": "module",
@@ -39,7 +39,7 @@
     "jquery": "^3.7.1",
     "lodash.isequal": "^4.5.0",
     "lz-string": "^1.5.0",
-    "preact": "^10.19.3",
+    "preact": "^10.19.4",
     "prop-types": "15.8.1",
     "text-field-edit": "^4.0.0",
     "ts-debounce": "^4.0.0",
@@ -56,8 +56,8 @@
     "@types/jquery": "^3.5.29",
     "@types/lodash.isequal": "^4.5.8",
     "@types/node": "^20.11.16",
-    "@types/react": "^18.2.54",
-    "@types/react-dom": "^18.2.18",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
     "adm-zip": "^0.5.10",
     "dotenv": "^16.4.1",
     "embla-carousel": "8.0.0-rc19",
@@ -67,6 +67,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.1.0"
   }
 }
