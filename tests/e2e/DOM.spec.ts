@@ -179,18 +179,18 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
     // NCH minimum highlight stale time threshold is <=4 hours
     const staleThresh = 1000 * 60 * 60 * 4 + 60000;
     const staleTime = Date.now() + staleThresh;
-
+    // this would normally highlight the whole thread
     await navigate(
       page,
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { "42269502": 42270595 }, last_highlight_time: staleTime },
+        d: { new_comment_highlighter_last_id: { "42269502": 42269502 }, last_highlight_time: staleTime },
       },
       context
     );
     const highlights = page.locator(".newcommenthighlighter");
-    // should never highlight here unless we're refreshing via the root-refresh button
+    // shouldn't highlight here due to stale time unless we're refreshing via the root-refresh button
     await expect(highlights).toHaveCount(0);
   });
   test("stale id with unset time case", async ({ page, context }) => {
