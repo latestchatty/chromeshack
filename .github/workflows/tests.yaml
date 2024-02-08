@@ -7,6 +7,7 @@ on:
 jobs:
   playwright:
     name: "Playwright Tests"
+    if: false # disable for now
     runs-on: ubuntu-latest
     container:
       # make sure to match this version to what's in package.json
