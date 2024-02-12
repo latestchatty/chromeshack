@@ -25,7 +25,7 @@ export const setSetting = async (key: SettingKey, val: any) => {
   // Check each time we set a key that the val will fit within the storage limit
   // ... if we don't do this then the settings store can become corrupted
   // ... causing data loss of some kv-pairs.
-  const maxSize = 5000000; // the limit is 5MiB for chrome.storage.local
+  const maxSize = 10000000; // the limit is 10MiB for chrome.storage.local
   const _settings = await getSettings();
   const _newVal = { [key]: val };
   const _withVal = { ..._settings, ..._newVal };
