@@ -1,9 +1,5 @@
-/*eslint no-control-regex: 0*/
-import jQuery from "jquery";
-import { parseToElement } from "../core/common/dom";
-import { processPostBoxEvent, submitFormEvent } from "../core/events";
-
-const $ = jQuery;
+import { elementIsVisible, parseToElement, scrollToElement } from "../core/common/dom";
+import { processPostBoxEvent, processReplyEvent, submitFormEvent } from "../core/events";
 
 /*
  * Encodes string Astrals (Emoji's) into prefixed HTML entities to
@@ -37,7 +33,7 @@ export const EmojiPoster = {
       _clonedPostBtn?.setAttribute("cloned", "");
       _postBtn?.parentNode?.replaceChild(_clonedPostBtn, _postBtn);
 
-      const handleSubmit = (e: MouseEvent | Event) => {
+      const handleSubmitWrapper = (e: MouseEvent | Event) => {
         const this_elem = e.target as HTMLElement;
         const isSubmit = this_elem?.matches("#frm_submit");
         const _postBox = document.getElementById("frm_body") as HTMLInputElement;
@@ -48,11 +44,11 @@ export const EmojiPoster = {
           submitFormEvent.raise(e);
           _postBox.value = EmojiPoster.handleEncoding(_postBox.value);
           const result = EmojiPoster.handleSubmit(_postBox.value);
-          if (!result) document.removeEventListener("click", handleSubmit);
+          if (!result) document.removeEventListener("click", handleSubmitWrapper);
         }
       };
-      document.removeEventListener("click", handleSubmit);
-      document.addEventListener("click", handleSubmit);
+      document.removeEventListener("click", handleSubmitWrapper);
+      document.addEventListener("click", handleSubmitWrapper);
 
       // educate the user on how to open the OS' Emoji Picker
       const _rulesParent = postbox?.querySelector("p.rules") as HTMLElement;
@@ -62,17 +58,32 @@ export const EmojiPoster = {
     }
   },
 
+  handleReplyAdded(args: PostEventArgs) {
+    const { post } = args || {};
+    if (!post) return;
+    // scroll to the new reply similar to what the Chatty normally does
+    scrollToElement(post);
+    // cleanup after ourselves
+    processReplyEvent.removeHandler(EmojiPoster.handleReplyAdded);
+  },
+
   handleSubmit(postText: string) {
-    const $submitBtn = $("#frm_submit");
+    const submitBtn = document.getElementById("frm_submit");
+    const postForm = document.getElementById("postform") as HTMLFormElement;
+    if (!submitBtn || !postForm) return;
+
     if (EmojiPoster.countText(postText) > 5 || EmojiPoster.countAstrals(postText).astralsCount > 0) {
-      // normal post (either a single astral or some text)
-      $submitBtn.attr("disabled", "disabled").css("color", "#E9E9DE");
-      $("#postform").submit();
-      $("body").trigger("chatty-new-post-reply", [$submitBtn.closest("div.root > ul > li").first().attr("id")]);
+      // Disable the submit button and change its color
+      submitBtn.setAttribute("disabled", "true");
+      submitBtn.style.color = "#E9E9DE";
+      // catch the reply-added mutation
+      processReplyEvent.addHandler(EmojiPoster.handleReplyAdded);
+      postForm.submit();
       return false;
     }
-    // the server doesn't know that an astral is a single character
-    return alert("Please post something at least 5 characters long.");
+
+    alert("Please post something at least 5 characters long.");
+    return true;
   },
 
   handleEncoding(text: string) {

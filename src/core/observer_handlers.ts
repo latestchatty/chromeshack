@@ -106,14 +106,16 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
   const { postid, rootid, parentid } = mutation || {};
   const root = document.querySelector(`li#item_${rootid}`);
   const post = document.querySelector(`li#item_${postid || parentid}`);
-  const reply = parentid && post?.querySelector("li.sel.last");
+  const reply = parentid && post?.querySelector("li.sel");
   const raisedArgs = {
     post: reply || post,
     postid: parentid || postid,
     root,
     rootid,
   } as PostEventArgs;
-  if (reply && root && !(await getEnabled("hide_tagging_buttons"))) processReplyEvent.raise(raisedArgs, mutation);
+
+  if (reply && root) return processReplyEvent.raise(raisedArgs, mutation);
+
   if (post && root)
     await handleTagsEvent(raisedArgs)
       .then((neArgs) => handlePostRefresh(neArgs, mutation))
