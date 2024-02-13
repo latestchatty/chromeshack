@@ -1,7 +1,7 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
   "files": {
-    "ignore": ["node_modules", "dist", "dist-firefox"]
+    "ignore": ["node_modules", "dist", "dist-firefox", "results"]
   },
   "organizeImports": {
     "enabled": true
