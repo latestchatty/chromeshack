@@ -1,4 +1,3 @@
-import { importSettings } from "../PopupApp/helpers";
 import { arrHas, objEmpty, objHas } from "./common/common";
 import { superTrim } from "./common/dom";
 import { DefaultSettings } from "./default_settings";
