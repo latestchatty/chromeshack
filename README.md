@@ -24,7 +24,6 @@ NOTE: See the `ThirdPartyLicenses.txt` in the `public/` folder that is generated
 
 - [Preact](https://github.com/preactjs/preact)
 - [Embla](https://github.com/davidcetinkaya/embla-carousel)
-- [jQuery](https://github.com/jquery/jquery)
 - [DOMPurify](https://github.com/cure53/DOMPurify)
 - [ts-debounce](https://github.com/chodorowicz/ts-debounce)
 - [react-fontawesome](https://github.com/FortAwesome/react-fontawesome)
