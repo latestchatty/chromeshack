@@ -197,6 +197,7 @@ const PopupApp = memo(() => {
             label="Enhanced scroll-to-post behavior"
             descriptions={[
               "Enables more aggressive scroll-to-post behavior than the mostly broken functionality on the default Chatty.",
+              "WARNING: Use this setting with caution, can cause unpredictable behavior!",
             ]}
           />
         </OptionGroup>
