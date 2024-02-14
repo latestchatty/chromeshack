@@ -9,6 +9,20 @@ declare global {
     users?: string[];
   }
 
+  export type EnabledBuiltinOptions =
+    | "scroll_behavior"
+    | "az_scroll_fix"
+    | "single_thread_fix"
+    | "uncapped_thread_fix"
+    | "image_uploader"
+    | "user_popup"
+    | "collapse"
+    | "color_gauge"
+    | "comment_tags"
+    | "emoji_poster"
+    | "local_timestamp"
+    | "mod_banners"
+    | "post_length_counter";
   export type EnabledOptions =
     | "auto_open_embeds"
     | "chatty_news"
@@ -41,6 +55,7 @@ declare global {
 
   export type SettingKey =
     | "enabled_scripts"
+    | "enabled_builtins"
     | "enabled_suboptions"
     | "collapsed_threads"
     | "chatty_news_lastfetchdata"
@@ -62,6 +77,7 @@ declare global {
     | "version";
   export interface SettingsDict {
     enabled_scripts: EnabledOptions[];
+    enabled_builtins: EnabledBuiltinOptions[];
     enabled_suboptions: EnabledSuboptions[];
     collapsed_threads: CollapsedThread[];
     chatty_news_lastfetchdata: ShackRSSItem[];
@@ -84,7 +100,7 @@ declare global {
   }
   type MigrateVal = {
     old: string;
-    new: SettingKey | EnabledOptions | EnabledSuboptions;
+    new: SettingKey | EnabledOptions | EnabledBuiltinOptions | EnabledSuboptions;
   };
   export type MigratedSettings = Record<string, MigrateVal[] | null>;
   export type Settings = Partial<SettingsDict>;

@@ -8,13 +8,15 @@ import { getRandomInt, randomHsl } from "./helpers";
 export const getState = async () => {
   // pull state from local settings store into reducer schema
   const _settings = (await getSettings()) as Settings;
-  const options = _settings.enabled_scripts ? _settings.enabled_scripts : [];
-  const suboptions = _settings.enabled_suboptions ? _settings.enabled_suboptions : [];
-  const notifications = _settings.notifications ? _settings.notifications : [];
-  const filters = _settings.user_filters ? _settings.user_filters : [];
-  const highlightgroups = _settings.highlight_groups ? _settings.highlight_groups : [];
+  const options = _settings.enabled_scripts || [];
+  const builtins = _settings.enabled_builtins || [];
+  const suboptions = _settings.enabled_suboptions || [];
+  const notifications = _settings.notifications || [];
+  const filters = _settings.user_filters || [];
+  const highlightgroups = _settings.highlight_groups || [];
   return {
     options,
+    builtins,
     suboptions,
     notifications,
     filters,
@@ -23,11 +25,12 @@ export const getState = async () => {
 };
 export const setSettingsState = async (localState: PopupState) => {
   // push reducer schema into local settings store returning the new state
-  const { options, suboptions, notifications, filters, highlightgroups } = localState || {};
+  const { options, builtins, suboptions, notifications, filters, highlightgroups } = localState || {};
   const settings = await getSettings();
   const newState = {
     ...settings,
     enabled_scripts: options,
+    enabled_builtins: builtins,
     enabled_suboptions: suboptions,
     user_filters: filters,
     highlight_groups: highlightgroups,
@@ -46,9 +49,9 @@ export const toggleOption = (
   // works with enabled_scripts and enabled_suboptions
   const foundIdx = options?.findIndex((o) => o?.toUpperCase() === val?.toUpperCase());
   const filtered = options?.filter((o) => o.toUpperCase() !== val.toUpperCase());
-  // readd our val if it didn't exist previously (toggling it)
+  // read our val if it didn't exist previously (toggling it)
   if (foundIdx === -1) filtered.push(val);
-  dispatch({ type, payload: filtered });
+  dispatch({ type, payload: filtered as EnabledOptions[] | EnabledBuiltinOptions[] | EnabledSuboptions[] });
   return filtered;
 };
 

@@ -66,6 +66,15 @@ div[id$="_settings"].hidden {
   display: none !important;
 }
 
+div#tabs-container {
+}
+div.tabs-header {
+  overflow: visible;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--background-color-light);
+}
 div.tabs {
   display: flex;
   align-items: center;
@@ -84,6 +93,7 @@ div.tabs > button.tab__btn {
   border-top-right-radius: 6px;
   border: var(--border-style) var(--border-style) 0 var(--border-style);
   font-weight: normal;
+  cursor: pointer;
 }
 button.tab__btn.active {
   color: var(--text-color-light) !important;
@@ -99,6 +109,7 @@ div.tab-indicator {
 }
 div.tabs-body {
   margin: -0.75em 0;
+  padding-bottom: 0.5rem;
 }
 
 div.suboption {
@@ -293,6 +304,13 @@ div.filter_box > p {
   }
   select option:active {
     background-color: transparent;
+  }
+  div.tabs-header {
+    overflow: visible;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--background-color-dark);
   }
   button.tab__btn {
     color: var(--text-color-dark);

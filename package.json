@@ -58,7 +58,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "adm-zip": "^0.5.10",
-    "dotenv": "^16.4.3",
+    "dotenv": "^16.4.4",
     "embla-carousel": "8.0.0-rc19",
     "glob": "^10.3.10",
     "jest": "^29.7.0",

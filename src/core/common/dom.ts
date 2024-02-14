@@ -1,5 +1,6 @@
 import * as textFieldEdit from "text-field-edit";
 import { arrHas } from "./common";
+import { getEnabledBuiltin } from "../settings";
 
 export const stripHtml = (html: string) => {
   // respect carriage returns
@@ -114,22 +115,27 @@ export const generatePreview = (postText: string) => {
 };
 
 export function scrollToElement(elem: HTMLElement, opts?: { offset?: number; smooth?: boolean; toFit?: boolean }) {
-  let _elem = elem as any;
-  const { offset, smooth, toFit } = opts || {};
+  getEnabledBuiltin("scroll_behavior").then((isEnabled) => {
+    // provide an escape hatch for the user
+    if (!isEnabled) return console.log("scrollToElement is disabled by the 'scroll_behavior' option!");
 
-  // Check if elem is a jQuery object by looking for the .jquery property
-  if (typeof _elem === "object" && _elem !== null && _elem.jquery) {
-    _elem = _elem[0];
-  }
-  if (!_elem) return false;
+    let _elem = elem as any;
+    const { offset, smooth, toFit } = opts || {};
 
-  const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
-  const _offset = offset == null ? headerHeight : offset;
-  const visibleY = toFit ? _offset : -Math.floor(window.innerHeight / 4);
-  const rect = _elem.getBoundingClientRect();
-  const scrollY = rect.top + window.scrollY + visibleY;
+    // Check if elem is a jQuery object by looking for the .jquery property
+    if (typeof _elem === "object" && _elem !== null && _elem.jquery) {
+      _elem = _elem[0];
+    }
+    if (!_elem) return false;
 
-  window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
+    const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
+    const _offset = offset == null ? headerHeight : offset;
+    const visibleY = toFit ? _offset : -Math.floor(window.innerHeight / 4);
+    const rect = _elem.getBoundingClientRect();
+    const scrollY = rect.top + window.scrollY + visibleY;
+
+    window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
+  });
 }
 
 export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement, offset?: number) => {

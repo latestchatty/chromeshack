@@ -1,4 +1,5 @@
 import { processPostEvent, processPostRefreshEvent } from "../core/events";
+import { getEnabledBuiltin } from "../core/settings";
 
 export const LocalTimeStamp = {
   date: new Date(),
@@ -12,7 +13,10 @@ export const LocalTimeStamp = {
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   } as Intl.DateTimeFormatOptions,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("local_timestamp");
+    if (!isEnabled) return;
+
     processPostRefreshEvent.addHandler(LocalTimeStamp.adjustTime);
     processPostEvent.addHandler(LocalTimeStamp.adjustTime);
   },

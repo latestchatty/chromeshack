@@ -10,6 +10,21 @@ const DefaultSettings: Settings = {
     "reduced_color_user_icons",
     "shrink_user_icons",
   ],
+  enabled_builtins: [
+    "az_scroll_fix",
+    "single_thread_fix",
+    "uncapped_thread_fix",
+    "scroll_behavior",
+    "image_uploader",
+    "user_popup",
+    "collapse",
+    "color_gauge",
+    "comment_tags",
+    "emoji_poster",
+    "local_timestamp",
+    "mod_banners",
+    "post_length_counter",
+  ],
 
   enabled_suboptions: ["cuf_hide_fullposts"],
 

@@ -3,8 +3,12 @@ import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
 import { useStore } from "./popupStore";
 
-const useOption = (opts: { key: string; val: EnabledOptions | EnabledSuboptions; type: OptionsTypes }) => {
-  const { key, val, type } = opts || {};
+const useOption = (opts: {
+  key: string;
+  val: EnabledOptions | EnabledBuiltinOptions | EnabledSuboptions;
+  type: "SET_OPTIONS" | "SET_BUILTINS" | "SET_SUBOPTIONS";
+}) => {
+  const { key, val, type = "SET_OPTIONS" } = opts || {};
   const state = useStore() as PopupState;
   const dispatch = state.dispatch;
 
@@ -75,18 +79,19 @@ const Suboption = memo(
 
 const Option = memo(
   (props: {
-    id: EnabledOptions | EnabledSuboptions;
+    id: EnabledOptions | EnabledBuiltinOptions | EnabledSuboptions;
     label: string;
     classes?: string;
     indented?: boolean;
     descriptions?: string[];
     children?: React.ReactNode | React.ReactNode[];
+    optionType?: "SET_OPTIONS" | "SET_BUILTINS";
   }) => {
-    const { id, classes, label, indented = true, descriptions, children } = props || {};
+    const { id, classes, label, indented = true, descriptions, children, optionType = "SET_OPTIONS" } = props || {};
     const { isChecked, setChecked } = useOption({
-      key: "options",
+      key: optionType === "SET_BUILTINS" ? "builtins" : "options",
       val: id,
-      type: "SET_OPTIONS",
+      type: optionType === "SET_BUILTINS" ? "SET_BUILTINS" : "SET_OPTIONS",
     });
 
     return (
@@ -105,21 +110,38 @@ const Option = memo(
     );
   }
 );
+const OptionBuiltin = (props: {
+  id: EnabledBuiltinOptions;
+  label: string;
+  indented?: boolean;
+  descriptions?: string[];
+  children?: React.ReactNode | React.ReactNode[];
+}) => (
+  <Option
+    id={props.id}
+    optionType={"SET_BUILTINS"}
+    indented={props.indented}
+    label={props.label}
+    descriptions={props.descriptions}>
+    {props.children != null ? props.children : null}
+  </Option>
+);
 
 // Warning: OptionGroup is sensitive to memo() use!
 const OptionGroup = (props: {
   label: string;
-  id?: EnabledOptions | EnabledSuboptions;
+  id?: EnabledOptions | EnabledBuiltinOptions | EnabledSuboptions;
   classes?: string;
   indented?: boolean;
   infolabel?: string;
   children?: React.ReactNode | React.ReactNode[];
+  optionType?: "SET_OPTIONS" | "SET_BUILTINS";
 }) => {
-  const { id, classes, label, indented = false, infolabel, children } = props || {};
+  const { id, classes, label, indented = false, infolabel, children, optionType = "SET_OPTIONS" } = props || {};
   const { isChecked, setChecked } = useOption({
     key: "options",
     val: id,
-    type: "SET_OPTIONS",
+    type: optionType === "SET_BUILTINS" ? "SET_BUILTINS" : "SET_OPTIONS",
   });
 
   return (
@@ -134,4 +156,4 @@ const OptionGroup = (props: {
   );
 };
 
-export { Option, OptionButton, Suboption, OptionGroup };
+export { Option, OptionBuiltin, OptionButton, Suboption, OptionGroup };

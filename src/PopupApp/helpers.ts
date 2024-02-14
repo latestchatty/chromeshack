@@ -58,13 +58,13 @@ export const copyToClipboard = async (textArea: HTMLTextAreaElement, exportable:
 };
 
 export const importSettings = async (settingsJSON: string) => {
-  const field_limit = 5 * 1000 * 1000;
+  const field_limit = 10 * 1000 * 1000;
   try {
     const trimmed = superTrim(settingsJSON);
     const parsed = JSON.parse(trimmed);
     if (parsed?.length > field_limit) {
       const _truncated = settingsJSON.substring(0, field_limit);
-      alert("Warning! Settings input must be less than 5 MiB in size!");
+      alert("Warning! Settings input must be less than 10 MiB in size!");
       return _truncated;
     } else if (parsed) {
       // spread merged settings, highlight groups, and user filters into default settings
@@ -122,6 +122,7 @@ export const exportSettings = async () => {
   }, settings.enabled_suboptions as string[]);
   const mutated = {
     ...allowedSettings,
+    enabled_builtins: settings.enabled_builtins,
     enabled_suboptions: allowedSuboptions,
     highlight_groups: exportedGroups,
   };

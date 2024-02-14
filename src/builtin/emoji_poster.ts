@@ -1,5 +1,6 @@
-import { elementIsVisible, parseToElement, scrollToElement } from "../core/common/dom";
+import { parseToElement, scrollToElement } from "../core/common/dom";
 import { processPostBoxEvent, processReplyEvent, submitFormEvent } from "../core/events";
+import { getEnabledBuiltin } from "../core/settings";
 
 /*
  * Encodes string Astrals (Emoji's) into prefixed HTML entities to
@@ -8,7 +9,10 @@ import { processPostBoxEvent, processReplyEvent, submitFormEvent } from "../core
 export const EmojiPoster = {
   cachedEl: null as HTMLElement,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("emoji_poster");
+    if (!isEnabled) return;
+
     processPostBoxEvent.addHandler(EmojiPoster.apply);
     EmojiPoster.cacheInjectables();
   },

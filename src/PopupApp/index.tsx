@@ -4,10 +4,11 @@ import { resetSettings } from "../core/settings";
 import { FilterBox } from "./FilterBox";
 import { HighlightGroups } from "./HighlightGroups";
 import { ImportExport } from "./ImportExport";
-import { Option, OptionButton, OptionGroup, Suboption } from "./Options";
+import { Option, OptionBuiltin, OptionButton, OptionGroup, Suboption } from "./Options";
 import { Tabs } from "./Tabs";
 import { getState, setSettingsState } from "./actions";
 import { useStore } from "./popupStore";
+import { isFirefox } from "../core/common/common";
 
 const PopupApp = memo(() => {
   const state = useStore() as PopupState;
@@ -168,6 +169,86 @@ const PopupApp = memo(() => {
           />
         </OptionGroup>
         <br />
+      </div>
+
+      <div title="Core">
+        <OptionGroup label="QOL Patches">
+          {isFirefox() ? (
+            <OptionBuiltin
+              id="az_scroll_fix"
+              label="A/Z scroll fix"
+              descriptions={[
+                "Re-enables the A/Z keyboard shortcut when navigating posts in a thread (only in Firefox).",
+              ]}
+            />
+          ) : null}
+          <OptionBuiltin
+            id="single_thread_fix"
+            label="Enhanced single-thread mode"
+            descriptions={["Scrolls to the linked post when in single-thread mode (not in Chatty)."]}
+          />
+          <OptionBuiltin
+            id="uncapped_thread_fix"
+            label="Enhanced thread uncapping behavior"
+            descriptions={["Scrolls to the clicked oneline post when uncapping a thread."]}
+          />
+          <OptionBuiltin
+            id="scroll_behavior"
+            label="Enhanced scroll-to-post behavior"
+            descriptions={[
+              "Enables more aggressive scroll-to-post behavior than the mostly broken functionality on the default Chatty.",
+            ]}
+          />
+        </OptionGroup>
+        <OptionGroup label="Built-in Features">
+          <OptionBuiltin
+            id="collapse"
+            label="Enhanced thread collapse"
+            descriptions={["Allows the thread-collapse toggle on root posts to remember its state."]}
+          />
+          <OptionBuiltin
+            id="color_gauge"
+            label="Enhanced thread timeout gauges"
+            descriptions={[
+              "Upgrades the stock thread timeout gauges with more information and colors based on time-to-expiry.",
+            ]}
+          />
+          <OptionBuiltin
+            id="comment_tags"
+            label="Enhanced Shack Tags chooser"
+            descriptions={["Upgrades the functionality of the Shack Tags chooser in the Postbox."]}
+          />
+          <OptionBuiltin
+            id="emoji_poster"
+            label="Enhanced symbols encoding for Postbox"
+            descriptions={["Enhances the Postbox to encode emoji and unicode symbols."]}
+          />
+          <OptionBuiltin
+            id="image_uploader"
+            label="Image Uploader"
+            descriptions={["Provides a convenient way to upload media to Imgur right in the Postbox."]}
+          />
+          <OptionBuiltin
+            id="local_timestamp"
+            label="Enhanced post timestamps"
+            descriptions={["Shows post timestamps in the user's local timezone."]}
+          />
+          <OptionBuiltin
+            id="mod_banners"
+            label="Enhanced mod banners"
+            descriptions={["Shows bigger and more colorful mod banners on posts."]}
+          />
+          <OptionBuiltin
+            id="post_length_counter"
+            label="Show post length reminder"
+            descriptions={["Shows how many characters left until oneline-wrapping of a post."]}
+          />
+          <OptionBuiltin
+            id="user_popup"
+            label="Enhanced user popup"
+            descriptions={["Shows an enhanced popup menu when clicking a post author's name."]}
+          />
+        </OptionGroup>
       </div>
 
       <div title="Extras">
