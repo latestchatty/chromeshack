@@ -58,7 +58,7 @@ const crxConfig = {
       matches: ["https://www.shacknews.com/chatty*"],
     },
   ],
-  permissions: ["tabs", "storage", "scripting", "notifications", "alarms"],
+  permissions: ["tabs", "storage", "notifications", "alarms"],
   host_permissions: ["https://www.shacknews.com/chatty*"],
   web_accessible_resources: [
     {

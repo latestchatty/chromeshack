@@ -2,8 +2,9 @@ export {};
 
 declare global {
   export interface PopupState extends ReducerState {
-    options: string[];
-    suboptions: string[];
+    options: EnabledOptions[];
+    builtins: EnabledBuiltinOptions[];
+    suboptions: EnabledSuboptions[];
     notifications: string[];
     filters: string[];
     highlightgroups: HighlightGroup[];
@@ -11,12 +12,12 @@ declare global {
     dispatch?: (action: PopupAction) => void;
   }
 
-  export type OptionsTypes = "SET_OPTIONS" | "SET_SUBOPTIONS";
+  export type OptionsTypes = "SET_OPTIONS" | "SET_BUILTINS" | "SET_SUBOPTIONS";
   export type FilterTypes = "SET_FILTERS" | "SET_NOTIFICATIONS";
 
   export type PopupAction =
     | { type: "INIT"; payload: PopupState }
-    | { type: OptionsTypes; payload: string[] }
+    | { type: OptionsTypes; payload: EnabledOptions[] | EnabledBuiltinOptions[] | EnabledSuboptions[] }
     | { type: FilterTypes; payload: string[] }
     | { type: "SET_HIGHLIGHTGROUPS"; payload: HighlightGroup[] }
     | {

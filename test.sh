@@ -63,7 +63,7 @@ case "$CMD" in
   "--shell" | "-s")
     run /bin/bash
     ;;
-  "--test")
+  "--test" | "")
     build
     run pnpm test
     ;;

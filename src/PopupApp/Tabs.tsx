@@ -35,29 +35,31 @@ const Tabs = memo((props: { children?: JSX.Element[]; isLoaded: boolean }) => {
 
   return (
     <div id="tabs-container" className={classes}>
-      <div className="tabs">
-        {children.map((c, i) => {
-          return (
-            <button
-              key={i}
-              className={classNames("tab__btn", { active: activeTabIdx === i })}
-              onClick={() => {
-                setActiveTabIdx(i);
-                storeActiveTab(i);
-              }}>
-              {c.props.title}
-            </button>
-          );
-        })}
-      </div>
-      <div className="tab-indicator__container">
-        <div
-          className="tab-indicator"
-          style={{
-            width: `${100 / children.length}%`,
-            transform: `translateX(${activeTabIdx * 100}%)`,
-          }}
-        />
+      <div className="tabs-header">
+        <div className="tabs">
+          {children.map((c, i) => {
+            return (
+              <button
+                key={i}
+                className={classNames("tab__btn", { active: activeTabIdx === i })}
+                onClick={() => {
+                  setActiveTabIdx(i);
+                  storeActiveTab(i);
+                }}>
+                {c.props.title}
+              </button>
+            );
+          })}
+        </div>
+        <div className="tab-indicator__container">
+          <div
+            className="tab-indicator"
+            style={{
+              width: `${100 / children.length}%`,
+              transform: `translateX(${activeTabIdx * 100}%)`,
+            }}
+          />
+        </div>
       </div>
       <div className="tabs-body" ref={bodyRef}>
         {children?.[activeTabIdx]?.props?.children}

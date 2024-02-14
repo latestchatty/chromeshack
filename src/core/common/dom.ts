@@ -1,8 +1,6 @@
-import jQuery from "jquery";
 import * as textFieldEdit from "text-field-edit";
 import { arrHas } from "./common";
-
-const $ = jQuery;
+import { getEnabledBuiltin } from "../settings";
 
 export const stripHtml = (html: string) => {
   // respect carriage returns
@@ -116,20 +114,28 @@ export const generatePreview = (postText: string) => {
   return convertUrlToLink(_postText);
 };
 
-export function scrollToElement(
-  elem: JQuery<HTMLElement> | HTMLElement,
-  opts?: { offset?: number; smooth?: boolean; toFit?: boolean }
-) {
-  let _elem = elem;
-  const { offset, smooth, toFit } = opts || {};
-  if (_elem && _elem instanceof $) _elem = (_elem as JQuery<HTMLElement>)[0] as HTMLElement;
-  else if (!_elem) return false;
-  const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
-  const _offset = offset === undefined ? headerHeight : offset;
-  // position visibly by default - use offset if 'toFit'
-  const visibleY = toFit ? _offset : -($(window).height() / 4);
-  const scrollY = (_elem as HTMLElement).getBoundingClientRect().top + window.scrollY + visibleY;
-  window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
+export function scrollToElement(elem: HTMLElement, opts?: { offset?: number; smooth?: boolean; toFit?: boolean }) {
+  getEnabledBuiltin("scroll_behavior").then((isEnabled) => {
+    // provide an escape hatch for the user
+    if (!isEnabled) return console.log("scrollToElement is disabled by the 'scroll_behavior' option!");
+
+    let _elem = elem as any;
+    const { offset, smooth, toFit } = opts || {};
+
+    // Check if elem is a jQuery object by looking for the .jquery property
+    if (typeof _elem === "object" && _elem !== null && _elem.jquery) {
+      _elem = _elem[0];
+    }
+    if (!_elem) return false;
+
+    const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
+    const _offset = offset == null ? headerHeight : offset;
+    const visibleY = toFit ? _offset : -Math.floor(window.innerHeight / 4);
+    const rect = _elem.getBoundingClientRect();
+    const scrollY = rect.top + window.scrollY + visibleY;
+
+    window.scrollTo({ top: scrollY, behavior: smooth ? "smooth" : "auto" });
+  });
 }
 
 export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement, offset?: number) => {
@@ -145,22 +151,28 @@ export const scrollParentToChild = (parent: HTMLElement, child: HTMLElement, off
   if (!isViewable) parent.scrollTop = childRect.top + parent.scrollTop - parentRect.top + _offset;
 };
 
-export function elementIsVisible(elem: JQuery<HTMLElement> | HTMLElement, partialBool?: boolean) {
-  let _elem = elem;
-  // don't use an arrow function here (for injection purposes)
-  // only check to ensure vertical visibility
-  if (_elem && _elem instanceof $) _elem = (_elem as JQuery<HTMLElement>)[0] as HTMLElement;
-  else if (!_elem) return false;
+export function elementIsVisible(elem: HTMLElement, partialBool?: boolean) {
+  let _elem = elem as any;
+  // Check if elem is a jQuery object by looking for the .jquery property
+  if (typeof _elem === "object" && _elem !== null && _elem.jquery) {
+    _elem = _elem[0];
+  }
+  if (!_elem) return false;
+
   const rect = (_elem as HTMLElement).getBoundingClientRect();
   const visibleHeight = window.innerHeight;
   if (partialBool) return rect.top <= visibleHeight && rect.top + rect.height >= 0;
   return rect.top >= 0 && rect.top + rect.height <= visibleHeight;
 }
 
-export function elementFitsViewport(elem: JQuery<HTMLElement> | HTMLElement) {
-  let _elem = elem;
-  if (_elem && _elem instanceof $) _elem = (_elem as JQuery<HTMLElement>)[0] as HTMLElement;
-  else if (!_elem) return false;
+export function elementFitsViewport(elem: HTMLElement) {
+  let _elem = elem as any;
+  // Check if elem is a jQuery object by looking for the .jquery property
+  if (typeof _elem === "object" && _elem !== null && _elem.jquery) {
+    _elem = _elem[0];
+  }
+  if (!_elem) return false;
+
   const headerHeight = document.querySelector("header")?.getBoundingClientRect().height + 6;
   const elemHeight = (_elem as HTMLElement).getBoundingClientRect().height;
   const visibleHeight = window.innerHeight;

@@ -4,11 +4,15 @@ import { userPopupEvent } from "../../core/events";
 import { getUsername } from "../../core/notifications";
 import "../../styles/userpopup.css";
 import { UserPopupApp } from "./UserPopupApp";
+import { getEnabledBuiltin } from "../../core/settings";
 
 export const UserPopup = {
   cachedEl: null as HTMLElement,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("user_popup");
+    if (!isEnabled) return;
+
     document.addEventListener("click", UserPopup.clickHandler);
     userPopupEvent.addHandler(UserPopup.userPopupEventHandler);
     UserPopup.cacheInjectables();

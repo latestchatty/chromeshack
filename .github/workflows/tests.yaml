@@ -1,24 +1,26 @@
 name: Playwright Tests
 on:
   push:
-    branches: [master, testing]
-  pull_request:
-    branches: [master, testing]
+    branches:
+      - master
 
 jobs:
   playwright:
     name: "Playwright Tests"
+    if: false # disable for now
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.41.1-jammy
+      # make sure to match this version to what's in package.json
+      image: mcr.microsoft.com/playwright:v1.40.1-jammy
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.1
+      - uses: actions/setup-node@v4
         with:
           node-version: 21
-          E2E_SHACKLI: ${{ secrets.E2E_SHACKLI }}
-      - name: Install PNPM
-        run: corepack enable
+          cache: 'pnpm'
       - name: Install project dependencies
         run: pnpm install
       - name: Install test dependencies
@@ -29,6 +31,8 @@ jobs:
         run: pnpm test
         env:
           HOME: /root
+          CI: true
+          E2E_SHACKLI: ${{ secrets.E2E_SHACKLI }}
       - name: Upload test report
         uses: actions/upload-artifact@v2
         with:

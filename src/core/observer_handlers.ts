@@ -1,5 +1,5 @@
-import { scrollToUncappedPostFix } from "../patches/scrollToPostFix";
-import { singleThreadFix } from "../patches/singleThreadFix";
+import { ScrollToUncappedPostFix } from "../patches/scrollToPostFix";
+import { SingleThreadFix } from "../patches/singleThreadFix";
 import { arrHas } from "./common/common";
 import { disableTwitch, elemMatches, locatePostRefs, parseToElement, scrollToElement } from "./common/dom";
 import {
@@ -106,14 +106,16 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
   const { postid, rootid, parentid } = mutation || {};
   const root = document.querySelector(`li#item_${rootid}`);
   const post = document.querySelector(`li#item_${postid || parentid}`);
-  const reply = parentid && post?.querySelector("li.sel.last");
+  const reply = parentid && post?.querySelector("li.sel");
   const raisedArgs = {
     post: reply || post,
     postid: parentid || postid,
     root,
     rootid,
   } as PostEventArgs;
-  if (reply && root && !(await getEnabled("hide_tagging_buttons"))) processReplyEvent.raise(raisedArgs, mutation);
+
+  if (reply && root) return processReplyEvent.raise(raisedArgs, mutation);
+
   if (post && root)
     await handleTagsEvent(raisedArgs)
       .then((neArgs) => handlePostRefresh(neArgs, mutation))
@@ -161,9 +163,9 @@ export const contentScriptLoaded = async () => {
   // open a message channel for WinChatty events
   TabMessenger.connect();
   // try to fix incorrect positioning in single-thread mode
-  singleThreadFix();
+  await SingleThreadFix.install();
   // try to fix the busted 'clickItem()' method on Chatty when uncapping root posts
-  scrollToUncappedPostFix();
+  await ScrollToUncappedPostFix.install();
   // set our current logged-in username once upon refreshing the Chatty
   const loggedInUsername = document.getElementById("user_posts")?.textContent || "";
   if (loggedInUsername) await setUsername(loggedInUsername);

@@ -1,33 +1,36 @@
 import { elementIsVisible, scrollToElement } from "../core/common/dom";
-import { fullPostsCompletedEvent, processPostEvent, processUncapThreadEvent } from "../core/events";
+import { processPostEvent, processUncapThreadEvent } from "../core/events";
+import { getEnabledBuiltin } from "../core/settings";
 
 /*
  *  Workaround for busted scroll-to-post in clickItem() when uncapping root posts
  */
-export const scrollToUncappedPostFix = () => {
-  let uncapped = -1;
+export const ScrollToUncappedPostFix = {
+  uncapped: -1,
 
-  const detect = ({ root, rootid }: UncapThreadEventArgs) => {
-    if (root != undefined) uncapped = rootid;
-  };
-  const fix = ({ post, rootid, postid }: PostEventArgs) => {
-    if (uncapped === rootid && !elementIsVisible(post)) {
+  detect({ root, rootid }: UncapThreadEventArgs) {
+    if (root != undefined) ScrollToUncappedPostFix.uncapped = rootid;
+  },
+
+  fix({ post, rootid, postid }: PostEventArgs) {
+    const _uncapped = ScrollToUncappedPostFix.uncapped;
+    if (_uncapped === rootid && !elementIsVisible(post)) {
       // scroll-to-post when uncapping a thread
-      console.log("scrollToUncappedPostFix thread:", post, rootid, uncapped);
+      console.log("scrollToUncappedPostFix thread:", post, rootid, _uncapped);
       scrollToElement(post, { toFit: true });
-    } else if (uncapped === postid && !elementIsVisible(post, true)) {
+    } else if (_uncapped === postid && !elementIsVisible(post, true)) {
       // try to scroll-to-post when an opened fullpost is offscreen
-      console.log("scrollToUncappedPostFix post:", post, rootid, postid, uncapped);
+      console.log("scrollToUncappedPostFix post:", post, rootid, postid, _uncapped);
       scrollToElement(post);
     }
-  };
-  const install = () => {
+  },
+
+  async install() {
+    const isEnabled = await getEnabledBuiltin("uncapped_thread_fix");
     const isChatty = document.getElementById("newcommentbutton");
-    if (!isChatty) return;
+    if (!isEnabled || !isChatty) return;
 
-    processUncapThreadEvent.addHandler(detect);
-    processPostEvent.addHandler(fix);
-  };
-
-  fullPostsCompletedEvent.addHandler(install);
+    processUncapThreadEvent.addHandler(ScrollToUncappedPostFix.detect);
+    processPostEvent.addHandler(ScrollToUncappedPostFix.fix);
+  },
 };
