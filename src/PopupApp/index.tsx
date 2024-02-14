@@ -18,6 +18,8 @@ const PopupApp = memo(() => {
     (async () => {
       const freshSettings = await resetSettings().then(getState);
       dispatch({ type: "INIT", payload: { ...freshSettings, loaded: true } });
+      // force a context reload after resetting
+      chrome.runtime.reload();
     })();
   };
   const handleRlsNotesBtn = () => {
@@ -203,9 +205,19 @@ const PopupApp = memo(() => {
         </OptionGroup>
         <OptionGroup label="Built-in Features">
           <OptionBuiltin
+            id="image_uploader"
+            label="Image Uploader"
+            descriptions={["Provides a convenient way to upload media to Imgur right in the Postbox."]}
+          />
+          <OptionBuiltin
+            id="post_length_counter"
+            label="Show post length reminder"
+            descriptions={["Shows how many characters are left until the oneline-body of a post is truncated."]}
+          />
+          <OptionBuiltin
             id="collapse"
             label="Enhanced thread collapse"
-            descriptions={["Allows the thread-collapse toggle on root posts to remember its state."]}
+            descriptions={["Enhances the thread-collapse toggle on root posts so it remembers its state."]}
           />
           <OptionBuiltin
             id="color_gauge"
@@ -225,11 +237,6 @@ const PopupApp = memo(() => {
             descriptions={["Enhances the Postbox to encode emoji and unicode symbols."]}
           />
           <OptionBuiltin
-            id="image_uploader"
-            label="Image Uploader"
-            descriptions={["Provides a convenient way to upload media to Imgur right in the Postbox."]}
-          />
-          <OptionBuiltin
             id="local_timestamp"
             label="Enhanced post timestamps"
             descriptions={["Shows post timestamps in the user's local timezone."]}
@@ -238,11 +245,6 @@ const PopupApp = memo(() => {
             id="mod_banners"
             label="Enhanced mod banners"
             descriptions={["Shows bigger and more colorful mod banners on posts."]}
-          />
-          <OptionBuiltin
-            id="post_length_counter"
-            label="Show post length reminder"
-            descriptions={["Shows how many characters left until oneline-wrapping of a post."]}
           />
           <OptionBuiltin
             id="user_popup"
