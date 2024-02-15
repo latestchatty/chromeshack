@@ -38,39 +38,69 @@ run() {
 
 help() {
   echo
-  echo "Usage: $0 [--build | -b] [--run | -r] [--shell | -s] [--test] [--help | -h]"
+  echo "Usage: $0 [--build | -b] [--run | -r] [--shell | -s] [--test | -t] [--help | -h]"
   echo
   echo "  --build, -b      rebuild the image"
-  echo "  --run, -r        run the tests"
+  echo "  --run, -r        run the test suite"
   echo "  --shell, -s      open a shell inside the image"
-  echo "  --test           rerun the tests"
+  echo "  --test, -t       rebuild the image and rerun the tests"
   echo "  --help, -h       this message"
   echo
   exit 1
 }
 
-CMD=${@:-""}
-case "$CMD" in
-  "--help" | "-h")
-    help
-    ;;
-  "--build" | "-b")
-    build
-    ;;
-  "--run" | "-r")
-    run pnpm test
-    ;;
-  "--shell" | "-s")
-    run /bin/bash
-    ;;
-  "--test" | "")
-    build
-    run pnpm test
-    ;;
-  *)
-    echo "Error: Invalid argument"
-    help
-    ;;
-esac
+VALID_ARGS=$(getopt -o bhrst --long build,help,run,shell,test -- "$@")
+eval set -- "$VALID_ARGS"
+
+BUILD=false
+RUN=false
+RUNSHELL=false
+RUNTEST=false
+
+while true; do
+  case "$1" in
+    -b | --build)
+      BUILD=true
+      shift
+      ;;
+    -h | --help)
+      help
+      ;;
+    -r | --run)
+      RUN=true
+      shift
+      ;;
+    -s | --shell)
+      RUNSHELL=true
+      shift
+      ;;
+    -t | --test)
+      RUNTEST=true
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      echo "Error: Invalid argument!"
+      help
+      ;;
+  esac
+done
+
+if [ "$BUILD" == true ]; then
+  build
+fi
+if [ "$RUN" == true ]; then
+  run pnpm test
+fi
+if [ "$RUNSHELL" == true ]; then
+  run /bin/bash
+fi
+if [ "$RUNTEST" == true ]; then
+  build
+  run pnpm test
+fi
 
 exit 0
