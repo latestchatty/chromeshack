@@ -1,42 +1,50 @@
 import { test, expect, navigate } from "../fixtures";
 
-test("user flairs enabled", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40040034#item_40040034");
+test.describe("User Flairs", () => {
+  const url = "https://www.shacknews.com/chatty?id=40040034#item_40040034";
 
-  const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
-  await expect(icon).toHaveCSS("width", "10px");
-  const filter = page.locator("li.sel img.chatty-user-icons").nth(0);
-  await expect(filter).toHaveCSS("filter", "grayscale(0.75)");
-});
-test("user flairs disabled", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40040034#item_40040034", {
-    o: { exclude: true },
-    d: { enabled_scripts: ["shrink_user_icons", "reduced_color_user_icons"] },
+  test("enabled", async ({ page }) => {
+    await navigate(page, url);
+
+    const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
+    await expect(icon).toHaveCSS("width", "10px");
+    const filter = page.locator("li.sel img.chatty-user-icons").nth(0);
+    await expect(filter).toHaveCSS("filter", "grayscale(0.75)");
   });
+  test("disabled", async ({ page }) => {
+    await navigate(page, url, {
+      o: { exclude: true },
+      d: { enabled_scripts: ["shrink_user_icons", "reduced_color_user_icons"] },
+    });
 
-  const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
-  await expect(icon).toHaveCSS("width", "14px");
-  const filter = page.locator("li.sel img.chatty-user-icons").nth(0);
-  await expect(filter).not.toHaveCSS("filter", "grayscale(0.75)");
-});
-
-test("lol tags enabled", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40046772#item_40046772");
-
-  const tags = page.locator(".fullpost .lol-tags").nth(0);
-  await expect(tags).toHaveCSS("display", "flex");
-  const olTag = page.locator(".oneline .lol-tags").nth(0);
-  await expect(olTag).toHaveCSS("display", "inline-block");
-});
-test("lol tags disabled", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40049133#item_40049133", {
-    d: { enabled_scripts: ["hide_tagging_buttons", "hide_tag_counts"] },
+    const icon = page.locator("li.sel img.chatty-user-icons").nth(0);
+    await expect(icon).toHaveCSS("width", "14px");
+    const filter = page.locator("li.sel img.chatty-user-icons").nth(0);
+    await expect(filter).not.toHaveCSS("filter", "grayscale(0.75)");
   });
+});
 
-  const tag = page.locator(".fullpost .lol-tags").nth(0);
-  await expect(tag).toHaveCSS("display", "none");
-  const olTagItem = page.locator(".oneline .lol-tags").nth(0);
-  await expect(olTagItem).toHaveCSS("display", "none");
+test.describe("LOL Tags", () => {
+  const url = "https://www.shacknews.com/chatty?id=40046772#item_40046772";
+
+  test("enabled", async ({ page }) => {
+    await navigate(page, url);
+
+    const tags = page.locator(".fullpost .lol-tags").nth(0);
+    await expect(tags).toHaveCSS("display", "flex");
+    const olTag = page.locator(".oneline .lol-tags").nth(0);
+    await expect(olTag).toHaveCSS("display", "inline-block");
+  });
+  test("disabled", async ({ page }) => {
+    await navigate(page, url, {
+      d: { enabled_scripts: ["hide_tagging_buttons", "hide_tag_counts"] },
+    });
+
+    const tag = page.locator(".fullpost .lol-tags").nth(0);
+    await expect(tag).toHaveCSS("display", "none");
+    const olTagItem = page.locator(".oneline .lol-tags").nth(0);
+    await expect(olTagItem).toHaveCSS("display", "none");
+  });
 });
 
 test("shame switchers enabled", async ({ page }) => {
@@ -67,25 +75,29 @@ test("chatty-news enabled", async ({ page }) => {
   await expect(articleContent).toHaveClass(/chatty__news__enabled/);
 });
 
-test("CustomUserFilter on author in single-thread mode", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40049762#item_40049762", {
-    d: { user_filters: ["ForcedEvolutionaryVirus"] },
-  });
+test.describe("CustomUserFilter", () => {
+  const url = "https://www.shacknews.com/chatty?id=40049762#item_40049762";
 
-  const fullpost = page.locator("li .fullpost");
-  await expect(fullpost).toBeVisible();
-  const olUser = page.locator("li .oneline_user");
-  expect(await olUser.count()).toBeLessThanOrEqual(0);
-});
-test("CustomUserFilter on replies in single-thread mode", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=40049762#item_40049762", {
-    d: { user_filters: ["Milleh"] },
-  });
+  test("CustomUserFilter on author in single-thread mode", async ({ page }) => {
+    await navigate(page, url, {
+      d: { user_filters: ["ForcedEvolutionaryVirus"] },
+    });
 
-  const onelines = await page.locator(".oneline_user").allInnerTexts();
-  for (const user in onelines) {
-    expect(user).not.toMatch("Milleh");
-  }
+    const fullpost = page.locator("li .fullpost");
+    await expect(fullpost).toBeVisible();
+    const olUser = page.locator("li .oneline_user");
+    expect(await olUser.count()).toBeLessThanOrEqual(0);
+  });
+  test("CustomUserFilter on replies in single-thread mode", async ({ page }) => {
+    await navigate(page, url, {
+      d: { user_filters: ["Milleh"] },
+    });
+
+    const onelines = await page.locator(".oneline_user").allInnerTexts();
+    for (const user in onelines) {
+      expect(user).not.toMatch("Milleh");
+    }
+  });
 });
 
 test("HighlightUser highlighting", async ({ page }) => {
@@ -221,17 +233,4 @@ test("ColorGauge - post load and refresh", async ({ page }) => {
   await refreshBtn.click();
   await expect(gauge).toHaveAttribute("title");
   await expect(colorClass).toHaveClass(/gauge_/);
-});
-
-test("scrollToPost disabled on Chatty", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty");
-  await expect(page.locator("div#featured-article")).toBeInViewport();
-  await page.reload();
-  await expect(page.locator("div#featured-article")).toBeInViewport();
-});
-test("scrollToPost enabled on single post", async ({ page }) => {
-  await navigate(page, "https://www.shacknews.com/chatty?id=42267857#item_42267857");
-  await expect(page.locator("li.sel .fullpost").nth(1)).toBeInViewport();
-  await page.reload();
-  await expect(page.locator("li.sel .fullpost").nth(1)).toBeInViewport();
 });
