@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { elemMatches, parseToElement } from "../../core/common/dom";
-import { userPopupEvent } from "../../core/events";
+import { processPostEvent, userPopupEvent } from "../../core/events";
 import { getUsername } from "../../core/notifications";
 import "../../styles/userpopup.css";
 import { UserPopupApp } from "./UserPopupApp";
@@ -15,7 +15,14 @@ export const UserPopup = {
 
     document.addEventListener("click", UserPopup.clickHandler);
     userPopupEvent.addHandler(UserPopup.userPopupEventHandler);
+    processPostEvent.addHandler(UserPopup.setup);
     UserPopup.cacheInjectables();
+  },
+
+  setup({ post }: PostEventArgs) {
+    // show some proof we exist for testing purposes
+    const userLink = post.querySelector("span.user");
+    if (userLink) userLink.classList.add("enhanced");
   },
 
   cacheInjectables() {

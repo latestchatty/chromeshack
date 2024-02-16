@@ -49,6 +49,8 @@ export const Collapse = {
     if (post && is_root) {
       const rootContainer = root.closest("div.root") as HTMLElement;
       const close = post.querySelector("a.closepost");
+      // show proof we exist for testing purposes
+      close?.classList?.add("enhanced");
       const show = post.querySelector("a.showpost");
       document.addEventListener("click", Collapse.collapseHandler);
       // check if thread should be collapsed
