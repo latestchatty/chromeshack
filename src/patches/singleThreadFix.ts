@@ -16,8 +16,8 @@ export const SingleThreadFix = {
     const urlRgx = window.location.href.match(/id=(\d+)(?:#item_(\d+))?/);
     if (!urlRgx) return;
 
-    const rootid = parseInt(urlRgx?.[1], 10);
-    const postid = parseInt(urlRgx?.[2], 10);
+    const rootid = parseInt(urlRgx?.[1], 10) || null;
+    const postid = parseInt(urlRgx?.[2], 10) || null;
     const post = document.getElementById(`item_${postid || rootid}`);
     if (post) {
       console.log("scrolling to single-thread:", post);
