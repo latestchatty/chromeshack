@@ -44,7 +44,6 @@ test.describe("Drafts", () => {
     await expect(replyInput).toHaveValue(msg);
     await expect(draftsDot).toHaveClass(/valid/);
   });
-
   test("survives post navigation", async ({ page, context }) => {
     await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
 
@@ -128,66 +127,67 @@ test("Templates - input and persistence", async ({ page, context }) => {
   await expect(templateItemsSpans.nth(0)).toHaveText(/Template #1/);
 });
 
-test("PostPreview complex interactions", async ({ page, context }) => {
-  await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
+test.describe("PostPreview", () => {
+  test("complex interactions", async ({ page, context }) => {
+    await navigate(page, url, { d: { enabled_scripts: ["drafts"] } }, context);
 
-  const replyBtn = page.locator("li li.sel div.reply>a");
-  await replyBtn.click();
+    const replyBtn = page.locator("li li.sel div.reply>a");
+    await replyBtn.click();
 
-  // test input and visibility state transitions
-  const previewBtn = page.locator("li li.sel #previewButton");
-  const replyInput = page.locator("li li.sel textarea#frm_body");
-  await previewBtn.click();
-  const previewArea = page.locator("li li.sel #previewArea");
-  await expect(previewArea).toBeVisible();
-  // test for serialization consistency
-  const msg = "This is a test of the post preview feature.";
-  await replyInput.fill(msg);
-  await page.waitForTimeout(751);
-  await expect(previewArea).toHaveText(msg);
-  // catch flakiness with toggling postform
-  await page.locator("li li.sel div.closeform>a").click();
-  await replyBtn.click();
-  if (!(await page.waitForSelector("textarea#frm_body", { timeout: 1000 }))) {
-    await replyBtn.click({ clickCount: 2, delay: 500 });
-  }
-  await expect(previewArea).toHaveText(msg);
-});
-test("PostPreview - url detection", async ({ page, context }) => {
-  await navigate(page, url, undefined, context);
+    // test input and visibility state transitions
+    const previewBtn = page.locator("li li.sel #previewButton");
+    const replyInput = page.locator("li li.sel textarea#frm_body");
+    await previewBtn.click();
+    const previewArea = page.locator("li li.sel #previewArea");
+    await expect(previewArea).toBeVisible();
+    // test for serialization consistency
+    const msg = "This is a test of the post preview feature.";
+    await replyInput.fill(msg);
+    await page.waitForTimeout(751);
+    await expect(previewArea).toHaveText(msg);
+    // catch flakiness with toggling postform
+    await page.locator("li li.sel div.closeform>a").click();
+    await replyBtn.click();
+    if (!(await page.waitForSelector("textarea#frm_body", { timeout: 1000 }))) {
+      await replyBtn.click({ clickCount: 2, delay: 500 });
+    }
+    await expect(previewArea).toHaveText(msg);
+  });
+  test("url detection", async ({ page, context }) => {
+    await navigate(page, url, undefined, context);
 
-  const replyBtn = page.locator("li li.sel div.reply>a");
-  await replyBtn.click();
+    const replyBtn = page.locator("li li.sel div.reply>a");
+    await replyBtn.click();
 
-  const previewBtn = page.locator("li li.sel #previewButton");
-  await previewBtn.click();
-  const replyInput = page.locator("li li.sel textarea#frm_body");
-  const previewArea = page.locator("li li.sel #previewArea");
-  await expect(previewArea).toBeVisible();
-  // test for url detection and rendering in the preview box
-  const msg = "Just some text with a url in it https://github.com/latestchatty/chromeshack/issues.";
-  const rendered =
-    'Just some text with a url in it <a href="https://github.com/latestchatty/chromeshack/issues" target="_blank" rel="noopener noreferrer">https://github.com/latestchatty/chromeshack/issues</a>.';
-  await replyInput.fill(msg);
-  await page.waitForTimeout(333);
-  await expect(replyInput).toHaveValue(msg);
-  expect(await previewArea.innerHTML()).toMatch(rendered);
-});
-test("PostPreview - codeblock formatting", async ({ page, context }) => {
-  await navigate(page, url, undefined, context);
+    const previewBtn = page.locator("li li.sel #previewButton");
+    await previewBtn.click();
+    const replyInput = page.locator("li li.sel textarea#frm_body");
+    const previewArea = page.locator("li li.sel #previewArea");
+    await expect(previewArea).toBeVisible();
+    // test for url detection and rendering in the preview box
+    const msg = "Just some text with a url in it https://github.com/latestchatty/chromeshack/issues.";
+    const rendered =
+      'Just some text with a url in it <a href="https://github.com/latestchatty/chromeshack/issues" target="_blank" rel="noopener noreferrer">https://github.com/latestchatty/chromeshack/issues</a>.';
+    await replyInput.fill(msg);
+    await page.waitForTimeout(333);
+    await expect(replyInput).toHaveValue(msg);
+    expect(await previewArea.innerHTML()).toMatch(rendered);
+  });
+  test("codeblock formatting", async ({ page, context }) => {
+    await navigate(page, url, undefined, context);
 
-  const replyBtn = page.locator("li li.sel div.reply>a");
-  await replyBtn.click();
-  const toggleBtn = page.locator("li li.sel a#shacktags_legend_toggle");
-  await toggleBtn.click();
+    const replyBtn = page.locator("li li.sel div.reply>a");
+    await replyBtn.click();
+    const toggleBtn = page.locator("li li.sel a#shacktags_legend_toggle");
+    await toggleBtn.click();
 
-  page.locator("#previewButton").click();
-  const replyInput = page.locator("li li.sel textarea#frm_body");
-  const previewArea = page.locator("li li.sel #previewArea");
-  await previewArea.scrollIntoViewIfNeeded();
-  await expect(previewArea).toBeVisible();
-  // test for codeblock detection and rendering in the preview box
-  const msg = `&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+    page.locator("#previewButton").click();
+    const replyInput = page.locator("li li.sel textarea#frm_body");
+    const previewArea = page.locator("li li.sel #previewArea");
+    await previewArea.scrollIntoViewIfNeeded();
+    await expect(previewArea).toBeVisible();
+    // test for codeblock detection and rendering in the preview box
+    const msg = `&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 &&&&&&&&&&&&&&&&&&&&&&%####%%&&&&&&&&&&&&&&&&&&&
 &&&&&&&&&&&&&&&%(////(((((((((////(%&&&&&&&&&&&&
 &&&&&&&&&&&%(//(%&&&&&&&&&&&&&&&&%#(//(%&&&&&&&&
@@ -206,14 +206,15 @@ test("PostPreview - codeblock formatting", async ({ page, context }) => {
 &&&&&&&&&&&#///(#%&&&&&&&&&&&&&&%#(///#%&&&&&&&&
 &&&&&&&&&&&&&&%(//////((((((//////(%&&&&&&&&&&&&
 &&&&&&&&&&&&&&&&&&&&%%######%%&&&&&&&&&&&&&&&&&&`;
-  const rendered =
-    "&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%####%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(////(((((((((////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;&amp;%/.    .*%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%///%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//#&amp;&amp;(,              ,(&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(/(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%%%/                        *%&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;<br>&amp;&amp;&amp;%(,                                ,(%&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;#((%&amp;&amp;&amp;.     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#.     &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;,     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(     .&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//%&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;*     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;<br>&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;(     *&amp;,.#&amp;&amp;&amp;&amp;/     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;%//(%&amp;&amp;#     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;%///%&amp;%.    ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%(//(%*,,,,*&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/,,,,*%&amp;&amp;&amp;&amp;&amp;&amp;#//(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//(%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#///(#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(///#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//////((((((//////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%######%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;";
-  await replyInput.fill(msg);
-  await page.waitForTimeout(333);
-  await expect(replyInput).toHaveValue(msg);
-  // test tagging a selected block of text
-  await replyInput.selectText();
-  page.locator("li li.sel #shacktags_legend_table tr:nth-child(8) > td:nth-child(4) > a").click();
-  const codeTag = previewArea.locator(".jt_code");
-  expect(await codeTag.nth(0).innerHTML()).toMatch(rendered);
+    const rendered =
+      "&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%####%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(////(((((((((////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;&amp;%/.    .*%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%///%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//#&amp;&amp;(,              ,(&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(/(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%%%/                        *%&amp;&amp;&amp;&amp;&amp;#//#&amp;&amp;&amp;<br>&amp;&amp;&amp;%(,                                ,(%&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;#((%&amp;&amp;&amp;.     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#.     &amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;,     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(     .&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%//%&amp;<br>&amp;&amp;&amp;&amp;(/(%&amp;&amp;&amp;*     /&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;<br>&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;(     *&amp;,.#&amp;&amp;&amp;&amp;/     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;//(&amp;&amp;<br>&amp;&amp;&amp;&amp;%//(%&amp;&amp;#     *&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     (&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//%&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;%///%&amp;%.    ,&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;*     #&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;(//#&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;%(//(%*,,,,*&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;/,,,,*%&amp;&amp;&amp;&amp;&amp;&amp;#//(&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#//(%&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;#///(#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%#(///#%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%(//////((((((//////(%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;<br>&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;%%######%%&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;&amp;";
+    await replyInput.fill(msg);
+    await page.waitForTimeout(333);
+    await expect(replyInput).toHaveValue(msg);
+    // test tagging a selected block of text
+    await replyInput.selectText();
+    page.locator("li li.sel #shacktags_legend_table tr:nth-child(8) > td:nth-child(4) > a").click();
+    const codeTag = previewArea.locator(".jt_code");
+    expect(await codeTag.nth(0).innerHTML()).toMatch(rendered);
+  });
 });

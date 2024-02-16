@@ -114,6 +114,12 @@ export const generatePreview = (postText: string) => {
   return convertUrlToLink(_postText);
 };
 
+export const disableScrollRestore = async () => {
+  // disable scroll restoration - if allowed
+  const aggressiveScrolling = await getEnabledBuiltin("scroll_behavior");
+  if (aggressiveScrolling) history.scrollRestoration = "manual";
+};
+
 export function scrollToElement(elem: HTMLElement, opts?: { offset?: number; smooth?: boolean; toFit?: boolean }) {
   getEnabledBuiltin("scroll_behavior").then((isEnabled) => {
     // provide an escape hatch for the user

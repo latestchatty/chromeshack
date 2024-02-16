@@ -1,7 +1,14 @@
 import { ScrollToUncappedPostFix } from "../patches/scrollToPostFix";
 import { SingleThreadFix } from "../patches/singleThreadFix";
 import { arrHas } from "./common/common";
-import { disableTwitch, elemMatches, locatePostRefs, parseToElement, scrollToElement } from "./common/dom";
+import {
+  disableScrollRestore,
+  disableTwitch,
+  elemMatches,
+  locatePostRefs,
+  parseToElement,
+  scrollToElement,
+} from "./common/dom";
 import {
   fullPostsCompletedEvent,
   processEmptyTagsLoadedEvent,
@@ -15,7 +22,7 @@ import {
 } from "./events";
 import { TabMessenger, setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
-import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
+import { getEnabled, getEnabledBuiltin, getEnabledSuboption, mergeTransientSettings } from "./settings";
 
 const checkReplyCeiling = (rootEl: HTMLElement) => {
   // Both FF & Chrome get bogged down by nuLOL tags loading into extremely large threads
@@ -113,6 +120,9 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
     root,
     rootid,
   } as PostEventArgs;
+
+  // disable scroll restoration on refresh/reply to avoid jankiness
+  await disableScrollRestore();
 
   if (reply && root) return processReplyEvent.raise(raisedArgs, mutation);
 
