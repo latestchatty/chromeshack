@@ -12,8 +12,9 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
     ({ o, d }) => {
       window.localStorage.setItem("transient-opts", JSON.stringify(o));
       window.localStorage.setItem("transient-data", JSON.stringify(d));
+      console.log("setting up testing environment:", JSON.stringify({ o, d }));
     },
-    { o: _opts, d: _data },
+    { o: _opts, d: _data }
   );
 };
 export const setTestCookie = async (context: BrowserContext) => {
@@ -40,7 +41,7 @@ export const navigate = async (page: Page, url: string, opts?: { o?: any; d?: an
   if (context) await setTestCookie(context);
   await page.reload();
   // for debugging use env var: PWDEBUG=console
-  // page.on("console", (msg) => console.log(msg.text()));
+  if (process.env.PWDEBUG === "console") page.on("console", (msg) => console.log(msg.text()));
 };
 
 export const test = base.extend<{
@@ -50,8 +51,16 @@ export const test = base.extend<{
   // biome-ignore lint/correctness/noEmptyPattern: "blame the official docs"
   context: async ({}, use) => {
     const prodPath = path.resolve("./artifacts/dist");
+    const prodPathManifest = path.join(prodPath, "manifest.json");
     const devPath = path.resolve("./dist");
-    const pathToExtension = fs.existsSync(prodPath) ? prodPath : devPath;
+    const devPathManifest = path.resolve(devPath, "manifest.json");
+    const pathToExtension = fs.existsSync(prodPathManifest)
+      ? prodPath
+      : fs.existsSync(devPathManifest)
+        ? devPath
+        : null;
+    if (pathToExtension === null) throw new Error("Could not find extension");
+
     const context = await chromium.launchPersistentContext("", {
       headless: false,
       args: [`--disable-extensions-except=${pathToExtension}`, `--load-extension=${pathToExtension}`, "--headless=new"],

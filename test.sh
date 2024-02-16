@@ -38,69 +38,54 @@ run() {
 
 help() {
   echo
-  echo "Usage: $0 [--build | -b] [--run | -r] [--shell | -s] [--test | -t] [--help | -h]"
+  echo "Usage: $0 [-b] [-r | -s] [-h]"
   echo
-  echo "  --build, -b      rebuild the image"
-  echo "  --run, -r        run the test suite"
-  echo "  --shell, -s      open a shell inside the image"
-  echo "  --test, -t       rebuild the image and rerun the tests"
-  echo "  --help, -h       this message"
+  echo "  -b      rebuild the image"
+  echo "  -r      run the test suite"
+  echo "  -s      open a shell inside the image"
+  echo "  -t      rebuild the image and rerun the tests"
+  echo "  -h      this message"
   echo
   exit 1
 }
 
-VALID_ARGS=$(getopt -o bhrst --long build,help,run,shell,test -- "$@")
+VALID_ARGS=$(getopt -o bhrst -- "$@")
 eval set -- "$VALID_ARGS"
 
-BUILD=false
-RUN=false
-RUNSHELL=false
-RUNTEST=false
-
-while true; do
+while [[ $# -gt 0 ]]; do
   case "$1" in
-    -b | --build)
-      BUILD=true
-      shift
-      ;;
-    -h | --help)
-      help
-      ;;
-    -r | --run)
-      RUN=true
-      shift
-      ;;
-    -s | --shell)
-      RUNSHELL=true
-      shift
-      ;;
-    -t | --test)
-      RUNTEST=true
-      shift
-      ;;
-    --)
-      shift
+  -h)
+    shift
+    help
+    ;;
+  -b)
+    build
+    shift
+    ;;
+  -r)
+    run pnpm test
+    shift
+    break
+    ;;
+  -s)
+    run /bin/bash
+    shift
+    break
+    ;;
+  --)
+    help
+    ;;
+  *)
+    shift
+    if [[ -z "$1" ]]; then
+      build
+      run pnpm test
       break
-      ;;
-    *)
-      echo "Error: Invalid argument!"
+    else
       help
-      ;;
+    fi
+    ;;
   esac
 done
-
-if [ "$BUILD" == true ]; then
-  build
-fi
-if [ "$RUN" == true ]; then
-  run pnpm test
-fi
-if [ "$RUNSHELL" == true ]; then
-  run /bin/bash
-fi
-if [ "$RUNTEST" == true ]; then
-  build
-  run pnpm test
-fi
 
 exit 0

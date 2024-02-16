@@ -1,24 +1,24 @@
 import { test, expect, navigate, Page } from "../fixtures";
 
-const singlePostURL = "https://www.shacknews.com/chatty?id=42267857#item_42267857";
+const singlePostURL = "https://www.shacknews.com/chatty?id=42267733";
 
 test.describe("scrollToPost", () => {
-  const expectScrolled = async (page: Page) => {
+  const expectArticle = async (page: Page) => {
     // expect fullpost to be positioned by default under the topbar in the viewport
-    await expect(page.locator("li.sel li.sel > div.fullpost")).toBeInViewport({ ratio: 0.5 });
+    await expect(page.locator("div#featured-article")).toBeInViewport();
     await page.reload();
-    await expect(page.locator("li.sel li.sel > div.fullpost")).toBeInViewport({ ratio: 0.5 });
+    await expect(page.locator("div#featured-article")).toBeInViewport();
   };
 
   test("disabled on initial Chatty load", async ({ page }) => {
     await navigate(page, "https://www.shacknews.com/chatty");
-    await expect(page.locator("div#featured-article")).toBeInViewport();
-    await page.reload();
-    await expect(page.locator("div#featured-article")).toBeInViewport();
+    await expectArticle(page);
   });
 
   test("enabled on single post", async ({ page }) => {
-    await navigate(page, singlePostURL);
+    await navigate(page, singlePostURL, {
+      d: { enabled_builtins: ["scroll_behavior", "single_thread_fix"] },
+    });
     await expect(page.locator("li.sel .fullpost").nth(1)).toBeInViewport();
     await page.reload();
     await expect(page.locator("li.sel .fullpost").nth(1)).toBeInViewport();
@@ -28,14 +28,14 @@ test.describe("scrollToPost", () => {
       o: { exclude: true },
       d: { enabled_builtins: ["scroll_behavior"] },
     });
-    await expectScrolled(page);
+    await expectArticle(page);
   });
   test("disabled single-thread fix", async ({ page }) => {
     await navigate(page, singlePostURL, {
       o: { exclude: true },
       d: { enabled_builtins: ["single_thread_fix"] },
     });
-    await expectScrolled(page);
+    await expectArticle(page);
   });
 });
 
