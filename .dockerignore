@@ -4,3 +4,5 @@ node_modules
 dist
 dist-firefox
 artifacts
+results
+seccomp_profile.json

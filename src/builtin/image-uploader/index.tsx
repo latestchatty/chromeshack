@@ -3,11 +3,15 @@ import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import "../../styles/image_uploader.css";
 import { ImageUploaderApp } from "./ImageUploaderApp";
+import { getEnabledBuiltin } from "../../core/settings";
 
 export const ImageUploader = {
   cachedEl: null as HTMLElement,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("image_uploader");
+    if (!isEnabled) return;
+
     processPostBoxEvent.addHandler(ImageUploader.apply);
     ImageUploader.cacheInjectable();
   },

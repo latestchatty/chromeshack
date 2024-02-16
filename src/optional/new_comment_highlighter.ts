@@ -18,7 +18,6 @@ export const NewCommentHighlighter = {
   async highlight(args?: PostEventArgs) {
     const { root } = args || {};
     const isEnabled = await enabledContains(["new_comment_highlighter"]);
-    const isChatty = !!document.getElementById("newcommentbutton");
     if (!isEnabled) return;
 
     const recents = NewCommentHighlighter.getRecentsCache();
@@ -94,9 +93,16 @@ export const NewCommentHighlighter = {
       await setSetting("last_highlight_time", now);
       return false;
     }
-    const lastHighlightTime = await getSetting("last_highlight_time", now);
+
+    let lastHighlightTime = await getSetting("last_highlight_time", now);
+    if (lastHighlightTime === -1) {
+      await setSetting("last_highlight_time", now);
+      console.log(`checkStaleTime corrected invalid lastHighlightTime: ${lastHighlightTime}`);
+      lastHighlightTime = now;
+    }
+
     const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
-    if (!overThresh || lastHighlightTime === -1) {
+    if (!overThresh) {
       console.log(`checkStaleTime fresh: ${lastHighlightTime + delayInMs} > ${now}`);
       return false;
     }

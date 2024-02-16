@@ -1,13 +1,17 @@
 import { EmojiPoster } from "../builtin/emoji_poster";
 import { parseToElement } from "../core/common/dom";
 import { processPostBoxEvent } from "../core/events";
+import { getEnabledBuiltin } from "../core/settings";
 
 export const PostLengthCounter = {
   MAX_POST_BYTES: 105,
   updateTimer: null as ReturnType<typeof setTimeout>,
   cachedEl: null as HTMLElement,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("post_length_counter");
+    if (!isEnabled) return;
+
     processPostBoxEvent.addHandler(PostLengthCounter.apply);
     PostLengthCounter.cacheInjectables();
   },

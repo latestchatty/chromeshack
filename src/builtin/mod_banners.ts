@@ -1,9 +1,13 @@
 import { processPostEvent } from "../core/events";
+import { getEnabledBuiltin } from "../core/settings";
 
 export const ModBanners = {
   isEnabled: false,
 
-  install() {
+  async install() {
+    const isEnabled = await getEnabledBuiltin("mod_banners");
+    if (!isEnabled) return;
+
     const rootContainer = document.getElementById("chatty_comments_wrap");
     if (!rootContainer?.classList?.contains("show_banners")) rootContainer?.setAttribute("class", "show_banners");
     ModBanners.isEnabled = rootContainer?.classList?.contains("show_banners");

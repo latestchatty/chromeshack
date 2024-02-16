@@ -1,7 +1,7 @@
 import * as textFieldEdit from "text-field-edit";
 import { parseToElement } from "../core/common/dom";
 import { processPostBoxEvent } from "../core/events";
-import { getSetting, setSetting } from "../core/settings";
+import { getEnabledBuiltin, getSetting, setSetting } from "../core/settings";
 import "../styles/comment_tags.css";
 
 export const CommentTags = {
@@ -43,6 +43,9 @@ export const CommentTags = {
   ],
 
   async install() {
+    const isEnabled = await getEnabledBuiltin("comment_tags");
+    if (!isEnabled) return;
+
     processPostBoxEvent.addHandler(CommentTags.installCommentTags);
     await CommentTags.cacheInjectables();
   },

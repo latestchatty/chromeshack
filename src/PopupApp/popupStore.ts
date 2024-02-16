@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 const initialState: PopupState = {
   options: [],
+  builtins: [],
   suboptions: [],
   notifications: [],
   filters: [],
@@ -15,6 +16,8 @@ const popupReducer = (state: PopupState, action: PopupAction) => {
       return action.payload;
     case "SET_OPTIONS":
       return { ...state, options: action.payload };
+    case "SET_BUILTINS":
+      return { ...state, builtins: action.payload };
     case "SET_SUBOPTIONS":
       return { ...state, suboptions: action.payload };
     case "SET_HIGHLIGHTGROUPS":

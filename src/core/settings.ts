@@ -1,4 +1,3 @@
-import { importSettings } from "../PopupApp/helpers";
 import { arrHas, objEmpty, objHas } from "./common/common";
 import { superTrim } from "./common/dom";
 import { DefaultSettings } from "./default_settings";
@@ -25,7 +24,7 @@ export const setSetting = async (key: SettingKey, val: any) => {
   // Check each time we set a key that the val will fit within the storage limit
   // ... if we don't do this then the settings store can become corrupted
   // ... causing data loss of some kv-pairs.
-  const maxSize = 5000000; // the limit is 5MiB for chrome.storage.local
+  const maxSize = 10000000; // the limit is 10MiB for chrome.storage.local
   const _settings = await getSettings();
   const _newVal = { [key]: val };
   const _withVal = { ..._settings, ..._newVal };
@@ -46,18 +45,26 @@ export const getSettingsVersion = async () => await getSetting("version", 0);
 export const getManifestVersion = () => parseFloat(chrome.runtime.getManifest().version);
 
 export const getEnabled = async (key?: EnabledOptions) => {
-  const enabled = (await getSetting("enabled_scripts")) as string[];
+  const enabled = (await getSetting("enabled_scripts", null)) as EnabledOptions[];
   if (!key) return enabled;
-  return enabled.find((v) => v === key) || null;
+  return enabled.find((v) => v === key) ?? null;
+};
+
+export const getEnabledBuiltins = async () => {
+  const builtins = (await getSetting("enabled_builtins", null)) as EnabledBuiltinOptions[];
+  return builtins;
+};
+export const getEnabledBuiltin = async (key: EnabledBuiltinOptions) => {
+  const builtins = (await getEnabledBuiltins()) as EnabledBuiltinOptions[];
+  return builtins.find((x) => x.toUpperCase() === key.toUpperCase()) || null;
 };
 
 export const getEnabledSuboptions = async () => {
-  const enabled = (await getSetting("enabled_suboptions")) as string[];
-  return enabled || null;
+  const enabled = (await getSetting("enabled_suboptions", null)) as EnabledSuboptions[];
+  return enabled;
 };
-
 export const getEnabledSuboption = async (key: EnabledSuboptions) => {
-  const suboptions = (await getEnabledSuboptions()) as string[];
+  const suboptions = (await getEnabledSuboptions()) as EnabledSuboptions[];
   return suboptions.find((x) => x.toUpperCase() === key.toUpperCase()) || null;
 };
 
@@ -89,13 +96,19 @@ export const updateSettingsVersion = async () => {
 };
 
 export const setEnabled = async (key: EnabledOptions) => {
-  const scripts = (await getEnabled()) as string[];
+  const scripts = (await getEnabled()) as EnabledOptions[];
   if (!scripts.includes(key) && key.length > 0) scripts.push(key);
   return await setSetting("enabled_scripts", scripts);
 };
 
+export const setEnabledBuiltin = async (key: EnabledBuiltinOptions) => {
+  const options = (await getEnabledBuiltins()) as EnabledBuiltinOptions[];
+  if (!options.includes(key) && key.length > 0) options.push(key);
+  return await setSetting("enabled_builtins", options);
+};
+
 export const setEnabledSuboption = async (key: EnabledSuboptions) => {
-  const options = (await getEnabledSuboptions()) as string[];
+  const options = (await getEnabledSuboptions()) as EnabledSuboptions[];
   if (!options.includes(key) && key.length > 0) options.push(key);
   return await setSetting("enabled_suboptions", options);
 };
@@ -118,14 +131,21 @@ export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) 
 /// REMOVERS
 
 export const removeEnabled = async (key: EnabledOptions) => {
-  const scripts = (await getEnabled()) as string[];
+  const scripts = (await getEnabled()) as EnabledOptions[];
   const filtered = scripts.filter((x) => x !== key) || [];
   await setSetting("enabled_scripts", filtered);
   return filtered;
 };
 
+export const removeEnabledBuiltin = async (key: EnabledBuiltinOptions) => {
+  const options = ((await getEnabledBuiltins()) || []) as EnabledBuiltinOptions[];
+  const filtered = options.filter((x) => x !== key) || [];
+  await setSetting("enabled_builtins", filtered);
+  return filtered;
+};
+
 export const removeEnabledSuboption = async (key: EnabledSuboptions) => {
-  const options = ((await getEnabledSuboptions()) || []) as string[];
+  const options = ((await getEnabledSuboptions()) || []) as EnabledSuboptions[];
   const filtered = options.filter((x) => x !== key) || [];
   await setSetting("enabled_suboptions", filtered);
   return filtered;
@@ -322,7 +342,7 @@ export const migrateSettings = async () => {
     await setSettings(mutatedSettings);
     migrated = true;
   }
-  if (last_version <= 1.73) {
+  if (last_version < 1.74) {
     // make sure highlight_groups are up-to-date for 1.74
     const mutatedGroups = await mergeHighlightGroups(
       legacy_settings?.["highlight_groups"],
@@ -342,6 +362,11 @@ export const migrateSettings = async () => {
     // reset saved drafts and templates
     await setSetting("saved_drafts", {});
     await setSetting("saved_templates", []);
+    migrated = true;
+  }
+  if (last_version < 1.76) {
+    // reset enabled_builtins from defaults when initially migrating
+    await setSetting("enabled_builtins", DefaultSettings.enabled_builtins);
     migrated = true;
   }
 

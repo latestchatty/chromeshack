@@ -1,7 +1,7 @@
 import { timeOverThresh } from "../core/common/common";
 import { elemMatches, locatePostRefs } from "../core/common/dom";
 import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from "../core/events";
-import { getSetting, setSetting } from "../core/settings";
+import { getEnabledBuiltin, getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
   // 18hr threshold
@@ -9,6 +9,9 @@ export const Collapse = {
   collapsed: [] as CollapsedThread[],
 
   async install() {
+    const isEnabled = await getEnabledBuiltin("collapse");
+    if (!isEnabled) return;
+
     await Collapse.getCollapsed();
     processPostEvent.addHandler(Collapse.toggle);
   },
