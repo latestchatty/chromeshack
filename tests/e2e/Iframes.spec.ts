@@ -37,7 +37,7 @@ test.describe("Youtube", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://www.youtube.com/embed/zXLeJFu57Wg?autoplay=1&list=PL9CBBEA5A85DBCDEF",
+      "https://www.youtube.com/embed/zXLeJFu57Wg?autoplay=1&list=PL9CBBEA5A85DBCDEF"
     );
   });
   test("Youtube long-form playlist", async ({ page }) => {
@@ -45,7 +45,7 @@ test.describe("Youtube", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://www.youtube.com/embed/videoseries?autoplay=1&list=PLBO8M-O_dTPE1Lxp4VNVMGUoz2S3_eOyQ",
+      "https://www.youtube.com/embed/videoseries?autoplay=1&list=PLBO8M-O_dTPE1Lxp4VNVMGUoz2S3_eOyQ"
     );
   });
   test("Youtube Short", async ({ page, context }) => {
@@ -62,7 +62,7 @@ test.describe("Twitch", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://player.twitch.tv/?channel=451fireman&parent=www.shacknews.com&autoplay=true&muted=false",
+      "https://player.twitch.tv/?channel=451fireman&parent=www.shacknews.com&autoplay=true&muted=false"
     );
   });
   test("Twitch long-form clip", async ({ page }) => {
@@ -70,7 +70,7 @@ test.describe("Twitch", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://clips.twitch.tv/embed?clip=EphemeralUnsightlyCarrotLeeroyJenkins&parent=www.shacknews.com&autoplay=true&muted=false",
+      "https://clips.twitch.tv/embed?clip=EphemeralUnsightlyCarrotLeeroyJenkins&parent=www.shacknews.com&autoplay=true&muted=false"
     );
   });
   test("Twitch short-form clip", async ({ page }) => {
@@ -78,7 +78,7 @@ test.describe("Twitch", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://clips.twitch.tv/embed?clip=FastBloodyDelicataMau5&parent=www.shacknews.com&autoplay=true&muted=false",
+      "https://clips.twitch.tv/embed?clip=FastBloodyDelicataMau5&parent=www.shacknews.com&autoplay=true&muted=false"
     );
   });
   test("Twitch VOD", async ({ page }) => {
@@ -86,7 +86,7 @@ test.describe("Twitch", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://player.twitch.tv/?video=v1930049844&parent=www.shacknews.com&autoplay=true&muted=false",
+      "https://player.twitch.tv/?video=v1930049844&parent=www.shacknews.com&autoplay=true&muted=false"
     );
   });
   test("Twitch VOD at offset", async ({ page }) => {
@@ -94,7 +94,7 @@ test.describe("Twitch", () => {
 
     const iframe = await waitForMedialinkIframe(page);
     expect(await iframe.getAttribute("title")).toMatch(
-      "https://player.twitch.tv/?video=v633051886&parent=www.shacknews.com&autoplay=true&muted=false&time=00h36m17s",
+      "https://player.twitch.tv/?video=v633051886&parent=www.shacknews.com&autoplay=true&muted=false&time=00h36m17s"
     );
   });
 });

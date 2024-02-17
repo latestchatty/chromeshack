@@ -38,39 +38,54 @@ run() {
 
 help() {
   echo
-  echo "Usage: $0 [--build | -b] [--run | -r] [--shell | -s] [--test] [--help | -h]"
+  echo "Usage: $0 [-b] [-r | -s] [-h]"
   echo
-  echo "  --build, -b      rebuild the image"
-  echo "  --run, -r        run the tests"
-  echo "  --shell, -s      open a shell inside the image"
-  echo "  --test           rerun the tests"
-  echo "  --help, -h       this message"
+  echo "  -b      rebuild the image"
+  echo "  -r      run the test suite"
+  echo "  -s      open a shell inside the image"
+  echo "  -t      rebuild the image and rerun the tests"
+  echo "  -h      this message"
   echo
   exit 1
 }
 
-CMD=${@:-""}
-case "$CMD" in
-  "--help" | "-h")
+VALID_ARGS=$(getopt -o bhrst -- "$@")
+eval set -- "$VALID_ARGS"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  -h)
+    shift
     help
     ;;
-  "--build" | "-b")
+  -b)
     build
+    shift
     ;;
-  "--run" | "-r")
+  -r)
     run pnpm test
+    shift
+    break
     ;;
-  "--shell" | "-s")
+  -s)
     run /bin/bash
+    shift
+    break
     ;;
-  "--test" | "")
-    build
-    run pnpm test
+  --)
+    help
     ;;
   *)
-    echo "Error: Invalid argument"
-    help
+    shift
+    if [[ -z "$1" ]]; then
+      build
+      run pnpm test
+      break
+    else
+      help
+    fi
     ;;
-esac
+  esac
+done
 
 exit 0

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # make sure to match this version to what's in package.json
-      image: mcr.microsoft.com/playwright:v1.40.1-jammy
+      image: mcr.microsoft.com/playwright:v1.41.2-jammy
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 21
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install project dependencies
         run: pnpm install
       - name: Install test dependencies

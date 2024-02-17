@@ -17,6 +17,8 @@ export const ModBanners = {
   processPost(args: PostEventArgs) {
     const { post } = args || {};
     if (ModBanners.isEnabled && post) {
+      // show proof we exist for testing purposes
+      post?.classList.add("enhanced_banners");
       const _isOfftopic = post.querySelector("li > div.fullpost.fpmod_offtopic:not(.getPost)") as HTMLElement;
       const _isStupid = post.querySelector("li > div.fullpost.fpmod_stupid:not(.getPost)") as HTMLElement;
       const _isPolitical = post.querySelector("li > div.fullpost.fpmod_political:not(.getPost)") as HTMLElement;
