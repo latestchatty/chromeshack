@@ -16,14 +16,16 @@ export const NewCommentHighlighter = {
   },
 
   async highlight(args?: PostEventArgs) {
-    const { root } = args || {};
+    const { root, rootid } = args || {};
     const isEnabled = await enabledContains(["new_comment_highlighter"]);
     if (!isEnabled) return;
 
     const recents = NewCommentHighlighter.getRecentsCache();
 
     const lastIds = (await getSetting("new_comment_highlighter_last_id", {})) as Record<number, number>;
-    const lastId: number = Object.keys(lastIds).length ? Math.max(...Object.values(lastIds)) : -1;
+    const lastIdsLen = Object.keys(lastIds).length;
+    const lastId =
+      lastIdsLen && root && lastIds[rootid] ? lastIds[rootid] : lastIdsLen ? Math.max(...Object.values(lastIds)) : -1;
     const newId = NewCommentHighlighter.getRecentId(root);
     let staleId = false;
 
