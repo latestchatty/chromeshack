@@ -36,7 +36,7 @@ export const HighlightUsers = {
       return { id, mod: !!mod, op, postid, username };
     };
     for (const p of posts) {
-      const r = process(p as HTMLElement);
+      const r = process(p as HTMLElement) as ResolvedUser;
       if (!compiled[r.username]) compiled[r.username] = [r];
       else compiled[r.username].push(r);
     }
@@ -75,7 +75,7 @@ export const HighlightUsers = {
             `.authorid_${id}, .replyid_${id}`,
           ].join(", ");
           cssRules.push(`${rules} { ${group.css} }`);
-        } else if (foundUser && group.css.length > 0) {
+        } else if (foundUser && group?.css?.length) {
           const rules = [
             `div.fpauthor_${id} span.author span.user>a`,
             `div.chattypost__hdr.fpauthor_${id} span.username>a`,

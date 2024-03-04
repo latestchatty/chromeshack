@@ -1,4 +1,3 @@
-/* eslint react-hooks/exhaustive-deps: 0 */
 import { memo, useEffect } from "react";
 import { resetSettings } from "../core/settings";
 import { FilterBox } from "./FilterBox";
@@ -17,7 +16,7 @@ const PopupApp = memo(() => {
   const handleResetBtn = () => {
     (async () => {
       const freshSettings = await resetSettings().then(getState);
-      dispatch({ type: "INIT", payload: { ...freshSettings, loaded: true } });
+      if (dispatch) dispatch({ type: "INIT", payload: { ...freshSettings, loaded: true } });
       // force a context reload after resetting
       chrome.runtime.reload();
     })();
@@ -44,7 +43,7 @@ const PopupApp = memo(() => {
     (async () => {
       const _state = await getState();
       if (_state?.loaded) return;
-      dispatch({ type: "INIT", payload: { ..._state, loaded: true } });
+      if (dispatch) dispatch({ type: "INIT", payload: { ..._state, loaded: true } });
     })();
   }, [dispatch]);
 

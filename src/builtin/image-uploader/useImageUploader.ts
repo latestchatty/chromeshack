@@ -8,7 +8,7 @@ import { getSetting, setSetting } from "../../core/settings";
 export const validTabs = [{ id: "imgurTab", label: "Imgur" }];
 
 const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch: (action: UploaderAction) => void) => {
-  const fileChooserRef = useRef(null);
+  const fileChooserRef = useRef<HTMLInputElement>(null);
 
   const doSelectTab = useCallback(
     (nextTabName?: string, prevTabName?: string) => {
@@ -18,10 +18,11 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
       (async () => {
         await setSetting("selected_upload_tab", nNextTabName);
       })();
-      dispatch({
-        type: "LOAD_TAB",
-        payload: { to: nNextTabName, from: nPrevTabName },
-      });
+      if (dispatch)
+        dispatch({
+          type: "LOAD_TAB",
+          payload: { to: nNextTabName, from: nPrevTabName },
+        });
     },
     [dispatch]
   );
@@ -33,7 +34,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
       (async () => {
         await setSetting("image_uploader_toggled", visibility);
       })();
-      dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
+      if (dispatch) dispatch({ type: "TOGGLE_UPLOADER", payload: visibility });
     },
     [state.visible, dispatch]
   );
@@ -55,18 +56,18 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
           const { fileData, urlData, selectedTab, urlDisabled } = state;
           const _tabName = selectedTab as TAB_NAMES;
           const data = arrHas(fileData) ? fileData : !urlDisabled && urlData ? [urlData] : null;
-          if (_tabName === "IMGURTAB") await handleImgurUpload(data, dispatch);
+          if (_tabName === "IMGURTAB") await handleImgurUpload(data as string[] | File[], dispatch);
         }
       })();
     },
     [state, dispatch]
   );
   const onClickCancelBtn = useCallback(
-    (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    (e?: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e?.preventDefault();
       dispatch({ type: "UPLOAD_CANCEL" });
       doSelectTab(state.selectedTab);
-      fileChooserRef.current.value = null;
+      if (fileChooserRef.current) fileChooserRef.current.value = "";
     },
     [state.selectedTab, dispatch, doSelectTab]
   );
@@ -79,7 +80,7 @@ const useImageUploader = (parentRef: HTMLElement, state: UploaderState, dispatch
     const replyField = thisElem?.querySelector("#frm_body") as HTMLInputElement;
     if (arrHas(state?.response) && replyField) {
       appendLinksToField(replyField, state.response);
-      onClickCancelBtn(null);
+      onClickCancelBtn();
     }
   }, [state.response, parentRef, onClickCancelBtn]);
 

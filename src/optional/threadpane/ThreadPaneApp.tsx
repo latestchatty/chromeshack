@@ -62,7 +62,7 @@ const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
         cs_thread_pane_card_refresh_pending: pending,
         collapsed,
       })}
-      id={`item_${rootid.toString()}`}
+      id={rootid ? `item_${rootid.toString()}` : ""}
       onClick={handleCardClick}>
       <div className="cs_thread_pane_card_header">
         <div className={`cs_thread_pane_root_author authorid_${authorid}`}>{author}</div>
@@ -71,7 +71,7 @@ const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
             <CommentDotsIcon />
           </div>
         )}
-        <div className="cs_thread_pane_post_count">{count > 0 && `${count} posts`}</div>
+        <div className="cs_thread_pane_post_count">{count && count > 0 ? `${count} posts` : ""}</div>
         <div className="cs_thread_pane_reload" title="Refresh this thread" onClick={handleClickReload}>
           <RefreshIcon classes={classNames("refresh__icon", { loading: refreshed })} />
         </div>
@@ -80,7 +80,7 @@ const ThreadPaneCard = memo((props: { post: ParsedPost }) => {
         </div>
       </div>
       <div className="cs_thread_pane_root_body">{body ? parse(body) : ""}</div>
-      {!collapsed && <ThreadPaneReplies recents={localRecents} />}
+      {!collapsed && <ThreadPaneReplies recents={localRecents as Recents} />}
     </div>
   ) : null;
 });

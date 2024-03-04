@@ -11,13 +11,13 @@ import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { jumpToPost, parseRoot } from "./helpers";
 
 const useThreadPaneCard = (post: ParsedPost) => {
-  const [localPost, setLocalPost] = useState(post);
+  const [localPost, setLocalPost] = useState<ParsedPost | null>(post as ParsedPost);
   const { recents, rootid } = localPost || {};
 
   const [pending, setPending] = useState(false);
-  const [collapsed, setCollapsed] = useState(localPost.collapsed);
+  const [collapsed, setCollapsed] = useState(localPost?.collapsed);
   const [refreshed, setRefreshed] = useState(false);
-  const [localRecents, setLocalRecents] = useState(recents);
+  const [localRecents, setLocalRecents] = useState<Recents | null>(recents as Recents);
 
   const handleClickReload = useCallback(() => {
     const reloadBtn = document.querySelector(`.root#root_${rootid}>ul>li .refresh>a`) as HTMLElement;
@@ -47,7 +47,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
   const handleCardClick = useCallback(() => {
     const _mostRecent = localRecents?.mostRecentRef;
     const _nearestLi = (_mostRecent?.parentNode as HTMLElement)?.closest("li");
-    const postid = parseInt(_nearestLi?.id?.substring(5), 10);
+    const postid = parseInt(_nearestLi?.id?.substring(5) ?? "", 10);
     jumpToPost({
       postid,
       rootid,
@@ -126,8 +126,8 @@ const useThreadPaneCard = (post: ParsedPost) => {
           for (const _post of recentTree || [])
             if (filterToLower === _post.author.toLowerCase()) break;
             else filteredRecents.push(_post);
-          if (filteredRecents.length !== recentTree.length)
-            setLocalRecents({ ...localRecents, recentTree: filteredRecents });
+          if (filteredRecents.length !== recentTree?.length)
+            setLocalRecents({ ...localRecents, recentTree: filteredRecents } as Recents);
         }
       })();
     },

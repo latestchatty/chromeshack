@@ -8,7 +8,7 @@ import { requiredOrigin } from "./permissions";
 export const injectAZScrollFix = (request: OnMessageRequest, sendResponse: any) => {
   // scroll-by-key fix for Chatty
   if (request.name === "scrollByKeyFix") {
-    getCurrentTabId().then((tabId) => {
+    getCurrentTabId().then((tabId: number) => {
       chrome.scripting
         .executeScript({
           target: { tabId },
@@ -78,12 +78,12 @@ export const initPermissionsListeners = () => {
     }
   });
   chrome.permissions.onAdded.addListener(async (permissions) => {
-    const isGranted = permissions.origins.includes(requiredOrigin);
+    const isGranted = permissions.origins?.includes(requiredOrigin);
     console.log("permission.onAdded:", isGranted);
     chrome.runtime.sendMessage({ type: "permissions_granted", permissions: permissions });
   });
   chrome.permissions.onRemoved.addListener(async (permissions) => {
-    const isGranted = permissions.origins.includes(requiredOrigin);
+    const isGranted = permissions.origins?.includes(requiredOrigin);
     console.log("permission.onRemoved:", isGranted);
     chrome.runtime.sendMessage({ type: "permissions_removed", permissions: permissions });
   });

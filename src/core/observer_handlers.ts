@@ -1,6 +1,5 @@
 import { ScrollToUncappedPostFix } from "../patches/scrollToPostFix";
 import { SingleThreadFix } from "../patches/singleThreadFix";
-import { arrHas } from "./common/common";
 import {
   disableScrollRestore,
   disableTwitch,
@@ -22,7 +21,7 @@ import {
 } from "./events";
 import { TabMessenger, setUsername } from "./notifications";
 import { ChromeShack } from "./observer";
-import { getEnabled, getEnabledBuiltin, getEnabledSuboption, mergeTransientSettings } from "./settings";
+import { getEnabled, getEnabledSuboption, mergeTransientSettings } from "./settings";
 
 const checkReplyCeiling = (rootEl: HTMLElement) => {
   // Both FF & Chrome get bogged down by nuLOL tags loading into extremely large threads
@@ -35,7 +34,7 @@ const checkReplyCeiling = (rootEl: HTMLElement) => {
   return totalTags || totalReplies;
 };
 
-const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
+const asyncResolveTags = (post: HTMLElement, timeout?: number): Promise<HTMLElement[] | null> => {
   const removeUnusedTagline = async (p: HTMLElement) => {
     // avoid having a duplicate (unused) tagline
     const rootTags = p?.querySelectorAll(".root>ul>li > .fullpost span.lol-tags");
@@ -54,7 +53,7 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
         return acc;
       }, [] as HTMLElement[]);
 
-    return [];
+    return [] as HTMLElement[];
   };
 
   const _timeout = timeout || 1000; // 1s timeout by default
@@ -65,7 +64,7 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
     const tagsInterval = setInterval(async () => {
       // check every timeStep for data being loaded up to a timeout
       const tagCheckResult = collectTagData(post);
-      if (tagsTimer <= _timeout && arrHas(tagCheckResult)) {
+      if (tagsTimer <= _timeout && tagCheckResult && tagCheckResult.length) {
         await removeUnusedTagline(post);
         clearInterval(tagsInterval);
         return resolve(tagCheckResult);
@@ -80,15 +79,16 @@ const asyncResolveTags = (post: HTMLElement, timeout?: number) => {
 };
 export const handleTagsEvent = async (args: PostEventArgs) => {
   const { post } = args || {};
+  if (!post) return;
   // count all the tags in this post and raise events based on whether they contain data
   return asyncResolveTags(post)
-    .then((tagData: HTMLElement[]) => {
-      const _args = { ...args, tagData };
+    .then((tagData) => {
+      const _args = { ...args, tagData } as PostEventArgs;
       processTagDataLoadedEvent.raise(_args);
       return _args;
     })
-    .catch((emptyTags: HTMLElement[]) => {
-      const _args = { ...args, emptyTags };
+    .catch((emptyTags) => {
+      const _args = { ...args, emptyTags } as PostEventArgs;
       processEmptyTagsLoadedEvent.raise(_args);
       return _args;
     });
@@ -97,8 +97,9 @@ export const handleTagsEvent = async (args: PostEventArgs) => {
 export const handlePostRefresh = async (args: PostEventArgs, mutation?: RefreshMutation) => {
   const { post, root, postid, rootid } = args || {};
   const postOL = post?.querySelector(".oneline_body") as HTMLElement;
-  const replyOL = root?.querySelector(`li#item_${mutation.postid} .oneline_body`) as HTMLElement;
-  processPostRefreshEvent.raise(args, mutation);
+  const replyOL =
+    root && mutation ? (root.querySelector(`li#item_${mutation.postid} .oneline_body`) as HTMLElement) : null;
+  processPostRefreshEvent.raise(args, mutation!);
   const disableTags = await getEnabled("hide_tagging_buttons");
   const _elem = postOL || replyOL;
   // reopen the previously open post (if applicable)
@@ -128,15 +129,15 @@ export const handleRootAdded = async (mutation: RefreshMutation) => {
 
   if (post && root)
     await handleTagsEvent(raisedArgs)
-      .then((neArgs) => handlePostRefresh(neArgs, mutation))
-      .catch((eArgs) => handlePostRefresh(eArgs, mutation));
+      .then((neArgs) => handlePostRefresh(neArgs as PostEventArgs, mutation))
+      .catch((eArgs) => handlePostRefresh(eArgs as PostEventArgs, mutation));
 };
 
 export const handleReplyAdded = async (args: PostEventArgs) => {
   const { post, root } = args || {};
   const postRefreshBtn = post?.querySelector("div.refresh > a") as HTMLElement;
   const disableTags = await getEnabled("hide_tagging_buttons");
-  const shouldRefresh = checkReplyCeiling(root);
+  const shouldRefresh = root && checkReplyCeiling(root);
   ChromeShack.refreshing = [...ChromeShack.refreshing.filter((r) => r.rootid !== args.rootid)];
   // avoid refreshing a thread after replying if this would cause a performance problem
   if (!disableTags && postRefreshBtn && shouldRefresh) postRefreshBtn.click();
@@ -150,10 +151,10 @@ export const handleRefreshClick = async (e: MouseEvent) => {
   if (refreshBtn) {
     const raisedArgs = locatePostRefs(refreshBtn);
     const { root, postid, rootid, is_root } = raisedArgs || {};
-    processRefreshIntentEvent.raise(raisedArgs);
+    processRefreshIntentEvent.raise(raisedArgs as PostEventArgs);
     const rootRefreshBtn = root?.querySelector("div.refresh > a") as HTMLElement;
     const foundIdx = ChromeShack.refreshing.findIndex((r) => r.rootid === rootid);
-    const shouldRefresh = checkReplyCeiling(root);
+    const shouldRefresh = root && checkReplyCeiling(root);
     const disableTags = await getEnabled("hide_tagging_buttons");
     if (foundIdx === -1 && shouldRefresh) ChromeShack.refreshing.unshift({ postid, rootid });
     // avoid unnecessary tag refreshes by refreshing the root only
@@ -195,7 +196,7 @@ export const processFullPosts = () => {
   for (const el of fullposts) {
     const args = locatePostRefs(el);
     const { post, root } = args || {};
-    if (root || post) processPost(args);
+    if (root || post) processPost(args as PostEventArgs);
   }
   fullPostsCompletedEvent.raise();
 };
@@ -206,7 +207,7 @@ export const processPostBox = (postbox: HTMLElement) => {
   const postform = postbox.querySelector("#postform");
   if (!postform?.querySelector("#postform #postform_aligner")) {
     const aligner = parseToElement(`<div id="postform_aligner" />`);
-    postform.appendChild(aligner);
+    postform?.appendChild(aligner!);
   }
 
   processPostBoxEvent.raise({ postbox });

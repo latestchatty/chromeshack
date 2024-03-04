@@ -28,12 +28,13 @@ const Carousel = (props: { slides: React.ReactNode[] }) => {
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
 
-  const [firstSlideRef, setFirstSlideRef] = useState(null as HTMLElement);
+  const [firstSlideRef, setFirstSlideRef] = useState<HTMLElement | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   const scrollPrev = useCallback(() => embla?.scrollPrev(), [embla]);
   const scrollNext = useCallback(() => embla?.scrollNext(), [embla]);
   const onSelect = useCallback(() => {
+    if (!embla) return;
     // update our button states
     setPrevBtnEnabled(embla.canScrollPrev());
     setNextBtnEnabled(embla.canScrollNext());

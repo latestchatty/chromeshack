@@ -5,7 +5,7 @@ import { getEnabledBuiltin, getSetting, setSetting } from "../core/settings";
 import "../styles/comment_tags.css";
 
 export const CommentTags = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   tags: [
     [
@@ -64,25 +64,25 @@ export const CommentTags = {
     `) as HTMLElement;
     const tbody = table.querySelector("#shacktags_legend_table-body");
     for (const tr of CommentTags.tags) {
-      const row = tbody.appendChild(document.createElement("tr"));
+      const row = tbody?.appendChild(document.createElement("tr"));
       for (const tag of tr) {
         const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
-        const name_td = row.appendChild(document.createElement("td"));
+        const name_td = row?.appendChild(document.createElement("td"));
         const span = parseToElement(`<span class="${class_name}">${name}</span>`);
-        name_td.appendChild(span);
-        if (clickFuncAsString?.length > 0) name_td.setAttribute("onclick", clickFuncAsString);
-        const code_td = row.appendChild(document.createElement("td"));
-        const button = code_td.appendChild(document.createElement("a"));
+        if (span) name_td?.appendChild(span);
+        if (clickFuncAsString?.length > 0) name_td?.setAttribute("onclick", clickFuncAsString);
+        const code_td = row?.appendChild(document.createElement("td"));
+        const button = code_td?.appendChild(document.createElement("a"))!;
         button.textContent = `${opening_tag}...${closing_tag}`;
         button.href = "#";
-        button.addEventListener("click", async (e: MouseEvent) => {
+        button?.addEventListener("click", async (e: MouseEvent) => {
           e.preventDefault();
           CommentTags.insertCommentTag(name, opening_tag, closing_tag);
         });
       }
     }
     table.addEventListener("click", CommentTags.toggleLegend, true);
-    CommentTags.cachedEl = table;
+    if (table) CommentTags.cachedEl = table as HTMLElement;
   },
 
   async installCommentTags(args: PostboxEventArgs) {
@@ -92,17 +92,17 @@ export const CommentTags = {
     const postForm = postbox.querySelector("#postform_aligner");
     // remove the pre-existing legend box
     const ogLegend = postbox.querySelector("fieldset > #shacktags_legend");
-    ogLegend?.parentElement.removeChild(ogLegend);
+    ogLegend?.parentElement?.removeChild(ogLegend);
     const legend = postForm?.querySelector("#comment_tags_container");
     const cachedLegend = CommentTags.cachedEl;
-    if (!legend) postForm.append(cachedLegend);
+    if (!legend && cachedLegend) postForm?.append(cachedLegend);
   },
 
   async toggleLegend(e: MouseEvent) {
     e.preventDefault();
     const _this = e.target as HTMLElement;
     const isToggle = _this?.id?.indexOf("shacktags_legend_toggle") > -1;
-    const table = _this?.parentElement.querySelector("#shacktags_legend_table");
+    const table = _this?.parentElement?.querySelector("#shacktags_legend_table");
     const enabled = !table?.classList?.contains("hidden");
     if (isToggle && table) {
       await setSetting("tags_legend_toggled", !enabled);
@@ -120,7 +120,7 @@ export const CommentTags = {
     if (name === "code") value = value.replace(/\s\s*$/, "");
     // break up curly braces that confuse the shack
     else value = value.replace(/^{/, "\n{").replace(/}$/, "}\n");
-    if (selectStart >= 0 && selectEnd > 0) {
+    if (selectStart && selectEnd) {
       const beforeSelection = value.substring(0, selectStart);
       const afterSelection = value.substring(selectEnd, value.length);
       const selection = value.substring(selectStart, selectEnd);

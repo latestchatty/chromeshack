@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { type Root, createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
@@ -6,8 +7,8 @@ import "../../styles/templates.css";
 import { TemplatesApp } from "./TemplatesApp";
 
 const Templates = {
-  cachedEl: null as HTMLElement,
-  cachedRoot: null as Root,
+  cachedEl: null as HTMLElement | null,
+  cachedRoot: null as Root | null,
 
   install() {
     processPostBoxEvent.addHandler(Templates.apply);
@@ -31,8 +32,12 @@ const Templates = {
         const root = createRoot(Templates.cachedEl!);
         Templates.cachedRoot = root;
       }
-      positionElem.append(Templates.cachedEl);
-      Templates.cachedRoot.render(<TemplatesApp inputBox={inputBox} />);
+      positionElem.append(Templates.cachedEl!);
+      Templates.cachedRoot.render(
+        <StrictMode>
+          <TemplatesApp inputBox={inputBox} />
+        </StrictMode>
+      );
     }
   },
 };

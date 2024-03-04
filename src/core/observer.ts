@@ -33,7 +33,7 @@ export const ChromeShack = {
           }
 
           // check for opening capped root posts
-          if (mutation.type === "attributes" && mutation.oldValue?.indexOf("capped") > -1) {
+          if (mutation.type === "attributes" && mutation.oldValue && mutation.oldValue.indexOf("capped") > -1) {
             const root = mutation.target as HTMLElement;
             const rootid = root != undefined ? parseInt(root.id?.substring(5), 10) : -1;
             processUncapThread({ root, rootid });
@@ -53,7 +53,7 @@ export const ChromeShack = {
             }
             if (addedFullpost) {
               // check for opening a fullpost
-              const refs = locatePostRefs(addedFullpost);
+              const refs = locatePostRefs(addedFullpost) as PostEventArgs;
               processPost(refs);
             }
             if (elemMatches(added, "#postbox")) processPostBox(added);

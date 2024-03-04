@@ -13,7 +13,7 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
     if (window.scrollY > _threshold) setHasScrolled(true);
     else setHasScrolled(false);
   }, [headerEl]);
-  const debounceScroll = useRef(debounce((e: Event) => headerScrolled(), 100)).current;
+  const debounceScroll = useRef(debounce((_: Event) => headerScrolled(), 100)).current;
   useEffect(() => {
     if (!targetEl || !headerEl) return;
     setObservedElem(headerEl as HTMLElement);
@@ -21,7 +21,7 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
     const narrowMatch = window.matchMedia("(max-width: 1024px)");
     setIsNarrow(narrowMatch.matches);
     headerScrolled();
-    function handleNarrow(this: MediaQueryList, e: MediaQueryListEvent) {
+    function handleNarrow(this: MediaQueryList, _: MediaQueryListEvent) {
       if (this.matches) setIsNarrow(true);
       else setIsNarrow(false);
     }

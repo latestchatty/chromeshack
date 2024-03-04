@@ -3,11 +3,13 @@ import { arrHas, classNames } from "../core/common/common";
 import { toggleOption } from "./actions";
 import { useStore } from "./popupStore";
 
-const useOption = (opts: {
+interface OptionProps {
   key: string;
   val: EnabledOptions | EnabledBuiltinOptions | EnabledSuboptions;
   type: "SET_OPTIONS" | "SET_BUILTINS" | "SET_SUBOPTIONS";
-}) => {
+}
+
+const useOption = (opts: OptionProps) => {
   const { key, val, type = "SET_OPTIONS" } = opts || {};
   const state = useStore() as PopupState;
   const dispatch = state.dispatch;
@@ -15,7 +17,10 @@ const useOption = (opts: {
   const [options, setOptions] = useState(state[key] as string[]);
 
   const isChecked = arrHas(options) ? !!options.find((x) => x?.toUpperCase() === val?.toUpperCase()) : false;
-  const setChecked = useCallback(() => toggleOption(options, val, type, dispatch), [options, val, type, dispatch]);
+  const setChecked = useCallback(
+    () => dispatch && toggleOption(options, val, type, dispatch),
+    [options, val, type, dispatch]
+  );
 
   useEffect(() => {
     const _options = state[key] as string[];
@@ -138,11 +143,15 @@ const OptionGroup = (props: {
   optionType?: "SET_OPTIONS" | "SET_BUILTINS";
 }) => {
   const { id, classes, label, indented = false, infolabel, children, optionType = "SET_OPTIONS" } = props || {};
-  const { isChecked, setChecked } = useOption({
-    key: "options",
-    val: id,
-    type: optionType === "SET_BUILTINS" ? "SET_BUILTINS" : "SET_OPTIONS",
-  });
+  const { isChecked, setChecked } = useOption(
+    id
+      ? {
+          key: "options",
+          val: id,
+          type: optionType === "SET_BUILTINS" ? "SET_BUILTINS" : "SET_OPTIONS",
+        }
+      : ({} as OptionProps)
+  );
 
   return (
     <div className={classNames("option__group", classes)}>

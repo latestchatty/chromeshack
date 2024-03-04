@@ -10,7 +10,7 @@ export const ModBanners = {
 
     const rootContainer = document.getElementById("chatty_comments_wrap");
     if (!rootContainer?.classList?.contains("show_banners")) rootContainer?.setAttribute("class", "show_banners");
-    ModBanners.isEnabled = rootContainer?.classList?.contains("show_banners");
+    ModBanners.isEnabled = rootContainer?.classList?.contains("show_banners") || false;
     processPostEvent.addHandler(ModBanners.processPost);
   },
 

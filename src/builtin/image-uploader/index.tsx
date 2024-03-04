@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
@@ -6,7 +7,7 @@ import { ImageUploaderApp } from "./ImageUploaderApp";
 import { getEnabledBuiltin } from "../../core/settings";
 
 export const ImageUploader = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   async install() {
     const isEnabled = await getEnabledBuiltin("image_uploader");
@@ -29,8 +30,12 @@ export const ImageUploader = {
       appContainer = ImageUploader.cachedEl;
       const root = createRoot(appContainer!);
       // insert our footer at the bottom of the postbox
-      renderContainer.append(appContainer);
-      root.render(<ImageUploaderApp postboxEl={postbox} />);
+      renderContainer.append(appContainer!);
+      root.render(
+        <StrictMode>
+          <ImageUploaderApp postboxEl={postbox} />
+        </StrictMode>
+      );
     }
   },
 };

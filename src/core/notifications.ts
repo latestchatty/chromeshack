@@ -96,7 +96,7 @@ export const alarmNotifications = async () => {
     if (!enabled) return;
 
     let nEventId = await getEventId();
-    let resp: NotifyResponse = null;
+    let resp = null as NotifyResponse | null;
     if (!nEventId) {
       // avoid getting hung in a tock loop if saved id is unusable
       await setInitialNotificationsEventId();

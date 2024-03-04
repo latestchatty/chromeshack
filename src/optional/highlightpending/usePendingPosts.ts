@@ -48,7 +48,7 @@ const usePendingPosts = (threaded: boolean) => {
   const updateRefreshed = useCallback(
     ({ post }: PostEventArgs) => {
       // update the list of pending posts when one of them is refreshed
-      const threadid = parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5), 10);
+      const threadid = parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5) ?? "", 10);
       const filtered = pendings.filter((p) => p.threadId !== threadid);
       const newIdx = filtered.length - 1 > 0 ? filtered.length - 1 : 0;
       const newPendings = arrHas(filtered) ? [...filtered] : [];
@@ -74,7 +74,7 @@ const usePendingPosts = (threaded: boolean) => {
         const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
         const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
         // don't grab new posts that contain our logged-in user as the author
-        if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
+        if (thread && postId && threadId && !isAuthorMe) acc.push({ postId, threadId, thread });
         return acc;
       }, [] as PendingPost[]);
       const reducedPendings = reducedPosts.reduce((acc, p) => {

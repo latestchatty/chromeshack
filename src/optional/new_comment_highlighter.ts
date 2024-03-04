@@ -25,7 +25,7 @@ export const NewCommentHighlighter = {
     const lastIds = (await getSetting("new_comment_highlighter_last_id", {})) as Record<number, number>;
     const lastIdsLen = Object.keys(lastIds).length;
     const lastId =
-      lastIdsLen && root && lastIds[rootid] ? lastIds[rootid] : lastIdsLen ? Math.max(...Object.values(lastIds)) : -1;
+      lastIdsLen && rootid && lastIds[rootid] ? lastIds[rootid] : lastIdsLen ? Math.max(...Object.values(lastIds)) : -1;
     const newId = NewCommentHighlighter.getRecentId(root);
     let staleId = false;
 
@@ -54,7 +54,7 @@ export const NewCommentHighlighter = {
             (acc, r) => {
               const id = parseInt(r.id?.substring(5), 10);
               const newest = r.querySelector("div.oneline0");
-              const newestId = parseInt(newest?.parentElement.id?.substring(5), 10);
+              const newestId = parseInt(newest?.parentElement?.id?.substring(5) ?? "", 10);
               acc[id] = newestId;
               return acc;
             },
@@ -75,7 +75,7 @@ export const NewCommentHighlighter = {
     return recentId > -1 ? recentId : -1;
   },
   filterKeysByNewest(records: Record<number, number>[]): Record<number, number> {
-    const newest = {};
+    const newest = {} as Record<number, number>;
     const seenKeys = new Set<string>();
     for (const r of records) {
       for (const k in r) {
@@ -121,7 +121,7 @@ export const NewCommentHighlighter = {
     const newerPostIds = oneliners.reduce(
       (acc, v) => {
         const _root = v?.closest("div.root > ul > li");
-        const rootId = parseInt(_root?.id?.substring(5), 10);
+        const rootId = parseInt(_root?.id?.substring(5) ?? "", 10);
         const curId = parseInt(v?.id?.substring(5), 10);
         if (curId <= lastId) return acc;
         // tag these newer oneline spans with a blue bar on the left
@@ -138,7 +138,7 @@ export const NewCommentHighlighter = {
     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
     const commentsCount = commentDisplay?.textContent?.split(" ")[0];
     const newComments = commentsCount && `${commentsCount} Comments (${newerPostIds.length - 1} New)`;
-    if (newComments) commentDisplay.textContent = newComments;
+    if (newComments && commentDisplay) commentDisplay.textContent = newComments;
 
     const filtered = NewCommentHighlighter.filterKeysByNewest(newerPostIds);
     const newestId = Math.max(...Object.values(filtered));

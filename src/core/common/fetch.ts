@@ -10,9 +10,9 @@ const sanitizeObj = (val: any) => {
       acc.push(sanitizeObj(v));
       return acc;
     }, []);
-  else if (_objKeys?.length > 0)
+  else if (_objKeys?.length)
     return _objKeys.reduce(
-      (acc, k) => {
+      (acc: Record<string | number, any>, k: any) => {
         acc[k] = sanitizeObj(val[k]);
         return acc;
       },
@@ -36,7 +36,7 @@ export const safeJSON = (text: string) => {
         result[key] = sanitizeObj(val);
       }
       return result;
-    } catch (e) {
+    } catch (e: any) {
       throw Error(e);
     }
 
@@ -102,7 +102,7 @@ export const parseFetchResponse = async (textPromise: Promise<string>, parseType
   return null;
 };
 
-export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any> => {
+export const fetchSafe = (opts: FetchArgs): Promise<any> => {
   // used for sanitizing fetches
   // fetchOpts gets destructured in 'xhrRequest()'
   // parseType gets destructured into override bools:
@@ -110,11 +110,12 @@ export const fetchSafe = ({ url, fetchOpts, parseType }: FetchArgs): Promise<any
   //   chattyRSS: to force parsing RSS to a sanitized JSON object
   //   instagram: for embedded instagram graphQL parsing
   //   json: to force sanitizing the response text as a JSON object
+  const { url, fetchOpts, parseType } = opts || {};
   return new Promise((resolve, reject) =>
     fetch(url, fetchOpts)
       .then(async (res) => {
         const result = (res?.ok || res?.statusText === "OK") && res.text();
-        const parsed = result ? parseFetchResponse(result, parseType) : null;
+        const parsed = result ? parseFetchResponse(result, parseType as ParseType) : null;
         if (parsed) return resolve(parsed);
         console.error(res);
         return reject(res);

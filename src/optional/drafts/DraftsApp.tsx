@@ -5,7 +5,6 @@ import { getSetting, setSetting } from "../../core/settings";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
 import { debounce } from "ts-debounce";
 import isEqual from "lodash.isequal";
-import { decompress } from "lz-string";
 
 export const filterDraftsLRU = async (drafts: Record<number, Draft>) => {
   if (!drafts || !Object.keys(drafts)) return {};
@@ -30,11 +29,12 @@ const DraftsApp = memo((props: { postid: number; inputBox: HTMLInputElement }) =
     const keys = Object.keys(_drafts);
     const decompressed = keys.length
       ? keys.reduce(
-          (acc, k) => {
-            const cDraft = _drafts[k];
+          (acc, k: string) => {
+            const _k = parseInt(k, 10);
+            const cDraft = _drafts[_k];
             const dBody = decompressString(cDraft.body);
             if (dBody == null) return acc;
-            acc[k] = { ...cDraft, body: dBody };
+            acc[_k] = { ...cDraft, body: dBody };
             return acc;
           },
           {} as Record<number, Draft>
@@ -63,10 +63,11 @@ const DraftsApp = memo((props: { postid: number; inputBox: HTMLInputElement }) =
       const compressed = keys.length
         ? keys.reduce(
             (acc, k) => {
-              const draft = d[k];
+              const _k = parseInt(k, 10);
+              const draft = d[_k];
               const cBody = compressString(draft.body);
               if (cBody == null) return acc;
-              acc[k] = { ...draft, body: cBody };
+              acc[_k] = { ...draft, body: cBody };
               return acc;
             },
             {} as Record<number, Draft>
@@ -150,14 +151,14 @@ const DraftsApp = memo((props: { postid: number; inputBox: HTMLInputElement }) =
         const filtered =
           _keys.length &&
           _keys.reduce(
-            (acc, v) => {
-              const _key = parseInt(v, 10);
-              if (_key !== postid) return { ...acc, [_key]: _drafts[_key] };
+            (acc, k) => {
+              const _k = parseInt(k, 10);
+              if (_k !== postid) return { ...acc, [_k]: _drafts[_k] };
               return acc;
             },
             {} as Record<number, Draft>
           );
-        await saveDraftsToStore(filtered);
+        await saveDraftsToStore(filtered as Record<number, Draft>);
         setInputVal("");
         unregisterHandlers(); // avoid duplicate handlers when replybox closes
       })();

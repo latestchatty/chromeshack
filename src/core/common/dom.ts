@@ -134,7 +134,8 @@ export function scrollToElement(elem: HTMLElement, opts?: { offset?: number; smo
     }
     if (!_elem) return false;
 
-    const headerHeight = -(document.querySelector("header")?.getBoundingClientRect().height + 6);
+    const header = document?.querySelector("header");
+    const headerHeight = header ? -(header.getBoundingClientRect().height + 6) : 0;
     const _offset = offset == null ? headerHeight : offset;
     const visibleY = toFit ? _offset : -Math.floor(window.innerHeight / 4);
     const rect = _elem.getBoundingClientRect();
@@ -179,13 +180,15 @@ export function elementFitsViewport(elem: HTMLElement) {
   }
   if (!_elem) return false;
 
-  const headerHeight = document.querySelector("header")?.getBoundingClientRect().height + 6;
+  const header = document.querySelector("header");
+  const headerHeight = header ? header.getBoundingClientRect().height + 6 : 0;
   const elemHeight = (_elem as HTMLElement).getBoundingClientRect().height;
   const visibleHeight = window.innerHeight;
   return elemHeight < visibleHeight - headerHeight;
 }
 
 export const removeChildren = (elem: HTMLElement) => {
+  if (!elem || !elem.lastChild) return;
   // https://stackoverflow.com/a/42658543
   while (elem.hasChildNodes()) elem.removeChild(elem.lastChild);
 };
@@ -239,16 +242,16 @@ export const JSONToFormData = (jsonStr: string) => {
 export const appendLinksToField = (field: HTMLInputElement, links: string[]) => {
   /// try to append links to the bottom of text input field
   if (!field || field.value === undefined) return console.error("invalid field target:", field);
-  const constructed: string = arrHas(links)
+  const constructed = links.length
     ? links
         .reduce((pv, v, i) => {
           // make sure we leave space after the link text is inserted
           if (i === 0 && field.value.length > 0) pv.push(`\n${v}\n`);
-          else pv.push(`${v}\n`);
+          else if (v) pv.push(`${v}\n`);
           return pv;
-        }, [])
+        }, [] as string[])
         .join("")
-    : null;
+    : "";
   if (constructed) textFieldEdit.insert(field, constructed);
 };
 
@@ -257,8 +260,8 @@ export const matchFileFormat = (input: File, imgFormats: string, vidFormats: str
   const _imgFormats = imgFormats && imgFormats.length > 0 ? imgFormats.split(",") : null;
   const _vidFormats = vidFormats && vidFormats.length > 0 ? vidFormats.split(",") : null;
   if (!_imgFormats && !_vidFormats) return -1;
-  const _imgMatched = arrHas(_imgFormats) && _imgFormats.filter((fmt) => fmt === input.type);
-  const _vidMatched = arrHas(_vidFormats) && _vidFormats.filter((fmt) => fmt === input.type);
+  const _imgMatched = arrHas(_imgFormats as string[]) ? _imgFormats?.filter((fmt) => fmt === input.type) : false;
+  const _vidMatched = arrHas(_vidFormats as string[]) ? _vidFormats?.filter((fmt) => fmt === input.type) : false;
   if (_imgMatched) return 0;
   else if (_vidMatched) return 1;
   return -1;
@@ -268,7 +271,7 @@ export const afterElem = (siblingElem: HTMLElement, elem: HTMLElement) => {
   /// check if we are a successor of a sibling in a node list
   if (!siblingElem || !elem) return false;
   let siblingPos = 0;
-  const children = [...(elem?.parentNode.childNodes ?? [])];
+  const children = [...(elem?.parentNode?.childNodes ?? [])];
   for (let i = 0; i < children?.length && children?.length > 0; i++) {
     const child = children[i] as HTMLElement;
     // stop short if we get a match
@@ -302,7 +305,7 @@ export const disableTwitch = () => {
   twitch?.parentElement?.removeChild(twitch);
 };
 
-export const parseToElement = (html: string) => {
+export const parseToElement = (html: string): Element | null => {
   // NOTE: DOMParser is picky about its HTML-text input
   const noTrailingSpaces = html.replace(/^\s*|\s*$/, "");
   const parsed = new DOMParser().parseFromString(noTrailingSpaces, "text/html");
@@ -312,12 +315,12 @@ export const parseToElement = (html: string) => {
 export const decodeHTML = (text: string) => {
   // decode unicode entities from text by reading off an element
   const p = parseToElement(`<p>${text}</p>`);
-  return p.textContent || "";
+  return p?.textContent || "";
 };
 
 export const insertStyle = (css: string, containerName: string) => {
   const existing = document.getElementById(containerName);
-  if (existing) existing.parentElement.removeChild(existing);
+  if (existing) existing.parentElement?.removeChild(existing);
   const _style = document.createElement("style");
   _style.setAttribute("id", containerName);
   _style.textContent = css;

@@ -4,11 +4,11 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
   const { root = null, threshold = 0.5, ...configOpts } = config || {};
 
   const [isVisible, setIsVisible] = useState(false);
-  const [observedElem, setObservedElem] = useState<HTMLElement>(null);
-  const observer = useRef<IntersectionObserver>(null);
+  const [observedElem, setObservedElem] = useState<HTMLElement | null>();
+  const observer = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    if (!observedElem) return;
+    if (!observedElem || !observer) return;
     // disconnect previous before reattach (for safety)
     observer.current?.disconnect();
     const _config = {
@@ -22,11 +22,11 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
       else setIsVisible(false);
     }, _config);
     // avoid dropping our ref
-    const _observer = observer.current;
-    if (observedElem) _observer.observe(observedElem);
+    const _observer = observer;
+    if (observedElem) _observer.current?.observe(observedElem);
     // make sure we clean up after ourselves
-    return () => _observer.disconnect();
+    return () => _observer?.current?.disconnect();
   }, [configOpts, observedElem, root, threshold]);
   // expose an element setter and our boolean visibility state
-  return { observedElem, setObservedElem, isVisible };
+  return { observedElem, setObservedElem, isVisible, observer };
 };

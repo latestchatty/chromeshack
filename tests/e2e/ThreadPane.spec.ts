@@ -9,7 +9,7 @@ test("valid cards clicked jumps to post", async ({ page }) => {
   // find the first card with replies
   await page.waitForSelector("div#cs_thread_pane", { state: "visible" });
   const cards = page.locator(".cs_thread_pane_card");
-  let cardWithReplies: Locator = null;
+  let cardWithReplies = null as Locator | null;
   for (const card of await cards.all()) {
     const replies = card.locator(".cs_thread_pane_reply").all();
     if ((await replies).length > 0) {
@@ -17,16 +17,16 @@ test("valid cards clicked jumps to post", async ({ page }) => {
       break;
     }
   }
-  const cardBody = await cardWithReplies.locator(".cs_thread_pane_root_body").innerText();
-  expect(cardBody.length).toBeGreaterThan(0);
+  const cardBody = await cardWithReplies?.locator(".cs_thread_pane_root_body").innerText();
+  expect(cardBody?.length).toBeGreaterThan(0);
 
   // when card FFWD shortcut is clicked thread view jumps to the root post
-  await cardWithReplies.locator(".cs_thread_pane_shortcut").click();
-  const cardId = (await cardWithReplies.getAttribute("id"))?.substring(5);
+  await cardWithReplies?.locator(".cs_thread_pane_shortcut").click();
+  const cardId = (await cardWithReplies?.getAttribute("id"))?.substring(5);
   const rootFP = page.locator(`div.root#root_${cardId} .fullpost`);
   await expect(rootFP).toBeInViewport({ ratio: 0.1 });
   // when card body is clicked thread view jumps to newest reply
-  await cardWithReplies.locator(".cs_thread_pane_root_body").click();
+  await cardWithReplies?.locator(".cs_thread_pane_root_body").click();
   const rootOL = page.locator(`div.root#root_${cardId} .oneline0`);
   await expect(rootOL).toBeInViewport();
 });

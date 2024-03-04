@@ -1,14 +1,17 @@
 import { compressToUTF16, decompressFromUTF16 } from "lz-string";
 
-export const arrHas = (arr: any[]) => arr != null && Array.isArray(arr) && arr.length > 0;
-export const arrEmpty = (arr: any[]) => arr !== null && Array.isArray(arr) && arr.length === 0;
-export const objHas = (obj: Record<string, any>) =>
-  obj != null && typeof obj === "object" && Object.keys(obj).length > 0;
-export const objEmpty = (obj: Record<string, any>) =>
-  obj != null && typeof obj === "object" && Object.keys(obj).length === 0;
+export function isNotNull<T>(val: T | null): val is T {
+  return val != null;
+}
+export const arrHas = (arr: any[]): boolean => Array.isArray(arr) && arr.length > 0;
+export const arrEmpty = (arr: any[]): boolean => Array.isArray(arr) && arr.length === 0;
+export const objHas = (obj: Record<any, any>): boolean =>
+  isNotNull(obj) && typeof obj === "object" && Object.keys(obj).length > 0;
+export const objEmpty = (obj: Record<any, any>): boolean =>
+  isNotNull(obj) && typeof obj === "object" && Object.keys(obj).length === 0;
 
-export const objContainsProperty = (key: string, obj: Record<string, any>) =>
-  objHas(obj) && Object.prototype.hasOwnProperty.call(obj, key);
+export const objContainsProperty = (key: string, obj: Record<any, any>) =>
+  isNotNull(obj) && objHas(obj) && Object.prototype.hasOwnProperty.call(obj, key);
 
 export const isJSON = (text: string) => {
   try {
@@ -110,10 +113,10 @@ export const timeOverThresh = (timestamp: number, threshold: number) => {
   return elapsed > threshold;
 };
 
-export const getCurrentTabId = async () => {
+export const getCurrentTabId = async (): Promise<number> => {
   const queryOptions = { active: true, lastFocusedWindow: true };
   const [tab] = await chrome.tabs.query(queryOptions);
-  return tab.id;
+  return tab.id ?? 0;
 };
 
 export const isFirefox = () => {

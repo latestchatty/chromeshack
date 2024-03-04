@@ -18,19 +18,21 @@ export const CustomUserFilters = {
     for (const post of postElems || []) {
       const ol = post?.matches(".oneline") && (post as HTMLElement);
       const fp = hideFPs && post?.matches(".fullpost") && post;
-      const root = fp?.closest ? fp.closest(".root") : false;
-      if (ol?.parentElement?.matches("li")) {
+      const root = fp instanceof Element && fp?.closest && fp.closest(".root");
+      if (ol instanceof Element && ol?.parentElement?.matches("li")) {
         // remove all matching subreplies
         const matchedNode = ol?.parentNode;
         const children = matchedNode?.childNodes;
         let lastChild = children?.[children.length - 1] as HTMLElement;
         let lastChildIsRoot = lastChild?.matches ? lastChild.matches(".root>ul>li>.fullpost") : false;
+
+        if (!children?.length) return console.error("matchedNode children is invalid!");
         for (let i = children.length - 1; i > 0 && lastChild; i--) {
           // don't remove the root fullpost in single-thread mode
           if ((hideFPs && !isChatty && !lastChildIsRoot) || (!lastChildIsRoot && lastChild))
-            matchedNode.removeChild(lastChild);
+            matchedNode?.removeChild(lastChild);
 
-          lastChild = children[i - 1] as HTMLElement;
+          lastChild = children?.[i - 1] as HTMLElement;
           lastChildIsRoot = lastChild?.matches ? lastChild.matches(".root>ul>li>.fullpost") : false;
         }
       } else if (isChatty && fp && root)

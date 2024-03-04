@@ -42,19 +42,24 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
           : null;
 
     // try all of our potential matches
-    const task = (
+    const tasks = (
       await Promise.all(
         [albumImageUrl, albumUrl, imageUrl].map(async (u) => {
           if (!u) return;
           const resp: ImgurResponse = await _fetch(u);
-          const album = arrHas(resp?.data?.images) ? resp?.data?.images.map((i) => i?.mp4 || i?.link) : null;
-          const link = resp?.data?.mp4 || resp?.data?.link || null;
+          if (!resp?.data) return null;
+
+          const album = resp.data.images?.length ? resp.data.images.map((i) => i.mp4 || i.link) : null;
+          const link = resp.data.mp4 || resp.data.link || null;
+
+          if (!link) return null;
           const media = isImage(link) || isVideo(link) ? [link] : null;
+
           return album || media || null;
         })
       )
     ).find((t) => !!t);
-    if (arrHas(task)) return task;
+    if (tasks?.length) return tasks;
     throw new Error(`Could not resolve Imgur using any available method: ${imageId} ${albumId} ${galleryId}`);
   } catch (e) {
     console.error(e);
@@ -65,10 +70,11 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
 export const getImgur = async (...args: any[]) => {
   const [imageId, albumId, galleryId] = args || [];
   const resolved = await doResolveImgur({ imageId, albumId, galleryId });
-  return arrHas(resolved)
+  return resolved?.length
     ? resolved.reduce((acc, m) => {
+        if (!m) return acc;
         const type = isImage(m) ? "image" : isVideo(m) ? "video" : null;
-        acc.push({ src: m, type });
+        if (type) acc.push({ src: m, type });
         return acc;
       }, [] as ImgurSource[])
     : [];
@@ -95,7 +101,7 @@ const parseLink = (href: string) => {
     ? ({
         href,
         args: [imageId, albumId, galleryId],
-        type: null,
+        type: undefined,
         cb: getImgur,
       } as ParsedResponse)
     : null;
@@ -139,7 +145,7 @@ const doImgurCreateAlbum = async (hashes: string[]) => {
       : null;
   const _fd = dataBody && (await FormDataToJSON(dataBody));
   // open a new album and add our media hashes to it
-  const resp = _fd && ((await _post(imgurApiAlbumBaseUrl, _fd)) as ImgurCreateAlbumResponse);
+  const resp = _fd ? ((await _post(imgurApiAlbumBaseUrl, _fd)) as ImgurCreateAlbumResponse) : null;
   return resp?.data?.id ? `https://imgur.com/a/${resp.data.id}` : null;
 };
 
@@ -162,11 +168,16 @@ export const handleImgurUpload = async (data: UploadData, dispatch: Dispatch<Upl
   try {
     if (!data) return;
     const uploaded = await doImgurUpload(data, dispatch);
-    const links = uploaded?.map((i) => i.link);
-    const hashes = uploaded?.map((i) => i.deletehash);
+    if (!uploaded?.length) return Error(`handleImgurUpload got invalid upload data: ${uploaded}`);
+
+    const links = uploaded.map((i) => i.link) as string[];
+    const hashes = uploaded.map((i) => i.deletehash) as string[];
+    if (!links?.length || !hashes?.length)
+      return Error(`handleImgurUpload got invalid links or hashes: ${links} ${hashes}`);
+
     // return an album link or a media link
     await handleImgurAlbumUpload(links, hashes, dispatch);
-  } catch (e) {
+  } catch (e: any) {
     if (e) console.error(e);
     handleImgurFailure({ code: 401, msg: e.message || "Something went wrong!" }, dispatch);
   }

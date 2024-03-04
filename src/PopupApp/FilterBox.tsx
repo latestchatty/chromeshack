@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { arrHas, classNames } from "../core/common/common";
+import { classNames } from "../core/common/common";
 import { addFilter, delFilters } from "./actions";
 import { useStore } from "./popupStore";
 
@@ -38,8 +38,8 @@ const FilterBox = memo(
       const _this = e.target as HTMLSelectElement;
       const _options = [...(_this?.options ?? [])]?.map((x) => x.value);
       const _selected = [...(_this?.selectedOptions ?? [])]?.map((x) => x?.value);
-      if (arrHas(_options) && _options !== optionVals) setOptionVals(_options);
-      if (arrHas(_selected) && _selected !== selected) setSelected(_selected);
+      if (_options?.length && _options !== optionVals) setOptionVals(_options);
+      if (_selected?.length && _selected !== selected) setSelected(_selected);
     };
 
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,8 +51,8 @@ const FilterBox = memo(
       if (textField?.length >= 2 && textField?.match(/[^\h\r\n]+/i)) {
         // allow a single space before/after if requested
         const trimmed = allowTrailingSpace ? textField.replace(/\h\h+/, " ") : textField.trim();
-        if (type !== "UPDATE_HIGHLIGHTGROUP") addFilter(options, trimmed, type, dispatch);
-        else addFilter(options, trimmed, type, dispatch, groups, groupName);
+        if (type !== "UPDATE_HIGHLIGHTGROUP" && options && dispatch) addFilter(options, trimmed, type, dispatch);
+        else if (options && dispatch) addFilter(options, trimmed, type, dispatch, groups, groupName);
         setTextField("");
       } else {
         alert("Input fields must contain 2 or more characters");
@@ -60,8 +60,8 @@ const FilterBox = memo(
       }
     };
     const handleFiltersDelBtn = () => {
-      if (type !== "UPDATE_HIGHLIGHTGROUP") delFilters(options, selected, type, dispatch);
-      else delFilters(options, selected, type, dispatch, groups, groupName);
+      if (type !== "UPDATE_HIGHLIGHTGROUP" && options && dispatch) delFilters(options, selected, type, dispatch);
+      else if (options && dispatch) delFilters(options, selected, type, dispatch, groups, groupName);
       setSelected([]);
     };
     const handleEnterOnInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -72,7 +72,7 @@ const FilterBox = memo(
     };
 
     useEffect(() => {
-      setOptionVals(options);
+      if (options) setOptionVals(options);
     }, [options]);
 
     return (
@@ -106,7 +106,7 @@ const FilterBox = memo(
           <button id={addBtnId} onClick={handleFilterAddBtn}>
             Add
           </button>
-          <button id={removeBtnId} onClick={handleFiltersDelBtn} disabled={!arrHas(selected)}>
+          <button id={removeBtnId} onClick={handleFiltersDelBtn} disabled={!selected?.length}>
             Remove
           </button>
         </div>

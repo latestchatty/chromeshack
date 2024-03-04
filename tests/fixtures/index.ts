@@ -20,11 +20,13 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
 export const setTestCookie = async (context: BrowserContext) => {
   // only load secure cookie from a trusted source
   try {
-    const shackli = JSON.parse(process.env.E2E_SHACKLI) as any;
+    const shackli: Record<string, string>[] = JSON.parse(process.env.E2E_SHACKLI || "[]");
+    if (!shackli?.length) return console.error("setTestCookie unable to parse secure cookie from .env!");
+
     await context.addCookies([
       {
         name: "_shack_li_",
-        value: shackli[2]?._shack_li_ as string,
+        value: shackli[2]?._shack_li_,
         domain: ".shacknews.com",
         path: "/",
       },

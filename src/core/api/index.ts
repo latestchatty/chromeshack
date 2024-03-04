@@ -1,4 +1,4 @@
-import { objHas } from "../common/common";
+import { isNotNull, objHas } from "../common/common";
 import { enabledContains } from "./../settings";
 /// normal embeds
 import { isChattyLink } from "./chattypost";
@@ -24,7 +24,7 @@ import { isYoutube } from "./youtube";
  * 2) { href: string, args: string[], type: ..., cb: Function }
  *      ^ (e.g.: cb(...args) => string)
  */
-export const detectMediaLink = async (href: string): Promise<ParsedResponse> => {
+export const detectMediaLink = async (href: string): Promise<ParsedResponse | null> => {
   const mediaEnabled = await enabledContains(["media_loader"]);
   const chattypostEnabled = await enabledContains(["getpost"]);
 
@@ -38,26 +38,26 @@ export const detectMediaLink = async (href: string): Promise<ParsedResponse> => 
     const tumblr = isTumblr(href);
     const directmedia = isDirectMedia(href);
     const normalMedia = dropbox || twimg || giphy || imgflip || gstatic || tumblr || directmedia;
-    if (objHas(normalMedia)) return normalMedia;
+    if (isNotNull(normalMedia) && objHas(normalMedia)) return normalMedia;
 
     const imgur = isImgur(href);
     const tenor = isTenor(href);
     const resolvableMedia = imgur || tenor;
-    if (objHas(resolvableMedia)) return resolvableMedia;
+    if (isNotNull(resolvableMedia) && objHas(resolvableMedia)) return resolvableMedia;
 
     const streamable = isStreamable(href);
     const resolvableEmbeds = streamable;
-    if (objHas(resolvableEmbeds)) return resolvableEmbeds;
+    if (isNotNull(resolvableEmbeds) && objHas(resolvableEmbeds)) return resolvableEmbeds;
 
     const twitch = isTwitch(href);
     const xboxdvr = isXboxDVR(href);
     const youtube = isYoutube(href);
     const iframeEmbeds = twitch || xboxdvr || youtube;
-    if (objHas(iframeEmbeds)) return iframeEmbeds;
+    if (isNotNull(iframeEmbeds) && objHas(iframeEmbeds)) return iframeEmbeds;
   }
   if (chattypostEnabled) {
     const chattypost = isChattyLink(href);
-    if (objHas(chattypost)) return chattypost;
+    if (isNotNull(chattypost) && objHas(chattypost)) return chattypost;
   }
   return null;
 };

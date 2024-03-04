@@ -1,4 +1,5 @@
-import { type Root, createRoot } from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -6,8 +7,8 @@ import "../../styles/post_preview.css";
 import { PostPreviewApp } from "./PostPreviewApp";
 
 const PostPreview = {
-  cachedPaneEl: null as HTMLElement,
-  cachedAppEl: null as HTMLElement,
+  cachedPaneEl: null as HTMLElement | null,
+  cachedAppEl: null as HTMLElement | null,
 
   install() {
     processPostBoxEvent.addHandler(PostPreview.apply);
@@ -30,13 +31,17 @@ const PostPreview = {
     const container = postbox.querySelector("#post__preview__app");
     const altPositionElem = postbox?.querySelector("#frm_body");
     if (!container && positionElem) {
-      const clonedAppEl = PostPreview.cachedAppEl.cloneNode(false) as HTMLElement;
-      const clonedPaneEl = PostPreview.cachedPaneEl.cloneNode(false) as HTMLElement;
+      const clonedAppEl = PostPreview.cachedAppEl?.cloneNode(false) as HTMLElement;
+      const clonedPaneEl = PostPreview.cachedPaneEl?.cloneNode(false) as HTMLElement;
 
       const root = createRoot(clonedAppEl!);
-      altPositionElem.parentNode.insertBefore(clonedPaneEl, altPositionElem);
+      altPositionElem?.parentNode?.insertBefore(clonedPaneEl, altPositionElem);
       positionElem.append(clonedAppEl);
-      root.render(<PostPreviewApp postboxElem={postbox} paneMountElem={clonedPaneEl} />);
+      root.render(
+        <StrictMode>
+          <PostPreviewApp postboxElem={postbox} paneMountElem={clonedPaneEl} />
+        </StrictMode>
+      );
     }
   },
 };

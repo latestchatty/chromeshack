@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { enabledContains } from "../../core/settings";
@@ -15,11 +16,15 @@ const HighlightPendingPosts = {
     if (!container && positionElem) {
       const appContainer = parseToElement(`<div id="hpnp__app__container" />`) as HTMLElement;
       // put our HPNP app next to the Shacknews logo in the top-left
-      positionElem.parentElement.classList?.add("hpnp__enabled");
+      positionElem.parentElement?.classList?.add("hpnp__enabled");
 
       const root = createRoot(appContainer);
       positionElem.append(appContainer!);
-      root.render(<HighlightPendingApp threaded={isChatty} elRef={appContainer} />);
+      root.render(
+        <StrictMode>
+          <HighlightPendingApp threaded={isChatty} elRef={appContainer} />
+        </StrictMode>
+      );
     }
   },
 };

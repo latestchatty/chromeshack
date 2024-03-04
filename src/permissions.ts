@@ -15,7 +15,7 @@ const requestPermissions = async () => {
   );
 };
 
-const getCurrentPermissions = () => {
+const getCurrentPermissions = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     chrome.permissions.contains({ origins: [requiredOrigin] }, (response) => {
       if (response) return resolve(true);
@@ -24,23 +24,23 @@ const getCurrentPermissions = () => {
   });
 };
 
-const setPanelState = (granted) => {
+const setPanelState = (granted: boolean) => {
   const permissionBtn = document.getElementById("permissionBtn");
   const prompt = document.getElementById("prompt");
   const grantText = document.getElementById("granted");
+  if (!prompt || !grantText || !permissionBtn) return;
   if (granted) {
     prompt.setAttribute("class", "hide");
     grantText.removeAttribute("class");
     permissionBtn.innerText = "Permission Granted";
     permissionBtn.setAttribute("disabled", "true");
     permissionBtn.setAttribute("class", "hide");
-  } else {
-    prompt.removeAttribute("class");
-    grantText.setAttribute("class", "hide");
-    permissionBtn.innerText = "Request Permission";
-    permissionBtn.removeAttribute("disabled");
-    permissionBtn.setAttribute("class", "");
   }
+  prompt.removeAttribute("class");
+  grantText.setAttribute("class", "hide");
+  permissionBtn.innerText = "Request Permission";
+  permissionBtn.removeAttribute("disabled");
+  permissionBtn.setAttribute("class", "");
 };
 
 const initialize = async () => {

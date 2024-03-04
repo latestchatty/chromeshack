@@ -30,7 +30,7 @@ const HighlightFilter = memo((props: { username: string; groupName: string; isCo
 const HighlightFilters = memo((props: { username: string }) => {
   const { username } = props || {};
   const [isEnabled, setIsEnabled] = useState(false);
-  const [children, setChildren] = useState(null as JSX.Element[]);
+  const [children, setChildren] = useState(null as JSX.Element[] | null);
   useEffect(() => {
     (async () => {
       const highlightsEnabled = await enabledContains(["highlight_users"]);
@@ -39,10 +39,12 @@ const HighlightFilters = memo((props: { username: string }) => {
       const highlightGroups = await getMutableHighlights();
       const _children = [] as JSX.Element[];
       for (const [i, group] of highlightGroups.entries() || []) {
-        const groupContainsUser = await highlightGroupContains(group.name, username);
-        _children.push(
-          <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />
-        );
+        if (group?.name) {
+          const groupContainsUser = await highlightGroupContains(group.name, username);
+          _children.push(
+            <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />
+          );
+        }
       }
       if (arrHas(_children)) setChildren(_children);
     })();

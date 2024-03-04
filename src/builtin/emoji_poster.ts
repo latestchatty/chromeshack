@@ -7,7 +7,7 @@ import { getEnabledBuiltin } from "../core/settings";
  * workaround Chatty's poor support for unicode surrogate pairs.
  */
 export const EmojiPoster = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   async install() {
     const isEnabled = await getEnabledBuiltin("emoji_poster");
@@ -58,7 +58,7 @@ export const EmojiPoster = {
       const _rulesParent = postbox?.querySelector("p.rules") as HTMLElement;
       // parse our nodes into a document fragment
       const _emojiTaglineFragment = EmojiPoster.cachedEl;
-      _rulesParent?.append(_emojiTaglineFragment);
+      if (_emojiTaglineFragment) _rulesParent?.append(_emojiTaglineFragment);
     }
   },
 
@@ -106,7 +106,7 @@ export const EmojiPoster = {
     return transform?.replace(_matchBMPs, escapeBmp);
   },
 
-  countText(text: string) {
+  countText(text: string): number {
     // sums to the real length of text containing astrals
     const _astralsCount = EmojiPoster.countAstrals(text)?.astralsLen;
     // should return true length of text minus encoded entities

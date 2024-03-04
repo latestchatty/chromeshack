@@ -51,7 +51,7 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
 
   const [templates, setTemplates] = useState([] as string[]);
   const [popupVisible, setPopupVisible] = useState(false);
-  const popupRef = useRef(null);
+  const popupRef = useRef<HTMLDivElement>(null);
 
   const loadTemplatesFromStore = useCallback(() => {
     (async () => {
@@ -89,8 +89,8 @@ const TemplatesApp = memo((props: { inputBox: HTMLInputElement }) => {
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e.preventDefault();
       const _this = e.target as HTMLElement;
-      const _itemNode = _this?.closest(".template__item");
-      const _idx = parseInt(_itemNode?.getAttribute("data-idx"), 10) ?? -1;
+      const _itemNode = _this?.closest(".template__item") as HTMLDivElement;
+      const _idx = parseInt(_itemNode?.getAttribute("data-idx") ?? "", 10) ?? -1;
       const _text = elemMatches(_this, ".template__item>span");
       const _btn = _this?.closest(".template__btn");
       if (_idx < 0 || !_itemNode) return;
