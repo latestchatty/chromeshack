@@ -32,6 +32,7 @@ run() {
   docker run --rm --replace -it \
     --ipc=host --security-opt seccomp=seccomp_profile.json \
     -v "./results:/code/results" \
+    -p "9323:9323" \
     --name "$IMAGE_NAME" "$IMAGE_NAME" \
     "${@}"
 }

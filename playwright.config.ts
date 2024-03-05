@@ -10,7 +10,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ["list", { printSteps: true, outputFolder: "results/reports" }],
-    ["html", { open: "never", outputFolder: "results/reports" }],
+    ["html", { open: "never", outputFolder: "results/reports", host: "0.0.0.0", port: 9323 }],
   ],
   outputDir: "results/tests",
 
