@@ -95,7 +95,11 @@ const parseLink = (href: string) => {
   const albumId = albumMatch ? albumMatch[1] : null;
   const galleryId = galleryMatch ? galleryMatch[1] || galleryMatch[2] : null;
   // check if we've matched an image nonce of an album first
-  const imageId = albumMatch ? albumMatch[2] : imageMatch ? imageMatch[1] || imageMatch[2] || imageMatch[3] : null;
+  const imageId = albumMatch
+    ? albumMatch[2]
+    : imageMatch
+      ? imageMatch[1] || imageMatch[2] || imageMatch[3] || imageMatch[5]
+      : null;
 
   return albumId || galleryId || imageId
     ? ({
