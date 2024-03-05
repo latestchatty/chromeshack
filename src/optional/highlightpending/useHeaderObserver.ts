@@ -2,6 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { useIntersectObserver } from "../../core/useResolvedLinks/useIntersectObserver";
 
+interface HeaderObserverExports {
+  isNarrow: boolean;
+  isVisible: boolean;
+  hasScrolled: boolean;
+}
+
 const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
   const [isNarrow, setIsNarrow] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -33,6 +39,6 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
       narrowMatch.removeEventListener("change", handleNarrow);
     };
   }, [headerEl, targetEl, setObservedElem, headerScrolled, debounceScroll]);
-  return { isNarrow, isVisible, hasScrolled };
+  return { isNarrow, isVisible, hasScrolled } as HeaderObserverExports;
 };
 export { useHeaderObserver };

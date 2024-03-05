@@ -10,6 +10,17 @@ import { getUsername } from "../../core/notifications";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
 import { jumpToPost, parseRoot } from "./helpers";
 
+interface ThreadPaneCardExports {
+  collapsed: boolean;
+  handleClickReload: () => void;
+  handleClickThreadShortcut: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  handleCardClick: () => void;
+  localPost: ParsedPost | null;
+  localRecents: Recents | null;
+  pending: boolean;
+  refreshed: boolean;
+}
+
 const useThreadPaneCard = (post: ParsedPost) => {
   const [localPost, setLocalPost] = useState<ParsedPost | null>(post as ParsedPost);
   const { recents, rootid } = localPost || {};
@@ -158,6 +169,6 @@ const useThreadPaneCard = (post: ParsedPost) => {
     localRecents,
     pending,
     refreshed,
-  };
+  } as ThreadPaneCardExports;
 };
 export { useThreadPaneCard };

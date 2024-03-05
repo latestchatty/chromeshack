@@ -12,6 +12,13 @@ import { getSetting } from "../../core/settings";
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
 const isPending = (elem: HTMLElement) => elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
 
+interface PendingPostsExports {
+  pendings: PendingPost[];
+  pendingText: string;
+  handlePrevClick: () => void;
+  handleNextClick: () => void;
+}
+
 const usePendingPosts = (threaded: boolean) => {
   const [pendings, setPendings] = useState([] as PendingPost[]);
   const [pendingText, setPendingText] = useState("");
@@ -113,7 +120,7 @@ const usePendingPosts = (threaded: boolean) => {
     };
   }, [fetchPendings, updateRefreshed]);
 
-  return { pendings, pendingText, handlePrevClick, handleNextClick };
+  return { pendings, pendingText, handlePrevClick, handleNextClick } as PendingPostsExports;
 };
 
 export { usePendingPosts };
