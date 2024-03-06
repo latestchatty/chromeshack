@@ -435,8 +435,8 @@ export const mergeTransientSettings = async () => {
   try {
     const localTransientOpts = window.localStorage.getItem("transient-opts");
     const localTransientData = window.localStorage.getItem("transient-data");
-    const transientOpts = JSON.parse(localTransientOpts ?? "");
-    const transientData = JSON.parse(localTransientData ?? "");
+    const transientOpts = JSON.parse(localTransientOpts ?? "{}");
+    const transientData = JSON.parse(localTransientData ?? "{}");
 
     if (!Object.keys(transientOpts).length && !Object.keys(transientData).length) return;
     console.log("mergeTransientSettings called with payload:", localTransientOpts, localTransientData);
