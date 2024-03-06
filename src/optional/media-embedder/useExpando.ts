@@ -42,7 +42,7 @@ const useExpando = (props: ExpandoProps) => {
       e.preventDefault();
       const _this = e?.target as HTMLElement;
       const _mediaParent = type === "image" && elemMatches(_this, "img");
-      const _expando = !_this?.closest("div.media") && _this?.closest("div.medialink");
+      const _expando = !_this?.closest("div.media") && _this?.closest("div.medialink > a:first-child");
       // only clickTogglesVisible on media when an image or expando link
       if ((_mediaParent && type === "image" && toggled) || _expando) setToggled(!toggled);
     },
