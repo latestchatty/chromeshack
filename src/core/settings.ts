@@ -361,7 +361,7 @@ export const migrateSettings = async () => {
   if (last_version < 1.75) {
     // reset NewCommentHighlighter settings
     await setSetting("new_comment_highlighter_last_id", JSON.stringify({}));
-    await setSetting("last_highlight_time", -1);
+    await setSetting("last_highlight_time", 0);
     // reset saved drafts and templates
     await setSetting("saved_drafts", {});
     await setSetting("saved_templates", []);
