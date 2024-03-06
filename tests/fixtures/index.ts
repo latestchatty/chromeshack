@@ -2,6 +2,7 @@
 
 import fs from "fs";
 import path from "path";
+import "dotenv/config";
 
 import { test as base, chromium, type BrowserContext, type Page } from "@playwright/test";
 
