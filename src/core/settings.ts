@@ -396,49 +396,53 @@ export const migrateSettings = async () => {
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
-  const { append, exclude, defaults, overwrite } = transientOpts || {};
+  const { append = false, exclude = false, defaults = true, overwrite = false } = transientOpts || {};
+  if (transientData == null || !Object.keys(transientData).length)
+    throw Error(`mergeTransients was unable to use invalid payload: ${transientData}`);
+
   const settings = await getSettings();
-  let output = {} as Settings;
-  if (defaults) output = { ...DefaultSettings };
-  else output = { ...settings };
-  if (transientData && transientOpts && Object.keys(transientData).length && Object.keys(transientOpts).length)
-    console.log("mergeTransients called with payload:", transientData, transientOpts);
-  return Object.keys(transientData)?.reduce((acc, k) => {
-    const _inVal = transientData[k as keyof Settings];
-    const _setVal = acc[k as keyof Settings];
-    const _inValIsArr = Array.isArray(_inVal) ? (_inVal as string[]) : ([] as string[]);
-    const _setIsArr = Array.isArray(_setVal) ? (_setVal as string[]) : ([] as string[]);
-    const foundList = !_inValIsArr && _setIsArr && _setIsArr.find((x) => x === _inVal);
-    const foundVal = _setVal === _inVal;
+  const _settings = defaults ? { ...DefaultSettings } : { ...settings };
+
+  const output = Object.keys(transientData)?.reduce((acc, k) => {
+    const v = transientData[k as keyof Settings];
+    const sv = acc[k as keyof Settings];
+    const valIsArray = Array.isArray(v) && (v as string[]);
+    const setIsArray = Array.isArray(sv) && (sv as string[]);
+    const foundList = !valIsArray && setIsArray && setIsArray.find((x) => x === v);
+    const foundVal = sv === v;
+
     // 'append' simply appends a value to an existing list (probably HighlightGroups)
-    const appendedArr = append && _inValIsArr && _setIsArr && [..._setIsArr, ..._inValIsArr];
+    const appended = append && valIsArray && setIsArray ? [...setIsArray, ...valIsArray] : null;
     // 'exclude' filters the given strings out of an option list
-    const filteredArr =
-      exclude && _inValIsArr && _setIsArr && _inValIsArr.reduce((opts, s) => opts.filter((o) => o !== s), _setIsArr);
-    if (appendedArr) return { ...acc, [k]: appendedArr };
-    else if (filteredArr) return { ...acc, [k]: filteredArr };
-    else if (!foundList && !foundVal && !overwrite && _inValIsArr)
-      return { ...acc, [k]: [..._setIsArr, ..._inValIsArr] };
-    else if (!foundList && !foundVal) return { ...acc, [k]: _inVal };
+    const filtered =
+      exclude && valIsArray && setIsArray
+        ? valIsArray.reduce((opts, s) => opts.filter((o) => o !== s), setIsArray)
+        : null;
+
+    if (appended) return { ...acc, [k]: appended };
+    else if (filtered) return { ...acc, [k]: filtered };
+    else if (!foundList && !foundVal && !overwrite && setIsArray && valIsArray)
+      return { ...acc, [k]: [...setIsArray, ...valIsArray] };
+    else if (!foundList && !foundVal) return { ...acc, [k]: v };
+
     return acc;
-  }, output);
+  }, _settings as Settings);
+
+  return output;
 };
 export const mergeTransientSettings = async () => {
   // process any testing related settings passed in by cypress
   try {
     const localTransientOpts = window.localStorage.getItem("transient-opts");
     const localTransientData = window.localStorage.getItem("transient-data");
+    const transientOpts = JSON.parse(localTransientOpts ?? "");
+    const transientData = JSON.parse(localTransientData ?? "");
 
-    if (localTransientOpts || localTransientData)
-      console.log("mergeTransientSettings:", localTransientOpts, localTransientData);
-
-    const transientOpts = localTransientOpts && JSON.parse(localTransientOpts);
-    const transientData = localTransientData && JSON.parse(localTransientData);
-    if (objHas(transientData)) {
-      const merged = await mergeTransients(transientData, transientOpts);
-      const newSettings = await resetSettings(merged);
-      console.log("mergeTransientSettings merged:", newSettings);
-    }
+    if (!Object.keys(transientOpts).length && !Object.keys(transientData).length) return;
+    console.log("mergeTransientSettings called with payload:", localTransientOpts, localTransientData);
+    const merged = await mergeTransients(transientData, transientOpts);
+    const newSettings = await resetSettings(merged);
+    console.log("mergeTransientSettings merged:", newSettings);
   } catch (e) {
     console.error(e);
   }
