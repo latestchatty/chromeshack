@@ -41,26 +41,20 @@ help() {
   echo
   echo "Usage: $0 [-b] [-r | -s] [-h]"
   echo
-  echo "  -b      rebuild the image"
-  echo "  -r      run the test suite"
-  echo "  -s      open a shell inside the image"
-  echo "  -t      rebuild the image and rerun the tests"
-  echo "  -h      this message"
+  echo "  -b       rebuild the image"
+  echo "  -r       run the test suite"
+  echo "  -s       open a shell inside the image"
+  echo "  -h       this message"
   echo
   exit 1
 }
 
-VALID_ARGS=$(getopt -o bhrst -- "$@")
-eval set -- "$VALID_ARGS"
+eval set -- "$(getopt -o bhrs -- "$@")"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-  -h)
-    shift
-    help
-    ;;
   -b)
-    build
+    build # not mutually exclusive
     shift
     ;;
   -r)
@@ -73,18 +67,16 @@ while [[ $# -gt 0 ]]; do
     shift
     break
     ;;
+  -h)
+    help
+    ;;
   --)
     help
     ;;
   *)
-    shift
-    if [[ -z "$1" ]]; then
-      build
-      run pnpm test
-      break
-    else
-      help
-    fi
+    build
+    run pnpm test
+    break
     ;;
   esac
 done
