@@ -51,7 +51,13 @@ help() {
 
 eval set -- "$(getopt -o bhrs -- "$@")"
 
-while [[ $# -gt 0 ]]; do
+if [[ $# -eq 1 ]]; then
+  build
+  run pnpm test
+  exit 0
+fi
+
+while [[ $# -gt 1 ]]; do
   case "$1" in
   -b)
     build # not mutually exclusive
@@ -74,9 +80,7 @@ while [[ $# -gt 0 ]]; do
     help
     ;;
   *)
-    build
-    run pnpm test
-    break
+    help
     ;;
   esac
 done
