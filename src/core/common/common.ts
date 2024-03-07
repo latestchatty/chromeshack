@@ -109,7 +109,7 @@ export const decompressString = (input: string) => {
 
 export const timeOverThresh = (timestamp: number, threshold: number) => {
   const now = Date.now();
-  const elapsed = timestamp > -1 ? Math.abs(now - timestamp) : 0;
+  const elapsed = timestamp > 0 ? Math.abs(now - timestamp) : 0;
   return elapsed > threshold;
 };
 

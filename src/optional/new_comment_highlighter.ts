@@ -35,7 +35,7 @@ export const NewCommentHighlighter = {
     if (staleId) {
       console.log(`highlight stale: ${lastId} -> ${newId}`);
       await setSetting("new_comment_highlighter_last_id", newId);
-      return await NewCommentHighlighter.checkStaleTime(0, true);
+      return await NewCommentHighlighter.checkStaleTime(-1, true);
     }
     if (!newId || newId <= lastId)
       return console.log("highlight aborted due to invalid newId or freshness: ", newId, lastId);
@@ -68,6 +68,10 @@ export const NewCommentHighlighter = {
     return NewCommentHighlighter.recentsCache;
   },
   getRecentId(root?: HTMLElement) {
+    if (!Object.keys(NewCommentHighlighter.recentsCache).length) {
+      // refresh our cache if empty
+      NewCommentHighlighter.getRecentsCache();
+    }
     // only return the most recent on the page if we have no root
     if (!root) return Math.max(...Object.values(NewCommentHighlighter.recentsCache));
     // otherwise, look it up in the cache
@@ -104,7 +108,7 @@ export const NewCommentHighlighter = {
       lastHighlightTime = now;
     }
 
-    const overThresh = delayInMs ? timeOverThresh(lastHighlightTime, delayInMs) : false;
+    const overThresh = timeOverThresh(lastHighlightTime, delayInMs);
     if (!overThresh) {
       console.log(`checkStaleTime fresh: ${lastHighlightTime + delayInMs} > ${now}`);
       return false;

@@ -8,6 +8,7 @@ import {
   processPostRefreshEvent,
 } from "../../core/events";
 import { getSetting } from "../../core/settings";
+import { NewCommentHighlighter } from "../new_comment_highlighter";
 
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
 const isPending = (elem: HTMLElement) => elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
@@ -81,7 +82,10 @@ const usePendingPosts = (threaded: boolean) => {
         const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
         const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
         // don't grab new posts that contain our logged-in user as the author
-        if (thread && postId && threadId && !isAuthorMe) acc.push({ postId, threadId, thread });
+        const shouldPushNotAuthor = thread && postId && threadId && !isAuthorMe;
+        // make sure the postid from the event is really newer than the current page
+        const shouldPushIsNewer = postId ? postId > NewCommentHighlighter.getRecentId() : false;
+        if (shouldPushNotAuthor && shouldPushIsNewer) acc.push({ postId, threadId, thread } as PendingPost);
         return acc;
       }, [] as PendingPost[]);
       const reducedPendings = reducedPosts.reduce((acc, p) => {
