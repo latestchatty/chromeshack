@@ -119,28 +119,28 @@ export const NewCommentHighlighter = {
   },
 
   highlightPostsAfter(lastId: number, root?: HTMLElement): Record<number, number> {
-    // abort if lastId is invalid, meaning we haven't seen any posts yet
-    if (Number.isNaN(lastId) || !lastId) {
-      return {} as Record<number, number>;
-    }
+    // try to get a valid lastId if the one we're passed seems invalid
+    const _lastId = lastId > 0 ? lastId : NewCommentHighlighter.getRecentId(root);
 
     const oneliners = [...(root || document).querySelectorAll("li[id^='item_']")];
-    const newerPostIds = oneliners.reduce(
-      (acc, v) => {
-        const _root = v?.closest("div.root > ul > li");
-        const rootId = Number.parseInt(_root?.id?.substring(5) ?? "0", 10);
-        const curId = Number.parseInt(v?.id?.substring(5) ?? "0", 10);
-        if (curId && curId <= lastId) return acc;
-        // tag these newer oneline spans with a blue bar on the left
-        const onelineBody = v?.querySelector(".oneline_body");
-        if (onelineBody?.classList?.contains("newcommenthighlighter")) return acc;
-        onelineBody?.classList?.add("newcommenthighlighter");
-        // add each highlighted post to our accumulator to show the count later
-        if (rootId) acc.push({ [rootId]: curId });
-        return acc;
-      },
-      [] as Record<number, number>[]
-    );
+    const newerPostIds: Record<number, number>[] =
+      oneliners?.reduce(
+        (acc, v) => {
+          const _root = v?.closest("div.root > ul > li");
+          const rootId = Number.parseInt(_root?.id?.substring(5) ?? "0", 10);
+          const curId = Number.parseInt(v?.id?.substring(5) ?? "0", 10);
+          // abort early if we've seen nothing new
+          if (curId && curId <= _lastId) return acc;
+          // tag these newer oneline spans with a blue bar on the left
+          const onelineBody = v?.querySelector(".oneline_body");
+          if (onelineBody?.classList?.contains("newcommenthighlighter")) return acc;
+          onelineBody?.classList?.add("newcommenthighlighter");
+          // add each highlighted post to our accumulator to show the count later
+          if (rootId) acc.push({ [rootId]: curId });
+          return acc;
+        },
+        [] as Record<number, number>[]
+      ) ?? [];
 
     let commentDisplay = document.getElementById("chatty_settings");
     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
