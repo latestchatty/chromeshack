@@ -1,7 +1,7 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
 import dotenv from "dotenv";
-import process from "process";
 
 dotenv.config();
 const _login = process.env.TESTUSR;

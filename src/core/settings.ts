@@ -42,7 +42,7 @@ export const getSetting = async (key: SettingKey, defaultVal?: any) => {
 };
 
 export const getSettingsVersion = async () => await getSetting("version", 0);
-export const getManifestVersion = () => parseFloat(chrome.runtime.getManifest().version);
+export const getManifestVersion = () => Number.parseFloat(chrome.runtime.getManifest().version);
 
 export const getEnabled = async (key?: EnabledOptions) => {
   const enabled = (await getSetting("enabled_scripts", null)) as EnabledOptions[];

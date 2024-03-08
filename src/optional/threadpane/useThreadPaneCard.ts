@@ -58,7 +58,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
   const handleCardClick = useCallback(() => {
     const _mostRecent = localRecents?.mostRecentRef;
     const _nearestLi = (_mostRecent?.parentNode as HTMLElement)?.closest("li");
-    const postid = parseInt(_nearestLi?.id?.substring(5) ?? "", 10);
+    const postid = Number.parseInt(_nearestLi?.id?.substring(5) ?? "", 10);
     jumpToPost({
       postid,
       rootid,

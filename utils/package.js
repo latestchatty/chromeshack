@@ -1,8 +1,8 @@
-import fs from "fs/promises";
-import { access, existsSync } from "fs";
-import path from "path";
-import { glob } from "glob";
+import { access } from "node:fs";
+import fs from "node:fs/promises";
+import path from "node:path";
 import AdmZip from "adm-zip";
+import { glob } from "glob";
 
 function getCurrentTimestamp() {
   const date = new Date();

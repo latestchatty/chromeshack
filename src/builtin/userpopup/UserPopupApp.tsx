@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef } from "react";
-import { type Root } from "react-dom/client";
+import type { Root } from "react-dom/client";
 import { elemMatches } from "../../core/common/dom";
 import { userPopupEvent } from "../../core/events";
 import { HighlightFilters } from "./HighlightFilters";

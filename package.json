@@ -40,13 +40,13 @@
     "lz-string": "^1.5.0",
     "preact": "^10.19.6",
     "prop-types": "15.8.1",
-    "text-field-edit": "^4.1.0",
+    "text-field-edit": "^4.1.1",
     "ts-debounce": "^4.0.0",
     "xss": "^1.0.15",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.5.3",
+    "@biomejs/biome": "^1.6.0",
     "@crxjs/vite-plugin": "2.0.0-beta.23",
     "@playwright/test": "1.41.2",
     "@preact/preset-vite": "^2.8.1",

@@ -5,7 +5,7 @@ import { compressString, decompressString, timeOverThresh } from "../../core/com
 import { elemMatches } from "../../core/common/dom";
 import { replyFieldEvent, submitFormEvent } from "../../core/events";
 import { getSetting, setSetting } from "../../core/settings";
-import { DraftsAppProps } from "./DraftsApp";
+import type { DraftsAppProps } from "./DraftsApp";
 
 const filterDraftsLRU = async (drafts: Record<number, Draft>) => {
   if (!drafts || !Object.keys(drafts)) return {};
@@ -27,7 +27,6 @@ const useDraftsApp = (props: DraftsAppProps) => {
   const [drafts, setDrafts] = useState({} as Record<number, Draft>);
   const [valid, setValid] = useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional generic"
   const loadDraftsFromStore = useCallback(async () => {
     const _drafts = (await getSetting("saved_drafts", {})) as Record<number, Draft>;
     // decompress body of each property in the drafts object when loading from store
@@ -35,7 +34,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
     const decompressed = keys.length
       ? keys.reduce(
           (acc, k: string) => {
-            const _k = parseInt(k, 10);
+            const _k = Number.parseInt(k, 10);
             const cDraft = _drafts[_k];
             const dBody = decompressString(cDraft.body);
             if (dBody == null) return acc;
@@ -57,7 +56,6 @@ const useDraftsApp = (props: DraftsAppProps) => {
     }
   }, [postid]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional generic"
   const saveDraftsToStore = useCallback(
     async (d: Record<number, Draft>) => {
       // filter out old drafts when saving
@@ -68,7 +66,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
       const compressed = keys.length
         ? keys.reduce(
             (acc, k) => {
-              const _k = parseInt(k, 10);
+              const _k = Number.parseInt(k, 10);
               const draft = d[_k];
               const cBody = compressString(draft.body);
               if (cBody == null) return acc;
@@ -157,7 +155,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
           _keys.length &&
           _keys.reduce(
             (acc, k) => {
-              const _k = parseInt(k, 10);
+              const _k = Number.parseInt(k, 10);
               if (_k !== postid) return { ...acc, [_k]: _drafts[_k] };
               return acc;
             },

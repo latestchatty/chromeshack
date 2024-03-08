@@ -1,7 +1,7 @@
 /* eslint import/named: 0 */
 
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import "dotenv/config";
 
 import { test as base, chromium, type BrowserContext, type Page } from "@playwright/test";

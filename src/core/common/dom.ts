@@ -294,8 +294,8 @@ export const locatePostRefs = (postElem: HTMLElement) => {
   const post = elemMatches(_parent, "li.sel") || (postElem?.closest && (postElem?.closest("li.sel") as HTMLElement));
   const root =
     (post?.closest(".root > ul > li") as HTMLElement) || (post?.querySelector(".root > ul > li") as HTMLElement);
-  const postid = parseInt(post?.id?.substring(5), 10);
-  const rootid = parseInt(root?.id?.substring(5), 10);
+  const postid = Number.parseInt(post?.id?.substring(5), 10);
+  const rootid = Number.parseInt(root?.id?.substring(5), 10);
   const is_root = rootid && postid && rootid === postid;
   return { post, postid, root, rootid, is_root } as PostEventArgs;
 };

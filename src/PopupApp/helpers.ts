@@ -10,7 +10,7 @@ import {
 } from "../core/settings";
 
 export const getRandomNum = (min: number, max: number, precision?: number) =>
-  parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
+  Number.parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
 
 // https://stackoverflow.com/a/25873123
 export const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(25, 100)}%, ${getRandomNum(35, 60)}%, 1)`;

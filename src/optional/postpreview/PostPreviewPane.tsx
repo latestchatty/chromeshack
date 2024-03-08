@@ -1,4 +1,4 @@
-import parse, { DOMNode, Element, domToReact } from "html-react-parser";
+import parse, { domToReact, type DOMNode, type Element } from "html-react-parser";
 import { memo } from "react";
 import { createPortal } from "react-dom";
 import { classNames } from "../../core/common/common";

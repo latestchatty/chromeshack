@@ -27,7 +27,6 @@ const usePendingPosts = (threaded: boolean) => {
   const [count, setCount] = useState(0);
   const indicator = "★ ";
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handlePrevClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx - 1 + pendings.length) % pendings.length;
@@ -40,7 +39,6 @@ const usePendingPosts = (threaded: boolean) => {
     }
   }, [pendings, pendingIdx]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handleNextClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx + 1 + pendings.length) % pendings.length;
@@ -56,7 +54,7 @@ const usePendingPosts = (threaded: boolean) => {
   const updateRefreshed = useCallback(
     ({ post }: PostEventArgs) => {
       // update the list of pending posts when one of them is refreshed
-      const threadid = parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5) ?? "", 10);
+      const threadid = Number.parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5) ?? "", 10);
       const filtered = pendings.filter((p) => p.threadId !== threadid);
       const newIdx = filtered.length - 1 > 0 ? filtered.length - 1 : 0;
       const newPendings = arrHas(filtered) ? [...filtered] : [];

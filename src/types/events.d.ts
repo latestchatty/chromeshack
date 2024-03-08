@@ -2,8 +2,8 @@ import type { Root } from "react-dom/client";
 
 declare global {
   export interface LiteEventInterface<T> {
-    addHandler(handler: { (...args: T[]): void }): void;
-    removeHandler(handler: { (...args: T[]): void }): void;
+    addHandler(handler: (...args: T[]) => void): void;
+    removeHandler(handler: (...args: T[]) => void): void;
   }
 
   export interface PostboxEventArgs {

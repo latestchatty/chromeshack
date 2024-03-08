@@ -1,4 +1,4 @@
-import { test, expect, navigate, type Page, BrowserContext } from "../fixtures";
+import { test, expect, navigate, type Page, type BrowserContext } from "../fixtures";
 
 const mediaNavigate = async (page: Page, url: string, context?: BrowserContext) => {
   await navigate(page, url, undefined, context);

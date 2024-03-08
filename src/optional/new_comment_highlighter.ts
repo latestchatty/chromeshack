@@ -53,9 +53,9 @@ export const NewCommentHighlighter = {
       roots.length > 0
         ? roots.reduce(
             (acc, r) => {
-              const id = parseInt(r.id?.substring(5), 10);
+              const id = Number.parseInt(r.id?.substring(5), 10);
               const newest = r.querySelector("div.oneline0");
-              const newestId = parseInt(newest?.parentElement?.id?.substring(5) ?? "0", 10);
+              const newestId = Number.parseInt(newest?.parentElement?.id?.substring(5) ?? "0", 10);
               acc[id] = newestId;
               return acc;
             },
@@ -75,7 +75,7 @@ export const NewCommentHighlighter = {
     // only return the most recent on the page if we have no root
     if (!root) return Math.max(...Object.values(NewCommentHighlighter.recentsCache));
     // otherwise, look it up in the cache
-    const rootId = parseInt(root.id?.substring(5) ?? "0");
+    const rootId = Number.parseInt(root.id?.substring(5) ?? "0");
     const recentId = NewCommentHighlighter.recentsCache[rootId];
     return recentId || 0;
   },
@@ -128,8 +128,8 @@ export const NewCommentHighlighter = {
     const newerPostIds = oneliners.reduce(
       (acc, v) => {
         const _root = v?.closest("div.root > ul > li");
-        const rootId = parseInt(_root?.id?.substring(5) ?? "0", 10);
-        const curId = parseInt(v?.id?.substring(5) ?? "0", 10);
+        const rootId = Number.parseInt(_root?.id?.substring(5) ?? "0", 10);
+        const curId = Number.parseInt(v?.id?.substring(5) ?? "0", 10);
         if (curId && curId <= lastId) return acc;
         // tag these newer oneline spans with a blue bar on the left
         const onelineBody = v?.querySelector(".oneline_body");

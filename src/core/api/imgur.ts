@@ -1,6 +1,6 @@
-import { Dispatch } from "react";
+import type { Dispatch } from "react";
 import { imageFormats, videoFormats } from "../../builtin/image-uploader/uploaderStore";
-import { arrEmpty, arrHas, isImage, isVideo } from "../common/common";
+import { arrEmpty, isImage, isVideo } from "../common/common";
 import { FormDataToJSON, matchFileFormat } from "../common/dom";
 import { fetchSafe, postBackground } from "../common/fetch";
 

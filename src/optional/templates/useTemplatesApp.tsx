@@ -46,13 +46,12 @@ const useTemplatesApp = (props: TemplatesAppProps) => {
     [popupVisible]
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "intentional generic capture"
   const handlePopupClick = useCallback(
     (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
       e.preventDefault();
       const _this = e.target as HTMLElement;
       const _itemNode = _this?.closest(".template__item") as HTMLDivElement;
-      const _idx = parseInt(_itemNode?.getAttribute("data-idx") ?? "", 10) ?? -1;
+      const _idx = Number.parseInt(_itemNode?.getAttribute("data-idx") ?? "", 10) ?? -1;
       const _text = elemMatches(_this, ".template__item>span");
       const _btn = _this?.closest(".template__btn");
       if (_idx < 0 || !_itemNode) return;

@@ -1,4 +1,4 @@
-export {};
+export type {};
 
 declare global {
   type BaseTypes = string | number | boolean | Record<string, any> | [];

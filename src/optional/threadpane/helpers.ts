@@ -70,9 +70,9 @@ const getAuthor = (postElem: HTMLElement) => {
 
 export const parseReply = (postElem: HTMLElement) => {
   const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
-  const postid = parseInt(post?.id?.substring(5) ?? "", 10);
+  const postid = Number.parseInt(post?.id?.substring(5) ?? "", 10);
   const oneline = post?.querySelector(".oneline") as HTMLElement;
-  const authorid = parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1] ?? "", 10);
+  const authorid = Number.parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1] ?? "", 10);
   const mod = getMod(oneline);
   const author = getAuthor(oneline);
   const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
@@ -102,7 +102,7 @@ export const getRecents = (divRootElem: HTMLElement) => {
     const recent = divRootElem.querySelector(`div.oneline${i}`) as HTMLElement;
     if (recent) lastRecentRef = recent;
   }
-  const recentRootId = lastRecentRef && parseInt(lastRecentRef.closest("div.root")?.id?.substring(5) ?? "", 10);
+  const recentRootId = lastRecentRef && Number.parseInt(lastRecentRef.closest("div.root")?.id?.substring(5) ?? "", 10);
   const mostRecentRef = lastRecentRef;
   // walk up the reply tree to a distance limit of 4 parents
   const recentTree = [] as ParsedReply[];
@@ -148,7 +148,7 @@ export const clonePostBody = (postElem: HTMLElement) => {
 
 export const parseRoot = (rootElem: HTMLElement, user: string) => {
   const root = elemMatches(rootElem, "div.root");
-  const rootid = root && parseInt(root?.id?.substring(5), 10);
+  const rootid = root && Number.parseInt(root?.id?.substring(5), 10);
   // try to return early for threads with invalid ids
   if (rootid && (rootid < 1 || rootid > 50000000)) {
     console.error(`The thread ID of ${rootid} seems bogus.`);
@@ -156,7 +156,7 @@ export const parseRoot = (rootElem: HTMLElement, user: string) => {
   }
   const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
   const fullpost = rootLi?.querySelector(".fullpost") as HTMLElement;
-  const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1] ?? "", 10);
+  const authorid = Number.parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1] ?? "", 10);
   const author = getAuthor(rootLi);
   const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
   const count = [...(rootLi?.querySelectorAll("div.capcontainer li") ?? [])]?.length;

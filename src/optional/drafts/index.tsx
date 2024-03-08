@@ -27,7 +27,7 @@ const Drafts = {
     const container = postbox.querySelector("#drafts__app");
     if (is_enabled && !container && positionElem) {
       const nearestLi = postbox?.closest("li[id^='item_']");
-      const postid = parseInt(nearestLi?.id?.substring(5) ?? "", 10);
+      const postid = Number.parseInt(nearestLi?.id?.substring(5) ?? "", 10);
       const inputBox = postbox?.querySelector("#frm_body") as HTMLInputElement;
 
       if (!Drafts.cachedRoot) {

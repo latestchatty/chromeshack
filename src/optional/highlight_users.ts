@@ -17,14 +17,14 @@ export const HighlightUsers = {
     const compiled = {} as ResolvedUsers;
     const posts = [...document.querySelectorAll("li[id^='item_'")];
     const process = (post: HTMLElement) => {
-      const postid = parseInt(post?.id?.substring(5), 10);
+      const postid = Number.parseInt(post?.id?.substring(5), 10);
       const fullpost = post.querySelector(".fullpost");
       const fullpostAuthor = fullpost?.getAttribute("class")?.split("fpauthor_");
       const oneline = post.querySelector(".oneline");
       const onelineAuthor = oneline?.getAttribute("class")?.split("olauthor_");
       const op = fullpost?.matches(".op");
-      const fpauthor_id = fullpostAuthor && parseInt(fullpostAuthor?.[1], 10);
-      const olauthor_id = onelineAuthor && parseInt(onelineAuthor?.[1], 10);
+      const fpauthor_id = fullpostAuthor && Number.parseInt(fullpostAuthor?.[1], 10);
+      const olauthor_id = onelineAuthor && Number.parseInt(onelineAuthor?.[1], 10);
       const id = olauthor_id ?? fpauthor_id;
       const username =
         post.querySelector("span.oneline_user")?.textContent ??
