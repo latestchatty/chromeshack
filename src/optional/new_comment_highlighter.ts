@@ -41,10 +41,15 @@ export const NewCommentHighlighter = {
       return console.log("highlight aborted due to invalid newId or freshness: ", newId, lastId);
 
     const newestIds = NewCommentHighlighter.highlightPostsAfter(lastId, root);
-    const newestId = Object.keys(newestIds).length ? Math.max(...Object.values(newestIds)) : 0;
-    NewCommentHighlighter.recentsCache = { ...recents, ...newestIds };
-    console.log(`highlight updated: ${lastId} -> ${newestId}`);
-    await setSetting("new_comment_highlighter_last_id", NewCommentHighlighter.recentsCache);
+    if (newestIds && Object.keys(newestIds).length) {
+      const newestId = Math.max(...Object.values(newestIds));
+      NewCommentHighlighter.recentsCache = { ...recents, ...newestIds };
+      console.log(`highlight updated: ${lastId} -> ${newestId}`);
+      await setSetting("new_comment_highlighter_last_id", NewCommentHighlighter.recentsCache);
+    } else {
+      console.log(`highlight aborted due to freshness: ${lastId} <-> ${newId}`);
+      await setSetting("new_comment_highlighter_last_id", newId);
+    }
   },
 
   getRecentsCache() {
@@ -145,7 +150,8 @@ export const NewCommentHighlighter = {
     let commentDisplay = document.getElementById("chatty_settings");
     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
     const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-    const newComments = commentsCount && `${commentsCount} Comments (${newerPostIds.length - 1} New)`;
+    const newerPostCount = newerPostIds.length > 1 ? newerPostIds.length - 1 : newerPostIds.length;
+    const newComments = commentsCount && newerPostIds.length && `${commentsCount} Comments (${newerPostCount} New)`;
     if (newComments && commentDisplay) commentDisplay.textContent = newComments;
 
     const filtered = NewCommentHighlighter.filterKeysByNewest(newerPostIds);
