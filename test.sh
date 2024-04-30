@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euxo pipefail
 
 # import env vars from the .env in this project root
 while IFS= read -r line; do
@@ -17,10 +18,26 @@ IMAGE_NAME="chromeshack-e2e"
 if [ -z "${E2E_SHACKLI+x}" ]; then
   echo
   echo "ERROR: a cookie fixture in the env variable \"E2E_SHACKLI\" is required for the E2E suite!"
-  echo "Install a valid \".env\" in the project root and generate one with: pnpm testlogin"
+  echo "Install a valid \".env\" with TESTUSR/TESTPW vars set in the project root and run: pnpm generate-cookie"
   echo "For more information, see CONTRIBUTING.md..."
   echo
   exit 1
+fi
+
+selinux_status () {
+  ENFORCING=false
+  if command -v getenforce; then
+    local enforcing_status=$(getenforce)
+    if [ "$enforcing_status" == "Enforcing" ]; then
+      ENFORCING=true
+    fi
+  fi
+}
+
+selinux_status
+RELABEL=""
+if [[ "$ENFORCING" == true ]]; then
+  RELABEL=":z"
 fi
 
 build() {
@@ -31,7 +48,7 @@ run() {
   mkdir -p "results/" && rm -rf "results/*"
   docker run --rm --replace -it \
     --ipc=host --security-opt seccomp=seccomp_profile.json \
-    -v "./results:/code/results" \
+    -v "./results:/code/results${RELABEL}" \
     -p "9323:9323" \
     --name "$IMAGE_NAME" "$IMAGE_NAME" \
     "${@}"
