@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 IMAGE_NAME="chromeshack"
 

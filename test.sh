@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euxo pipefail
 
 # import env vars from the .env in this project root
 while IFS= read -r line; do
