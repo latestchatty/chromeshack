@@ -28,7 +28,7 @@ export const ColorGauge = {
       const selectedThreshold = thresholds.find(({ threshold }) => width > threshold) || { class: "gauge_green" };
       gauge?.classList?.add(selectedThreshold.class);
 
-      const val = Number.parseFloat((18 - (width * 18) / 100).toFixed(2));
+      const val = Number.parseFloat((24 - (width * 24) / 100).toFixed(2));
       const hour = Math.floor(val);
       const minutes = Math.floor((val - hour) * 60);
 

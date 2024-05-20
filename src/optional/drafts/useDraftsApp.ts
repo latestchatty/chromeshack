@@ -9,7 +9,7 @@ import type { DraftsAppProps } from "./DraftsApp";
 
 const filterDraftsLRU = async (drafts: Record<number, Draft>) => {
   if (!drafts || !Object.keys(drafts)) return {};
-  const maxAge = 1000 * 60 * 60 * 18; // 18hr timeout on saved drafts
+  const maxAge = 1000 * 60 * 60 * 24; // 24hr timeout on saved drafts
   const lruByNewest = Object.values(drafts)
     .filter((d) => !timeOverThresh(d.timestamp, maxAge))
     .sort((a, b) => b.timestamp - a.timestamp);

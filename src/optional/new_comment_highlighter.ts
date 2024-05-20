@@ -6,7 +6,7 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 export const NewCommentHighlighter = {
   // minimum time between refreshes to invalidate lastId
-  timeout: 1000 * 60 * 60 * 4, // 4 hours
+  timeout: 1000 * 60 * 60 * 24 * 0.25, // 6 hour watermark
 
   recentsCache: {} as Record<number, number>,
 

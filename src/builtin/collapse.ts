@@ -4,8 +4,7 @@ import { collapsedPostEvent, processPostEvent, processRefreshIntentEvent } from 
 import { getEnabledBuiltin, getSetting, setSetting } from "../core/settings";
 
 export const Collapse = {
-  // 18hr threshold
-  timeout: 1000 * 60 * 60 * 18,
+  timeout: 1000 * 60 * 60 * 24, // 24hr threshold
   collapsed: [] as CollapsedThread[],
 
   async install() {
