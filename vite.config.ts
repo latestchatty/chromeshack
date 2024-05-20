@@ -77,7 +77,7 @@ export default defineConfig({
       browser: isFirefox,
     }),
   ],
-  build: { outDir: "dist", minify: isFirefox === "firefox" ? false : true },
+  build: { outDir: "dist", minify: isFirefox !== "firefox" },
 
   server: {
     port: 5173,
