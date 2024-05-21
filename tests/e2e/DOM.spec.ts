@@ -145,7 +145,7 @@ test.describe("NewCommentHighlighter", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { 42269502: 42270595 } },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270595 } },
       },
       context
     );
@@ -167,7 +167,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { 42269502: 42270597 }, last_highlight_time: Date.now() },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270597 }, last_highlight_time: Date.now() },
       },
       context
     );
@@ -180,7 +180,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { 42269502: 42270595 }, last_highlight_time: Date.now() },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270595 }, last_highlight_time: Date.now() },
       },
       context
     );
@@ -197,7 +197,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { 42269502: 42269502 }, last_highlight_time: staleTime },
+        d: { new_comment_highlighter_last_id: { "42269502": 42269502 }, last_highlight_time: staleTime },
       },
       context
     );
@@ -211,7 +211,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { 42269502: 42270323 }, last_highlight_time: 0 },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270323 }, last_highlight_time: 0 },
       },
       context
     );
