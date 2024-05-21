@@ -1,31 +1,33 @@
 #!/usr/bin/env bash
 
-# import env vars from the .env in this project root
-while IFS= read -r line; do
-  if [[ "$line" =~ ^\s*#.*$ || -z "$line" ]]; then
-    continue
+# import env vars from the .env in the cwd
+if [ -f ".env" ]; then
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^\s*#.*$ || -z "$line" ]]; then
+      continue
+    fi
+    key=$(echo "$line" | cut -d '=' -f 1)
+    value=$(echo "$line" | cut -d '=' -f 2-)
+    # skip comments
+    value=$(echo "$value" | sed -e "s/^'//" -e "s/'$//" -e 's/^"//' -e 's/"$//' -e 's/^[ \t]*//;s/[ \t]*$//')
+    export "$key=$value"
+  done <".env"
+
+  if [ -z "${E2E_SHACKLI}" ]; then
+    echo
+    echo "ERROR: a cookie fixture in the env variable \"E2E_SHACKLI\" is required for the E2E suite!"
+    echo "Install a valid \".env\" with TESTUSR/TESTPW vars set in the project root and run: pnpm generate-cookie"
+    echo "For more information, see CONTRIBUTING.md..."
+    echo
+    exit 1
   fi
-  key=$(echo "$line" | cut -d '=' -f 1)
-  value=$(echo "$line" | cut -d '=' -f 2-)
-  # skip comments
-  value=$(echo "$value" | sed -e "s/^'//" -e "s/'$//" -e 's/^"//' -e 's/"$//' -e 's/^[ \t]*//;s/[ \t]*$//')
-  export "$key=$value"
-done <".env"
+fi
 
 IMAGE_NAME="chromeshack-e2e"
 
-if [ -z "${E2E_SHACKLI+x}" ]; then
-  echo
-  echo "ERROR: a cookie fixture in the env variable \"E2E_SHACKLI\" is required for the E2E suite!"
-  echo "Install a valid \".env\" with TESTUSR/TESTPW vars set in the project root and run: pnpm generate-cookie"
-  echo "For more information, see CONTRIBUTING.md..."
-  echo
-  exit 1
-fi
-
-selinux_status () {
+selinux_status() {
   ENFORCING=false
-  if command -v getenforce; then
+  if command -v getenforce &>/dev/null; then
     local enforcing_status=$(getenforce)
     if [ "$enforcing_status" == "Enforcing" ]; then
       ENFORCING=true
