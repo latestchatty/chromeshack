@@ -372,6 +372,10 @@ export const migrateSettings = async () => {
     await setSetting("enabled_builtins", DefaultSettings.enabled_builtins);
     migrated = true;
   }
+  if (last_version < 1.77) {
+    await setSetting("new_comment_highlighter_last_id", {});
+    migrated = true;
+  }
 
   // pull the latest version data after the migration
   current_version = getManifestVersion();

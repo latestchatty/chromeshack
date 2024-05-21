@@ -86,7 +86,7 @@ declare global {
     image_uploader_toggled: boolean;
     last_eventid: number;
     last_highlight_time: number;
-    new_comment_highlighter_last_id: number;
+    new_comment_highlighter_last_id: Record<string, number>;
     notifications: string[];
     post_preview_toggled: boolean;
     saved_drafts: Record<number, Draft>;

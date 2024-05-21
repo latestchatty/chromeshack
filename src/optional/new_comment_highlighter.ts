@@ -4,11 +4,14 @@ import { enabledContains, getSetting, setSetting } from "../core/settings";
 
 // some parts taken from Greg Laabs "OverloadUT"'s New Comments Marker greasemonkey script
 
+// can be a single record or an array of records in the form of: [rootId]: mostRecentPostId
+type RecentsCache = Record<string, number>;
+
 export const NewCommentHighlighter = {
   // minimum time between refreshes to invalidate lastId
   timeout: 1000 * 60 * 60 * 24 * 0.25, // 6 hour watermark
 
-  recentsCache: {} as Record<number, number>,
+  recentsCache: {} as RecentsCache,
 
   async install() {
     processPostRefreshEvent.addHandler(NewCommentHighlighter.highlight);
@@ -22,14 +25,16 @@ export const NewCommentHighlighter = {
 
     const recents = NewCommentHighlighter.getRecentsCache();
 
-    const lastIds = (await getSetting("new_comment_highlighter_last_id", {})) as Record<number, number>;
+    const lastIds = (await getSetting("new_comment_highlighter_last_id", {})) as RecentsCache;
     const lastIdsLen = Object.keys(lastIds).length;
     const lastId =
       lastIdsLen && rootid && lastIds[rootid] ? lastIds[rootid] : lastIdsLen ? Math.max(...Object.values(lastIds)) : 0;
     const newId = NewCommentHighlighter.getRecentId(root);
     let staleId = false;
 
-    console.log(`highlight started with: ${lastId} & ${newId}`);
+    console.log(
+      `highlight started with: ${lastId} & ${newId} ~= ${lastIdsLen ? JSON.stringify(lastIds) : JSON.stringify({})}`
+    );
     // only bypass stale check if we have a root
     if (!root) staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
     if (staleId) {
@@ -45,28 +50,25 @@ export const NewCommentHighlighter = {
       const newestId = Math.max(...Object.values(newestIds));
       NewCommentHighlighter.recentsCache = { ...recents, ...newestIds };
       console.log(`highlight updated: ${lastId} -> ${newestId}`);
-      await setSetting("new_comment_highlighter_last_id", NewCommentHighlighter.recentsCache);
     } else {
       console.log(`highlight aborted due to freshness: ${lastId} <-> ${newId}`);
-      await setSetting("new_comment_highlighter_last_id", newId);
     }
+
+    await setSetting("new_comment_highlighter_last_id", NewCommentHighlighter.recentsCache);
   },
 
   getRecentsCache() {
     const roots = [...document.querySelectorAll("div.root > ul > li")];
     const recents =
       roots.length > 0
-        ? roots.reduce(
-            (acc, r) => {
-              const id = Number.parseInt(r.id?.substring(5), 10);
-              const newest = r.querySelector("div.oneline0");
-              const newestId = Number.parseInt(newest?.parentElement?.id?.substring(5) ?? "0", 10);
-              acc[id] = newestId;
-              return acc;
-            },
-            {} as Record<number, number>
-          )
-        : {};
+        ? roots.reduce((acc, r) => {
+            const id = Number.parseInt(r.id?.substring(5), 10);
+            const newest = r.querySelector("div.oneline0");
+            const newestId = Number.parseInt(newest?.parentElement?.id?.substring(5) ?? "0", 10);
+            acc[id] = newestId;
+            return acc;
+          }, {} as RecentsCache)
+        : ({} as RecentsCache);
 
     // don't mutate the live cache - just assign it
     NewCommentHighlighter.recentsCache = { ...NewCommentHighlighter.recentsCache, ...recents };
@@ -84,13 +86,14 @@ export const NewCommentHighlighter = {
     const recentId = NewCommentHighlighter.recentsCache[rootId];
     return recentId || 0;
   },
-  filterKeysByNewest(records: Record<number, number>[]): Record<number, number> {
-    const newest = {} as Record<number, number>;
+  filterKeysByNewest(records: RecentsCache[]): RecentsCache {
+    const newest = {} as RecentsCache;
     const seenKeys = new Set<string>();
     for (const r of records) {
       for (const k in r) {
-        if (!seenKeys.has(k) || r[k] > newest[k]) {
-          newest[k] = r[k];
+        const _k = Number.parseInt(k, 10);
+        if (!seenKeys.has(k) || r[_k] > newest[_k]) {
+          newest[_k] = r[_k];
           seenKeys.add(k);
         }
       }
@@ -123,7 +126,7 @@ export const NewCommentHighlighter = {
     return true;
   },
 
-  highlightPostsAfter(lastId: number, root?: HTMLElement): Record<number, number> {
+  highlightPostsAfter(lastId: number, root?: HTMLElement): RecentsCache {
     // try to get a valid lastId if the one we're passed seems invalid
     const _lastId = lastId > 0 ? lastId : NewCommentHighlighter.getRecentId(root);
 
@@ -155,8 +158,8 @@ export const NewCommentHighlighter = {
     if (newComments && commentDisplay) commentDisplay.textContent = newComments;
 
     const filtered = NewCommentHighlighter.filterKeysByNewest(newerPostIds);
-    const newestId = Math.max(...Object.values(filtered));
-    console.log(`highlightPostsAfter returned [${lastId} -> ${newestId}]: ${JSON.stringify(filtered)}`);
+    const newestId = Object.keys(filtered).length ? Math.max(...Object.values(filtered)) : 0;
+    if (newestId) console.log(`highlightPostsAfter returned [${lastId} -> ${newestId}]: ${JSON.stringify(filtered)}`);
     return filtered;
   },
 };
