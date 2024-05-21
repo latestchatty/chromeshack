@@ -153,8 +153,8 @@ export const NewCommentHighlighter = {
     let commentDisplay = document.getElementById("chatty_settings");
     if (commentDisplay) commentDisplay = commentDisplay.childNodes[4] as HTMLElement;
     const commentsCount = commentDisplay?.textContent?.split(" ")[0];
-    const newerPostCount = newerPostIds.length > 1 ? newerPostIds.length - 1 : newerPostIds.length;
-    const newComments = commentsCount && newerPostIds.length && `${commentsCount} Comments (${newerPostCount} New)`;
+    const newComments =
+      commentsCount && newerPostIds.length && `${commentsCount} Comments (${newerPostIds.length} New)`;
     if (newComments && commentDisplay) commentDisplay.textContent = newComments;
 
     const filtered = NewCommentHighlighter.filterKeysByNewest(newerPostIds);
