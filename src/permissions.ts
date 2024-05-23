@@ -35,12 +35,13 @@ const setPanelState = (granted: boolean) => {
     permissionBtn.innerText = "Permission Granted";
     permissionBtn.setAttribute("disabled", "true");
     permissionBtn.setAttribute("class", "hide");
+  } else {
+    prompt.removeAttribute("class");
+    grantText.setAttribute("class", "hide");
+    permissionBtn.innerText = "Request Permission";
+    permissionBtn.removeAttribute("disabled");
+    permissionBtn.setAttribute("class", "");
   }
-  prompt.removeAttribute("class");
-  grantText.setAttribute("class", "hide");
-  permissionBtn.innerText = "Request Permission";
-  permissionBtn.removeAttribute("disabled");
-  permissionBtn.setAttribute("class", "");
 };
 
 const initialize = async () => {
@@ -61,7 +62,6 @@ const initialize = async () => {
   }
 };
 
-(async () => {
-  // only allow Firefox useragent's to use the permissions panel
+window.onload = async (_) => {
   if (isFirefox()) await initialize();
-})();
+};
