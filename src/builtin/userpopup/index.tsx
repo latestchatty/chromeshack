@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { elemMatches, parseToElement } from "../../core/common/dom";
 import { processPostEvent, userPopupEvent } from "../../core/events";
@@ -7,7 +8,7 @@ import { UserPopupApp } from "./UserPopupApp";
 import { getEnabledBuiltin } from "../../core/settings";
 
 export const UserPopup = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   async install() {
     const isEnabled = await getEnabledBuiltin("user_popup");
@@ -21,7 +22,7 @@ export const UserPopup = {
 
   setup({ post }: PostEventArgs) {
     // show some proof we exist for testing purposes
-    const userLink = post.querySelector("span.user");
+    const userLink = post?.querySelector("span.user");
     if (userLink) userLink.classList.add("enhanced");
   },
 
@@ -38,31 +39,34 @@ export const UserPopup = {
     const _this = e?.target as HTMLElement;
     const isLoggedIn = document.querySelector("li#user_posts");
     // cover both logged-in and logged-out cases
-    const userLink = isLoggedIn ? elemMatches(_this, "span.user > a") : elemMatches(_this, "span.user");
+    const loggedOutLink = !isLoggedIn ? (elemMatches(_this, "span.user")?.childNodes?.[0] as HTMLSpanElement) : null;
+    const loggedInLink = isLoggedIn ? (elemMatches(_this, "span.user > a") as HTMLAnchorElement) : null;
     const accountLink = _this && elemMatches(_this, "header .header-bottom .tools ul li a[href='/settings']");
     const accountName = accountLink
       ? (accountLink?.parentNode?.parentNode?.querySelector("#user_posts") as HTMLLIElement)?.textContent
       : "";
     accountLink?.setAttribute("id", "userDropdownTrigger");
 
-    if (userLink || accountLink) {
+    if (loggedInLink || loggedOutLink || accountLink) {
       e.preventDefault();
-      const _username = userLink?.textContent.trim() || accountName.trim();
-      const _elem = userLink || accountLink;
+      const _username = (loggedInLink || loggedOutLink)?.textContent?.trim() || accountName?.trim() || "";
+      const _elem = loggedInLink || loggedOutLink?.parentElement || accountLink;
       const containerRef = _elem?.querySelector(".userDropdown") as HTMLUListElement;
       const loggedInUsername = await getUsername();
       const isLoggedInUser = loggedInUsername?.toUpperCase() === _username?.toUpperCase();
 
       if (!containerRef && _elem) {
-        _elem.appendChild(UserPopup.cachedEl);
+        _elem.appendChild(UserPopup.cachedEl!);
         const root = createRoot(UserPopup.cachedEl!);
         root.render(
-          <UserPopupApp
-            username={_username}
-            isLoggedInUser={isLoggedInUser}
-            isUserBadge={!!userLink}
-            parentRoot={root}
-          />
+          <StrictMode>
+            <UserPopupApp
+              username={_username}
+              isLoggedInUser={isLoggedInUser}
+              isUserBadge={!!(loggedInLink || loggedOutLink?.parentElement)}
+              parentRoot={root}
+            />
+          </StrictMode>
         );
       }
     }

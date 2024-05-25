@@ -2,6 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { useIntersectObserver } from "../../core/useResolvedLinks/useIntersectObserver";
 
+interface HeaderObserverExports {
+  isNarrow: boolean;
+  isVisible: boolean;
+  hasScrolled: boolean;
+}
+
 const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
   const [isNarrow, setIsNarrow] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -13,7 +19,7 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
     if (window.scrollY > _threshold) setHasScrolled(true);
     else setHasScrolled(false);
   }, [headerEl]);
-  const debounceScroll = useRef(debounce((e: Event) => headerScrolled(), 100)).current;
+  const debounceScroll = useRef(debounce((_: Event) => headerScrolled(), 100)).current;
   useEffect(() => {
     if (!targetEl || !headerEl) return;
     setObservedElem(headerEl as HTMLElement);
@@ -21,7 +27,7 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
     const narrowMatch = window.matchMedia("(max-width: 1024px)");
     setIsNarrow(narrowMatch.matches);
     headerScrolled();
-    function handleNarrow(this: MediaQueryList, e: MediaQueryListEvent) {
+    function handleNarrow(this: MediaQueryList, _: MediaQueryListEvent) {
       if (this.matches) setIsNarrow(true);
       else setIsNarrow(false);
     }
@@ -33,6 +39,6 @@ const useHeaderObserver = (headerEl: HTMLElement, targetEl: HTMLElement) => {
       narrowMatch.removeEventListener("change", handleNarrow);
     };
   }, [headerEl, targetEl, setObservedElem, headerScrolled, debounceScroll]);
-  return { isNarrow, isVisible, hasScrolled };
+  return { isNarrow, isVisible, hasScrolled } as HeaderObserverExports;
 };
 export { useHeaderObserver };

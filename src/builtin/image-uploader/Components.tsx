@@ -8,7 +8,7 @@ const ExclamationCircleIcon = memo(({ className, title }: { className: string; t
   <FontAwesomeIcon className={className} title={title} icon={faExclamationCircle} />
 ));
 
-const ToggleChildren = memo((props: ImageUploaderComponentProps) => {
+export const ToggleChildren = memo((props: ImageUploaderComponentProps) => {
   const { id, childId, label, visible, clickHandler, children } = props || {};
   const childClasses = classNames({ hidden: !visible });
   return (
@@ -23,7 +23,7 @@ const ToggleChildren = memo((props: ImageUploaderComponentProps) => {
   );
 });
 
-const Tab = memo((props: ImageUploaderComponentProps) => {
+export const Tab = memo((props: ImageUploaderComponentProps) => {
   const { id, label, selected, clickHandler } = props || {};
   const classes = classNames("tab", { active: selected }, { inactive: !selected });
   return (
@@ -33,9 +33,9 @@ const Tab = memo((props: ImageUploaderComponentProps) => {
   );
 });
 
-const DropArea = memo((props: ImageUploaderComponentProps) => {
+export const DropArea = memo((props: ImageUploaderComponentProps) => {
   const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
-  const showWarning = fileData.length > 1 && !multifile;
+  const showWarning = fileData?.length && fileData.length > 1 && !multifile;
 
   const override = (e: React.DragEvent | React.ChangeEvent) => {
     e.preventDefault();
@@ -47,7 +47,7 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
       const dropData = (e as React.DragEvent<HTMLElement>)?.dataTransfer?.files;
       const chooserData = (e as React.ChangeEvent<HTMLInputElement>)?.target?.files;
       const data = dropData ?? chooserData;
-      if (data?.length > 0 && !disabled) dispatch({ type: "LOAD_FILES", payload: data });
+      if (data?.length > 0 && !disabled && dispatch) dispatch({ type: "LOAD_FILES", payload: data });
     },
     [override, disabled, dispatch]
   );
@@ -55,13 +55,13 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
   return (
     <div
       id="dropArea"
-      className={classNames({ disabled, active: fileData.length > 0 })}
+      className={classNames({ disabled, active: fileData?.length })}
       onDrop={handleFileChooser}
       onDragOver={override}
       onDragEnter={override}
       onDragExit={override}>
       <label id="fileChooserLabel" htmlFor="fileChooser">
-        {getFileCount(fileData) || `Drop or select ${multifile ? "files" : "file"} here...`}
+        {getFileCount(fileData as File[]) || `Drop or select ${multifile ? "files" : "file"} here...`}
         <input
           ref={fcRef}
           type="file"
@@ -79,7 +79,7 @@ const DropArea = memo((props: ImageUploaderComponentProps) => {
   );
 });
 
-const UrlInput = memo((props: ImageUploaderComponentProps) => {
+export const UrlInput = memo((props: ImageUploaderComponentProps) => {
   const { state, disabled, dispatch } = props || {};
   const [url, setUrl] = useState("");
   const urlValidatePattern = "https?://.+?\\..+?/.+";
@@ -88,8 +88,8 @@ const UrlInput = memo((props: ImageUploaderComponentProps) => {
   const useDebouncedUrl = useRef(
     debounce((val: string) => {
       const match = val?.match(urlValidateRegExp);
-      if (match) dispatch({ type: "LOAD_URL", payload: val });
-      else dispatch({ type: "LOAD_INVALID_URL" });
+      if (match && dispatch) dispatch({ type: "LOAD_URL", payload: val });
+      else if (dispatch) dispatch({ type: "LOAD_INVALID_URL" });
     }, 500)
   );
   const onInput = (e: React.ChangeEvent) => {
@@ -119,7 +119,7 @@ const UrlInput = memo((props: ImageUploaderComponentProps) => {
   );
 });
 
-const Button = memo((props: ImageUploaderComponentProps) => {
+export const Button = memo((props: ImageUploaderComponentProps) => {
   const { id, disabled, clickHandler, label } = props || {};
   return (
     <button id={id} disabled={disabled} onClick={clickHandler}>
@@ -128,7 +128,7 @@ const Button = memo((props: ImageUploaderComponentProps) => {
   );
 });
 
-const StatusLine = memo((props: ImageUploaderComponentProps) => {
+export const StatusLine = memo((props: ImageUploaderComponentProps) => {
   const { status, error, isPending, animationEnd } = props || {};
   const statusClasses = classNames({
     fadeout: !isPending,
@@ -146,5 +146,3 @@ const StatusLine = memo((props: ImageUploaderComponentProps) => {
     </div>
   );
 });
-
-export { StatusLine, Button, UrlInput, DropArea, Tab, ToggleChildren };

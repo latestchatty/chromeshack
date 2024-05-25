@@ -2,8 +2,8 @@ import type { Root } from "react-dom/client";
 
 declare global {
   export interface LiteEventInterface<T> {
-    addHandler(handler: { (...args: T[]): void }): void;
-    removeHandler(handler: { (...args: T[]): void }): void;
+    addHandler(handler: (...args: T[]) => void): void;
+    removeHandler(handler: (...args: T[]) => void): void;
   }
 
   export interface PostboxEventArgs {
@@ -15,6 +15,9 @@ declare global {
     postid?: number;
     rootid?: number;
     is_root?: boolean;
+    tagData?: HTMLElement[];
+    emptyTags?: HTMLElement[];
+    mutation?: RefreshMutation;
   }
   export interface CollapsedPostEventArgs {
     threadid: number;

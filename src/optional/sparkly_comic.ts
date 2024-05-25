@@ -36,10 +36,10 @@ export const SparklyComic = {
               <span>${line}</span>
             </div>
           `);
-          comic_div.appendChild(panel);
+          comic_div?.appendChild(panel!);
         }
 
-        postBody.appendChild(comic_div);
+        postBody?.appendChild(comic_div!);
       }
     }
   },

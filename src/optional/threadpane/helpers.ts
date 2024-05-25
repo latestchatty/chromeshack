@@ -27,13 +27,13 @@ export const jumpToPost = (args: JumpToPostArgs) => {
   const liElem = postid && (document.querySelector(`li#item_${postid}`) as HTMLLIElement);
   const divRoot = rootid && (document.querySelector(`div.root#root_${rootid}`) as HTMLDivElement);
   const card = rootid && (document.querySelector(`div#item_${rootid}`) as HTMLDivElement);
-  const cardList = card?.closest("div#cs_thread_pane") as HTMLElement;
+  const cardList = card instanceof HTMLDivElement ? (card?.closest("div#cs_thread_pane") as HTMLElement) : null;
   if ((uncap && !collapsed && divRoot) || (uncap && divRoot)) divRoot.classList.remove("capped");
   if (scrollPost && divRoot && elementFitsViewport(divRoot)) scrollToElement(divRoot, { toFit: true });
-  else if (scrollPost && (liElem || divRoot)) scrollToElement(liElem || divRoot, { toFit });
-  else if (scrollParent && card) scrollParentToChild(cardList, card);
+  else if (scrollPost && (liElem || divRoot)) scrollToElement((liElem || divRoot) as HTMLElement, { toFit });
+  else if (scrollParent && card && cardList) scrollParentToChild(cardList as HTMLElement, card);
   if (cardFlash && card) flashCard(card);
-  if (postFlash && divRoot) flashPost(divRoot, liElem);
+  if (postFlash && divRoot && liElem) flashPost(divRoot, liElem);
 };
 
 const trimBodyHTML = (elem: HTMLElement) =>
@@ -44,7 +44,7 @@ const trimBodyHTML = (elem: HTMLElement) =>
 export const threadContainsLoggedUser = (rootEl: HTMLElement, user: string) => {
   if (!user) return false;
   const oneliners = [...(rootEl?.querySelectorAll(".oneline_user") ?? [])];
-  for (const oneline of oneliners || []) if (oneline.textContent.toLowerCase() === user.toLowerCase()) return true;
+  for (const oneline of oneliners || []) if (oneline.textContent?.toLowerCase() === user.toLowerCase()) return true;
 
   return false;
 };
@@ -70,9 +70,9 @@ const getAuthor = (postElem: HTMLElement) => {
 
 export const parseReply = (postElem: HTMLElement) => {
   const post = postElem?.nodeName === "LI" ? postElem : (postElem?.parentNode as HTMLElement)?.closest("li");
-  const postid = parseInt(post?.id.substring(5), 10);
+  const postid = Number.parseInt(post?.id?.substring(5) ?? "", 10);
   const oneline = post?.querySelector(".oneline") as HTMLElement;
-  const authorid = parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1], 10);
+  const authorid = Number.parseInt(oneline?.getAttribute("class")?.split("olauthor_")?.[1] ?? "", 10);
   const mod = getMod(oneline);
   const author = getAuthor(oneline);
   const body = (oneline?.querySelector(".oneline_body") as HTMLSpanElement)?.textContent;
@@ -96,21 +96,21 @@ export const parseReply = (postElem: HTMLElement) => {
 
 export const getRecents = (divRootElem: HTMLElement) => {
   // find the most recent posts in a thread - newest to oldest
-  let lastRecentRef: HTMLElement;
+  let lastRecentRef = null as HTMLElement | null;
   // find the most recent post in ascending age
   for (let i = 0; i < 10 && !lastRecentRef; i++) {
     const recent = divRootElem.querySelector(`div.oneline${i}`) as HTMLElement;
     if (recent) lastRecentRef = recent;
   }
-  const recentRootId = lastRecentRef && parseInt(lastRecentRef.closest("div.root")?.id?.substring(5), 10);
+  const recentRootId = lastRecentRef && Number.parseInt(lastRecentRef.closest("div.root")?.id?.substring(5) ?? "", 10);
   const mostRecentRef = lastRecentRef;
   // walk up the reply tree to a distance limit of 4 parents
   const recentTree = [] as ParsedReply[];
   for (let i = 0; i < 4 && lastRecentRef; i++) {
     const _parsed = parseReply(lastRecentRef);
-    lastRecentRef = _parsed.parentRef;
+    lastRecentRef = _parsed?.parentRef as HTMLElement;
     // put our replies in render order (oldest to newest)
-    if (_parsed?.postid !== recentRootId) recentTree.unshift(_parsed);
+    if (_parsed?.postid !== recentRootId) recentTree.unshift(_parsed as ParsedReply);
   }
   return {
     mostRecentRef,
@@ -122,7 +122,7 @@ export const getRecents = (divRootElem: HTMLElement) => {
 export const clonePostBody = (postElem: HTMLElement) => {
   // clean up the postbody before processing
   // post body is empty (probably nuked)
-  if (postElem?.textContent.length === 0) return null;
+  if (postElem?.textContent?.length === 0) return null;
   const clone = postElem?.cloneNode(true) as HTMLElement;
   const elements = [...(clone?.querySelectorAll("a, div.medialink, .jt_spoiler") ?? [])];
   for (const element of elements || []) {
@@ -141,22 +141,22 @@ export const clonePostBody = (postElem: HTMLElement) => {
       element?.removeAttribute("onclick");
   }
   const _mediamanager = clone?.querySelector("#react-media-manager");
-  if (_mediamanager) _mediamanager.parentNode.removeChild(_mediamanager);
+  if (_mediamanager) _mediamanager.parentNode?.removeChild(_mediamanager);
   const trimmed = trimBodyHTML(clone);
   return trimmed;
 };
 
 export const parseRoot = (rootElem: HTMLElement, user: string) => {
   const root = elemMatches(rootElem, "div.root");
-  const rootid = root && parseInt(root?.id?.substring(5), 10);
+  const rootid = root && Number.parseInt(root?.id?.substring(5), 10);
   // try to return early for threads with invalid ids
-  if (rootid < 1 || rootid > 50000000) {
+  if (rootid && (rootid < 1 || rootid > 50000000)) {
     console.error(`The thread ID of ${rootid} seems bogus.`);
     return null;
   }
   const rootLi = root?.querySelector("ul > li.sel") as HTMLElement;
   const fullpost = rootLi?.querySelector(".fullpost") as HTMLElement;
-  const authorid = parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1], 10);
+  const authorid = Number.parseInt(fullpost.getAttribute("class")?.split("fpauthor_")?.[1] ?? "", 10);
   const author = getAuthor(rootLi);
   const body = clonePostBody(root?.querySelector("div.postbody") as HTMLElement);
   const count = [...(rootLi?.querySelectorAll("div.capcontainer li") ?? [])]?.length;
@@ -166,9 +166,9 @@ export const parseRoot = (rootElem: HTMLElement, user: string) => {
     return null;
   }
   const mod = getMod(fullpost);
-  const recents = getRecents(root);
+  const recents = root ? getRecents(root) : null;
   const contained = threadContainsLoggedUser(rootElem, user);
-  const collapsed = !!Collapse.findCollapsed(rootid);
+  const collapsed = rootid ? !!Collapse.findCollapsed(rootid) : null;
   return {
     author,
     authorid,

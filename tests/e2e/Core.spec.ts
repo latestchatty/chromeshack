@@ -1,4 +1,4 @@
-import { test, expect, navigate, Page } from "../fixtures";
+import { test, expect, navigate, type Page } from "../fixtures";
 
 const singlePostURL = "https://www.shacknews.com/chatty?id=42267733";
 

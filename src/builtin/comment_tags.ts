@@ -5,7 +5,7 @@ import { getEnabledBuiltin, getSetting, setSetting } from "../core/settings";
 import "../styles/comment_tags.css";
 
 export const CommentTags = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   tags: [
     [
@@ -62,13 +62,13 @@ export const CommentTags = {
         </div>
       </div>
     `) as HTMLElement;
-    const tbody = table.querySelector("#shacktags_legend_table-body");
+    const tbody = table.querySelector("#shacktags_legend_table-body")!;
     for (const tr of CommentTags.tags) {
       const row = tbody.appendChild(document.createElement("tr"));
       for (const tag of tr) {
         const [name, opening_tag, closing_tag, class_name, clickFuncAsString] = tag || [];
         const name_td = row.appendChild(document.createElement("td"));
-        const span = parseToElement(`<span class="${class_name}">${name}</span>`);
+        const span = parseToElement(`<span class="${class_name}">${name}</span>`)!;
         name_td.appendChild(span);
         if (clickFuncAsString?.length > 0) name_td.setAttribute("onclick", clickFuncAsString);
         const code_td = row.appendChild(document.createElement("td"));
@@ -92,17 +92,17 @@ export const CommentTags = {
     const postForm = postbox.querySelector("#postform_aligner");
     // remove the pre-existing legend box
     const ogLegend = postbox.querySelector("fieldset > #shacktags_legend");
-    ogLegend?.parentElement.removeChild(ogLegend);
+    ogLegend?.parentElement?.removeChild(ogLegend);
     const legend = postForm?.querySelector("#comment_tags_container");
-    const cachedLegend = CommentTags.cachedEl;
-    if (!legend) postForm.append(cachedLegend);
+    const cachedLegend = CommentTags.cachedEl as HTMLElement;
+    if (!legend && postForm) postForm.append(cachedLegend);
   },
 
   async toggleLegend(e: MouseEvent) {
     e.preventDefault();
     const _this = e.target as HTMLElement;
     const isToggle = _this?.id?.indexOf("shacktags_legend_toggle") > -1;
-    const table = _this?.parentElement.querySelector("#shacktags_legend_table");
+    const table = _this?.parentElement?.querySelector("#shacktags_legend_table");
     const enabled = !table?.classList?.contains("hidden");
     if (isToggle && table) {
       await setSetting("tags_legend_toggled", !enabled);
@@ -114,8 +114,8 @@ export const CommentTags = {
     const textarea = document.getElementById("frm_body") as HTMLInputElement;
     const scrollPos = textarea.scrollTop;
     let value = textarea?.value;
-    const selectStart = textarea.selectionStart;
-    const selectEnd = textarea.selectionEnd;
+    const selectStart = textarea.selectionStart!;
+    const selectEnd = textarea.selectionEnd!;
     // remove line-ending whitespace
     if (name === "code") value = value.replace(/\s\s*$/, "");
     // break up curly braces that confuse the shack

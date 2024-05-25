@@ -42,7 +42,7 @@ export const getSetting = async (key: SettingKey, defaultVal?: any) => {
 };
 
 export const getSettingsVersion = async () => await getSetting("version", 0);
-export const getManifestVersion = () => parseFloat(chrome.runtime.getManifest().version);
+export const getManifestVersion = () => Number.parseFloat(chrome.runtime.getManifest().version);
 
 export const getEnabled = async (key?: EnabledOptions) => {
   const enabled = (await getSetting("enabled_scripts", null)) as EnabledOptions[];
@@ -77,7 +77,7 @@ export const getSettingsLegacy = async () => {
   //     else if (!isNaN(parseFloat(JSON.parse(settings[key])))) settings[key] = parseFloat(JSON.parse(settings[key]));
   //     else settings[key] = JSON.parse(settings[key]);
 
-  return settings;
+  return settings as any;
 };
 
 export const getMutableHighlights = async () => {
@@ -120,8 +120,8 @@ export const setSettings = async (obj: Settings) => {
 
 export const setHighlightGroup = async (groupName: string, obj: HighlightGroup) => {
   // for overwriting a specific highlight group by name
-  const records = (await getSetting("highlight_groups")) as HighlightGroup[];
-  const indexMatch = records.findIndex((x: HighlightGroup) => x.name.toLowerCase() === groupName.toLowerCase());
+  const records = (await getSetting("highlight_groups", [])) as HighlightGroup[];
+  const indexMatch = records.findIndex((x: HighlightGroup) => x.name?.toLowerCase() === groupName.toLowerCase());
   // overwrite at index if applicable (append otherwise)
   if (indexMatch > -1) records[indexMatch] = obj;
   else records.push(obj);
@@ -162,9 +162,9 @@ export const removeHighlightUser = async (groupName: string, username: string) =
   const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
   const filtered = groups.filter((x) => x.name === groupName);
   for (const group of filtered || []) {
-    const mutated = group.users.filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase())) || null;
+    const mutated = group.users?.filter((x) => x && x.toLowerCase() !== superTrim(username.toLowerCase())) || null;
     if (mutated) group.users = mutated;
-    await setHighlightGroup(group.name, group);
+    if (group.name) await setHighlightGroup(group.name, group);
   }
 };
 
@@ -186,7 +186,7 @@ export const enabledContains = async (keys: EnabledOptions[]) => {
 export const highlightsContains = async (username: string): Promise<HighlightGroup[]> => {
   // return all group matches based on username
   return (await getMutableHighlights()).filter((x: HighlightGroup) =>
-    x.users.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
+    x.users?.find((y) => y.toLowerCase() === superTrim(username.toLowerCase()))
   );
 };
 
@@ -202,21 +202,23 @@ export const highlightGroupsEqual = (groupA: HighlightGroup, groupB: HighlightGr
   const { built_in: built_inA, enabled: enabledA, name: nameA, css: cssA, users: usersA } = groupA;
   const { built_in: built_inB, enabled: enabledB, name: nameB, css: cssB, users: usersB } = groupB;
   if (built_inA !== built_inB || enabledA !== enabledB) return false;
-  if (nameA.toUpperCase() !== nameB.toUpperCase() || cssA.toUpperCase() !== cssB.toUpperCase()) return false;
+  if (nameA?.toUpperCase() !== nameB?.toUpperCase() || cssA?.toUpperCase() !== cssB?.toUpperCase()) return false;
   if (usersA?.length !== usersB?.length || (!usersA && usersB) || (!usersB && usersA)) return false;
-  for (const userA of usersA || []) if (!usersB.includes(userA)) return false;
+  for (const userA of usersA || []) if (!usersB?.includes(userA)) return false;
   return true;
 };
 
 export const filtersContains = async (username: string): Promise<string> => {
   const filters = (await getSetting("user_filters")) as string[];
-  return filters.find((x) => x && x.toLowerCase() === superTrim(username.toLowerCase())) || null;
+  return filters.find((x) => x && x.toLowerCase() === superTrim(username?.toLowerCase())) ?? "";
 };
 
 export const addHighlightUser = async (groupName: string, username: string) => {
   const groups = (await getSetting("highlight_groups")) as HighlightGroup[];
   const filtered = groups.filter((x) => x.name === groupName) || null;
   for (const group of filtered || []) {
+    if (!group?.users || !group?.name) continue;
+
     const mutated = [...group.users, username];
     group.users = mutated;
     await setHighlightGroup(group.name, group);
@@ -277,7 +279,7 @@ export const mergeSettings = async (newSettings: MigratedSettings) => {
   // to remove if found, pass: { option_name: null }
   const settings = (await getSettings()) as Record<string, any>;
   for (const [key, val] of Object.entries(newSettings))
-    if (arrHas(val))
+    if (val != null && Array.isArray(val))
       for (const v of val) {
         const _oldVal = settings[key];
         const _oldTopVal = settings[v.old];
@@ -304,13 +306,14 @@ export const migrateSettings = async () => {
   let current_version = getManifestVersion();
   let last_version = (await getSettingsVersion()) || current_version;
   let migrated = false;
-  if (legacy_settings?.["version"] <= 1.63) {
+  const legacyVersion = legacy_settings?.["version"];
+  if (legacyVersion && legacyVersion <= 1.63) {
     // quick reload of default settings from nuStorage
     await resetSettings().then(getSettings);
     // preserve previous convertible filters and notifications state
-    const prevFilters = legacy_settings["user_filters"] || null;
-    const prevNotifyUID = legacy_settings["notificationuid"] || null;
-    const prevNotifyState = legacy_settings["notifications"] || null;
+    const prevFilters = legacy_settings?.["user_filters"] || null;
+    const prevNotifyUID = legacy_settings?.["notificationuid"] || null;
+    const prevNotifyState = legacy_settings?.["notifications"] || null;
     if (prevFilters) await setSetting("user_filters", prevFilters);
     if (prevNotifyUID && prevNotifyState) await setEnabled("enable_notifications");
     window.localStorage.clear();
@@ -346,7 +349,7 @@ export const migrateSettings = async () => {
     // make sure highlight_groups are up-to-date for 1.74
     const mutatedGroups = await mergeHighlightGroups(
       legacy_settings?.["highlight_groups"],
-      DefaultSettings.highlight_groups
+      DefaultSettings.highlight_groups!
     );
     await setSettings({
       ...legacy_settings,
@@ -358,7 +361,7 @@ export const migrateSettings = async () => {
   if (last_version < 1.75) {
     // reset NewCommentHighlighter settings
     await setSetting("new_comment_highlighter_last_id", JSON.stringify({}));
-    await setSetting("last_highlight_time", -1);
+    await setSetting("last_highlight_time", 0);
     // reset saved drafts and templates
     await setSetting("saved_drafts", {});
     await setSetting("saved_templates", []);
@@ -367,6 +370,10 @@ export const migrateSettings = async () => {
   if (last_version < 1.76) {
     // reset enabled_builtins from defaults when initially migrating
     await setSetting("enabled_builtins", DefaultSettings.enabled_builtins);
+    migrated = true;
+  }
+  if (last_version < 1.77) {
+    await setSetting("new_comment_highlighter_last_id", {});
     migrated = true;
   }
 
@@ -393,49 +400,53 @@ export const migrateSettings = async () => {
 };
 
 const mergeTransients = async (transientData: Settings, transientOpts?: TransientOpts) => {
-  const { append, exclude, defaults, overwrite } = transientOpts || {};
+  const { append = false, exclude = false, defaults = true, overwrite = false } = transientOpts || {};
+  if (transientData == null || !Object.keys(transientData).length)
+    throw Error(`mergeTransients was unable to use invalid payload: ${transientData}`);
+
   const settings = await getSettings();
-  let output = {} as Settings;
-  if (defaults) output = { ...DefaultSettings };
-  else output = { ...settings };
-  if (objHas(transientData) || objHas(transientOpts))
-    console.log("mergeTransients called:", transientData, transientOpts);
-  return Object.keys(transientData)?.reduce((acc, k) => {
-    const _inVal = transientData[k as keyof Settings];
-    const _setVal = acc[k as keyof Settings];
-    const _inValIsArr = Array.isArray(_inVal) && (_inVal as string[]);
-    const _setIsArr = Array.isArray(_setVal) && (_setVal as string[]);
-    const foundList = !_inValIsArr && _setIsArr && _setIsArr.find((x) => x === _inVal);
-    const foundVal = _setVal === _inVal;
+  const _settings = defaults ? { ...DefaultSettings } : { ...settings };
+
+  const output = Object.keys(transientData)?.reduce((acc, k) => {
+    const v = transientData[k as keyof Settings];
+    const sv = acc[k as keyof Settings];
+    const valIsArray = Array.isArray(v) && (v as string[]);
+    const setIsArray = Array.isArray(sv) && (sv as string[]);
+    const foundList = !valIsArray && setIsArray && setIsArray.find((x) => x === v);
+    const foundVal = sv === v;
+
     // 'append' simply appends a value to an existing list (probably HighlightGroups)
-    const appendedArr = append && _inValIsArr && _setIsArr && [..._setIsArr, ..._inValIsArr];
+    const appended = append && valIsArray && setIsArray ? [...setIsArray, ...valIsArray] : null;
     // 'exclude' filters the given strings out of an option list
-    const filteredArr =
-      exclude && _inValIsArr && _setIsArr && _inValIsArr.reduce((opts, s) => opts.filter((o) => o !== s), _setIsArr);
-    if (appendedArr) return { ...acc, [k]: appendedArr };
-    else if (filteredArr) return { ...acc, [k]: filteredArr };
-    else if (!foundList && !foundVal && !overwrite && _inValIsArr)
-      return { ...acc, [k]: [..._setIsArr, ..._inValIsArr] };
-    else if (!foundList && !foundVal) return { ...acc, [k]: _inVal };
+    const filtered =
+      exclude && valIsArray && setIsArray
+        ? valIsArray.reduce((opts, s) => opts.filter((o) => o !== s), setIsArray)
+        : null;
+
+    if (appended) return { ...acc, [k]: appended };
+    else if (filtered) return { ...acc, [k]: filtered };
+    else if (!foundList && !foundVal && !overwrite && setIsArray && valIsArray)
+      return { ...acc, [k]: [...setIsArray, ...valIsArray] };
+    else if (!foundList && !foundVal) return { ...acc, [k]: v };
+
     return acc;
-  }, output);
+  }, _settings as Settings);
+
+  return output;
 };
 export const mergeTransientSettings = async () => {
   // process any testing related settings passed in by cypress
   try {
     const localTransientOpts = window.localStorage.getItem("transient-opts");
     const localTransientData = window.localStorage.getItem("transient-data");
+    const transientOpts = JSON.parse(localTransientOpts ?? "{}");
+    const transientData = JSON.parse(localTransientData ?? "{}");
 
-    if (localTransientOpts || localTransientData)
-      console.log("mergeTransientSettings:", localTransientOpts, localTransientData);
-
-    const transientOpts = localTransientOpts && JSON.parse(localTransientOpts);
-    const transientData = localTransientData && JSON.parse(localTransientData);
-    if (objHas(transientData)) {
-      const merged = await mergeTransients(transientData, transientOpts);
-      const newSettings = await resetSettings(merged);
-      console.log("mergeTransientSettings merged:", newSettings);
-    }
+    if (!Object.keys(transientOpts).length && !Object.keys(transientData).length) return;
+    console.log("mergeTransientSettings called with payload:", localTransientOpts, localTransientData);
+    const merged = await mergeTransients(transientData, transientOpts);
+    const newSettings = await resetSettings(merged);
+    console.log("mergeTransientSettings merged:", newSettings);
   } catch (e) {
     console.error(e);
   }

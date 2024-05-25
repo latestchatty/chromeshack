@@ -10,7 +10,7 @@ import {
 } from "../core/settings";
 
 export const getRandomNum = (min: number, max: number, precision?: number) =>
-  parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
+  Number.parseFloat((Math.random() * (max - min) + min).toPrecision(precision ? precision : 1));
 
 // https://stackoverflow.com/a/25873123
 export const randomHsl = () => `hsla(${getRandomNum(0, 360)}, ${getRandomNum(25, 100)}%, ${getRandomNum(35, 60)}%, 1)`;
@@ -27,8 +27,8 @@ export const trimName = (name: string) =>
 export const insertGroupCSS = (groups: HighlightGroup[]) => {
   let css = "";
   for (const group of groups || []) {
-    const _name = trimName(group.name);
-    if (group.css.length > 0) css += `#${_name}_splotch { ${group.css} }`;
+    const _name = group.name ? trimName(group.name) : "";
+    if (group.css?.length) css += `#${_name}_splotch { ${group.css} }`;
   }
 
   if (css) insertStyle(css, "highlight-group__styles");
@@ -68,7 +68,7 @@ export const importSettings = async (settingsJSON: string) => {
       return _truncated;
     } else if (parsed) {
       // spread merged settings, highlight groups, and user filters into default settings
-      const mergedGroups = await mergeHighlightGroups(parsed.highlight_groups, DefaultSettings.highlight_groups);
+      const mergedGroups = await mergeHighlightGroups(parsed.highlight_groups, DefaultSettings.highlight_groups || []);
       const combinedSettings = {
         ...DefaultSettings,
         ...{
@@ -103,7 +103,7 @@ export const exportSettings = async () => {
   ];
   const disallowedOptions = ["show_rls_notes", "imported"];
   // leave out users array from builtin groups to save space
-  const exportedGroups = settings.highlight_groups.reduce((acc, g) => {
+  const exportedGroups = settings?.highlight_groups?.reduce((acc, g) => {
     if (g.built_in)
       acc.push({
         built_in: g.built_in,
@@ -114,15 +114,15 @@ export const exportSettings = async () => {
     else if (g.name) acc.push(g);
     return acc;
   }, [] as HighlightGroup[]);
-  const allowedSettings = objConditionalFilter(disallowed, settings);
+  const allowedSettings = objConditionalFilter(disallowed, settings || {});
   const allowedSuboptions = disallowedOptions.reduce((acc, so) => {
     const foundIdx = acc.findIndex((x) => x.toUpperCase() === so.toUpperCase());
     if (foundIdx !== -1) acc.splice(foundIdx);
     return acc;
-  }, settings.enabled_suboptions as string[]);
+  }, settings?.enabled_suboptions as string[]);
   const mutated = {
     ...allowedSettings,
-    enabled_builtins: settings.enabled_builtins,
+    enabled_builtins: settings?.enabled_builtins,
     enabled_suboptions: allowedSuboptions,
     highlight_groups: exportedGroups,
   };

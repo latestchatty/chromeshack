@@ -9,13 +9,13 @@ const ImportExport = memo(() => {
 
   const [fieldBox, setFieldBox] = useState("");
   const [importing, setImporting] = useState(false);
-  const textRef = useRef<HTMLTextAreaElement>();
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const validateImport = (value: string) => {
     (async () => {
       const result = await importSettings(value);
       if (result) setFieldBox(result);
-      else if (result === null) {
+      else if (result === null && dispatch) {
         const freshState = await getState();
         // overwrite our state from the local settings store
         dispatch({ type: "INIT", payload: freshState });

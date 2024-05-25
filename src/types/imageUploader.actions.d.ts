@@ -1,4 +1,4 @@
-export {};
+export type {};
 
 declare global {
   export type TAB_NAMES = "IMGURTAB";

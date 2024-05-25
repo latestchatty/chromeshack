@@ -37,7 +37,7 @@ const Tabs = memo((props: { children?: JSX.Element[]; isLoaded: boolean }) => {
     <div id="tabs-container" className={classes}>
       <div className="tabs-header">
         <div className="tabs">
-          {children.map((c, i) => {
+          {children?.map((c, i) => {
             return (
               <button
                 key={i}
@@ -55,7 +55,7 @@ const Tabs = memo((props: { children?: JSX.Element[]; isLoaded: boolean }) => {
           <div
             className="tab-indicator"
             style={{
-              width: `${100 / children.length}%`,
+              width: `${children ? 100 / children.length : 0}%`,
               transform: `translateX(${activeTabIdx * 100}%)`,
             }}
           />

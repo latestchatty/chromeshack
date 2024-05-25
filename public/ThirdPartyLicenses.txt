@@ -1,4 +1,4 @@
-Package: @biomejs/biome@1.5.3
+Package: @biomejs/biome@1.7.3
 License: MIT OR Apache-2.0
 
                               Apache License
@@ -229,7 +229,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Package: @fortawesome/fontawesome-svg-core@6.5.1
+Package: @fortawesome/fontawesome-svg-core@6.5.2
 License: MIT
 
 Fonticons, Inc. (https://fontawesome.com)
@@ -257,7 +257,7 @@ as SVG and JS file types.
 In the Font Awesome Free download, the SIL OFL license applies to all icons
 packaged as web and desktop font files.
 
-Copyright (c) 2023 Fonticons, Inc. (https://fontawesome.com)
+Copyright (c) 2024 Fonticons, Inc. (https://fontawesome.com)
 with Reserved Font Name: "Font Awesome".
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
@@ -357,7 +357,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 In the Font Awesome Free download, the MIT license applies to all non-font and
 non-icon files.
 
-Copyright 2023 Fonticons, Inc.
+Copyright 2024 Fonticons, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in the
@@ -399,7 +399,7 @@ Awesome, nor vice versa. **Please do not use brand logos for any purpose except
 to represent the company, product, or service to which they refer.**
 
 
-Package: @fortawesome/free-regular-svg-icons@6.5.1
+Package: @fortawesome/free-regular-svg-icons@6.5.2
 License: (CC-BY-4.0 AND MIT)
 
 Fonticons, Inc. (https://fontawesome.com)
@@ -427,7 +427,7 @@ as SVG and JS file types.
 In the Font Awesome Free download, the SIL OFL license applies to all icons
 packaged as web and desktop font files.
 
-Copyright (c) 2023 Fonticons, Inc. (https://fontawesome.com)
+Copyright (c) 2024 Fonticons, Inc. (https://fontawesome.com)
 with Reserved Font Name: "Font Awesome".
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
@@ -527,7 +527,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 In the Font Awesome Free download, the MIT license applies to all non-font and
 non-icon files.
 
-Copyright 2023 Fonticons, Inc.
+Copyright 2024 Fonticons, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in the
@@ -569,7 +569,7 @@ Awesome, nor vice versa. **Please do not use brand logos for any purpose except
 to represent the company, product, or service to which they refer.**
 
 
-Package: @fortawesome/free-solid-svg-icons@6.5.1
+Package: @fortawesome/free-solid-svg-icons@6.5.2
 License: (CC-BY-4.0 AND MIT)
 
 Fonticons, Inc. (https://fontawesome.com)
@@ -597,7 +597,7 @@ as SVG and JS file types.
 In the Font Awesome Free download, the SIL OFL license applies to all icons
 packaged as web and desktop font files.
 
-Copyright (c) 2023 Fonticons, Inc. (https://fontawesome.com)
+Copyright (c) 2024 Fonticons, Inc. (https://fontawesome.com)
 with Reserved Font Name: "Font Awesome".
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
@@ -697,7 +697,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 In the Font Awesome Free download, the MIT license applies to all non-font and
 non-icon files.
 
-Copyright 2023 Fonticons, Inc.
+Copyright 2024 Fonticons, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in the
@@ -739,7 +739,7 @@ Awesome, nor vice versa. **Please do not use brand logos for any purpose except
 to represent the company, product, or service to which they refer.**
 
 
-Package: @fortawesome/react-fontawesome@0.2.0
+Package: @fortawesome/react-fontawesome@0.2.1
 License: MIT
 
 Copyright 2018 Fonticons, Inc.
@@ -763,7 +763,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-Package: @playwright/test@1.40.1
+Package: @playwright/test@1.41.2
 License: Apache-2.0
 
                                  Apache License
@@ -970,7 +970,7 @@ License: Apache-2.0
    limitations under the License.
 
 
-Package: @preact/preset-vite@2.8.1
+Package: @preact/preset-vite@2.8.2
 License: MIT
 
 MIT License
@@ -1048,7 +1048,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/jquery@3.5.29
+Package: @types/jquery@3.5.30
 License: MIT
 
     MIT License
@@ -1100,7 +1100,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/node@20.11.17
+Package: @types/node@20.12.12
 License: MIT
 
     MIT License
@@ -1126,7 +1126,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/react-dom@18.2.19
+Package: @types/react-dom@18.3.0
 License: MIT
 
     MIT License
@@ -1152,7 +1152,7 @@ License: MIT
     SOFTWARE
 
 
-Package: @types/react@18.2.55
+Package: @types/react@18.3.2
 License: MIT
 
     MIT License
@@ -1178,7 +1178,7 @@ License: MIT
     SOFTWARE
 
 
-Package: adm-zip@0.5.10
+Package: adm-zip@0.5.12
 License: MIT
 
 MIT License
@@ -1204,7 +1204,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-Package: chromeshack@1.76.0
+Package: chromeshack@1.77.0
 License: MIT*
 
 Copyright (c) 2009 Adam Hughes <arhughes@gmail.com>
@@ -1228,11 +1228,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-Package: dompurify@3.0.8
+Package: dompurify@3.1.4
 License: (MPL-2.0 OR Apache-2.0)
 
 DOMPurify
-Copyright 2023 Dr.-Ing. Mario Heiderich, Cure53
+Copyright 2024 Dr.-Ing. Mario Heiderich, Cure53
 
 DOMPurify is free software; you can redistribute it and/or modify it under the
 terms of either:
@@ -1801,7 +1801,7 @@ Exhibit B - “Incompatible With Secondary Licenses” Notice
 
 
 
-Package: dotenv@16.4.3
+Package: dotenv@16.4.5
 License: BSD-2-Clause
 
 Copyright (c) 2015, Scott Motte
@@ -2199,7 +2199,7 @@ License: MIT
 </p>
 
 
-Package: glob@10.3.10
+Package: glob@10.3.15
 License: ISC
 
 The ISC License
@@ -2406,7 +2406,7 @@ SOFTWARE.
 
 
 
-Package: preact@10.19.4
+Package: preact@10.22.0
 License: MIT
 
 The MIT License (MIT)
@@ -7320,7 +7320,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-Package: text-field-edit@4.0.0
+Package: text-field-edit@4.1.1
 License: MIT
 
 MIT License
@@ -7360,7 +7360,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-Package: typescript@5.3.3
+Package: typescript@5.4.5
 License: Apache-2.0
 
 Apache License
@@ -7420,7 +7420,7 @@ If the Work includes a "NOTICE" text file as part of its distribution, then any 
 END OF TERMS AND CONDITIONS
 
 
-Package: vite@5.1.1
+Package: vite@5.2.11
 License: MIT
 
 # Vite core license
@@ -7880,6 +7880,12 @@ Repository: https://github.com/nodelib/nodelib/tree/master/packages/fs/fs.walk
 > LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
+
+---------------------------------------
+
+## @polka/compression
+License: MIT
+Repository: lukeed/polka
 
 ---------------------------------------
 
@@ -10933,7 +10939,7 @@ Repository: github:eemeli/yaml
 > THIS SOFTWARE.
 
 
-Package: xss@1.0.14
+Package: xss@1.0.15
 License: MIT
 
 Copyright (c) 2012-2018 Zongmin Lei(雷宗民) <leizongmin@gmail.com>
@@ -10960,7 +10966,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Package: zustand@4.5.0
+Package: zustand@4.5.2
 License: MIT
 
 MIT License

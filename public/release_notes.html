@@ -17,12 +17,29 @@
 
   <body>
     <h1>Chrome Shack Release Notes</h1>
+    <h2>Version 1.77</h2>
+    <ul>
+      <li>Fixed: "Highlight New Posts" not highlighting when manually refreshing a thread (WombatFromHell)</li>
+      <li>Fixed: "User Popup" not rendering usernames correctly when logged-out (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" not detecting short-form Imgur image links (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" toggling embeds when not clicking the anchor expando elements (WombatFromHell)</li>
+      <li>Fixed: "Media Embedder" carousel not handling video/image aspect ratio correctly in some situations (WombatFromHell)</li>
+      <li>Fixed: "Pending Posts" marking pending posts that aren't newer than the current page (WombatFromHell)</li>
+      <li>Changed: Updated scripts to use the newly updated 24 hour thread timeout (WombatFromHell)</li>
+    </ul>
     <h2>Version 1.76</h2>
     <ul>
-      <li>Added: a "Core" tab in the settings panel enabling toggling of previously non-optional scripts (WombatFromHell)</li>
+      <li>
+        Added: a "Core" tab in the settings panel enabling toggling of previously non-optional scripts (WombatFromHell)
+      </li>
       <li>Changed: "Settings" the Reset button now forces an extension reload when used (WombatFromHell)</li>
-      <li>Fixed: "Highlight New Posts" squashed another bug causing excessive highlighting due to invalid timestamp (WombatFromHell)</li>
-      <li>Fixed: handlePostRefresh handler causing excessive reloads/scrolling of user-submitted replies (WombatFromHell)</li>
+      <li>
+        Fixed: "Highlight New Posts" squashed another bug causing excessive highlighting due to invalid timestamp
+        (WombatFromHell)
+      </li>
+      <li>
+        Fixed: handlePostRefresh handler causing excessive reloads/scrolling of user-submitted replies (WombatFromHell)
+      </li>
     </ul>
     <h2>Version 1.75</h2>
     <ul>
@@ -34,7 +51,9 @@
       <li>Added: "Media Embedder" now supports Youtube Shorts embeds (WombatFromHell)</li>
       <li>Added: "Media Embedder" now supports long-form Youtube Playlist embeds (WombatFromHell)</li>
       <li>Changed: Made Popup and new Firefox permissions panel dark/light mode responsive (WombatFromHell)</li>
-      <li>Fixed: "Drafts" wiping existing drafts when interacting with reply box in some situations (WombatFromHell)</li>
+      <li>
+        Fixed: "Drafts" wiping existing drafts when interacting with reply box in some situations (WombatFromHell)
+      </li>
       <li>Fixed: "Settings Popup" now reloads the extension automatically when importing settings (WombatFromHell)</li>
       <li>Fixed: "Scroll To Single Thread Fix" misbehaving and scrolling the main Chatty (WombatFromHell)</li>
       <li>Fixed: "Custom User Filters" not consistently applying filters on reloads (WombatFromHell)</li>

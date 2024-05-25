@@ -11,7 +11,7 @@ const ImageUploaderApp = memo((props: { postboxEl: HTMLElement }) => {
   const dispatch = state.dispatch;
 
   const { fileChooserRef, onClickCancelBtn, onClickTab, onClickToggle, onClickUploadBtn, onStatusAnimEnd } =
-    useImageUploader(parentRef.current, state, dispatch);
+    useImageUploader(parentRef.current, state, dispatch!);
 
   return (
     <ToggleChildren

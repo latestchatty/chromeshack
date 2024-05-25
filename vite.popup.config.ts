@@ -27,6 +27,7 @@ export default defineConfig({
         "**/dist-firefox/**",
         "**/playwright-report/**",
         "**/test-results/**",
+        "**/artifacts/**",
       ],
     },
   },

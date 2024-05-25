@@ -14,11 +14,11 @@ export const ScrollToUncappedPostFix = {
 
   fix({ post, rootid, postid }: PostEventArgs) {
     const _uncapped = ScrollToUncappedPostFix.uncapped;
-    if (_uncapped === rootid && !elementIsVisible(post)) {
+    if (_uncapped === rootid && post && !elementIsVisible(post)) {
       // scroll-to-post when uncapping a thread
       console.log("scrollToUncappedPostFix thread:", post, rootid, _uncapped);
       scrollToElement(post, { toFit: true });
-    } else if (_uncapped === postid && !elementIsVisible(post, true)) {
+    } else if (_uncapped === postid && post && !elementIsVisible(post, true)) {
       // try to scroll-to-post when an opened fullpost is offscreen
       console.log("scrollToUncappedPostFix post:", post, rootid, postid, _uncapped);
       scrollToElement(post);

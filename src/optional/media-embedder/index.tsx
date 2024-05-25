@@ -1,6 +1,7 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { detectMediaLink } from "../../core/api";
-import { arrHas } from "../../core/common/common";
+import { arrHas, isNotNull } from "../../core/common/common";
 import { parseToElement } from "../../core/common/dom";
 import { processPostEvent, processPostRefreshEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
@@ -8,7 +9,7 @@ import "../../styles/media.css";
 import { Expando } from "./Expando";
 
 export const MediaEmbedder = {
-  cachedEl: null as HTMLElement,
+  cachedEl: null as HTMLElement | null,
 
   install() {
     MediaEmbedder.cacheInjectables();
@@ -28,20 +29,24 @@ export const MediaEmbedder = {
     if (!is_enabled) return;
     // render inside a hidden container in each fullpost
     const postbody = post?.querySelector(".sel > .fullpost > .postbody");
-    const links = postbody && ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]);
+    const links = postbody ? ([...postbody.querySelectorAll("a")] as HTMLAnchorElement[]) : [];
     const openByDefault = await enabledContains(["auto_open_embeds"]);
     const rendered = [...(post?.querySelectorAll("div#react-media-element") ?? [])];
-    if (rendered.length === 0 && arrHas(links)) {
+    if (rendered.length === 0 && isNotNull(links) && arrHas(links)) {
       const process = async (l: HTMLAnchorElement) => {
         const childOfComic = l.closest("div.panel");
         const detected = await detectMediaLink(l.href);
         if (childOfComic || !detected) return;
-        const container = MediaEmbedder.cachedEl.cloneNode(false) as HTMLElement;
+        const container = MediaEmbedder.cachedEl?.cloneNode(false) as HTMLElement;
         // the container needs to remain in the DOM for events to work
-        postbody.append(container);
+        postbody?.append(container!);
         const root = createRoot(container!);
-        l.parentNode.replaceChild(container, l);
-        root.render(<Expando response={detected} options={{ openByDefault }} />);
+        l.parentNode?.replaceChild(container, l);
+        root.render(
+          <StrictMode>
+            <Expando response={detected} options={{ openByDefault }} />
+          </StrictMode>
+        );
       };
       await Promise.all(links.map(process));
     }

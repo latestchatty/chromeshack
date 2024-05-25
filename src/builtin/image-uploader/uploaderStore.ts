@@ -20,7 +20,7 @@ const initialState: UploaderState = {
   selectedTab: "IMGURTAB",
   urlData: "",
   status: "",
-  error: null,
+  error: { code: 0, msg: "" },
 };
 
 const tabReducer = (state: UploaderState, action: UploaderAction) => {
@@ -84,12 +84,12 @@ const tabReducer = (state: UploaderState, action: UploaderAction) => {
             ...commonInvalidState,
           };
     case "LOAD_FILES":
-      return arrHas(actionHasFiles)
+      return arrHas(actionHasFiles as File[])
         ? {
             ...state,
             ...commonValidState,
             urlDisabled: true,
-            fileData: state.multifile ? actionHasFiles : [actionHasFiles[0]],
+            fileData: state.multifile ? actionHasFiles : [actionHasFiles?.[0]],
           }
         : {
             ...state,

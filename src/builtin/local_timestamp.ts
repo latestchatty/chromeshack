@@ -39,7 +39,7 @@ export const LocalTimeStamp = {
     const timestamp = postDate?.childNodes?.[2] || postDate?.childNodes?.[1];
     const fixedTime = dateStr && document.createTextNode(dateStr);
     // either a fullpost with a timer or a reply without one
-    if (timestamp?.nodeType === 3) timestamp.parentNode.replaceChild(fixedTime, timestamp);
+    if (timestamp?.nodeType === 3 && fixedTime && timestamp) timestamp.parentNode?.replaceChild(fixedTime, timestamp);
   },
 
   adjustPostTime({ post }: PostEventArgs) {

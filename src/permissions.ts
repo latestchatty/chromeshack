@@ -15,7 +15,7 @@ const requestPermissions = async () => {
   );
 };
 
-const getCurrentPermissions = () => {
+const getCurrentPermissions = (): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     chrome.permissions.contains({ origins: [requiredOrigin] }, (response) => {
       if (response) return resolve(true);
@@ -24,10 +24,11 @@ const getCurrentPermissions = () => {
   });
 };
 
-const setPanelState = (granted) => {
+const setPanelState = (granted: boolean) => {
   const permissionBtn = document.getElementById("permissionBtn");
   const prompt = document.getElementById("prompt");
   const grantText = document.getElementById("granted");
+  if (!prompt || !grantText || !permissionBtn) return;
   if (granted) {
     prompt.setAttribute("class", "hide");
     grantText.removeAttribute("class");
@@ -61,7 +62,6 @@ const initialize = async () => {
   }
 };
 
-(async () => {
-  // only allow Firefox useragent's to use the permissions panel
+window.onload = async (_) => {
   if (isFirefox()) await initialize();
-})();
+};

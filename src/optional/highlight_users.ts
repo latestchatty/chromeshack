@@ -17,14 +17,14 @@ export const HighlightUsers = {
     const compiled = {} as ResolvedUsers;
     const posts = [...document.querySelectorAll("li[id^='item_'")];
     const process = (post: HTMLElement) => {
-      const postid = parseInt(post?.id?.substring(5), 10);
+      const postid = Number.parseInt(post?.id?.substring(5), 10);
       const fullpost = post.querySelector(".fullpost");
       const fullpostAuthor = fullpost?.getAttribute("class")?.split("fpauthor_");
       const oneline = post.querySelector(".oneline");
       const onelineAuthor = oneline?.getAttribute("class")?.split("olauthor_");
       const op = fullpost?.matches(".op");
-      const fpauthor_id = fullpostAuthor && parseInt(fullpostAuthor?.[1], 10);
-      const olauthor_id = onelineAuthor && parseInt(onelineAuthor?.[1], 10);
+      const fpauthor_id = fullpostAuthor && Number.parseInt(fullpostAuthor?.[1], 10);
+      const olauthor_id = onelineAuthor && Number.parseInt(onelineAuthor?.[1], 10);
       const id = olauthor_id ?? fpauthor_id;
       const username =
         post.querySelector("span.oneline_user")?.textContent ??
@@ -36,7 +36,7 @@ export const HighlightUsers = {
       return { id, mod: !!mod, op, postid, username };
     };
     for (const p of posts) {
-      const r = process(p as HTMLElement);
+      const r = process(p as HTMLElement) as ResolvedUser;
       if (!compiled[r.username]) compiled[r.username] = [r];
       else compiled[r.username].push(r);
     }
@@ -75,7 +75,7 @@ export const HighlightUsers = {
             `.authorid_${id}, .replyid_${id}`,
           ].join(", ");
           cssRules.push(`${rules} { ${group.css} }`);
-        } else if (foundUser && group.css.length > 0) {
+        } else if (foundUser && group?.css?.length) {
           const rules = [
             `div.fpauthor_${id} span.author span.user>a`,
             `div.chattypost__hdr.fpauthor_${id} span.username>a`,

@@ -1,9 +1,8 @@
-import fs from "fs";
-import path from "path";
-import dotenv from "dotenv";
-import process from "process";
+import fs from "node:fs";
+import path from "node:path";
+import process from "node:process";
+import "dotenv/config";
 
-dotenv.config();
 const _login = process.env.TESTUSR;
 const _pass = process.env.TESTPW;
 const outputPath = path.resolve("./.env");
@@ -32,7 +31,7 @@ fetch("https://www.shacknews.com/account/signin", {
     const outCookies = serializeCookie(setCookies);
     if (outCookies) {
       // overwrite the contents of the file "./.env" under the key "E2E_SHACKLI" with cookie data
-      fs.writeFileSync(outputPath, `E2E_SHACKLI=${JSON.stringify(outCookies)}`);
+      fs.writeFileSync(outputPath, `E2E_SHACKLI="${JSON.stringify(outCookies)}"`);
       console.log("cookie written in .env format to:", outputPath);
     } else throw Error("No cookie data received from server!");
   })

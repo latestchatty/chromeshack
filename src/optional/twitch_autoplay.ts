@@ -9,6 +9,6 @@ export const TwitchAutoplay = {
     const articlePlayer = document.querySelector(".article-content iframe");
     let src = articlePlayer?.getAttribute("src");
     if (src?.indexOf("autoplay") === -1) src += "&autoplay=false";
-    articlePlayer?.setAttribute("src", src);
+    if (src) articlePlayer?.setAttribute("src", src);
   },
 };

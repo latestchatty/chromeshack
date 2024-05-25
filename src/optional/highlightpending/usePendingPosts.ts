@@ -8,9 +8,17 @@ import {
   processPostRefreshEvent,
 } from "../../core/events";
 import { getSetting } from "../../core/settings";
+import { NewCommentHighlighter } from "../new_comment_highlighter";
 
 const isCollapsed = (elem: HTMLElement) => elem?.closest("div.root.collapsed");
 const isPending = (elem: HTMLElement) => elem?.matches("a.refresh_pending") && elem?.closest("div.refresh a") === elem;
+
+interface PendingPostsExports {
+  pendings: PendingPost[];
+  pendingText: string;
+  handlePrevClick: () => void;
+  handleNextClick: () => void;
+}
 
 const usePendingPosts = (threaded: boolean) => {
   const [pendings, setPendings] = useState([] as PendingPost[]);
@@ -19,7 +27,6 @@ const usePendingPosts = (threaded: boolean) => {
   const [count, setCount] = useState(0);
   const indicator = "★ ";
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handlePrevClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx - 1 + pendings.length) % pendings.length;
@@ -32,7 +39,6 @@ const usePendingPosts = (threaded: boolean) => {
     }
   }, [pendings, pendingIdx]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: "should be okay"
   const handleNextClick = useCallback(() => {
     if (!arrHas(pendings)) return;
     const newIdx = (pendingIdx + 1 + pendings.length) % pendings.length;
@@ -48,7 +54,7 @@ const usePendingPosts = (threaded: boolean) => {
   const updateRefreshed = useCallback(
     ({ post }: PostEventArgs) => {
       // update the list of pending posts when one of them is refreshed
-      const threadid = parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5), 10);
+      const threadid = Number.parseInt(post?.closest("div.root > ul > li[id^='item_']")?.id?.substring(5) ?? "", 10);
       const filtered = pendings.filter((p) => p.threadId !== threadid);
       const newIdx = filtered.length - 1 > 0 ? filtered.length - 1 : 0;
       const newPendings = arrHas(filtered) ? [...filtered] : [];
@@ -74,7 +80,10 @@ const usePendingPosts = (threaded: boolean) => {
         const thread = document.querySelector(`li#item_${threadId}`) as HTMLElement;
         const isAuthorMe = eventData?.post?.author?.toLowerCase() === loggedUser?.toLowerCase();
         // don't grab new posts that contain our logged-in user as the author
-        if (thread && !isAuthorMe) acc.push({ postId, threadId, thread });
+        const shouldPushNotAuthor = thread && postId && threadId && !isAuthorMe;
+        // make sure the postid from the event is really newer than the current page
+        const shouldPushIsNewer = postId ? postId > NewCommentHighlighter.getRecentId() : false;
+        if (shouldPushNotAuthor && shouldPushIsNewer) acc.push({ postId, threadId, thread } as PendingPost);
         return acc;
       }, [] as PendingPost[]);
       const reducedPendings = reducedPosts.reduce((acc, p) => {
@@ -113,7 +122,7 @@ const usePendingPosts = (threaded: boolean) => {
     };
   }, [fetchPendings, updateRefreshed]);
 
-  return { pendings, pendingText, handlePrevClick, handleNextClick };
+  return { pendings, pendingText, handlePrevClick, handleNextClick } as PendingPostsExports;
 };
 
 export { usePendingPosts };

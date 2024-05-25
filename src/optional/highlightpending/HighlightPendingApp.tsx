@@ -10,7 +10,7 @@ const ChevronRight = () => <FontAwesomeIcon className="hpnp__next__icon" icon={f
 
 const HighlightPendingApp = memo((props: { threaded: boolean; elRef: HTMLElement }) => {
   const { threaded, elRef } = props || {};
-  const headerRef = useRef(document.querySelector("header")).current;
+  const headerRef = useRef<HTMLElement>(document.querySelector("header") as HTMLElement).current;
 
   const { pendings, pendingText, handlePrevClick, handleNextClick } = usePendingPosts(threaded);
   const { isNarrow, isVisible, hasScrolled } = useHeaderObserver(headerRef, elRef);

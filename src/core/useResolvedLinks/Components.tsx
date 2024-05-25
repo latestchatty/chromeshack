@@ -42,7 +42,7 @@ const Image = (props: MediaProps) => {
   const { classes: _classes, src, options } = props || {};
   const [classes, setClasses] = useState("");
   const [isSlide, setIsSlide] = useState(false);
-  const imageRef = useRef<HTMLImageElement>();
+  const imageRef = useRef<HTMLImageElement>(null);
   // click-to-toggle enabled by default
   const { clickTogglesVisible = true } = options || {};
 

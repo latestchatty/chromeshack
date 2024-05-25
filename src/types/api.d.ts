@@ -1,7 +1,15 @@
-export {};
+export type {};
 
 declare global {
-  export type ParsedType = "image" | "video" | "iframe" | "iframe-short" | "instagram" | "twitter" | "chattypost";
+  export type ParsedType =
+    | "image"
+    | "video"
+    | "iframe"
+    | "iframe-short"
+    | "instagram"
+    | "twitter"
+    | "chattypost"
+    | undefined;
   export interface ParsedResponse {
     src?: string;
     href?: string;

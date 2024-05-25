@@ -77,7 +77,7 @@ export const Switchers = {
     const alt_span = post.querySelector("span.user");
     const user_icons = post.querySelectorAll("img.chatty-user-icons");
     if (span) span.textContent = newName;
-    else if (alt_span) alt_span.firstChild.textContent = newName;
+    else if (alt_span?.firstChild) alt_span.firstChild.textContent = newName;
     // Switchers don't deserve flair icons
     for (const icon of user_icons || []) if (!icon.classList?.contains("hidden")) icon.classList?.add("hidden");
   },

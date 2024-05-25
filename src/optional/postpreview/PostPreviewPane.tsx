@@ -1,4 +1,4 @@
-import parse, { Element, domToReact } from "html-react-parser";
+import parse, { domToReact, type DOMNode, type Element } from "html-react-parser";
 import { memo } from "react";
 import { createPortal } from "react-dom";
 import { classNames } from "../../core/common/common";
@@ -22,7 +22,12 @@ const PostPreviewPane = memo((props: { target: HTMLElement; toggled: boolean; in
   };
   return createPortal(
     <div id="previewArea" className={classNames({ hidden: !toggled })}>
-      {parse(input, { replace: (node: Element) => modifySpoiler(node) })}
+      {parse(input, {
+        replace: (node: Element | DOMNode): void => {
+          if (!node) return;
+          modifySpoiler(node as Element);
+        },
+      })}
     </div>,
     target
   );

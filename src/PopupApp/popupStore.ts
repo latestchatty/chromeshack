@@ -26,7 +26,7 @@ const popupReducer = (state: PopupState, action: PopupAction) => {
       const _payload = action.payload.newGroup;
       const _groupName = action.payload.prevGroup || _payload.name;
       const _groups = [...state.highlightgroups];
-      const idx = _groups.findIndex((g) => g.name.toUpperCase() === _groupName.toUpperCase());
+      const idx = _groups.findIndex((g) => g.name?.toUpperCase() === _groupName?.toUpperCase());
       if (idx > -1) _groups[idx] = _payload;
       return { ...state, highlightgroups: _groups };
     }

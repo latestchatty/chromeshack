@@ -5,8 +5,8 @@ import { getEnabledBuiltin } from "../core/settings";
 
 export const PostLengthCounter = {
   MAX_POST_BYTES: 105,
-  updateTimer: null as ReturnType<typeof setTimeout>,
-  cachedEl: null as HTMLElement,
+  updateTimer: null as ReturnType<typeof setTimeout> | null,
+  cachedEl: null as HTMLElement | null,
 
   async install() {
     const isEnabled = await getEnabledBuiltin("post_length_counter");
@@ -26,10 +26,10 @@ export const PostLengthCounter = {
     const position = postbox?.querySelector("div.csubmit");
     if (postbox?.querySelector("#post_length_counter_text") || !position) return;
     const child = PostLengthCounter.cachedEl;
-    position.parentNode.insertBefore(child, position);
+    if (child) position.parentNode?.insertBefore(child, position);
     PostLengthCounter.update(postbox);
     const updater = () => PostLengthCounter.update(postbox);
-    postbox.querySelector("textarea#frm_body").addEventListener("keyup", () => {
+    postbox.querySelector("textarea#frm_body")?.addEventListener("keyup", () => {
       if (PostLengthCounter.updateTimer) clearTimeout(PostLengthCounter.updateTimer);
       PostLengthCounter.updateTimer = setTimeout(updater, 250);
     });
@@ -40,9 +40,9 @@ export const PostLengthCounter = {
     const textarea = postbox?.querySelector("textarea#frm_body") as HTMLInputElement;
     const rawPostText = textarea?.value;
     const encodedText = rawPostText && EmojiPoster.handleEncoding(rawPostText);
-    const textCount = encodedText && EmojiPoster.countText(encodedText);
-    const astralCount = encodedText && EmojiPoster.countAstrals(encodedText).astralsCount;
-    const charCount = astralCount ? textCount + astralCount : textCount;
+    const textCount: number = encodedText ? EmojiPoster.countText(encodedText) : 0;
+    const astralCount: number = encodedText ? EmojiPoster.countAstrals(encodedText).astralsCount : 0;
+    const charCount: number = astralCount ? textCount + astralCount : textCount;
     if (counter)
       counter.textContent =
         charCount > PostLengthCounter.MAX_POST_BYTES

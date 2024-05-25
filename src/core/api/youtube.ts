@@ -4,9 +4,9 @@ const decodeOffset = (text: string) => {
   const min = timeMatch?.[2];
   const sec = timeMatch?.[3] || timeMatch?.[4];
   let offset = 0;
-  if (hour) offset += parseInt(hour, 10) * 60;
-  if (min) offset += parseInt(min, 10) * 60;
-  if (sec) offset += parseInt(sec, 10);
+  if (hour) offset += Number.parseInt(hour, 10) * 60;
+  if (min) offset += Number.parseInt(min, 10) * 60;
+  if (sec) offset += Number.parseInt(sec, 10);
   return offset ? `&start=${offset}` : "";
 };
 
@@ -17,7 +17,7 @@ const parseLink = (href: string) => {
   // youtube videos and/or playlists (vid id: $2, playlist id: $3, offset: $1 || $4)
   const isYoutube =
     /https?:\/\/(?:.+\.)?youtube\..+?\/(?:(?:embed\/|watch\?.*?(?:time_continue=(\w+))?[&?]?v=)([\w-]+))(?:.*?[&?]list=([\w-]+))?(?:(?:.*?[&?#]t=|.*?[&?]start=)(\w+))?/i.exec(
-      href,
+      href
     );
   const isYoutubePlaylist = /https?:\/\/.+?\.youtube\..+?\/playlist\?list=([\w-]+)/i.exec(href);
   // youtu.be videos w/wo offset (video id: $1, offset: $2)

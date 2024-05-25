@@ -9,15 +9,16 @@ import "../../styles/chattypost.css";
 
 const parseChattyPost = async (sanitizedFragment: DocumentFragment) => {
   const fullpost = sanitizedFragment.querySelector(".fullpost") as HTMLDivElement;
-  const authorid = parseInt(fullpost?.getAttribute("class")?.split("fpauthor_")[1], 10);
+  const fpAuthorId = fullpost?.getAttribute("class")?.split("fpauthor_")?.[1];
+  const authorid = fpAuthorId ? Number.parseInt(fpAuthorId, 10) : 0;
   const permalink = (sanitizedFragment.querySelector(".postnumber>a") as HTMLAnchorElement)?.href;
-  const postid = parseInt(permalink?.split("item_")[1], 10);
+  const postid = Number.parseInt(permalink?.split("item_")[1], 10);
   const author = (sanitizedFragment.querySelector(".user>a, .user") as HTMLAnchorElement)?.textContent;
   const saneAuthor = author?.replace(/\s/gm, "+");
   const icons = [...sanitizedFragment.querySelectorAll("span.author>img")] as HTMLImageElement[];
   const postbody = (sanitizedFragment.querySelector(".postbody") as HTMLDivElement)?.innerHTML;
   const postdate = (sanitizedFragment.querySelector(".postdate") as HTMLDivElement)?.textContent;
-  const fixedDate = LocalTimeStamp.fixTime(postdate);
+  const fixedDate = LocalTimeStamp.fixTime(postdate ?? "");
   return fullpost
     ? ({
         postid,

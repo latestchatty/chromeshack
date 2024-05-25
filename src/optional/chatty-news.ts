@@ -47,7 +47,7 @@ export const ChattyNews = {
           </a>
         </li>
       `);
-      newsBox?.append(newsItemFragment);
+      if (newsItemFragment) newsBox?.append(newsItemFragment);
     }
     return container;
   },
@@ -73,6 +73,7 @@ export const ChattyNews = {
     `);
 
     // populate the newly created newsBox from the Chatty RSS server's articles
+    if (!newsBoxFragment) return;
     const newsBox = await ChattyNews.populateNewsBox(newsBoxFragment);
 
     // leave our other text centered at the bottom of the article box

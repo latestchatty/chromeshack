@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { test, expect, navigate } from "../fixtures";
 
 const url = "https://www.shacknews.com/chatty?id=40056583#item_40056583";

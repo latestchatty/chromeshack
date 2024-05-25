@@ -51,7 +51,7 @@ const FlexVideo = (props: MediaProps) => {
     const vid = videoRef.current as HTMLVideoElementWithAudio;
     // supports Firefox and Chrome only (via their respective APIs)
     const mozHasAudio = vid?.mozHasAudio;
-    const wkAudioByteCount = vid?.webkitAudioDecodedByteCount;
+    const wkAudioByteCount = vid?.webkitAudioDecodedByteCount ?? 0;
     const _hasAudio = vid && mozHasAudio ? mozHasAudio : !!(vid && wkAudioByteCount > 0);
     if (vid && _hasAudio) setHasAudio(_hasAudio);
     else if (vid) setHasAudio(false);

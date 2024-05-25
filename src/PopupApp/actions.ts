@@ -68,9 +68,9 @@ export const addFilter = (
   else if (foundIdx === -1) {
     const _type = type as "UPDATE_HIGHLIGHTGROUP";
     let group = {
-      ...groups.find((g) => g.name.toUpperCase() === groupName.toUpperCase()),
+      ...groups?.find((g) => g.name?.toUpperCase() === groupName?.toUpperCase()),
     };
-    const _filters = [...group.users, val];
+    const _filters = group?.users ? [...group.users, val] : [];
     group = { ...group, users: _filters };
     if (group) dispatch({ type: _type, payload: { newGroup: group } });
   }
@@ -93,7 +93,7 @@ export const delFilters = (
     });
   else {
     let group = {
-      ...groups.find((g) => g.name.toUpperCase() === groupName.toUpperCase()),
+      ...groups?.find((g) => g.name?.toUpperCase() === groupName?.toUpperCase()),
     };
     const _filters = options.reduce((acc, o) => acc.filter((f) => f.toUpperCase() !== o.toUpperCase()), filters);
     group = { ...group, users: _filters };
@@ -105,9 +105,9 @@ const newHighlightGroup = (name?: string, css?: string, username?: string) => {
   // return a new group with a random color as its default css
   return {
     enabled: true,
-    name: name?.length > 0 ? name : `New Group ${getRandomInt(1, 999999)}`,
-    css: css?.length > 0 ? css : `color: ${randomHsl()} !important;`,
-    users: username?.length > 0 ? [username] : [],
+    name: name?.length ? name : `New Group ${getRandomInt(1, 999999)}`,
+    css: css?.length ? css : `color: ${randomHsl()} !important;`,
+    users: username?.length ? [username] : [],
     builtin: false,
   } as HighlightGroup;
 };
@@ -126,6 +126,6 @@ export const delHighlightGroup = (
   groupName: string,
   dispatch: (action: PopupAction) => void
 ) => {
-  const newGroups = groups.filter((g) => g.name.toUpperCase() !== groupName.toUpperCase());
+  const newGroups = groups.filter((g) => g.name?.toUpperCase() !== groupName.toUpperCase());
   dispatch({ type: "SET_HIGHLIGHTGROUPS", payload: newGroups });
 };

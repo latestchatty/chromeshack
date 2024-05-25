@@ -1,4 +1,4 @@
-import { test, expect, navigate, type Page, BrowserContext } from "../fixtures";
+import { test, expect, navigate, type Page, type BrowserContext } from "../fixtures";
 
 const mediaNavigate = async (page: Page, url: string, context?: BrowserContext) => {
   await navigate(page, url, undefined, context);
@@ -107,16 +107,15 @@ test.describe("Imgur", () => {
     await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
     expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/TVag7Ip.mp4");
   });
-  test.skip("Imgur multi-video album with carousel", async ({ page }) => {
-    // TODO: implement this test
-    const medialinks = await mediaNavigate(page, "");
+  test("Imgur multi-video album with carousel", async ({ page, context }) => {
+    const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=42332710#item_42332710", context);
     const targetEmbed = medialinks.nth(0);
     await targetEmbed.click();
     // first slide should be loaded and visible
     const firstSlide = targetEmbed.locator("div.media video").nth(0);
     await firstSlide.scrollIntoViewIfNeeded();
     await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
-    expect(await firstSlide.getAttribute("src")).toMatch("");
+    expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/SEp7qOa.mp4");
   });
   test("Imgur video from named gallery", async ({ page }) => {
     const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=39924469#item_39924469");

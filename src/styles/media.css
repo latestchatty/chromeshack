@@ -1,7 +1,7 @@
 /* basic rules for styling media/socials children */
 :root {
   --min-media-item-height: 200px;
-  --max-media-item-height: 720px;
+  --max-media-item-height: 810px;
   --min-media-item-width: 300px;
   --max-media-item-width: 854px;
   --min-media-row-size: 200px;

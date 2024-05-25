@@ -1,4 +1,4 @@
-import { resolve } from "path";
+import { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 const devMode = process.env.NODE_ENV === "development";
@@ -32,6 +32,7 @@ export default defineConfig({
         "**/dist-firefox/**",
         "**/playwright-report/**",
         "**/test-results/**",
+        "**/artifacts/**",
       ],
     },
   },

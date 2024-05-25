@@ -1,6 +1,6 @@
 import { isValidElement, useEffect, useState } from "react";
 import { detectMediaLink } from "../api";
-import { arrHas } from "../common/common";
+import { arrHas, isNotNull } from "../common/common";
 import { Carousel } from "./Carousel";
 import { Iframe, Image } from "./Components";
 import { FlexVideo } from "./FlexVideo";
@@ -17,6 +17,7 @@ const loadComponent = (opts: URLProps) => {
   if (type === "video" && src && /imgur/.test(src)) src = src.replace(".gifv", ".mp4");
 
   // feed 'src' into an embeddable common media component depending on link type
+  if (!src) return null;
   if (type === "image") {
     return <Image key={key || src} src={src} options={options} />;
   } else if (type === "video") {
@@ -35,7 +36,7 @@ const resolveComponent = async (opts: URLProps): Promise<JSX.Element> => {
   const { response, options } = opts || {};
   const { href, src, component, args, cb } = (response as ParsedResponse) || {};
   // if a component exists in the response or the callback result then return it
-  const resolved = cb && (await cb(...args));
+  const resolved = args && cb && (await cb(...args));
   if (isValidElement(component) || isValidElement(resolved?.component)) return component || resolved?.component;
   // if we have a list of responses (Imgur) then load them into media components
   const aResolved =
@@ -46,24 +47,24 @@ const resolveComponent = async (opts: URLProps): Promise<JSX.Element> => {
           return acc;
         }, [])
       : null;
-  if (arrHas(aResolved) && aResolved.length > 1) return <Carousel slides={aResolved} />;
+  if (isNotNull(aResolved) && arrHas(aResolved) && aResolved.length > 1) return <Carousel slides={aResolved} />;
   // edge case: Imgur single-media album
-  else if (arrHas(aResolved)) return aResolved[0];
+  else if (isNotNull(aResolved) && arrHas(aResolved)) return aResolved[0];
+
   // otherwise we load a component from our resolver
-  return resolved?.src || src
-    ? loadComponent({
-        response: resolved || response,
-        options,
-        key: src || href,
-      })
-    : null;
+  return loadComponent({
+    response: resolved || response,
+    options,
+    key: src || href,
+  }) as JSX.Element;
 };
 const resolveLink = async (opts: URLProps) => {
   const { link, options } = opts || {};
-  const detected = typeof link === "string" && (await detectMediaLink(link));
+  const detected = typeof link === "string" ? await detectMediaLink(link) : null;
   const resolved = detected && (await resolveComponent({ response: detected, options }));
   // if we're provided a component return it
-  if (isValidElement(resolved) || isValidElement(detected?.component)) return detected?.component || resolved;
+  if (isValidElement(resolved) || isValidElement(detected?.component))
+    return (detected?.component as JSX.Element) || (resolved as ParsedResponse);
   // otherwise load a media component from our response
   const pResolved = resolved as ParsedResponse;
   const rComponent = pResolved?.component && isValidElement(pResolved.component) ? pResolved.component : null;
@@ -73,7 +74,8 @@ const resolveLink = async (opts: URLProps) => {
 const resolveAlbum = async (opts: URLProps) => {
   const { links, options } = opts || {};
   try {
-    if (arrHas(links) && typeof links[0] !== "string") throw Error("resolveAlbum only resolves a list of strings!");
+    if (arrHas(links as string[]) && typeof links?.[0] !== "string")
+      throw Error("resolveAlbum only resolves a list of strings!");
     // resolve urls into a list of media components
     const resolved = [] as JSX.Element[];
     for (const link of links || []) {
@@ -92,13 +94,15 @@ const resolveAlbum = async (opts: URLProps) => {
 const resolveChildren = async (opts: URLProps) => {
   const { links, response, options } = opts || {};
   const cResolved = response && (await resolveComponent({ links, response, options }));
-  const lResolved = arrHas(links) && resolveAlbum({ links, options });
-  return cResolved || lResolved;
+  const lResolved = arrHas(links as string[]) && resolveAlbum({ links, options });
+  if (!cResolved && !lResolved)
+    throw Error(`resolveChildren unable to resolve to a JSX Element: ${response} ${links} ${options}`);
+  return (cResolved || lResolved) as JSX.Element;
 };
 const ResolveMedia = (props: ResolvedMediaProps) => {
   // use useResolvedLinks to return media components from a list of urls
   const { id, className, links, options } = props || {};
-  const [children, setChildren] = useState(null);
+  const [children, setChildren] = useState<JSX.Element | JSX.Element[]>();
 
   useEffect(() => {
     (async () => {

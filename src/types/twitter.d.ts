@@ -1,4 +1,4 @@
-export {};
+export type {};
 
 declare global {
   /// schema for the rendered tweet object

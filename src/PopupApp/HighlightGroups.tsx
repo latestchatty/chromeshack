@@ -14,7 +14,7 @@ const HighlightGroup = memo((props: { name: string }) => {
   const dispatch = state.dispatch;
 
   const [localGroup, setLocalGroup] = useState<HighlightGroup>(
-    state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase())
+    state.highlightgroups?.find((g) => g.name?.toUpperCase() === name?.toUpperCase()) || ({} as HighlightGroup)
   );
   const [nameInput, setNameInput] = useState(localGroup.name);
   const [styleInput, setStyleInput] = useState(localGroup.css);
@@ -32,7 +32,7 @@ const HighlightGroup = memo((props: { name: string }) => {
     if (fieldKey === "enabled") setIsChecked(fieldVal as boolean);
   };
   const handleDelGroup = () => {
-    if (name) delHighlightGroup(state.highlightgroups, name, dispatch);
+    if (name && dispatch) delHighlightGroup(state.highlightgroups, name, dispatch);
   };
   const handleSplotchClick = () => {
     let firstColor: string;
@@ -49,7 +49,7 @@ const HighlightGroup = memo((props: { name: string }) => {
   };
 
   useEffect(() => {
-    const _group = state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase());
+    const _group = state.highlightgroups?.find((g) => g.name?.toUpperCase() === name.toUpperCase());
     const newLocalGroup = {
       ..._group,
       name: nameInput,
@@ -60,8 +60,8 @@ const HighlightGroup = memo((props: { name: string }) => {
   }, [state.highlightgroups, name, isChecked, styleInput, nameInput]);
   useEffect(() => {
     const handler = setTimeout(() => {
-      const _group = state.highlightgroups?.find((g) => g.name.toUpperCase() === name.toUpperCase());
-      if (!highlightGroupsEqual(_group, localGroup))
+      const _group = state.highlightgroups?.find((g) => g.name?.toUpperCase() === name.toUpperCase());
+      if (_group && !highlightGroupsEqual(_group, localGroup) && dispatch)
         dispatch({
           type: "UPDATE_HIGHLIGHTGROUP",
           payload: { prevGroup: name, newGroup: localGroup },
@@ -91,7 +91,7 @@ const HighlightGroup = memo((props: { name: string }) => {
       </div>
       {!localGroup.built_in && (
         <FilterBox
-          id={`${trimName(nameInput)}_list`}
+          id={nameInput ? `${trimName(nameInput)}_list` : ""}
           type="UPDATE_HIGHLIGHTGROUP"
           options={localGroup.users}
           groups={state.highlightgroups}
@@ -100,14 +100,14 @@ const HighlightGroup = memo((props: { name: string }) => {
       )}
       <div className="group_css">
         <textarea
-          id={`${trimName(nameInput)}_css`}
+          id={nameInput ? `${trimName(nameInput)}_css` : ""}
           data-for="css"
           spellCheck={false}
           value={styleInput}
           onChange={setInput}
         />
         <div className="test_css" title="Click to try a new style" onClick={handleSplotchClick}>
-          <span id={`${trimName(nameInput)}_splotch`} title="Click to try a new color">
+          <span id={nameInput ? `${trimName(nameInput)}_splotch` : ""} title="Click to try a new color">
             Aa
           </span>
         </div>
@@ -120,11 +120,12 @@ const HighlightGroups = memo(() => {
   const state = useStore() as PopupState;
   const dispatch = state.dispatch;
 
-  const handleAddGroup = () => addHighlightGroup(state.highlightgroups, {}, dispatch);
+  const handleAddGroup = () => dispatch && addHighlightGroup(state.highlightgroups, {}, dispatch);
 
   return (
     <div id="highlight_groups">
-      {arrHas(state.highlightgroups) && state.highlightgroups?.map((g, i) => <HighlightGroup key={i} name={g.name} />)}
+      {arrHas(state.highlightgroups) &&
+        state.highlightgroups?.map((g, i) => g.name && <HighlightGroup key={i} name={g.name} />)}
       <button id="add_highlight_group" onClick={handleAddGroup}>
         Add Group
       </button>

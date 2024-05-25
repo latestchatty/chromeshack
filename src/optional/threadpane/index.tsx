@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
@@ -20,8 +21,12 @@ const ThreadPane = {
       const appContainer = parseToElement(`<div id="cs_thread_pane" />`);
 
       const root = createRoot(appContainer!);
-      rootEl.append(appContainer);
-      root.render(<ThreadPaneApp />);
+      rootEl?.append(appContainer!);
+      root.render(
+        <StrictMode>
+          <ThreadPaneApp />
+        </StrictMode>
+      );
     }
   },
 };

@@ -211,7 +211,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
       url,
       {
         o: { append: true },
-        d: { new_comment_highlighter_last_id: { "42269502": 42270323 }, last_highlight_time: -1 },
+        d: { new_comment_highlighter_last_id: { "42269502": 42270323 }, last_highlight_time: 0 },
       },
       context
     );
