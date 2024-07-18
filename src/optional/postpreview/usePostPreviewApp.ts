@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { debounce } from "ts-debounce";
 import { elemMatches, generatePreview, scrollToElement } from "../../core/common/dom";
 import { replyFieldEvent } from "../../core/events";
@@ -26,11 +26,11 @@ const usePostPreviewApp = (props: PostPreviewAppProps) => {
   const paneMountRef = useRef(paneMountElem).current;
   const fullpostRef = useRef<HTMLElement | null>(null);
 
-  const _generatePreview = (_input: string) => {
+  const _generatePreview = useCallback((_input: string) => {
     // generatePreview sanitizes input to conform to the shacktag schema
     const preview = _input ? generatePreview(_input) : "";
     if ((preview as string)?.length >= 0) setInput(preview);
-  };
+  }, []);
 
   const debouncedInputRef = useRef(
     debounce((el: HTMLInputElement) => {

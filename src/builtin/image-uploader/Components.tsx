@@ -37,10 +37,10 @@ export const DropArea = memo((props: ImageUploaderComponentProps) => {
   const { fcRef, multifile, fileData, formats, disabled, dispatch } = props || {};
   const showWarning = fileData?.length && fileData.length > 1 && !multifile;
 
-  const override = (e: React.DragEvent | React.ChangeEvent) => {
+  const override = useCallback((e: React.DragEvent | React.ChangeEvent) => {
     e.preventDefault();
     e.stopPropagation();
-  };
+  }, []);
   const handleFileChooser = useCallback(
     (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLElement>) => {
       override(e);
