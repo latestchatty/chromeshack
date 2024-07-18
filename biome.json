@@ -19,7 +19,6 @@
       "arrowParentheses": "always",
       "jsxQuoteStyle": "double",
       "semicolons": "always",
-      "trailingComma": "es5",
       "quoteProperties": "asNeeded",
       "bracketSpacing": true,
       "bracketSameLine": true
