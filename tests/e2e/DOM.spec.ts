@@ -147,7 +147,7 @@ test.describe("NewCommentHighlighter", () => {
         o: { append: true },
         d: { new_comment_highlighter_last_id: { "42269502": 42270595 } },
       },
-      context
+      context,
     );
     const highlights = page.locator(".newcommenthighlighter");
     await expect(highlights).toHaveCount(1);
@@ -158,6 +158,7 @@ test.describe("NewCommentHighlighter", () => {
     await expect(highlights).toHaveCount(0);
   });
 });
+
 test.describe("NewCommentHighlighter - time validated highlighting", () => {
   const url = "https://www.shacknews.com/chatty?id=42269502#item_42269502";
 
@@ -169,7 +170,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
         o: { append: true },
         d: { new_comment_highlighter_last_id: { "42269502": 42270597 }, last_highlight_time: Date.now() },
       },
-      context
+      context,
     );
     const highlights = page.locator(".newcommenthighlighter");
     await expect(highlights).toHaveCount(0);
@@ -182,14 +183,14 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
         o: { append: true },
         d: { new_comment_highlighter_last_id: { "42269502": 42270595 }, last_highlight_time: Date.now() },
       },
-      context
+      context,
     );
     const highlights = page.locator(".newcommenthighlighter");
     await expect(highlights).toHaveCount(1);
   });
   test("stale id with stale time", async ({ page, context }) => {
-    // NCH minimum highlight stale time threshold is <=4 hours
-    const staleThresh = 1000 * 60 * 60 * 4 + 60000;
+    // NCH minimum highlight stale time threshold is <=6 hours
+    const staleThresh = 1000 * 60 * 60 * 6 + 60000;
     const staleTime = Date.now() + staleThresh;
     // this would normally highlight the whole thread
     await navigate(
@@ -199,7 +200,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
         o: { append: true },
         d: { new_comment_highlighter_last_id: { "42269502": 42269502 }, last_highlight_time: staleTime },
       },
-      context
+      context,
     );
     const highlights = page.locator(".newcommenthighlighter");
     // shouldn't highlight here due to stale time unless we're refreshing via the root-refresh button
@@ -213,7 +214,7 @@ test.describe("NewCommentHighlighter - time validated highlighting", () => {
         o: { append: true },
         d: { new_comment_highlighter_last_id: { "42269502": 42270323 }, last_highlight_time: 0 },
       },
-      context
+      context,
     );
     const highlights = page.locator(".newcommenthighlighter");
     await expect(highlights).toHaveCount(6);
