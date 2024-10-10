@@ -113,7 +113,7 @@ div.cs_thread_pane_root_author {
 }
 div.cs_thread_pane_post_count {
   margin: 0 0.33em 0 auto;
-  font-family: arial;
+  font-family: arial, serif;
   font-size: 11px;
   color: #555;
 }
@@ -210,7 +210,7 @@ div.cs_thread_pane_replies {
 
 div.cs_thread_pane_reply {
   padding-left: var(--thread-pane-reply-indent);
-  font-family: arial;
+  font-family: arial, serif;
   font-size: 11px;
 }
 div.reply_most_recent {

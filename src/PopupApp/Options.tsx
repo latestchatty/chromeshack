@@ -44,7 +44,7 @@ const OptionButton = memo(
       <div className="option__btn">
         {label ? (
           <h2>
-            <label>{label}</label>
+            <label htmlFor={id}>{label}</label>
           </h2>
         ) : undefined}
         {infolabel ? <p className="info">{infolabel}</p> : undefined}
