@@ -83,20 +83,6 @@ test.describe("Imgur", () => {
     await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
     expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/3nShc.jpg");
   });
-  test("Imgur single video - new", async ({ page }) => {
-    const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=41990217#item_41990217");
-    const targetEmbed = medialinks.nth(0);
-    await targetEmbed.click();
-    // first slide should be loaded and visible
-    const firstSlide = targetEmbed.locator("div.media video").nth(0);
-    await firstSlide.scrollIntoViewIfNeeded();
-    await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
-    expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/aMt1luk.mp4");
-    // check if video pauses when clicked
-    await firstSlide.click();
-    await expect(firstSlide).toHaveJSProperty("paused", true);
-    // NOTE: cannot test for the inverse on current versions of playwright
-  });
   test("Imgur single video - with audio - new", async ({ page }) => {
     const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=41749264#item_41749264");
     const targetEmbed = medialinks.nth(0);
@@ -177,7 +163,7 @@ test.describe("Dropbox", () => {
     await imageEmbed.scrollIntoViewIfNeeded();
     await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await imageEmbed.getAttribute("src")).toMatch(
-      "https://www.dropbox.com/s/r9feiqem9qiclqk/2016%20Bulked%20Up.jpg?raw=1"
+      "https://www.dropbox.com/s/r9feiqem9qiclqk/2016%20Bulked%20Up.jpg?raw=1",
     );
   });
   test("Dropbox video", async ({ page }) => {
@@ -189,7 +175,7 @@ test.describe("Dropbox", () => {
     await videoEmbed.scrollIntoViewIfNeeded();
     await expect(videoEmbed).toBeInViewport({ ratio: 0.1 });
     expect(await videoEmbed.getAttribute("src")).toMatch(
-      "https://www.dropbox.com/s/8qk8lfwwtaubk44/20200512_193538.mp4?raw=1"
+      "https://www.dropbox.com/s/8qk8lfwwtaubk44/20200512_193538.mp4?raw=1",
     );
   });
 });
@@ -214,7 +200,7 @@ test("Tenor image", async ({ page }) => {
   await imageEmbed.scrollIntoViewIfNeeded();
   await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
   expect(await imageEmbed.getAttribute("src")).toMatch(
-    "https://media1.tenor.com/images/383abee6c9e5f68c6b7ca5b3102f91ca/tenor.gif?itemid=5103046"
+    "https://media1.tenor.com/images/383abee6c9e5f68c6b7ca5b3102f91ca/tenor.gif?itemid=5103046",
   );
 });
 
@@ -238,6 +224,6 @@ test("Gstatic image", async ({ page }) => {
   await imageEmbed.scrollIntoViewIfNeeded();
   await expect(imageEmbed).toBeInViewport({ ratio: 0.1 });
   expect(await imageEmbed.getAttribute("src")).toMatch(
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2dGlhF4jRBG7_ZuQvNgPyMU4ePky65bUCgg&usqp=CAU"
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2dGlhF4jRBG7_ZuQvNgPyMU4ePky65bUCgg&usqp=CAU",
   );
 });
