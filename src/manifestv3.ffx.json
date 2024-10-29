@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chrome Shack",
-  "version": "1.77",
+  "version": "1.78",
   "description": "Collection of scripts for Shacknews.",
   "browser_specific_settings": {
     "gecko": {
