@@ -1,7 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export const useIntersectObserver = (config: IntersectionObserverConfig) => {
-  const { root = null, threshold = 0.5, ...configOpts } = config || {};
+  const { root = null, threshold = 0.5 } = config || {};
+  const _configOpts = useMemo(() => {
+    const { ...configOpts } = config || {};
+    return configOpts;
+  }, [config]);
 
   const [isVisible, setIsVisible] = useState(false);
   const [observedElem, setObservedElem] = useState<HTMLElement | null>();
@@ -14,7 +18,7 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
     const _config = {
       root,
       threshold,
-      ...configOpts,
+      ..._configOpts,
     };
     // only expose the boolean state of the visibility threshold (for ease of use)
     observer.current = new IntersectionObserver(([e]) => {
@@ -26,7 +30,7 @@ export const useIntersectObserver = (config: IntersectionObserverConfig) => {
     if (observedElem) _observer.current?.observe(observedElem);
     // make sure we clean up after ourselves
     return () => _observer?.current?.disconnect();
-  }, [configOpts, observedElem, root, threshold]);
+  }, [_configOpts, observedElem, root, threshold]);
   // expose an element setter and our boolean visibility state
   return { observedElem, setObservedElem, isVisible, observer };
 };

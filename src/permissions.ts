@@ -11,7 +11,7 @@ const requestPermissions = async () => {
       }
       console.error("Permission denied!");
       return reject(false);
-    })
+    }),
   );
 };
 
@@ -62,6 +62,6 @@ const initialize = async () => {
   }
 };
 
-window.onload = async (_) => {
+(async () => {
   if (isFirefox()) await initialize();
-};
+})();

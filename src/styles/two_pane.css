@@ -144,7 +144,7 @@ div.cs_thread_pane_replies {
 
 div.cs_thread_pane_reply {
   padding-left: var(--thread-pane-reply-indent);
-  font-family: arial;
+  font-family: arial, serif;
   font-size: 11px;
 }
 
@@ -195,7 +195,7 @@ div.cs_thread_pane_most_recent_reply {
 
 div.cs_thread_pane_post_count {
   float: right;
-  font-family: arial;
+  font-family: arial, serif;
   font-size: 11px;
   color: #555;
 }

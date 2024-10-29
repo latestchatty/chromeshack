@@ -1,5 +1,5 @@
 # Pull the base image
-FROM mcr.microsoft.com/playwright:v1.41.2-jammy
+FROM mcr.microsoft.com/playwright:v1.48.1-noble
 
 ARG SCOOKIE
 ARG CI
