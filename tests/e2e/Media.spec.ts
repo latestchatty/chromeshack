@@ -57,7 +57,7 @@ test.describe("Imgur", () => {
     await expect(thirdSlide).toBeInViewport({ ratio: 0.1 });
     expect(await thirdSlide.getAttribute("src")).toMatch("https://i.imgur.com/iH06hK7.jpg");
   });
-  test("Imgur multi-image carousel from named gallery", async ({ page }) => {
+  test("Imgur multi-image carousel from named gallery #1", async ({ page }) => {
     const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=41972746#item_41972746");
     // click toggles visibility of 6th embed
     const targetEmbed = medialinks.nth(5);
@@ -69,6 +69,14 @@ test.describe("Imgur", () => {
     await firstSlide.scrollIntoViewIfNeeded();
     await expect(firstSlide).toBeInViewport({ ratio: 0.1 });
     expect(await firstSlide.getAttribute("src")).toMatch("https://i.imgur.com/dPMm4MC.jpg");
+  });
+  test("Imgur multi-image album from named gallery #2", async ({ page, context }) => {
+    const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=42677276#item_42677276", context);
+    const targetEmbed = medialinks.nth(0);
+    await targetEmbed.click();
+    await expect(targetEmbed).toHaveClass("medialink toggled");
+    const firstEmbed = targetEmbed.locator("div.media img").nth(0);
+    expect(await firstEmbed.getAttribute("src")).toMatch("https://i.imgur.com/zjnJOuB.jpg");
   });
   test("Imgur multi-image carousel from blog gallery - new", async ({ page }) => {
     const medialinks = await mediaNavigate(page, "https://www.shacknews.com/chatty?id=42043485#item_42043485");

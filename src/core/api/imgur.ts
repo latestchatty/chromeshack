@@ -56,7 +56,7 @@ export const doResolveImgur = async ({ imageId, albumId, galleryId }: ImgurResol
           const media = isImage(link) || isVideo(link) ? [link] : null;
 
           return album || media || null;
-        })
+        }),
       )
     ).find((t) => !!t);
     if (tasks?.length) return tasks;
@@ -83,13 +83,14 @@ export const getImgur = async (...args: any[]) => {
 const parseLink = (href: string) => {
   // albumMatch[1] returns an album (data.images.length > 1)
   // albumMatch[2] can also be an image nonce (data.images.length === 1 || data.link)
-  const albumMatch = /https?:\/\/(?:.+?\.)?imgur\.(?:com|io)\/(?:(?:album|gallery|a|g)\/(\w+)(?:#(\w+))?)/i.exec(href);
+  const albumMatch =
+    /https?:\/\/(?:.+?\.)?imgur\.(?:com|io)\/(?:(?:album|gallery|a|g)\/(?:.*-)?(\w+)(?:#(\w+))?)/i.exec(href);
   // galleryMatch[1] matches a tagged gallery nonce (which is actually an album)
   const galleryMatch = /https?:\/\/(?:.+?\.)?imgur\.(?:com|io)\/(?:t\/\w+\/(\w+))/i.exec(href);
   // matches an image nonce (fallthrough from the two previous types)
   // [1] = direct match, [2] = gallery direct match, [3] = indirect match, plus the albumMatch[2] above
   const imageMatch = /https?:\/\/(?:.+?\.)?imgur\.(?:com|io)\/(?:i\/(\w+)|r\/\w+\/(\w+)|(\w+)\?(i|r)|(\w+))$/i.exec(
-    href
+    href,
   );
 
   const albumId = albumMatch ? albumMatch[1] : null;
