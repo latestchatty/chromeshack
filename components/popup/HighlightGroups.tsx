@@ -14,7 +14,7 @@ const HighlightGroup = memo((props: { name: string }) => {
   const dispatch = state.dispatch;
 
   const [localGroup, setLocalGroup] = useState<HighlightGroup>(
-    state.highlightgroups?.find((g) => g.name?.toUpperCase() === name?.toUpperCase()) || ({} as HighlightGroup)
+    state.highlightgroups?.find((g) => g.name?.toUpperCase() === name?.toUpperCase()) || ({} as HighlightGroup),
   );
   const [nameInput, setNameInput] = useState(localGroup.name);
   const [styleInput, setStyleInput] = useState(localGroup.css);

@@ -42,7 +42,7 @@ const HighlightFilters = memo((props: { username: string }) => {
         if (group?.name) {
           const groupContainsUser = await highlightGroupContains(group.name, username);
           _children.push(
-            <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />
+            <HighlightFilter key={i} username={username} groupName={group.name} isContained={!!groupContainsUser} />,
           );
         }
       }

@@ -49,7 +49,7 @@ export const DropArea = memo((props: ImageUploaderComponentProps) => {
       const data = dropData ?? chooserData;
       if (data?.length > 0 && !disabled && dispatch) dispatch({ type: "LOAD_FILES", payload: data });
     },
-    [override, disabled, dispatch]
+    [override, disabled, dispatch],
   );
 
   return (
@@ -90,7 +90,7 @@ export const UrlInput = memo((props: ImageUploaderComponentProps) => {
       const match = val?.match(urlValidateRegExp);
       if (match && dispatch) dispatch({ type: "LOAD_URL", payload: val });
       else if (dispatch) dispatch({ type: "LOAD_INVALID_URL" });
-    }, 500)
+    }, 500),
   );
   const onInput = (e: React.ChangeEvent) => {
     const _this = e?.target as HTMLInputElement;

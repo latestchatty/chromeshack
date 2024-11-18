@@ -2,7 +2,7 @@ const parseLink = (href: string) => {
   // $1 = VODs, $2 = channels, $3 = collections, $4 = time offset
   const isTwitch =
     /https?:\/\/(?!clips\.)(?:.*?\.)?twitch\.tv\/(?:(?:\w+\/v\/|videos\/)(\w+)|(\w+).?$)(?:.*?\??collection=([\w-]+))?(?:.*?\??t=(\w+)$)?/i.exec(
-      href
+      href,
     );
   // $1 = short form clips, $2 = long form clips
   const isTwitchClip = /https?:\/\/(?:clips\.twitch\.tv\/(\w+)|.*?\.twitch\.tv\/[\w-]+\/clip\/(\w+))/i.exec(href);

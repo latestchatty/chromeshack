@@ -46,7 +46,7 @@ const useExpando = (props: ExpandoProps) => {
       // only clickTogglesVisible on media when an image or expando link
       if ((_mediaParent && type === "image" && toggled) || _expando) setToggled(!toggled);
     },
-    [type, toggled]
+    [type, toggled],
   );
   const handleNewClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -54,7 +54,7 @@ const useExpando = (props: ExpandoProps) => {
       const newWindow = window.open(newTabHref, "_blank", "noopener,noreferrer");
       if (newWindow) newWindow.opener = null;
     },
-    [newTabHref]
+    [newTabHref],
   );
   const handleRefreshClick = useCallback(() => {
     // less graceful reload method

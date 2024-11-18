@@ -22,7 +22,7 @@ const UserPopupApp = memo(
           root.parentNode?.removeChild(root);
         }
       },
-      [parentRoot]
+      [parentRoot],
     );
 
     useEffect(() => {
@@ -41,7 +41,7 @@ const UserPopupApp = memo(
         )}
       </div>
     );
-  }
+  },
 );
 
 export { UserPopupApp };

@@ -51,7 +51,7 @@ export const copyToClipboard = async (textArea: HTMLTextAreaElement, exportable:
       },
       () => {
         return false;
-      }
+      },
     );
   }
   return false;

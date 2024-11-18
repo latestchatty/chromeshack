@@ -29,7 +29,7 @@ const PostPreviewPane = memo((props: { target: HTMLElement; toggled: boolean; in
         },
       })}
     </div>,
-    target
+    target,
   );
 });
 

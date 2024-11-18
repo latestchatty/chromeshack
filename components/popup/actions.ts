@@ -44,7 +44,7 @@ export const toggleOption = (
   options: string[],
   val: string,
   type: OptionsTypes,
-  dispatch: (action: PopupAction) => void
+  dispatch: (action: PopupAction) => void,
 ) => {
   // works with enabled_scripts and enabled_suboptions
   const foundIdx = options?.findIndex((o) => o?.toUpperCase() === val?.toUpperCase());
@@ -61,7 +61,7 @@ export const addFilter = (
   type: FilterTypes | "UPDATE_HIGHLIGHTGROUP",
   dispatch: (action: PopupAction) => void,
   groups?: HighlightGroup[],
-  groupName?: string
+  groupName?: string,
 ) => {
   const foundIdx = filters?.findIndex((f) => f.trim().toUpperCase() === val.trim().toUpperCase());
   if (type !== "UPDATE_HIGHLIGHTGROUP" && foundIdx === -1) dispatch({ type, payload: [...filters, val] });
@@ -81,14 +81,14 @@ export const delFilters = (
   type: FilterTypes | "UPDATE_HIGHLIGHTGROUP",
   dispatch: (action: PopupAction) => void,
   groups?: HighlightGroup[],
-  groupName?: string
+  groupName?: string,
 ) => {
   if (type !== "UPDATE_HIGHLIGHTGROUP")
     dispatch({
       type,
       payload: options.reduce(
         (acc, o) => acc.filter((f) => f.trim().toUpperCase() !== o.trim().toUpperCase()),
-        filters
+        filters,
       ),
     });
   else {
@@ -114,7 +114,7 @@ const newHighlightGroup = (name?: string, css?: string, username?: string) => {
 export const addHighlightGroup = (
   groups: HighlightGroup[],
   group: { name?: string; css?: string; username?: string },
-  dispatch: (action: PopupAction) => void
+  dispatch: (action: PopupAction) => void,
 ) => {
   const { name, css, username } = group || {};
   const newGroup = newHighlightGroup(name, css, username);
@@ -124,7 +124,7 @@ export const addHighlightGroup = (
 export const delHighlightGroup = (
   groups: HighlightGroup[],
   groupName: string,
-  dispatch: (action: PopupAction) => void
+  dispatch: (action: PopupAction) => void,
 ) => {
   const newGroups = groups.filter((g) => g.name?.toUpperCase() !== groupName.toUpperCase());
   dispatch({ type: "SET_HIGHLIGHTGROUPS", payload: newGroups });

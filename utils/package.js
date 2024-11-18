@@ -103,7 +103,7 @@ async function buildSrcArchive(includes, tempDir, excludes) {
   await buildSrcArchive(
     ["./*.md", "./*.json", "./pnpm-lock.yaml", "./*.config.ts", "./src", "./utils", "./public"],
     "./artifacts/srctemp",
-    "_shack_li_.json"
+    "_shack_li_.json",
   );
   await createZipArchive("chromeshack-src", "./artifacts/srctemp", "./artifacts");
 })();

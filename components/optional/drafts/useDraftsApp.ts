@@ -41,7 +41,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
             acc[_k] = { ...cDraft, body: dBody };
             return acc;
           },
-          {} as Record<number, Draft>
+          {} as Record<number, Draft>,
         )
       : null;
     const foundRecord = decompressed?.[postid];
@@ -73,14 +73,14 @@ const useDraftsApp = (props: DraftsAppProps) => {
               acc[_k] = { ...draft, body: cBody };
               return acc;
             },
-            {} as Record<number, Draft>
+            {} as Record<number, Draft>,
           )
         : null;
       if (compressed != null && !isEqual(compressed, current)) await setSetting("saved_drafts", compressed);
       const foundRecord = filtered?.[postid];
       if (foundRecord && filtered?.[postid]?.body) setValid(true);
     },
-    [postid]
+    [postid],
   );
 
   const debouncedSave = useRef(
@@ -88,7 +88,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
       (async () => {
         saveDraftsToStore(d);
       })();
-    }, 750)
+    }, 750),
   ).current;
 
   const saveToDraft = useCallback(
@@ -99,7 +99,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
       setDrafts(_drafts);
       debouncedSave(_drafts);
     },
-    [drafts, postid, debouncedSave]
+    [drafts, postid, debouncedSave],
   );
 
   useEffect(() => {
@@ -159,7 +159,7 @@ const useDraftsApp = (props: DraftsAppProps) => {
               if (_k !== postid) return { ...acc, [_k]: _drafts[_k] };
               return acc;
             },
-            {} as Record<number, Draft>
+            {} as Record<number, Draft>,
           );
         await saveDraftsToStore(filtered as Record<number, Draft>);
         setInputVal("");

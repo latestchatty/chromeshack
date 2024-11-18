@@ -43,7 +43,7 @@ const useTemplatesApp = (props: TemplatesAppProps) => {
       e.preventDefault();
       setPopupVisible(!popupVisible);
     },
-    [popupVisible]
+    [popupVisible],
   );
 
   const handlePopupClick = useCallback(
@@ -71,14 +71,14 @@ const useTemplatesApp = (props: TemplatesAppProps) => {
             let _t = t;
             if (i === _idx) _t = _val;
             return _t;
-          })
+          }),
         );
       else if (_btn?.matches("#save__btn") && !arrHas(templates)) setTemplates([_val]);
       else if (_btn?.matches("#del__btn"))
         setTemplates(templates.length > 1 ? templates.filter((_, i) => i !== _idx) : [""]);
       else if (_btn?.matches("#add__btn") && _hasBody) setTemplates([...templates, _val]);
     },
-    [inputBox, templates]
+    [inputBox, templates],
   );
 
   useEffect(() => {

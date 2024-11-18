@@ -13,10 +13,7 @@ div.dinogegtik {
   width: 735px;
   height: 487px;
   margin: 10px 0;
-  font-family:
-    Lucida Console,
-    Courier New,
-    sans-serif;
+  font-family: Lucida Console, Courier New, sans-serif;
   font-size: 13px;
   text-align: center;
   line-height: 1em;
@@ -74,11 +71,7 @@ div.sparklycomic div.panel span {
   left: 2px;
   right: 0;
   bottom: 0;
-  text-shadow:
-    -1px -1px 0 #000,
-    1px -1px 0 #000,
-    -1px 1px 0 #000,
-    1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 div.sparklycomic div.panel span a {

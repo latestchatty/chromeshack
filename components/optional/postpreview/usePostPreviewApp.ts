@@ -36,7 +36,7 @@ const usePostPreviewApp = (props: PostPreviewAppProps) => {
     debounce((el: HTMLInputElement) => {
       if (!elemMatches(el, "#frm_body")) return;
       _generatePreview(el.value);
-    }, 250)
+    }, 250),
   ).current;
 
   const handleInput = useCallback(
@@ -45,7 +45,7 @@ const usePostPreviewApp = (props: PostPreviewAppProps) => {
       if (!_el || !elemMatches(_el, "#frm_body")) return;
       debouncedInputRef(_el);
     },
-    [debouncedInputRef]
+    [debouncedInputRef],
   );
   const handleToggleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -54,7 +54,7 @@ const usePostPreviewApp = (props: PostPreviewAppProps) => {
       if (inputArea.value.length > 0) debouncedInputRef(inputArea);
       setToggled((p) => !p);
     },
-    [debouncedInputRef, postboxRef]
+    [debouncedInputRef, postboxRef],
   );
 
   useEffect(() => {

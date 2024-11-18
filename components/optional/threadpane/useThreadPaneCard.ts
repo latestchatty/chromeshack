@@ -53,7 +53,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         },
       });
     },
-    [rootid, collapsed]
+    [rootid, collapsed],
   );
   const handleCardClick = useCallback(() => {
     const _mostRecent = localRecents?.mostRecentRef;
@@ -84,7 +84,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         },
       });
     },
-    [collapsed]
+    [collapsed],
   );
 
   const updateCollapsed = useCallback(
@@ -92,7 +92,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
       const { threadid, is_collapsed } = args || {};
       if (threadid === rootid) setCollapsed(is_collapsed);
     },
-    [rootid]
+    [rootid],
   );
   const updatePending = useCallback(
     (args: PendingPostEventArgs) => {
@@ -102,7 +102,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
       const foundIdx = pendings?.findIndex((p: PendingPost) => p.threadId === rootid);
       if (foundIdx > -1) setPending(true);
     },
-    [pending, rootid]
+    [pending, rootid],
   );
 
   const refreshedThread = useCallback(
@@ -117,7 +117,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         if (parsed?.recents) setLocalRecents(parsed?.recents);
       }
     },
-    [rootid]
+    [rootid],
   );
 
   const userFilterUpdate = useCallback(
@@ -142,7 +142,7 @@ const useThreadPaneCard = (post: ParsedPost) => {
         }
       })();
     },
-    [localRecents, localPost]
+    [localRecents, localPost],
   );
 
   useEffect(() => {

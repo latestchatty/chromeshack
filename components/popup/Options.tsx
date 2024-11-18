@@ -19,7 +19,7 @@ const useOption = (opts: OptionProps) => {
   const isChecked = arrHas(options) ? !!options.find((x) => x?.toUpperCase() === val?.toUpperCase()) : false;
   const setChecked = useCallback(
     () => dispatch && toggleOption(options, val, type, dispatch),
-    [options, val, type, dispatch]
+    [options, val, type, dispatch],
   );
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const OptionButton = memo(
         </button>
       </div>
     );
-  }
+  },
 );
 
 const Suboption = memo(
@@ -79,7 +79,7 @@ const Suboption = memo(
         {children}
       </div>
     );
-  }
+  },
 );
 
 const Option = memo(
@@ -113,7 +113,7 @@ const Option = memo(
         {children}
       </div>
     );
-  }
+  },
 );
 const OptionBuiltin = (props: {
   id: EnabledBuiltinOptions;
@@ -150,7 +150,7 @@ const OptionGroup = (props: {
           val: id,
           type: optionType === "SET_BUILTINS" ? "SET_BUILTINS" : "SET_OPTIONS",
         }
-      : ({} as OptionProps)
+      : ({} as OptionProps),
   );
 
   return (

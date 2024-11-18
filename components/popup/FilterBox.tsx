@@ -112,7 +112,7 @@ const FilterBox = memo(
         </div>
       </div>
     );
-  }
+  },
 );
 
 export { FilterBox };

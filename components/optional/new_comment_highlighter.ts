@@ -33,7 +33,7 @@ export const NewCommentHighlighter = {
     let staleId = false;
 
     console.log(
-      `highlight started with: ${lastId} & ${newId} ~= ${lastIdsLen ? JSON.stringify(lastIds) : JSON.stringify({})}`
+      `highlight started with: ${lastId} & ${newId} ~= ${lastIdsLen ? JSON.stringify(lastIds) : JSON.stringify({})}`,
     );
     // only bypass stale check if we have a root
     if (!root) staleId = await NewCommentHighlighter.checkStaleTime(NewCommentHighlighter.timeout);
@@ -147,7 +147,7 @@ export const NewCommentHighlighter = {
           if (rootId) acc.push({ [rootId]: curId });
           return acc;
         },
-        [] as Record<number, number>[]
+        [] as Record<number, number>[],
       ) ?? [];
 
     let commentDisplay = document.getElementById("chatty_settings");

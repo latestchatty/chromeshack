@@ -64,7 +64,7 @@ const usePendingPosts = (threaded: boolean) => {
       setPendingIdx((i) => (i > newIdx ? newIdx : i));
       pendingPostsUpdateEvent.raise({ pendings: newPendings });
     },
-    [pendings]
+    [pendings],
   );
   const fetchPendings = useCallback(
     async (resp: NotifyResponse) => {
@@ -97,7 +97,7 @@ const usePendingPosts = (threaded: boolean) => {
       setPendings([...reducedPendings]);
       pendingPostsUpdateEvent.raise({ pendings: reducedPendings });
     },
-    [threaded, pendings]
+    [threaded, pendings],
   );
 
   useEffect(() => {

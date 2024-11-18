@@ -25,7 +25,7 @@ const ThreadPane = {
       root.render(
         <StrictMode>
           <ThreadPaneApp />
-        </StrictMode>
+        </StrictMode>,
       );
     }
   },
