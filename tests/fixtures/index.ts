@@ -15,7 +15,7 @@ export const loadExtensionDefaults = async (page: Page, opts?: any, data?: any) 
       window.localStorage.setItem("transient-data", JSON.stringify(d));
       console.log("setting up testing environment:", JSON.stringify({ o, d }));
     },
-    { o: _opts, d: _data }
+    { o: _opts, d: _data },
   );
 };
 export const setTestCookie = async (context: BrowserContext) => {
@@ -53,15 +53,9 @@ export const test = base.extend<{
 }>({
   // biome-ignore lint/correctness/noEmptyPattern: "blame the official docs"
   context: async ({}, use) => {
-    const prodPath = path.resolve("./artifacts/dist");
-    const prodPathManifest = path.join(prodPath, "manifest.json");
-    const devPath = path.resolve("./dist");
-    const devPathManifest = path.resolve(devPath, "manifest.json");
-    const pathToExtension = fs.existsSync(prodPathManifest)
-      ? prodPath
-      : fs.existsSync(devPathManifest)
-        ? devPath
-        : null;
+    const distPath = path.resolve("./dist/chrome-mv3");
+    const distPathManifest = path.resolve(distPath, "manifest.json");
+    const pathToExtension = fs.existsSync(distPathManifest) ? distPath : null;
     if (pathToExtension === null) throw new Error("Could not find extension");
 
     const context = await chromium.launchPersistentContext("", {

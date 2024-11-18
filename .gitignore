@@ -1,8 +1,11 @@
+.wxt
 .idea*
 node_modules
 dist
 dist-firefox
 artifacts
+results
+
 # make sure to use --id option when signing!
 .web-extension-id
 dist.crx
@@ -12,5 +15,4 @@ tsconfig.tsbuildinfo
 .envrc
 .env
 .direnv
-results
 _shack_li_.json

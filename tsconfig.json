@@ -1,23 +1,7 @@
 {
+  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "sourceMap": true,
-    "noEmit": true,
-    "strict": true,
-    "jsx": "react-jsx",
-    "types": ["node", "chrome", "./src/types"],
-  },
-  "include": ["src", "tests"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx"
+  }
 }

@@ -12,11 +12,11 @@ Links:
 
 NodeJS 20.x+ and NPM 9.x+ are required, but this is also a PNPM-preferred repo (8.x+ recommended). Use `pnpm i` for installing dependencies.
 
-- (`pnpm dev` or `npm run dev`) includes full source mapping and a WebKit/Firefox manifest in the `dist/` and `dist-firefox/` folders respectively.
+- (`pnpm dev` or `npm run dev`) builds development code in the `dist/chrome-mv3` and `dist/firefox-mv2` folders respectively.
 
-- (`pnpm build` or `npm run build`) builds production code for WebKit/Firefox manifest in the `dist/` and `dist-firefox/` folders respectively.
+- (`pnpm build` or `npm run build`) builds production code in the `dist/chrome-mv3` and `dist/firefox-mv3` folders respectively.
 
-- (`pnpm build:pkg` or `npm run build:pkg`) builds production code for WebKit/Firefox and places zipped archives in `artifacts/` for upload to AMO and CWS.
+- (`pnpm build:pkg` or `npm run build:pkg`) builds production code and places zipped archives in `dist/` for upload to AMO and CWS.
 
 ## Dependencies used in this project
 

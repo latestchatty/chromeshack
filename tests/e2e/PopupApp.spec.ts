@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures";
 
 test.describe("Settings Popup", () => {
   test.beforeEach(async ({ page, extensionId }) => {
-    await page.goto(`chrome-extension://${extensionId}/src/popup.html`);
+    await page.goto(`chrome-extension://${extensionId}/popup.html`);
     await page.waitForSelector("div#tabs-container.loaded");
   });
 

@@ -7,26 +7,24 @@
   "scripts": {
     "generate-licenses": "node utils/generateLicenses.js",
     "generate-cookie": "node utils/testlogin.js",
-    "pkgsrc": "node utils/package.js && cp -rf dist dist-firefox artifacts/",
-    "build:serviceWorker": "vite build --config vite.serviceWorker.config.ts",
-    "build:content": "vite build --config vite.content.config.ts",
-    "build:popup": "vite build --config vite.popup.config.ts",
-    "build:permissions": "vite build --config vite.permissions.config.ts",
-    "build:js": "run-p build:serviceWorker build:content build:popup build:permissions",
-    "clean": "rm -rf dist-firefox/* dist/* artifacts/dist/* artifacts/dist-firefox/*",
-    "dev:crxjs": "vite dev",
-    "dev:firefoxjs": "NODE_ENV=development run-p build:js",
-    "dev": "run-s clean lint && tsc && run-p dev:crxjs dev:firefoxjs",
-    "build:crxjs": "vite build",
-    "build:ffxcrxjs": "run-s build:js",
-    "build": "run-s clean lint && tsc && run-p build:crxjs build:ffxcrxjs",
-    "build:pkg": "run-s build pkgsrc",
+    "dev:chrome": "run-p lint && wxt --mv3",
+    "dev:firefox": "wxt -b firefox",
+    "dev": "run-p dev:chrome && run-p dev:firefox",
+    "build:chrome": "wxt build --mv3",
+    "build:firefox": "wxt build --mv3 -b firefox",
+    "build": "run-p build:chrome && run-p build:firefox",
+    "zip:chrome": "wxt zip",
+    "zip:firefox": "wxt zip --mv3 -b firefox",
+    "zip": "run-p zip:chrome && run-p zip:firefox",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare",
     "test:deps": "playwright install chromium --with-deps",
     "test": "playwright test",
     "pretty": "prettier -w ./src/*.html ./src/styles/*.css ./public/*.html",
     "lint": "biome lint .",
     "lint:fix": "biome check --apply .",
-    "format": "run-s pretty && biome format --write ."
+    "format": "run-s pretty && biome format --write .",
+    "build:pkg": "run-s lint && run-s zip"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
@@ -47,7 +45,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@crxjs/vite-plugin": "2.0.0-beta.26",
     "@playwright/test": "^1.48.1",
     "@preact/preset-vite": "^2.9.1",
     "@types/chrome": "^0.0.246",
@@ -57,6 +54,7 @@
     "@types/node": "^22.7.7",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
+    "@wxt-dev/module-react": "^1.1.1",
     "adm-zip": "^0.5.16",
     "dotenv": "^16.4.5",
     "embla-carousel": "8.3.0",
@@ -66,7 +64,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
-    "vite": "^5.4.9"
+    "wxt": "^0.19.11"
   },
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }
