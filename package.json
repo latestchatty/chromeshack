@@ -16,14 +16,15 @@
     "zip:chrome": "wxt zip",
     "zip:firefox": "wxt zip --mv3 -b firefox",
     "zip": "run-p zip:chrome && run-p zip:firefox",
+    "clean": "rm -rf ./dist",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare",
     "test:deps": "playwright install chromium --with-deps",
     "test": "playwright test",
-    "pretty": "prettier -w ./src/*.html ./src/styles/*.css ./public/*.html",
+    "pretty": "prettier -w ./entrypoints/**/*.html ./components/styles/*.css ./public/*.html",
     "lint": "biome lint .",
     "lint:fix": "biome check --apply .",
-    "format": "run-s pretty && biome format --write .",
+    "format": "run-s pretty && biome format --write ./entrypoints ./components ./public ./utils",
     "build:pkg": "run-s lint && run-s zip"
   },
   "dependencies": {
@@ -31,7 +32,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "dompurify": "^3.1.7",
+    "dompurify": "^3.2.0",
     "embla-carousel-react": "8.3.0",
     "html-react-parser": "^4.2.10",
     "lodash.isequal": "^4.5.0",
@@ -45,16 +46,15 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@playwright/test": "^1.48.1",
+    "@playwright/test": "^1.48.2",
     "@preact/preset-vite": "^2.9.1",
     "@types/chrome": "^0.0.246",
     "@types/dompurify": "^3.0.5",
-    "@types/jquery": "^3.5.31",
+    "@types/jquery": "^3.5.32",
     "@types/lodash.isequal": "^4.5.8",
-    "@types/node": "^22.7.7",
-    "@types/react": "^18.3.11",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@wxt-dev/module-react": "^1.1.1",
     "adm-zip": "^0.5.16",
     "dotenv": "^16.4.5",
     "embla-carousel": "8.3.0",
@@ -64,7 +64,7 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
-    "wxt": "^0.19.11"
+    "wxt": "^0.19.16"
   },
   "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }
