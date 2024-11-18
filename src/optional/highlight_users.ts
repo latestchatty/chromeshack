@@ -77,7 +77,7 @@ export const HighlightUsers = {
           cssRules.push(`${rules} { ${group.css} }`);
         } else if (foundUser && group?.css?.length) {
           const rules = [
-            `div.fpauthor_${id} span.author span.user>a`,
+            `div.fpauthor_${id} span.author span.user>a, div.fpauthor_${id} span.author span.user`,
             `div.chattypost__hdr.fpauthor_${id} span.username>a`,
             `div.olauthor_${id} span.oneline_user`,
             `.authorid_${id}, .replyid_${id}`,
