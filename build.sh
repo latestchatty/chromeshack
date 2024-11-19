@@ -2,7 +2,7 @@
 
 IMAGE_NAME="chromeshack"
 
-selinux_status () {
+selinux_status() {
   ENFORCING=false
   if command -v getenforce; then
     local enforcing_status=$(getenforce)
@@ -18,9 +18,9 @@ if [[ "$ENFORCING" == true ]]; then
   RELABEL=":z"
 fi
 
-mkdir -p artifacts
+mkdir -p ./dist
 
 docker build -t $IMAGE_NAME .
 docker run --rm -i \
-  -v "./artifacts:/code/artifacts${RELABEL}" \
+  -v "./dist:/code/dist${RELABEL}" \
   --name $IMAGE_NAME $IMAGE_NAME

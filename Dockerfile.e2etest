@@ -1,5 +1,5 @@
 # Pull the base image
-FROM mcr.microsoft.com/playwright:v1.48.1-noble
+FROM mcr.microsoft.com/playwright:v1.49.0-noble
 
 ARG SCOOKIE
 ARG CI
@@ -13,7 +13,7 @@ RUN corepack enable
 WORKDIR /code/
 COPY . /code/
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts --frozen-lockfile
 RUN pnpm test:deps
 RUN pnpm build
 
