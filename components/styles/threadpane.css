@@ -289,7 +289,8 @@ div.cs_thread_pane_jump_to_top {
   font-family: sans-serif;
   font-size: 14px;
   outline: none;
-  width: 91%;
+  /* try to match card width */
+  width: 20.5rem;
   cursor: pointer;
   opacity: 0.66;
   transition: 0.15s;
