@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { elemMatches, parseToElement } from "../../core/common/dom";
 import { processPostEvent, userPopupEvent } from "../../core/events";
 import { getUsername } from "../../core/notifications";
-import "@/components/styles/userpopup.css";
 import { UserPopupApp } from "./UserPopupApp";
 import { getEnabledBuiltin } from "../../core/settings";
 

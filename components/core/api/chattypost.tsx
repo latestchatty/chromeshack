@@ -5,8 +5,6 @@ import { objHas } from "../common/common";
 import { elemMatches, openAsWindow } from "../common/dom";
 import { fetchSafe } from "../common/fetch";
 
-import "@/components/styles/chattypost.css";
-
 const parseChattyPost = async (sanitizedFragment: DocumentFragment) => {
   const fullpost = sanitizedFragment.querySelector(".fullpost") as HTMLDivElement;
   const fpAuthorId = fullpost?.getAttribute("class")?.split("fpauthor_")?.[1];

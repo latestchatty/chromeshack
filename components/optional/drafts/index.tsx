@@ -3,7 +3,6 @@ import { type Root, createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { processPostBoxEvent } from "../../core/events";
 import { enabledContains } from "../../core/settings";
-import "@/components/styles/drafts.css";
 import { DraftsApp } from "./DraftsApp";
 
 const Drafts = {

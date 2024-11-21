@@ -36,6 +36,12 @@ import "@/components/styles/media.css";
 import "@/components/styles/templates.css";
 import "@/components/styles/post_preview.css";
 import "@/components/styles/highlight_pending.css";
+import "@/components/styles/chattypost.css";
+import "@/components/styles/threadpane.css";
+import "@/components/styles/drafts.css";
+import "@/components/styles/chatty-news.css";
+import "@/components/styles/embla.css";
+import "@/components/styles/userpopup.css";
 
 export default defineContentScript({
   matches: ["https://www.shacknews.com/chatty*"],

@@ -1,4 +1,3 @@
-import "@/components/styles/embla.css";
 import { arrHas } from "../common/common";
 import { NextButton, PrevButton } from "./CarouselButtons";
 import useCarousel from "./useCarousel";

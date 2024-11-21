@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { parseToElement } from "../../core/common/dom";
 import { enabledContains, getEnabledSuboption } from "../../core/settings";
-import "../../styles/threadpane.css";
 import { ThreadPaneApp } from "./ThreadPaneApp";
 
 const ThreadPane = {

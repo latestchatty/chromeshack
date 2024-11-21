@@ -2,7 +2,6 @@ import { arrHas, timeOverThresh } from "../core/common/common";
 import { parseToElement } from "../core/common/dom";
 import { fetchSafe } from "../core/common/fetch";
 import { enabledContains, getSetting, setSetting } from "../core/settings";
-import "@/components/styles/chatty-news.css";
 
 export const ChattyNews = {
   // 15 minute threshold
