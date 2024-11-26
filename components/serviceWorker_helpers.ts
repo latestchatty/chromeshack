@@ -9,22 +9,6 @@ import {
 import { migrateSettings } from "@/components/core/settings";
 import { requiredOrigin } from "@/entrypoints/options/main";
 
-export const injectAZScrollFix = (request: OnMessageRequest, sendResponse: any) => {
-  // scroll-by-key fix for Chatty
-  if (request.name === "scrollByKeyFix") {
-    getCurrentTabId().then((tabId: number) => {
-      browser.scripting
-        .executeScript({
-          target: { tabId },
-          files: ["patches/nuScrollByKeyFix.js"],
-        })
-        .then((r) => {
-          sendResponse(r);
-        });
-    });
-  }
-};
-
 export const commonBackgroundListeners = (request: OnMessageRequest, sendResponse: any) => {
   if (request.name === "corbFetch") {
     const fetchArgs: FetchArgs = {

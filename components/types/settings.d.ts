@@ -11,7 +11,6 @@ declare global {
 
   export type EnabledBuiltinOptions =
     | "scroll_behavior"
-    | "az_scroll_fix"
     | "single_thread_fix"
     | "uncapped_thread_fix"
     | "image_uploader"

@@ -174,15 +174,6 @@ const PopupApp = memo(() => {
 
       <div title="Core">
         <OptionGroup label="QOL Patches">
-          {isFirefox() ? (
-            <OptionBuiltin
-              id="az_scroll_fix"
-              label="A/Z scroll fix"
-              descriptions={[
-                "Re-enables the A/Z keyboard shortcut when navigating posts in a thread (only in Firefox).",
-              ]}
-            />
-          ) : null}
           <OptionBuiltin
             id="single_thread_fix"
             label="Enhanced single-thread mode"
