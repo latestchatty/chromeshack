@@ -10,7 +10,7 @@ export default defineConfig({
     plugins: [preact()],
   }),
 
-  manifest: ({ browser }) => {
+  manifest: ({ browser, manifestVersion }) => {
     const baseConfig = {
       name: "Chrome Shack",
       version,
@@ -42,9 +42,28 @@ export default defineConfig({
       permissions: [...baseConfig.permissions, "scripting"],
     };
 
+    const v2Mixin = {
+      permissions: [
+        "activeTab",
+        "https://api.imgur.com/3/*",
+        "https://api.gfycat.com/v1/gfycats/*",
+        "https://filedrop.gfycat.com/*",
+        "https://*.youtube.com/embed/*",
+        "https://api.streamable.com/videos/*",
+        "https://*.shacknews.com/chatty*",
+      ],
+    };
+
+    let outputConfig: any = {};
     if (browser === "firefox") {
-      return { ...baseConfig, ...firefoxMixin };
+      outputConfig = { ...baseConfig, ...firefoxMixin };
+    } else {
+      outputConfig = { ...baseConfig };
     }
-    return { ...baseConfig };
+    if (manifestVersion === 2) {
+      outputConfig = { ...outputConfig, permissions: [...outputConfig.permissions, ...v2Mixin.permissions] };
+    }
+
+    return outputConfig;
   },
 });
