@@ -30,7 +30,7 @@ export const SparklyComic = {
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          const image = chrome.runtime.getURL(`images/${SparklyComic.getImage(line, i, lines.length)}`);
+          const image = browser.runtime.getURL(`/images/${SparklyComic.getImage(line, i, lines.length)}`);
           const panel = parseToElement(`
             <div class="panel" style="background-image: url(${image});">
               <span>${line}</span>

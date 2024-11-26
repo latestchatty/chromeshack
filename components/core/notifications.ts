@@ -33,15 +33,6 @@ export const setInitialNotificationsEventId = async () => {
   await setEventId(resp.eventId);
 };
 
-export const notificationClicked = (notificationId: string) => {
-  if (notificationId.indexOf("ChromeshackNotification") > -1) {
-    const postId = notificationId.replace("ChromeshackNotification", "");
-    const url = `https://www.shacknews.com/chatty?id=${postId}#item_${postId}`;
-    browser.tabs.create({ url });
-    browser.notifications.clear(notificationId);
-  }
-};
-
 const matchNotification = async (nEvent: NotifyEvent) => {
   const loggedInUsername = (await getUsername())?.toLowerCase();
   const newPostEvent = nEvent.eventData as NewPostData;
@@ -85,7 +76,7 @@ const handleNotification = async (response: NotifyResponse) => {
           type: "basic",
           title: `New post by ${post.author}`,
           message: match,
-          iconUrl: "images/icon.png",
+          iconUrl: `${browser.runtime.getURL("/images/icon96.png")}`,
         });
     }
 };
@@ -107,7 +98,6 @@ export const alarmNotifications = async () => {
       });
     }
 
-    console.log("alarmNotifications tick:", nEventId, resp);
     if (resp?.lastEventId && !resp.error) {
       await setEventId(resp.lastEventId);
       await handleNotification(resp);

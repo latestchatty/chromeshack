@@ -7,7 +7,6 @@ import { Option, OptionBuiltin, OptionButton, OptionGroup, Suboption } from "./O
 import { Tabs } from "./Tabs";
 import { getState, setSettingsState } from "./actions";
 import { useStore } from "./popupStore";
-import { isFirefox } from "@/components/core/common/common";
 
 const PopupApp = memo(() => {
   const state = useStore() as PopupState;
@@ -18,12 +17,12 @@ const PopupApp = memo(() => {
       const freshSettings = await resetSettings().then(getState);
       if (dispatch) dispatch({ type: "INIT", payload: { ...freshSettings, loaded: true } });
       // force a context reload after resetting
-      chrome.runtime.reload();
+      browser.runtime.reload();
     })();
   };
   const handleRlsNotesBtn = () => {
-    chrome.tabs.create({
-      url: chrome.runtime.getURL("release_notes.html"),
+    browser.tabs.create({
+      url: browser.runtime.getURL("/release_notes.html"),
     });
   };
 

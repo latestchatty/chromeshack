@@ -35,7 +35,7 @@ export const DinoGegtik = {
         const postBody = fullpost?.querySelector("div.postbody") as HTMLDivElement;
         const postBodyClone = postBody?.cloneNode(true) as HTMLElement;
         const lines = SentenceParser.parseIntoLines(postBodyClone?.innerHTML);
-        const image = browser.runtime.getURL("images/dinogegtik.png");
+        const image = browser.runtime.getURL("/images/dinogegtik.png");
         const comic_height = lines.length <= 3 ? "244px" : "487px";
         const comic_div = parseToElement(`
           <div id="${comic_id}" class="dinogegtik" style="height: ${comic_height}; background-image: url(${image});" />

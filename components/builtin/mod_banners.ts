@@ -24,16 +24,16 @@ export const ModBanners = {
       const _isPolitical = post.querySelector("li > div.fullpost.fpmod_political:not(.getPost)") as HTMLElement;
       const _isInformative = post.querySelector("li > div.fullpost.fpmod_informative:not(.getPost)") as HTMLElement;
       if (_isOfftopic) {
-        const _url = `url("${chrome.runtime.getURL("images/offtopic.png")}")`;
+        const _url = `url("${browser.runtime.getURL("/images/offtopic.png")}")`;
         _isOfftopic.style.backgroundImage = _url;
       } else if (_isStupid) {
-        const _url = `url("${chrome.runtime.getURL("images/stupid.png")}")`;
+        const _url = `url("${browser.runtime.getURL("/images/stupid.png")}")`;
         _isStupid.style.backgroundImage = _url;
       } else if (_isPolitical) {
-        const _url = `url("${chrome.runtime.getURL("images/political.png")}")`;
+        const _url = `url("${browser.runtime.getURL("/images/political.png")}")`;
         _isPolitical.style.backgroundImage = _url;
       } else if (_isInformative) {
-        const _url = `url("${chrome.runtime.getURL("images/interesting.png")}")`;
+        const _url = `url("${browser.runtime.getURL("/images/interesting.png")}")`;
         _isInformative.style.backgroundImage = _url;
       }
     }
