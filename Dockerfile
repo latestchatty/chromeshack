@@ -2,8 +2,8 @@ FROM node:23-alpine
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack install -g pnpm@latest
+RUN corepack enable && \
+  pnpm i -g pnpm@latest
 
 COPY package.json pnpm-lock.yaml /code/
 WORKDIR /code

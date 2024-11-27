@@ -8,8 +8,8 @@ ENV CI=$CI
 ENV E2E_SHACKLI=$SCOOKIE
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-RUN corepack install -g pnpm@latest
+RUN corepack enable && \
+  pnpm i -g pnpm@latest
 
 COPY package.json pnpm-lock.yaml /code/
 WORKDIR /code
@@ -17,8 +17,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts 
 
 COPY . ./
 
-RUN pnpm postinstall
-RUN pnpm test:deps
-RUN pnpm build
+RUN pnpm postinstall && \
+  pnpm test:deps
 
+RUN pnpm build
 CMD ["/bin/bash"]
