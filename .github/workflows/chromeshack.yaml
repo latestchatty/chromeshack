@@ -1,8 +1,11 @@
 name: ChromeShack
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "master build"
+        required: true
+        default: "master"
 
 jobs:
   build:
