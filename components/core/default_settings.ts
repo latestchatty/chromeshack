@@ -11,7 +11,6 @@ const DefaultSettings: Settings = {
     "shrink_user_icons",
   ],
   enabled_builtins: [
-    "az_scroll_fix",
     "single_thread_fix",
     "uncapped_thread_fix",
     "scroll_behavior",
