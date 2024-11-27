@@ -1,8 +1,11 @@
 name: Playwright Tests
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "master tests"
+        required: true
+        default: "master"
 
 jobs:
   playwright:
