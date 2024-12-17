@@ -5,7 +5,7 @@ IMAGE_NAME="chromeshack"
 selinux_status() {
   ENFORCING=false
   if command -v getenforce; then
-    local enforcing_status=$(getenforce)
+    enforcing_status=$(getenforce)
     if [ "$enforcing_status" == "Enforcing" ]; then
       ENFORCING=true
     fi

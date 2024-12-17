@@ -28,7 +28,7 @@ IMAGE_NAME="chromeshack-e2e"
 selinux_status() {
   ENFORCING=false
   if command -v getenforce &>/dev/null; then
-    local enforcing_status=$(getenforce)
+    enforcing_status=$(getenforce)
     if [ "$enforcing_status" == "Enforcing" ]; then
       ENFORCING=true
     fi
