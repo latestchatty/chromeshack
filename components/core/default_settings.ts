@@ -11,6 +11,7 @@ const DefaultSettings: Settings = {
     "shrink_user_icons",
   ],
   enabled_builtins: [
+    "discord_link",
     "single_thread_fix",
     "uncapped_thread_fix",
     "scroll_behavior",

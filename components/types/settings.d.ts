@@ -10,6 +10,7 @@ declare global {
   }
 
   export type EnabledBuiltinOptions =
+    | "discord_link"
     | "scroll_behavior"
     | "single_thread_fix"
     | "uncapped_thread_fix"

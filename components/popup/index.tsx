@@ -199,6 +199,11 @@ const PopupApp = memo(() => {
         </OptionGroup>
         <OptionGroup label="Built-in Features">
           <OptionBuiltin
+            id="discord_link"
+            label="Discord Link"
+            descriptions={["A shortcut to the community Discord server on the Chatty"]}
+          />
+          <OptionBuiltin
             id="image_uploader"
             label="Image Uploader"
             descriptions={["Provides a convenient way to upload media to Imgur right in the Postbox."]}

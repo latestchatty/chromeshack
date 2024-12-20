@@ -55,6 +55,13 @@ test("shame switchers enabled", async ({ page }) => {
   await expect(page.locator("li li.sel span.user")).toHaveText(/\w+ - \(\w+\)/);
 });
 
+test("discord-link enabled", async ({ page }) => {
+  await navigate(page, "https://www.shacknews.com/chatty");
+  const discordLinkBtn = page.locator("a.discord-btn");
+  await expect(discordLinkBtn).toBeVisible();
+  await expect(discordLinkBtn).toHaveAttribute("href", "https://discord.gg/thechatty");
+});
+
 test("chatty-news enabled", async ({ page }) => {
   await navigate(page, "https://www.shacknews.com/chatty?id=40049762#item_40049762", {
     d: { enabled_scripts: ["chatty_news"] },

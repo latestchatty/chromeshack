@@ -42,6 +42,7 @@ import "@/components/styles/drafts.css";
 import "@/components/styles/chatty-news.css";
 import "@/components/styles/embla.css";
 import "@/components/styles/userpopup.css";
+import { DiscordLink } from "@/components/builtin/discord";
 
 export default defineContentScript({
   matches: ["https://www.shacknews.com/chatty*"],
@@ -64,6 +65,7 @@ export default defineContentScript({
         await Switchers.install();
         await TwitchAutoplay.install();
         await ThreadPane.install();
+        await DiscordLink.install();
         Drafts.install();
         EmojiPoster.install();
         ImageUploader.install();
