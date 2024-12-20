@@ -376,6 +376,11 @@ export const migrateSettings = async () => {
     await setSetting("new_comment_highlighter_last_id", {});
     migrated = true;
   }
+  if (last_version < 1.79) {
+    // ensure discord link defaults to enabled when migrating from <1.79
+    await setEnabledBuiltin("discord_link");
+    migrated = true;
+  }
 
   // pull the latest version data after the migration
   current_version = getManifestVersion();

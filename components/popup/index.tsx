@@ -201,7 +201,7 @@ const PopupApp = memo(() => {
           <OptionBuiltin
             id="discord_link"
             label="Discord Link"
-            descriptions={["A shortcut to the community Discord server on the Chatty"]}
+            descriptions={["A shortcut to the community Discord server on the Chatty."]}
           />
           <OptionBuiltin
             id="image_uploader"
