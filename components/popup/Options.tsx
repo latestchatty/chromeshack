@@ -34,11 +34,12 @@ const OptionButton = memo(
     id: string;
     classes?: string;
     label?: string;
+    tooltip?: string;
     infolabel?: string;
     buttonlabel: string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   }) => {
-    const { id, classes, label, infolabel, buttonlabel, onClick } = props || {};
+    const { id, classes, label, tooltip, infolabel, buttonlabel, onClick } = props || {};
 
     return (
       <div className="option__btn">
@@ -48,7 +49,7 @@ const OptionButton = memo(
           </h2>
         ) : undefined}
         {infolabel ? <p className="info">{infolabel}</p> : undefined}
-        <button className={classes} id={id} onClick={onClick ? onClick : undefined}>
+        <button className={classes} id={id} title={tooltip} onClick={onClick ? onClick : undefined}>
           {buttonlabel}
         </button>
       </div>

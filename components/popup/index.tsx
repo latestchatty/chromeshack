@@ -25,6 +25,11 @@ const PopupApp = memo(() => {
       url: browser.runtime.getURL("/release_notes.html"),
     });
   };
+  const handleDiscordBtn = () => {
+    browser.tabs.create({
+      url: "https://discord.gg/thechatty",
+    });
+  };
 
   useEffect(() => {
     if (state == null || (state && Object.keys(state).length === 0)) return;
@@ -287,6 +292,16 @@ const PopupApp = memo(() => {
           buttonlabel="Reset"
           onClick={handleResetBtn}
         />
+
+        <OptionGroup label="Community">
+          <OptionButton
+            id="join_discord_btn"
+            infolabel="Join the unofficial Chatty Discord community!"
+            buttonlabel="Discord"
+            tooltip="https://discord.gg/thechatty"
+            onClick={handleDiscordBtn}
+          />
+        </OptionGroup>
 
         <OptionButton
           id="rls_notes"

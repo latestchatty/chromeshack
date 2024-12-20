@@ -3,6 +3,16 @@
   <head>
     <title>Chrome Shack Release Notes</title>
     <style>
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --background-color-dark: #23222b;
+          --text-color-dark: white;
+        }
+        body {
+          background-color: var(--background-color-dark);
+          color: var(--text-color-dark);
+        }
+      }
       body {
         font-family: sans-serif;
         font-size: 14px;
@@ -19,6 +29,8 @@
     <h1>Chrome Shack Release Notes</h1>
     <h2>Version 1.79</h2>
     <ul>
+      <li>Added: a shortcut for joining the unofficial Chatty Discord server in the Extras pane (WombatFromHell)</li>
+      <li>Fixed: "Release Notes" page is now responsive to the OS theme (WombatFromHell)</li>
       <li>Fixed: "Thread Pane" jump-to-top button not aligning with card width (WombatFromHell)</li>
       <li>
         Fixed: "Highlight Users" edge case not correctly coloring fullpost author span when matching user rules

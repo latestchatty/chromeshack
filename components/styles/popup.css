@@ -15,6 +15,8 @@
   --info-color-dark: #bbbbbb;
   --border-color-dark: #999999;
   --text-color-dark: #ffffff;
+  --link-text-dark: var(--test-color-dark);
+  --link-text-light: var(--text-color-light);
 }
 
 body {
@@ -30,6 +32,9 @@ body {
   color: var(--text-color-light);
 }
 
+a {
+  color: var(--text-color-light);
+}
 h2 {
   width: 100%;
   background-image: var(--hdr-bg-color-light);
@@ -288,6 +293,9 @@ div.filter_box > p {
   }
   h2 {
     background-image: var(--hdr-bg-color-dark);
+  }
+  a {
+    color: var(--link-text-dark);
   }
   select option:checked {
     background-color: var(--background-color-dark);
